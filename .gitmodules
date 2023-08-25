@@ -1,0 +1,3 @@
+[submodule "object_detection_integration_client"]
+	path = submodules/object_detection_integration_client
+	url = https://git.rtx.mapspeople.com/MapsIndoors/automation/integrations/object_detection_integration_client.git

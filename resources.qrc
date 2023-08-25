@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="profilecreator">
+    <file>icon.png</file>
+    <file>icons/mp_notext.png</file>
+  </qresource>
+</RCC>

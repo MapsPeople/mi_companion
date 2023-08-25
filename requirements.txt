@@ -1,0 +1,6 @@
+warg
+jord
+geopandas
+pandas
+shapely == 1.8.5
+numpy
