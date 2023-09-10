@@ -3,7 +3,6 @@ from typing import Optional, Mapping, Any
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
-
 from qlive.qlive import PROJECT_NAME
 from qlive.qlive.configuration.project_settings import DEFAULT_PROJECT_SETTINGS
 

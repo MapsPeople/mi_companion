@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>qlive_dock_widget</class>
- <widget class="QDockWidget" name="qlive_dock_widget">
+ <class>geo_companion_dock_widget</class>
+ <widget class="QDockWidget" name="geo_companion_dock_widget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>348</width>
-    <height>227</height>
+    <width>446</width>
+    <height>120</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>QLive</string>
+   <string>Deployment Companion</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <property name="enabled">
@@ -90,7 +90,7 @@
          </font>
         </property>
         <property name="text">
-         <string>GDS Companion</string>
+         <string>Deployment Companion</string>
         </property>
        </widget>
       </item>
@@ -137,7 +137,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QGridLayout" name="entry_point_grid">
+     <layout class="QGridLayout" name="entry_point_grid" rowstretch="0" columnstretch="0">
       <property name="sizeConstraint">
        <enum>QLayout::SetDefaultConstraint</enum>
       </property>

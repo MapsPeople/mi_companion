@@ -3,12 +3,11 @@ from pathlib import Path
 from typing import Mapping
 
 from qgis.PyQt.QtGui import QIcon
+from warg import passes_kws_to
 
-from gui import PROJECT_NAME
+from .. import PROJECT_NAME
 from ..configuration.project_settings import DEFAULT_PROJECT_SETTINGS
 from ..configuration.settings import read_project_setting
-
-from warg import passes_kws_to
 
 __all__ = ["resolve_path", "load_icon", "get_icon_path"]
 

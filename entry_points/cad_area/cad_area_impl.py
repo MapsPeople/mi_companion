@@ -6,20 +6,17 @@ import csv
 import os
 import traceback
 from pathlib import Path
-from typing import List, Iterable, Sequence
+from typing import List, Sequence, Dict, Mapping
 
-from jord.gdal_utilities import GDAL, OGR
+from jord.gdal_utilities import OGR
+from warg import system_open_path
 
 
-def write_csv(path: Path, area_list: Sequence) -> None:
+def write_csv(csv_file_name: Path, area_list: Sequence[Mapping]) -> None:
     if len(area_list) == 0:
         return
 
-    fieldnames = []
-    for f in area_list[0]:
-        fieldnames.append(f)
-
-    csv_file_name = path / "cadareareport.csv"
+    fieldnames = list(area_list[0].keys())
 
     with open(csv_file_name, "w", newline="") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -28,9 +25,7 @@ def write_csv(path: Path, area_list: Sequence) -> None:
             writer.writerow(a)
 
 
-def area_of_layer(cad_file: Path) -> List:
-    area_list = []
-
+def area_of_layer(cad_file: Path) -> Dict:
     try:
         print(f"Opening cadfile: {cad_file}")
         # We use the MW_Floor_Area layer for floors that were delivered as cad files,
@@ -78,30 +73,23 @@ def area_of_layer(cad_file: Path) -> List:
         data_source = None
         del data_source
 
-        area_list.append(a)
-
     except Exception as ex:
         print(ex)
         print(traceback.format_exc())
 
-    return area_list
+    return a
 
 
-def run(root_dir: Path):
-    jobs = []
-
+def run(root_dir: Path, out_path: Path) -> None:
+    area_list = []
     for subdir, dirs, files in os.walk(root_dir):
         for file in files:
             if ".dxf" in file:
-                cad_path = os.path.join(subdir, file)
-                jobs.append(cad_path)
+                area_list.append(area_of_layer(Path(Path(subdir) / file)))
 
-    area_list = []
-    for j in jobs:
-        if not j in [r""]:
-            area_list.append(area_of_layer(Path(j)))
+    write_csv(out_path, area_list)
 
-    write_csv(root_dir, area_list)
+    system_open_path(out_path)
 
 
 if __name__ == "__main__":
