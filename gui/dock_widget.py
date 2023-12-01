@@ -28,13 +28,13 @@ from qgis.core import (
 )
 from warg import reload_module
 
+from ..cms_edit.cms_hierarchy import add_cms_layer_hierarchy
 from ..configuration.project_settings import DEFAULT_PROJECT_SETTINGS
 from ..configuration.settings import read_project_setting
 from ..constants import VERSION, PROJECT_NAME
 from ..entry_points.cad_area.cad_area_dialog import CadAreaDialog
 from ..utilities import resolve_path, get_icon_path
 from integration_system import get_cms_solution
-from jord.qlive_utilities import add_shapely_layer
 
 FORM_CLASS, _ = uic.loadUiType(resolve_path("dock_widget.ui", __file__))
 
@@ -67,6 +67,8 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.plugin_status_label.setText(plugin_status(PROJECT_NAME))
 
         self.changes_label.setText("")
+        self.sync_button.setEnabled(False)
+
         reconnect_signal(self.reset_button.clicked, self.reset_button_clicked)
         reconnect_signal(self.sync_button.clicked, self.sync_button_clicked)
         self.solution_combo_box.addItems(["Lakeline Mall"])
@@ -80,8 +82,8 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.repopulate_grid_layout()
 
     def reset_button_clicked(self):
-        ...
         self.changes_label.setText("Reset")
+        self.sync_button.setEnabled(True)
 
         env_vars = dict(
             mapsindoors__username="automation@mapspeople.com",
@@ -103,55 +105,10 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.solution_combo_box.addItems([*self.venues_map.keys()])
 
     def sync_button_clicked(self):
-        ...
         solution_name = str(self.solution_combo_box.currentText())
         self.changes_label.setText(f"Synced {solution_name}")
 
-        venue = None
-        for v in self.solution.venues:
-            if v.external_id == self.venues_map[solution_name]:
-                venue = v
-                break
-
-        add_shapely_layer(
-            qgis_instance_handle=self, geoms=[venue.polygon], name="venue"
-        )
-
-        add_shapely_layer(
-            qgis_instance_handle=self,
-            geoms=[d.linestring for d in self.solution.doors],
-            name="doors",
-        )
-
-        add_shapely_layer(
-            qgis_instance_handle=self,
-            geoms=[d.polygon for d in self.solution.buildings],
-            name="buildings",
-        )
-
-        add_shapely_layer(
-            qgis_instance_handle=self,
-            geoms=[d.polygon for d in self.solution.floors],
-            name="floors",
-        )
-
-        add_shapely_layer(
-            qgis_instance_handle=self,
-            geoms=[d.polygon for d in self.solution.rooms],
-            name="rooms",
-        )
-
-        add_shapely_layer(
-            qgis_instance_handle=self,
-            geoms=[d.polygon for d in self.solution.areas],
-            name="areas",
-        )
-
-        add_shapely_layer(
-            qgis_instance_handle=self,
-            geoms=[d.point for d in self.solution.points_of_interest],
-            name="pois",
-        )
+        add_cms_layer_hierarchy(self, self.solution, self.venues_map, solution_name)
 
     def repopulate_grid_layout(self):
         num_columns = int(
