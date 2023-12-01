@@ -33,6 +33,8 @@ from ..configuration.settings import read_project_setting
 from ..constants import VERSION, PROJECT_NAME
 from ..entry_points.cad_area.cad_area_dialog import CadAreaDialog
 from ..utilities import resolve_path, get_icon_path
+from integration_system import get_cms_solution
+from jord.qlive_utilities import add_shapely_layer
 
 FORM_CLASS, _ = uic.loadUiType(resolve_path("dock_widget.ui", __file__))
 
@@ -64,12 +66,92 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.version_label.setText(VERSION)
         self.plugin_status_label.setText(plugin_status(PROJECT_NAME))
 
+        self.changes_label.setText("")
+        reconnect_signal(self.reset_button.clicked, self.reset_button_clicked)
+        reconnect_signal(self.sync_button.clicked, self.sync_button_clicked)
+        self.solution_combo_box.addItems(["Lakeline Mall"])
+
         # from .. import entry_points
         # print(dir(entry_points))
 
         self.entry_point_dialogs = {"Cad Area": CadAreaDialog()}
 
-        self.repopulate_grid_layout()
+        if False:
+            self.repopulate_grid_layout()
+
+    def reset_button_clicked(self):
+        ...
+        self.changes_label.setText("Reset")
+
+        env_vars = dict(
+            mapsindoors__username="automation@mapspeople.com",
+            mapsindoors__password="8CtM6hLScJcYKtSJ6sBKqqPEBH7wBiHD",
+            mapsindoors__integration_api_host=(
+                "https://integration-automation.mapsindoors.com"
+            ),
+            mapsindoors__token_endpoint="https://auth.mapsindoors.com/connect/token",
+            mapsindoors__manager_api_host="https://v2.mapsindoors.com",
+        )
+        os.environ.update(**env_vars)
+        # solution_id = "2249acf1b9d245548f825717"
+        external_id = "nhl"
+        self.solution = get_cms_solution(external_id)
+
+        self.venues_map = {v.name: v.external_id for v in self.solution.venues}
+
+        self.solution_combo_box.clear()
+        self.solution_combo_box.addItems([*self.venues_map.keys()])
+
+    def sync_button_clicked(self):
+        ...
+        solution_name = str(self.solution_combo_box.currentText())
+        self.changes_label.setText(f"Synced {solution_name}")
+
+        venue = None
+        for v in self.solution.venues:
+            if v.external_id == self.venues_map[solution_name]:
+                venue = v
+                break
+
+        add_shapely_layer(
+            qgis_instance_handle=self, geoms=[venue.polygon], name="venue"
+        )
+
+        add_shapely_layer(
+            qgis_instance_handle=self,
+            geoms=[d.linestring for d in self.solution.doors],
+            name="doors",
+        )
+
+        add_shapely_layer(
+            qgis_instance_handle=self,
+            geoms=[d.polygon for d in self.solution.buildings],
+            name="buildings",
+        )
+
+        add_shapely_layer(
+            qgis_instance_handle=self,
+            geoms=[d.polygon for d in self.solution.floors],
+            name="floors",
+        )
+
+        add_shapely_layer(
+            qgis_instance_handle=self,
+            geoms=[d.polygon for d in self.solution.rooms],
+            name="rooms",
+        )
+
+        add_shapely_layer(
+            qgis_instance_handle=self,
+            geoms=[d.polygon for d in self.solution.areas],
+            name="areas",
+        )
+
+        add_shapely_layer(
+            qgis_instance_handle=self,
+            geoms=[d.point for d in self.solution.points_of_interest],
+            name="pois",
+        )
 
     def repopulate_grid_layout(self):
         num_columns = int(

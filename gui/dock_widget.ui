@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>446</width>
-    <height>120</height>
+    <width>338</width>
+    <height>227</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Deployment Companion</string>
+   <string>Geo Companion</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <property name="enabled">
@@ -29,7 +29,7 @@
      <verstretch>1</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0">
     <property name="sizeConstraint">
      <enum>QLayout::SetMinimumSize</enum>
     </property>
@@ -90,7 +90,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Deployment Companion</string>
+         <string>Geo Companion</string>
         </property>
        </widget>
       </item>
@@ -135,6 +135,71 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_2">
+      <property name="font">
+       <font>
+        <family>Lucida Sans</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>CMS Solution</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QComboBox" name="solution_combo_box"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QPushButton" name="reset_button">
+          <property name="text">
+           <string>Reset</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="changes_label">
+          <property name="text">
+           <string>Status</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="sync_button">
+          <property name="text">
+           <string>Download</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_3">
+      <property name="font">
+       <font>
+        <family>Lucida Sans</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Dialog Tools</string>
+      </property>
+     </widget>
     </item>
     <item>
      <layout class="QGridLayout" name="entry_point_grid" rowstretch="0" columnstretch="0">

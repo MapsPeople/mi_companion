@@ -3,14 +3,14 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=Profile Creator Angle
+name=GDS Companion
 qgisMinimumVersion=3.0
-description=Create object profiles for object search and creation in MapsIndoors
+description=GDS tooling
 version=0.1
-author=Jesper Winther @ MapsPeople
-email=jw@mapspeople.com
+author=CHEN @ MapsPeople
+email=chen@mapspeople.com
 
-about=The plugin enables creation of object "Profiles" which can be used to find and create objects in MapsIndoors.
+about=The plugin comprises various tools for the gds workflow
 
 tracker=http://bugs
 repository=http://repo

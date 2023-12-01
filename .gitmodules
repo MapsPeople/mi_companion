@@ -1,3 +1,6 @@
-[submodule "object_detection_integration_client"]
-	path = submodules/object_detection_integration_client
-	url = https://git.rtx.mapspeople.com/MapsIndoors/automation/integrations/object_detection_integration_client.git
+[submodule "cms_edit/integration_system"]
+	path = cms_edit/integration_system
+	url = git@git.rtx.mapspeople.com:MapsIndoors/automation/integrations/integration-system.git
+[submodule "cms_edit/integration_client"]
+	path = cms_edit/integration_client
+	url = https://git.rtx.mapspeople.com/mapsindoors-public/integration-client.git
