@@ -2,7 +2,7 @@ fail_fast: true
 #exclude: '^exclude'
 repos:
   - repo: https://github.com/ambv/black
-    rev: 23.3.0
+    rev: 23.11.0
     hooks:
       - id: black
         exclude: resources.py

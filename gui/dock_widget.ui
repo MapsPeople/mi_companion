@@ -137,7 +137,13 @@
      </layout>
     </item>
     <item>
-     <widget class="QLabel" name="label_2">
+     <widget class="QLabel" name="cms_label">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="font">
        <font>
         <family>Lucida Sans</family>
@@ -157,11 +163,14 @@
        <widget class="QComboBox" name="solution_combo_box"/>
       </item>
       <item>
+       <widget class="QComboBox" name="venue_combo_box"/>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QPushButton" name="reset_button">
+         <widget class="QPushButton" name="reload_button">
           <property name="text">
-           <string>Reset</string>
+           <string>Reload</string>
           </property>
          </widget>
         </item>
@@ -187,7 +196,16 @@
      </layout>
     </item>
     <item>
-     <widget class="QLabel" name="label_3">
+     <widget class="QLabel" name="tools_label">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="font">
        <font>
         <family>Lucida Sans</family>

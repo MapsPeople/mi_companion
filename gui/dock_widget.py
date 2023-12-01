@@ -28,7 +28,8 @@ from qgis.core import (
 )
 from warg import reload_module
 
-from ..cms_edit.cms_hierarchy import add_cms_layer_hierarchy
+from ..cms_edit.conversion.from_layers import layer_hierarchy_to_solution
+from ..cms_edit.conversion.to_layers import solution_to_layer_hierarchy
 from ..configuration.project_settings import DEFAULT_PROJECT_SETTINGS
 from ..configuration.settings import read_project_setting
 from ..constants import VERSION, PROJECT_NAME
@@ -69,46 +70,65 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.changes_label.setText("")
         self.sync_button.setEnabled(False)
 
-        reconnect_signal(self.reset_button.clicked, self.reset_button_clicked)
+        reconnect_signal(self.reload_button.clicked, self.reload_button_clicked)
         reconnect_signal(self.sync_button.clicked, self.sync_button_clicked)
-        self.solution_combo_box.addItems(["Lakeline Mall"])
+
+        self.solution_combo_box.clear()
+        self.solution_combo_box.addItems(["nhl", "kemper", "phoenix", "kingfisher"])
 
         # from .. import entry_points
         # print(dir(entry_points))
+
+        self.editing = False
 
         self.entry_point_dialogs = {"Cad Area": CadAreaDialog()}
 
         if False:
             self.repopulate_grid_layout()
 
-    def reset_button_clicked(self):
-        self.changes_label.setText("Reset")
-        self.sync_button.setEnabled(True)
+    def reload_button_clicked(self):
+        if self.editing:  # TODO: THIS IS SOLELY FOR THE DEMO!
+            self.reload_button.setText(f"Reload")
+            self.sync_button.setText(f"Download")
+            self.editing = False
+        else:
+            self.changes_label.setText("Fetched venues")
+            self.sync_button.setEnabled(True)
 
-        env_vars = dict(
-            mapsindoors__username="automation@mapspeople.com",
-            mapsindoors__password="8CtM6hLScJcYKtSJ6sBKqqPEBH7wBiHD",
-            mapsindoors__integration_api_host=(
-                "https://integration-automation.mapsindoors.com"
-            ),
-            mapsindoors__token_endpoint="https://auth.mapsindoors.com/connect/token",
-            mapsindoors__manager_api_host="https://v2.mapsindoors.com",
-        )
-        os.environ.update(**env_vars)
-        # solution_id = "2249acf1b9d245548f825717"
-        external_id = "nhl"
-        self.solution = get_cms_solution(external_id)
+            env_vars = dict(
+                mapsindoors__username="automation@mapspeople.com",
+                mapsindoors__password="8CtM6hLScJcYKtSJ6sBKqqPEBH7wBiHD",
+                mapsindoors__integration_api_host=(
+                    "https://integration-automation.mapsindoors.com"
+                ),
+                mapsindoors__token_endpoint="https://auth.mapsindoors.com/connect/token",
+                mapsindoors__manager_api_host="https://v2.mapsindoors.com",
+            )
+            os.environ.update(**env_vars)
+            solution_external_id = str(self.solution_combo_box.currentText())
+            self.solution = get_cms_solution(solution_external_id)
 
-        self.venues_map = {v.name: v.external_id for v in self.solution.venues}
+            self.venues_map = {v.name: v.external_id for v in self.solution.venues}
 
-        self.solution_combo_box.clear()
-        self.solution_combo_box.addItems([*self.venues_map.keys()])
+            self.venue_combo_box.clear()
+            self.venue_combo_box.addItems([*self.venues_map.keys()])
 
     def sync_button_clicked(self):
-        solution_name = str(self.solution_combo_box.currentText())
-        self.changes_label.setText(f"Synced {solution_name}")
+        venue_name = str(self.venue_combo_box.currentText())
+        if self.editing:
+            layer_hierarchy_to_solution()
+            self.changes_label.setText(f"Uploaded {venue_name}")
+            self.editing = False
+            self.sync_button.setText(f"Download")
+        else:
+            self.changes_label.setText(f"Editing {venue_name}")
 
-        add_cms_layer_hierarchy(self, self.solution, self.venues_map, solution_name)
+            solution_to_layer_hierarchy(
+                self, self.solution, self.venues_map, venue_name
+            )
+            self.editing = True
+            self.reload_button.setText(f"Discard")
+            self.sync_button.setText(f"Upload")
 
     def repopulate_grid_layout(self):
         num_columns = int(
