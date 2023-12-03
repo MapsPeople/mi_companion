@@ -18,19 +18,23 @@ def solution_to_layer_hierarchy(
     qgis_instance_handle: Any,
     solution: Solution,
     venues_map: Mapping,
-    solution_name: str,
+    venue_name: str,
 ) -> None:
     layer_tree_root = QgsProject.instance().layerTreeRoot()
 
-    cms_group = layer_tree_root.findGroup("CMS")
+    cms_name = "CMS"
+    cms_group = layer_tree_root.findGroup(cms_name)
     if not cms_group:
-        cms_group = layer_tree_root.addGroup("CMS")
+        cms_group = layer_tree_root.addGroup(cms_name)
 
-    solution_group = cms_group.insertGroup(0, f"{solution_name} (Solution)")
+    solution_name = f"{solution.name} (Solution)"
+    solution_group = layer_tree_root.findGroup(solution_name)
+    if not solution_group:
+        solution_group = cms_group.insertGroup(0, solution_name)
 
     venue = None
     for v in solution.venues:
-        if v.external_id == venues_map[solution_name]:
+        if v.external_id == venues_map[venue_name]:
             venue = v
             break
 
@@ -81,7 +85,13 @@ def solution_to_layer_hierarchy(
                     if not rooms.empty:
                         rooms = rooms[rooms["floor.external_id"] == floor.external_id]
                         rooms_df = geopandas.GeoDataFrame(
-                            rooms[[c for c in rooms.columns if "." not in c]],
+                            rooms[
+                                [
+                                    c
+                                    for c in rooms.columns
+                                    if ("." not in c) or ("location_type.name" == c)
+                                ]
+                            ],
                             geometry="polygon",
                         )
 
@@ -98,7 +108,7 @@ def solution_to_layer_hierarchy(
                     if not doors.empty:
                         doors = doors[doors["floor.external_id"] == floor.external_id]
                         door_df = geopandas.GeoDataFrame(
-                            doors[[c for c in doors.columns if "." not in c]],
+                            doors[[c for c in doors.columns if ("." not in c)]],
                             geometry="linestring",
                         )
 
@@ -114,7 +124,13 @@ def solution_to_layer_hierarchy(
                     if not areas.empty:
                         areas = areas[areas["floor.external_id"] == floor.external_id]
                         areas_df = geopandas.GeoDataFrame(
-                            areas[[c for c in areas.columns if "." not in c]],
+                            areas[
+                                [
+                                    c
+                                    for c in areas.columns
+                                    if ("." not in c) or ("location_type.name" == c)
+                                ]
+                            ],
                             geometry="polygon",
                         )
 
@@ -130,7 +146,13 @@ def solution_to_layer_hierarchy(
                     if not pois.empty:
                         pois = pois[pois["floor.external_id"] == floor.external_id]
                         poi_df = geopandas.GeoDataFrame(
-                            pois[[c for c in pois.columns if "." not in c]],
+                            pois[
+                                [
+                                    c
+                                    for c in pois.columns
+                                    if ("." not in c) or ("location_type.name" == c)
+                                ]
+                            ],
                             geometry="point",
                         )
 
