@@ -138,9 +138,11 @@ def layer_hierarchy_to_solution() -> None:
                                     )
 
                 if True:
-                    print("Synchronising")
+                    if VERBOSE:
+                        print("Synchronising")
                     synchronize(solution)
-                    print("Synchronised")
+                    if VERBOSE:
+                        print("Synchronised")
 
 
 def add_floor_inventory(
