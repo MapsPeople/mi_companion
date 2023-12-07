@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from jord.qgis_utilities import reconnect_signal
+from jord.qgis_utilities.helpers import signals
 
 from qgis.PyQt import QtWidgets
 from qgis.PyQt import uic
@@ -20,7 +20,7 @@ class CadAreaDialog(QtWidgets.QDialog, FORM_CLASS):
         super().__init__(parent)
         self.setupUi(self)
 
-        reconnect_signal(self.compute_button.clicked, self.on_compute_clicked)
+        signals.reconnect_signal(self.compute_button.clicked, self.on_compute_clicked)
 
     def on_compute_clicked(self):
         out_path = Path(str(self.out_file_widget.filePath()))

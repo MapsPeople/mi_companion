@@ -3,10 +3,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from jord.qgis_utilities import (
-    plugin_status,
-    reconnect_signal,
-)
+from jord.qgis_utilities import plugin_version
 from jord.qgis_utilities.helpers import signals
 
 # noinspection PyUnresolvedReferences
@@ -65,15 +62,15 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.sponsor_label.setPixmap(QtGui.QPixmap(get_icon_path("mp_notext.png")))
 
         self.version_label.setText(VERSION)
-        self.plugin_status_label.setText(plugin_status(PROJECT_NAME))
+        self.plugin_status_label.setText(plugin_version.plugin_status(PROJECT_NAME))
 
         self.changes_label.setText("")
         self.sync_button.setEnabled(False)
         self.upload_button.setEnabled(False)
 
-        reconnect_signal(self.reload_button.clicked, self.reload_button_clicked)
-        reconnect_signal(self.sync_button.clicked, self.sync_button_clicked)
-        reconnect_signal(self.upload_button.clicked, self.upload_button_clicked)
+        signals.reconnect_signal(self.reload_button.clicked, self.reload_button_clicked)
+        signals.reconnect_signal(self.sync_button.clicked, self.sync_button_clicked)
+        signals.reconnect_signal(self.upload_button.clicked, self.upload_button_clicked)
 
         self.solution_combo_box.clear()
         self.solution_combo_box.addItems(["nhl", "kemper", "phoenix", "kingfisher"])
@@ -133,7 +130,7 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         )
         for i, (k, dialog) in enumerate(self.entry_point_dialogs.items()):
             button = QtWidgets.QPushButton(k)
-            reconnect_signal(button.clicked, dialog.show)
+            signals.reconnect_signal(button.clicked, dialog.show)
 
             self.entry_point_grid.addWidget(
                 button, math.floor(i / num_columns), i % num_columns

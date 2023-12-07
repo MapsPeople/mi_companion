@@ -2,7 +2,6 @@
 
 from pathlib import Path
 
-from jord.qgis_utilities import reconnect_signal
 from jord.qt_utilities import DockWidgetAreaFlag
 from qgis.PyQt.QtCore import QCoreApplication, QLocale, QTranslator
 from qgis.PyQt.QtGui import QIcon
@@ -14,7 +13,7 @@ from .configuration.options import DeploymentOptionsPageFactory
 from .configuration.project_settings import DEFAULT_PROJECT_SETTINGS
 from .configuration.settings import read_project_setting
 from .gui.dock_widget import GdsCompanionDockWidget
-
+from jord.qgis_utilities.helpers import signals
 
 # noinspection PyUnresolvedReferences
 from .resources import *  # Initialize Qt resources from file resources.py
@@ -112,7 +111,7 @@ class GdsCompanion:
             self.iface.mainWindow(),
         )
 
-        reconnect_signal(
+        signals.reconnect_signal(
             self.open_server_dock_window_action.triggered, self.open_dock_widget
         )
 
@@ -126,7 +125,7 @@ class GdsCompanion:
         """
         if self.gds_companion_dock_widget is None:
             self.gds_companion_dock_widget = GdsCompanionDockWidget(self.iface)
-            reconnect_signal(
+            signals.reconnect_signal(
                 self.gds_companion_dock_widget.plugin_closing,
                 self.on_dock_widget_closed,
             )
