@@ -25,6 +25,7 @@ from qgis.core import (
 )
 from warg import reload_module
 
+from ..entry_points.instance_rooms import InstanceRoomsDialog
 from ..cms_edit.conversion.from_layers import layer_hierarchy_to_solution
 from ..cms_edit.conversion.to_layers import solution_to_layer_hierarchy
 from ..configuration.project_settings import DEFAULT_PROJECT_SETTINGS
@@ -32,6 +33,7 @@ from ..configuration.settings import read_project_setting
 from ..constants import VERSION, PROJECT_NAME
 from ..entry_points.cad_area.cad_area_dialog import CadAreaDialog
 from ..utilities import resolve_path, get_icon_path
+
 from integration_system import get_cms_solution
 
 FORM_CLASS, _ = uic.loadUiType(resolve_path("dock_widget.ui", __file__))
@@ -78,9 +80,12 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # from .. import entry_points
         # print(dir(entry_points))
 
-        self.entry_point_dialogs = {"Cad Area": CadAreaDialog()}
+        self.entry_point_dialogs = {
+            "Cad Area": CadAreaDialog(),
+            "Instance Rooms": InstanceRoomsDialog(),
+        }
 
-        if False:
+        if True:
             self.repopulate_grid_layout()
 
     def reload_button_clicked(self):

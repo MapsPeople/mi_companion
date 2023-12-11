@@ -6,7 +6,7 @@ import csv
 import os
 import traceback
 from pathlib import Path
-from typing import List, Sequence, Dict, Mapping
+from typing import List, Optional, Sequence, Dict, Mapping
 
 from jord.gdal_utilities import OGR
 from warg import system_open_path
@@ -25,7 +25,8 @@ def write_csv(csv_file_name: Path, area_list: Sequence[Mapping]) -> None:
             writer.writerow(a)
 
 
-def area_of_layer(cad_file: Path) -> Dict:
+def area_of_layer(cad_file: Path) -> Optional[Dict]:
+    a = None
     try:
         print(f"Opening cadfile: {cad_file}")
         # We use the MW_Floor_Area layer for floors that were delivered as cad files,
@@ -93,4 +94,4 @@ def run(root_dir: Path, out_path: Path) -> None:
 
 
 if __name__ == "__main__":
-    run(Path("/mnt/cad"))
+    run(Path("/mnt/cad"), Path("/mnt/cad"))

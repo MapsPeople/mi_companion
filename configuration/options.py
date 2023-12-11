@@ -75,8 +75,9 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
 
         qs = QgsSettings()
 
-        for k in sorted(qs.allKeys()):
-            print(k)
+        if False:
+            for k in sorted(qs.allKeys()):
+                print(k)
 
         # self.settings_tree_view
         # self.export_settings_button

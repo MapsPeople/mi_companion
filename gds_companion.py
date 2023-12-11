@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from jord.qt_utilities import DockWidgetAreaFlag
+from jord.qgis_utilities.helpers import signals
 from qgis.PyQt.QtCore import QCoreApplication, QLocale, QTranslator
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
@@ -13,7 +14,7 @@ from .configuration.options import DeploymentOptionsPageFactory
 from .configuration.project_settings import DEFAULT_PROJECT_SETTINGS
 from .configuration.settings import read_project_setting
 from .gui.dock_widget import GdsCompanionDockWidget
-from jord.qgis_utilities.helpers import signals
+
 
 # noinspection PyUnresolvedReferences
 from .resources import *  # Initialize Qt resources from file resources.py
