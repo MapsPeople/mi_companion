@@ -7,7 +7,7 @@
 [Ll]ib
 [Ll]ib64
 [Ll]ocal
-[Ss]cripts
+
 pyvenv.cfg
 .venv
 pip-selfcheck.json
@@ -28,6 +28,7 @@ pip-selfcheck.json
 # Qt-es
 object_script.*.Release
 object_script.*.Debug
+
 *_plugin_import.cpp
 /.qmake.cache
 /.qmake.stash

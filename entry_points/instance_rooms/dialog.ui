@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Cad Area Calculator</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="parameter_layout">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>

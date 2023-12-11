@@ -1,5 +1,5 @@
 <RCC>
-  <qresource prefix="profilecreator">
+  <qresource prefix="gds_companion">
     <file>icon.png</file>
     <file>icons/mp_notext.png</file>
   </qresource>
