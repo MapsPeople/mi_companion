@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-
+import warnings
 from pathlib import Path
 
 from jord.qt_utilities import DockWidgetAreaFlag
@@ -41,7 +40,7 @@ class GdsCompanion:
 
         self.iface = iface
 
-        if False:
+        _ = """        if False:
             import pydevd_pycharm
 
             pydevd_pycharm.settrace(
@@ -50,6 +49,7 @@ class GdsCompanion:
                 stdoutToServer=True,
                 stderrToServer=True,
             )
+"""
 
         self.plugin_dir = Path(__file__).parent
         locale = QgsSettings().value(

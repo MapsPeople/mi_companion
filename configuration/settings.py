@@ -1,5 +1,5 @@
 from logging import warning
-from typing import Optional, Mapping, Any
+from typing import Dict, Optional, Mapping, Any
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
@@ -20,6 +20,17 @@ def restore_default_project_settings(
         defaults = {}
     for key, value in defaults.items():
         store_project_setting(key, value, project_name=project_name, verbose=verbose)
+
+
+def list_project_settings() -> Dict[str, Any]:
+    # return QGIS_PROJECT.customVariables()
+    # from qgis.core import QgsExpressionContextUtils
+
+    # keys = QgsExpressionContextUtils.projectScope(QGIS_PROJECT).variableNames()
+
+    # return {k: read_project_setting(k) for k in keys}
+    # QGIS_PROJECT
+    return None
 
 
 def store_project_setting(

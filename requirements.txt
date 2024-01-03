@@ -1,7 +1,7 @@
-warg>=10.0.2
 apppath>=10.0.2
-jord>=10.0.2
 geopandas
+jord>=10.0.2
+numpy
 pandas
 shapely >= 2.0.0
-numpy
+warg>=10.0.2

@@ -1,5 +1,4 @@
 # !/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 __author__ = "heider"
 __doc__ = r"""
@@ -24,7 +23,10 @@ from qgis.core import QgsProject
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 
+from .project_settings import DEFAULT_PROJECT_SETTINGS
 from .settings import (
+    list_project_settings,
+    read_project_setting,
     restore_default_project_settings,
 )
 from ..constants import PROJECT_NAME, VERSION
@@ -57,6 +59,7 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         self.sponsor_label.setPixmap(QtGui.QPixmap(get_icon_path("mp_notext.png")))
         self.version_label.setText(f"{VERSION}")
 
+        self.settings_list_model = None
         self.reload_settings()
         self.populate_settings()
 
@@ -71,15 +74,51 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
                 restore_default_project_settings()
 
     def populate_settings(self):
-        from qgis.core import QgsSettings
+        # from qgis.core import QgsSettings
+        from qgis.PyQt.QtGui import QStandardItem, QStandardItemModel
+        from PyQt5 import QtCore
 
-        qs = QgsSettings()
+        # qs = QgsSettings()
+        # setting_keys = qs.allKeys()
+        # setting_keys = list_project_settings()
 
-        if False:
-            for k in sorted(qs.allKeys()):
-                print(k)
+        if hasattr(self, "settings_list_model"):
+            del self.settings_list_model
 
-        # self.settings_tree_view
+        self.settings_list_model = QStandardItemModel(self.settings_tree_view)
+
+        for k in sorted(DEFAULT_PROJECT_SETTINGS.keys()):
+            #   q = qs.getValue(k, None)  # DEFAULT_PROJECT_SETTINGS[k])
+            q = read_project_setting(
+                k,
+                project_name=PROJECT_NAME,
+                defaults=DEFAULT_PROJECT_SETTINGS,
+            )
+
+            name_item = QStandardItem(k)
+            state_item = QStandardItem(q)
+
+            self.settings_list_model.appendRow(
+                [
+                    name_item,
+                    state_item,
+                ]
+            )
+
+        column_headers = [
+            "setting",
+            "value",
+        ]
+        for ci, label in enumerate(column_headers):
+            self.settings_list_model.setHeaderData(ci, QtCore.Qt.Horizontal, str(label))
+
+        self.settings_tree_view.setModel(self.settings_list_model)
+
+        for ci in range(len(column_headers)):
+            self.settings_tree_view.resizeColumnToContents(ci)
+
+        self.settings_tree_view.show()
+
         # self.export_settings_button
         # self.import_settings_button
         # self.settings_file_widget

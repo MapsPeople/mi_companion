@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from .constants import *
 
 __version__ = VERSION

@@ -304,5 +304,3 @@ cython_debug/
 # Flags for Clang Code Model
 *.cxxflags
 *.cflags
-
-
