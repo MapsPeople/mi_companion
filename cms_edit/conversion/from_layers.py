@@ -60,7 +60,9 @@ def layer_hierarchy_to_solution() -> None:
                             venue_key = solution.add_venue(
                                 venue_attributes["external_id"],
                                 venue_attributes["name"],
-                                shapely.from_wkt(venue_feature.geometry().asWkt()),
+                                shapely.from_wkt(
+                                    venue_feature.geometry().asWkt()
+                                ).simplify(0),
                             )
                     assert venue_key, venue_key
 
@@ -91,7 +93,7 @@ def layer_hierarchy_to_solution() -> None:
                                         building_attributes["name"],
                                         shapely.from_wkt(
                                             building_feature.geometry().asWkt()
-                                        ),
+                                        ).simplify(0),
                                         venue_key=venue_key,
                                     )
                             assert building_key, building_key
@@ -129,7 +131,7 @@ def layer_hierarchy_to_solution() -> None:
                                                 floor_attributes["floor_index"],
                                                 shapely.from_wkt(
                                                     floor_feature.geometry().asWkt()
-                                                ),
+                                                ).simplify(0),
                                                 building_key=building_key,
                                             )
                                     assert floor_key, floor_key
@@ -167,7 +169,7 @@ def add_floor_inventory(
                 room_key = solution.add_room(
                     room_attributes["external_id"],
                     room_attributes["name"],
-                    shapely.from_wkt(room_feature.geometry().asWkt()),
+                    shapely.from_wkt(room_feature.geometry().asWkt()).simplify(0),
                     floor_key=floor_key,
                     location_type_key=room_attributes["location_type.name"],
                 )
@@ -192,7 +194,9 @@ def add_floor_inventory(
 
                 door_key = solution.add_door(
                     door_attributes["external_id"],
-                    linestring=shapely.from_wkt(door_feature.geometry().asWkt()),
+                    linestring=shapely.from_wkt(
+                        door_feature.geometry().asWkt()
+                    ).simplify(0),
                     door_type=door_attributes["door_type"],
                     floor_key=floor_key,
                 )
@@ -217,7 +221,7 @@ def add_floor_inventory(
                 poi_key = solution.add_point_of_interest(
                     poi_attributes["external_id"],
                     name=poi_attributes["external_id"],
-                    point=shapely.from_wkt(poi_feature.geometry().asWkt()),
+                    point=shapely.from_wkt(poi_feature.geometry().asWkt()).simplify(0),
                     floor_key=floor_key,
                     location_type_key=poi_attributes["location_type.name"],
                 )
@@ -242,7 +246,9 @@ def add_floor_inventory(
                 area_key = solution.add_area(
                     area_attributes["external_id"],
                     name=area_attributes["external_id"],
-                    polygon=shapely.from_wkt(area_feature.geometry().asWkt()),
+                    polygon=shapely.from_wkt(area_feature.geometry().asWkt()).simplify(
+                        0
+                    ),
                     floor_key=floor_key,
                     location_type_key=area_attributes["location_type.name"],
                 )

@@ -23,22 +23,22 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.u
 
 __all__ = ["InstanceRoomsDialog"]
 
-# Python >= 3.8
-try:
+
+try:  # Python >= 3.8
     from typing import Literal, get_args, get_origin
-# Compatibility
-except ImportError:
+
+except ImportError:  # Compatibility
     get_args = lambda t: getattr(t, "__args__", ()) if t is not Generic else Generic
     get_origin = lambda t: getattr(t, "__origin__", None)
 # assert get_origin(Union[int, str]) is Union
 # assert get_args(Union[int, str]) == (int, str)
 
 
-def is_union(field):
+def is_union(field) -> bool:
     return typing.get_origin(field) is Union
 
 
-def is_optional(field):
+def is_optional(field) -> bool:
     return is_union(field) and type(None) in typing.get_args(field)
 
 
@@ -73,11 +73,11 @@ class InstanceRoomsDialog(QtWidgets.QDialog, FORM_CLASS):
             self.parameter_layout.addWidget(h_box_w)
             self.parameter_lines[k] = line_edit
 
-    def on_compute_clicked(self):
+    def on_compute_clicked(self) -> None:
         call_kwarg = {}
         for k, v in self.parameter_lines.items():
             value = v.text()
-            if value:
+            if value and value != "None":
                 ano = self.parameter_signature[k].annotation
                 if ano != self.parameter_signature[k].empty:
                     if is_optional(ano) or is_union(ano):

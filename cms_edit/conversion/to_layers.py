@@ -101,7 +101,7 @@ def solution_to_layer_hierarchy(
                             geometry_column="polygon",
                             name="rooms",
                             group=floor_group,
-                            # append_type_name = False
+                            categorise_by_attribute="location_type.name",
                         )
 
                     doors = solution.doors.to_df()
@@ -140,6 +140,7 @@ def solution_to_layer_hierarchy(
                             geometry_column="polygon",
                             name="areas",
                             group=floor_group,
+                            categorise_by_attribute="location_type.name",
                         )
 
                     pois = solution.points_of_interest.to_df()
@@ -162,4 +163,5 @@ def solution_to_layer_hierarchy(
                             geometry_column="point",
                             name="pois",
                             group=floor_group,
+                            categorise_by_attribute="location_type.name",
                         )

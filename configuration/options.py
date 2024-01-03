@@ -28,7 +28,7 @@ from .settings import (
     restore_default_project_settings,
 )
 from ..constants import PROJECT_NAME, VERSION
-from ..utilities import resolve_path, get_icon_path, load_icon
+from ..utilities.paths import resolve_path, get_icon_path, load_icon
 
 QGIS_PROJECT = QgsProject.instance()
 VERBOSE = False
