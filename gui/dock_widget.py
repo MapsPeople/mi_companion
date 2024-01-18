@@ -3,7 +3,11 @@ import os
 from pathlib import Path
 from typing import Any
 
+# from warg import ensure_in_sys_path
+# ensure_in_sys_path(Path(__file__).parent.parent / "cms_edit", resolve=True)
+
 from integration_client.rest import ApiException
+
 from integration_system import get_cms_solution
 from jord.qgis_utilities import plugin_version
 from jord.qgis_utilities.helpers import signals
@@ -28,10 +32,7 @@ from qgis.core import (
 )
 from warg import reload_module
 
-from ..cms_edit import (
-    solution_to_layer_hierarchy,
-    layer_hierarchy_to_solution,
-)
+from ..cms_edit import layer_hierarchy_to_solution, solution_to_layer_hierarchy
 from ..configuration.project_settings import DEFAULT_PROJECT_SETTINGS
 from ..configuration.settings import read_project_setting
 from ..constants import PROJECT_NAME, VERSION

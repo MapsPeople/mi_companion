@@ -1,7 +1,10 @@
+-e cms_edit/integration_system
+-e cms_edit/integration_client
 apppath>=10.0.2
 geopandas
 jord>=10.0.2
 numpy
 pandas
 shapely >= 2.0.0
+validators
 warg>=10.0.2

@@ -1,155 +1,147 @@
-from typing import Any
-
-import geopandas
 import shapely
-from integration_system import Solution, synchronize
-from jord.qlive_utilities import add_shapely_layer, add_dataframe_layer
-from qgis.core import (
-    QgsVectorLayer,
-    QgsFeature,
-    QgsVectorLayer,
-    QgsRasterLayer,
-    QgsProject,
-    QgsLayerTreeGroup,
-    QgsLayerTreeLayer,
-)
-
+from integration_system import Solution, get_cms_solution, synchronize
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 __all__ = ["layer_hierarchy_to_solution"]
 
-VERBOSE = False
+from ...configuration.constants import (
+    POINT_INSIDE_MAPS_INDOORS_CUSTOMER_ID,
+    VERBOSE,
+    CMS_HIERARCHY_GROUP_NAME,
+)
 
 
-def layer_hierarchy_to_solution() -> None:
+def layer_hierarchy_to_solution(
+    cms_hierarchy_group_name: str = CMS_HIERARCHY_GROUP_NAME,
+    customer_id: str = POINT_INSIDE_MAPS_INDOORS_CUSTOMER_ID,
+) -> None:
     layer_tree_root = QgsProject.instance().layerTreeRoot()
 
-    cms_name = "CMS"
-    POINT_INSIDE_MAPS_INDOORS_CUSTOMER_ID = "4ba27f32c1034ca880431259"
+    cms_group = layer_tree_root.findGroup(cms_hierarchy_group_name)
 
-    cms_group = layer_tree_root.findGroup(cms_name)
+    if not cms_group:  # did not find the group
+        return
 
-    if cms_group:
-        for solution_group_items in cms_group.children():
-            if isinstance(solution_group_items, QgsLayerTreeGroup):
-                solution_name = (
-                    str(solution_group_items.name()).strip("(Solution)").strip()
-                )
-                solution = Solution(
-                    solution_name, solution_name, POINT_INSIDE_MAPS_INDOORS_CUSTOMER_ID
-                )
-                print(f"Converting {str(solution_group_items.name())}")
-                for venue_group_items in solution_group_items.children():
-                    venue_key = None
-                    for building_group_items in venue_group_items.children():
-                        if (
-                            isinstance(building_group_items, QgsLayerTreeLayer)
-                            and "venue" in building_group_items.name()
-                            and venue_key is None
-                        ):
-                            venue_polygon_layer = building_group_items.layer()
-                            venue_feature = venue_polygon_layer.getFeature(
-                                1
-                            )  # 1 is first element
+    for solution_group_items in cms_group.children():
+        if isinstance(solution_group_items, QgsLayerTreeGroup):
+            solution_name = str(solution_group_items.name()).strip("(Solution)").strip()
+            solution = Solution(solution_name, solution_name, customer_id)
+            print(f"Converting {str(solution_group_items.name())}")
+            for venue_group_items in solution_group_items.children():
+                venue_key = None
+                for building_group_items in venue_group_items.children():
+                    if (
+                        isinstance(building_group_items, QgsLayerTreeLayer)
+                        and "venue" in building_group_items.name()
+                        and venue_key is None
+                    ):
+                        venue_polygon_layer = building_group_items.layer()
+                        venue_feature = venue_polygon_layer.getFeature(
+                            1
+                        )  # 1 is first element
 
-                            venue_attributes = {
-                                k.name(): v
-                                for k, v in zip(
-                                    venue_feature.fields(), venue_feature.attributes()
-                                )
-                            }
-                            venue_key = solution.add_venue(
-                                venue_attributes["external_id"],
-                                venue_attributes["name"],
-                                shapely.from_wkt(
-                                    venue_feature.geometry().asWkt()
-                                ).simplify(0),
+                        venue_attributes = {
+                            k.name(): v
+                            for k, v in zip(
+                                venue_feature.fields(), venue_feature.attributes()
                             )
-                    assert venue_key, venue_key
+                        }
+                        venue_key = solution.add_venue(
+                            venue_attributes["external_id"],
+                            venue_attributes["name"],
+                            shapely.from_wkt(venue_feature.geometry().asWkt()).simplify(
+                                0
+                            ),
+                        )
+                assert venue_key, venue_key
 
-                    for building_group_items in venue_group_items.children():
-                        if isinstance(building_group_items, QgsLayerTreeGroup):
-                            building_key = None
-                            for floor_group_items in building_group_items.children():
-                                if (
-                                    isinstance(floor_group_items, QgsLayerTreeLayer)
-                                    and "building" in floor_group_items.name()
-                                    and venue_key is not None
-                                    and building_key is None
-                                ):
-                                    building_polygon_layer = floor_group_items.layer()
-                                    building_feature = (
-                                        building_polygon_layer.getFeature(1)
-                                    )  # 1 is first element
+                for building_group_items in venue_group_items.children():
+                    if isinstance(building_group_items, QgsLayerTreeGroup):
+                        building_key = None
+                        for floor_group_items in building_group_items.children():
+                            if (
+                                isinstance(floor_group_items, QgsLayerTreeLayer)
+                                and "building" in floor_group_items.name()
+                                and venue_key is not None
+                                and building_key is None
+                            ):
+                                building_polygon_layer = floor_group_items.layer()
+                                building_feature = building_polygon_layer.getFeature(
+                                    1
+                                )  # 1 is first element
 
-                                    building_attributes = {
-                                        k.name(): v
-                                        for k, v in zip(
-                                            building_feature.fields(),
-                                            building_feature.attributes(),
+                                building_attributes = {
+                                    k.name(): v
+                                    for k, v in zip(
+                                        building_feature.fields(),
+                                        building_feature.attributes(),
+                                    )
+                                }
+                                building_key = solution.add_building(
+                                    building_attributes["external_id"],
+                                    building_attributes["name"],
+                                    shapely.from_wkt(
+                                        building_feature.geometry().asWkt()
+                                    ).simplify(0),
+                                    venue_key=venue_key,
+                                )
+                        assert building_key, building_key
+                        for floor_group_items in building_group_items.children():
+                            if isinstance(floor_group_items, QgsLayerTreeGroup):
+                                floor_key = None
+                                for (
+                                    inventory_group_items
+                                ) in floor_group_items.children():
+                                    if (
+                                        isinstance(
+                                            inventory_group_items, QgsLayerTreeLayer
                                         )
-                                    }
-                                    building_key = solution.add_building(
-                                        building_attributes["external_id"],
-                                        building_attributes["name"],
-                                        shapely.from_wkt(
-                                            building_feature.geometry().asWkt()
-                                        ).simplify(0),
-                                        venue_key=venue_key,
-                                    )
-                            assert building_key, building_key
-                            for floor_group_items in building_group_items.children():
-                                if isinstance(floor_group_items, QgsLayerTreeGroup):
-                                    floor_key = None
-                                    for (
-                                        inventory_group_items
-                                    ) in floor_group_items.children():
-                                        if (
-                                            isinstance(
-                                                inventory_group_items, QgsLayerTreeLayer
-                                            )
-                                            and "floor" in inventory_group_items.name()
-                                            and building_key is not None
-                                            and floor_key is None
-                                        ):
-                                            floor_polygon_layer = (
-                                                inventory_group_items.layer()
-                                            )
-                                            floor_feature = (
-                                                floor_polygon_layer.getFeature(1)
-                                            )  # 1 is first element
+                                        and "floor" in inventory_group_items.name()
+                                        and building_key is not None
+                                        and floor_key is None
+                                    ):
+                                        floor_polygon_layer = (
+                                            inventory_group_items.layer()
+                                        )
+                                        floor_feature = floor_polygon_layer.getFeature(
+                                            1
+                                        )  # 1 is first element
 
-                                            floor_attributes = {
-                                                k.name(): v
-                                                for k, v in zip(
-                                                    floor_feature.fields(),
-                                                    floor_feature.attributes(),
-                                                )
-                                            }
-                                            floor_key = solution.add_floor(
-                                                floor_attributes["external_id"],
-                                                floor_attributes["name"],
-                                                floor_attributes["floor_index"],
-                                                shapely.from_wkt(
-                                                    floor_feature.geometry().asWkt()
-                                                ).simplify(0),
-                                                building_key=building_key,
+                                        floor_attributes = {
+                                            k.name(): v
+                                            for k, v in zip(
+                                                floor_feature.fields(),
+                                                floor_feature.attributes(),
                                             )
-                                    assert floor_key, floor_key
-                                    add_floor_inventory(
-                                        floor_group_items, floor_key, solution
-                                    )
+                                        }
+                                        floor_key = solution.add_floor(
+                                            floor_attributes["external_id"],
+                                            floor_attributes["name"],
+                                            floor_attributes["floor_index"],
+                                            shapely.from_wkt(
+                                                floor_feature.geometry().asWkt()
+                                            ).simplify(0),
+                                            building_key=building_key,
+                                        )
+                                assert floor_key, floor_key
+                                add_floor_inventory(
+                                    floor_group_items, floor_key, solution
+                                )
 
-                if True:
-                    if VERBOSE:
-                        print("Synchronising")
-                    synchronize(solution)
-                    if VERBOSE:
-                        print("Synchronised")
+            if True:
+                if VERBOSE:
+                    print("Synchronising")
+                existing_solution = get_cms_solution(solution.external_id)
+                for graph in existing_solution.graphs:
+                    solution.add_graph(graph.graph_id, graph.osm_xml)
+                synchronize(solution)
+                if VERBOSE:
+                    print("Synchronised")
 
 
 def add_floor_inventory(
     floor_group_items: QgsLayerTreeGroup, floor_key: str, solution: Solution
-):
+) -> None:
     for inventory_group_items in floor_group_items.children():
         if (
             isinstance(inventory_group_items, QgsLayerTreeLayer)

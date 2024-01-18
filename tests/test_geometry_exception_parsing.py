@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 
 import shapely.wkt
@@ -6,7 +5,7 @@ from warg import ensure_in_sys_path
 
 ensure_in_sys_path(Path(__file__).parent.parent)
 
-from utilities.string_parsing import extract_wkt_elements
+from ..utilities.string_parsing import extract_wkt_elements
 
 
 def test_parsing_duplicate_point_str():

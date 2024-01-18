@@ -1,17 +1,17 @@
-from typing import Mapping, Any
+from pathlib import Path
+from typing import Any, Mapping
 
 import geopandas
 from integration_system import Solution
-from jord.qlive_utilities import add_shapely_layer, add_dataframe_layer
-
+from jord.qlive_utilities import add_dataframe_layer, add_shapely_layer
 from qgis.core import (
-    QgsVectorLayer,
-    QgsFeature,
-    QgsVectorLayer,
-    QgsRasterLayer,
     QgsProject,
-    QgsLayerTreeGroup,
 )
+from warg import ensure_in_sys_path
+
+ensure_in_sys_path(Path(__file__).parent.parent)
+
+from ...configuration.constants import CMS_HIERARCHY_GROUP_NAME
 
 
 def solution_to_layer_hierarchy(
@@ -19,13 +19,14 @@ def solution_to_layer_hierarchy(
     solution: Solution,
     venues_map: Mapping,
     venue_name: str,
+    cms_hierarchy_group_name: str = CMS_HIERARCHY_GROUP_NAME,
 ) -> None:
     layer_tree_root = QgsProject.instance().layerTreeRoot()
 
-    cms_name = "CMS"
-    cms_group = layer_tree_root.findGroup(cms_name)
-    if not cms_group:
-        cms_group = layer_tree_root.addGroup(cms_name)
+    cms_group = layer_tree_root.findGroup(cms_hierarchy_group_name)
+
+    if not cms_group:  # add it if it does not exist
+        cms_group = layer_tree_root.addGroup(cms_hierarchy_group_name)
 
     solution_name = f"{solution.name} (Solution)"
     solution_group = layer_tree_root.findGroup(solution_name)

@@ -21,6 +21,7 @@ from .resources import *  # Initialize Qt resources from file resources.py
 assert qt_version
 
 MENU_INSTANCE_NAME = f"&{PROJECT_NAME.lower()}"
+
 VERBOSE = False
 DEBUGGING = False
 FORCE_RELOAD = False
