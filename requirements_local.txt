@@ -1,0 +1,18 @@
+-e file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/cms_edit/integration_client
+#-e file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/cms_edit/integration_system # --no-deps
+-e file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/cms_edit/integration_system
+
+#pytest >=7.4.0
+#shapely >= 2.0.1
+#matplotlib >= 3.7.1
+#pytest-xdist >= 3.3.1
+#numpy >= 1.25.0
+#authlib >= 1.2.1
+#pydantic >= 2.1.1
+#pydantic-settings >= 2.0.2
+#validators >= 0.22.0
+#certifi >= 14.05.14
+#six >= 1.10
+#python_dateutil >= 2.5.3
+#setuptools >= 21.0.0
+#urllib3 >= 1.15.1

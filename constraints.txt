@@ -1,0 +1,1 @@
+#integration_client @ file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/cms_edit/integration_client
