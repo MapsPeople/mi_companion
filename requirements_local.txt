@@ -1,6 +1,7 @@
 -e file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/cms_edit/integration_client
-#-e file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/cms_edit/integration_system # --no-deps
 -e file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/cms_edit/integration_system
+
+#-e file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/cms_edit/integration_system # --no-deps
 
 #pytest >=7.4.0
 #shapely >= 2.0.1

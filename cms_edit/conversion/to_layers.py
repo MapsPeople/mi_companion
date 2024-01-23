@@ -1,8 +1,10 @@
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Hashable, Iterator, Mapping, Optional, Sequence, TypeVar
 
 import geopandas
-from integration_system import Solution
+from integration_system.model import Solution
+from integration_system.model.mixins import CollectionMixin
+
 from jord.qlive_utilities import add_dataframe_layer, add_shapely_layer
 from qgis.core import (
     QgsProject,
@@ -12,6 +14,14 @@ from warg import ensure_in_sys_path
 ensure_in_sys_path(Path(__file__).parent.parent)
 
 from ...configuration.constants import CMS_HIERARCHY_GROUP_NAME
+
+
+import dataclasses
+from pandas import DataFrame, json_normalize
+
+
+def to_df(coll_mix: CollectionMixin) -> DataFrame:
+    return json_normalize(dataclasses.asdict(obj) for obj in coll_mix)
 
 
 def solution_to_layer_hierarchy(
@@ -82,7 +92,7 @@ def solution_to_layer_hierarchy(
                         visible=False,
                     )
 
-                    rooms = solution.rooms.to_df()
+                    rooms = to_df(solution.rooms)
                     if not rooms.empty:
                         rooms = rooms[rooms["floor.external_id"] == floor.external_id]
                         rooms_df = geopandas.GeoDataFrame(
@@ -105,7 +115,7 @@ def solution_to_layer_hierarchy(
                             categorise_by_attribute="location_type.name",
                         )
 
-                    doors = solution.doors.to_df()
+                    doors = to_df(solution.doors)
                     if not doors.empty:
                         doors = doors[doors["floor.external_id"] == floor.external_id]
                         door_df = geopandas.GeoDataFrame(
@@ -121,7 +131,7 @@ def solution_to_layer_hierarchy(
                             group=floor_group,
                         )
 
-                    areas = solution.areas.to_df()
+                    areas = to_df(solution.areas)
                     if not areas.empty:
                         areas = areas[areas["floor.external_id"] == floor.external_id]
                         areas_df = geopandas.GeoDataFrame(
@@ -144,7 +154,7 @@ def solution_to_layer_hierarchy(
                             categorise_by_attribute="location_type.name",
                         )
 
-                    pois = solution.points_of_interest.to_df()
+                    pois = to_df(solution.points_of_interest)
                     if not pois.empty:
                         pois = pois[pois["floor.external_id"] == floor.external_id]
                         poi_df = geopandas.GeoDataFrame(
