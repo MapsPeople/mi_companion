@@ -8,7 +8,7 @@ from typing import Any
 
 from integration_client.rest import ApiException
 
-from integration_system import get_cms_solution
+from integration_system.cms import get_cms_solution
 from jord.qgis_utilities import plugin_version
 from jord.qgis_utilities.helpers import signals
 from jord.qlive_utilities import add_shapely_layer
