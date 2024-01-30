@@ -13,6 +13,7 @@ __all__ = [
 
 import logging
 
+LOGGER = logging.getLogger(__name__)
 from jord.qgis_utilities.helpers import reconnect_signal
 
 # noinspection PyUnresolvedReferences
@@ -144,7 +145,7 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
             value = self.type_map[key](item.text())
             store_project_setting(key, value, project_name=PROJECT_NAME)
         except Exception as e:
-            logging.warning(e)
+            LOGGER.warning(e)
 
 
 class DeploymentCompanionOptionsPage(QgsOptionsPageWidget):

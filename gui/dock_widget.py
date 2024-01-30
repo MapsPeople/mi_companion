@@ -1,4 +1,6 @@
 import logging
+
+LOGGER = logging.getLogger(__name__)
 import math
 import os
 from pathlib import Path
@@ -185,7 +187,7 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 )
                 self.changes_label.setText(f"Downloaded {venue_name}")
             else:
-                logging.warning(f"Venue {venue_name} not found")
+                LOGGER.warning(f"Venue {venue_name} not found")
 
     def upload_button_clicked(self) -> None:
         venue_name = str(self.venue_combo_box.currentText())

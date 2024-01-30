@@ -1,4 +1,4 @@
-from logging import warning
+import logging
 from typing import Dict, Optional, Mapping, Any
 
 # noinspection PyUnresolvedReferences
@@ -6,8 +6,9 @@ from qgis.core import QgsProject
 from qlive.qlive import PROJECT_NAME
 from qlive.qlive.configuration.project_settings import DEFAULT_PROJECT_SETTINGS
 
-VERBOSE = False
+VERBOSE = True
 QGIS_PROJECT = QgsProject.instance()
+LOGGER = logging.getLogger(__name__)
 
 
 def restore_default_project_settings(
@@ -94,7 +95,7 @@ def read_project_setting(
     if verbose:
         print("read: ", project_name, key, val)
         if not type_conversion_ok:
-            warning(f"read_plugin_setting: {key} {val} {type_conversion_ok}")
+            LOGGER.warning(f"read_plugin_setting: {key} {val} {type_conversion_ok}")
 
     return val
 

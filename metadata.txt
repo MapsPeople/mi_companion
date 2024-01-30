@@ -2,7 +2,7 @@
 name=GDS Companion
 qgisMinimumVersion=3.0
 description=GDS tooling
-version=0.0.3
+version=0.0.4
 author=CHEN @ MapsPeople A/S
 email=chen@mapspeople.com
 
