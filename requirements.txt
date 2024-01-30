@@ -10,4 +10,4 @@ pandas
 pip
 shapely >= 2.0.0
 validators
-warg>=1.0.2
+warg>=1.3.8

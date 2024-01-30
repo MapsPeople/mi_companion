@@ -78,7 +78,7 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
                 # if a > load_attempts - 1:
                 raise e
 
-                restore_default_project_settings()
+                # restore_default_project_settings()
 
     def populate_settings(self):
         # from qgis.core import QgsSettings
