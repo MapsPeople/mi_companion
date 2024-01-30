@@ -1,8 +1,10 @@
 from pathlib import Path
-from typing import Any, Hashable, Iterator, Mapping, Optional, Sequence, TypeVar
+from typing import Any
 
 import geopandas
-from integration_system.model import Solution
+
+from integration_system.cms import get_cms_solution
+
 from integration_system.model.mixins import CollectionMixin
 
 from jord.qlive_utilities import add_dataframe_layer, add_shapely_layer
@@ -10,6 +12,8 @@ from qgis.core import (
     QgsProject,
 )
 from warg import ensure_in_sys_path
+
+from .graph.to_lines import osm_xml_to_lines
 
 ensure_in_sys_path(Path(__file__).parent.parent)
 
@@ -20,19 +24,23 @@ import dataclasses
 from pandas import DataFrame, json_normalize
 
 
+__all__ = ["solution_to_layer_hierarchy"]
+
+
 def to_df(coll_mix: CollectionMixin) -> DataFrame:
+    # noinspection PyTypeChecker
     return json_normalize(dataclasses.asdict(obj) for obj in coll_mix)
 
 
 def solution_to_layer_hierarchy(
     qgis_instance_handle: Any,
-    solution: Solution,
-    venues_map: Mapping,
-    venue_name: str,
+    solution_external_id: str,
+    venue_external_id: str,
     cms_hierarchy_group_name: str = CMS_HIERARCHY_GROUP_NAME,
 ) -> None:
     layer_tree_root = QgsProject.instance().layerTreeRoot()
 
+    solution = get_cms_solution(solution_external_id, [venue_external_id])
     cms_group = layer_tree_root.findGroup(cms_hierarchy_group_name)
 
     if not cms_group:  # add it if it does not exist
@@ -45,11 +53,33 @@ def solution_to_layer_hierarchy(
 
     venue = None
     for v in solution.venues:
-        if v.external_id == venues_map[venue_name]:
+        if v.external_id == venue_external_id:
             venue = v
             break
 
     venue_group = solution_group.insertGroup(0, f"{venue.name} (Venue)")
+
+    if True:  # add graph
+        (lines, lines_meta_data), (points, points_meta_data) = osm_xml_to_lines(
+            venue.graph.osm_xml
+        )
+
+        add_shapely_layer(
+            qgis_instance_handle=qgis_instance_handle,
+            geoms=lines,
+            name="navigation_graph_lines",
+            group=venue_group,
+            columns=lines_meta_data,
+        )
+
+        if False:
+            add_shapely_layer(
+                qgis_instance_handle=qgis_instance_handle,
+                geoms=points,
+                name="navigation_graph_points",
+                group=venue_group,
+                columns=points_meta_data,
+            )
 
     add_shapely_layer(
         qgis_instance_handle=qgis_instance_handle,

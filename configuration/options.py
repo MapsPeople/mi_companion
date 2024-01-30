@@ -11,6 +11,10 @@ __all__ = [
     "DeploymentOptionsPageFactory",
 ]
 
+import logging
+
+from jord.qgis_utilities.helpers import reconnect_signal
+
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, uic
 
@@ -28,6 +32,7 @@ from .settings import (
     list_project_settings,
     read_project_setting,
     restore_default_project_settings,
+    store_project_setting,
 )
 from ..constants import PROJECT_NAME, VERSION
 from ..utilities.paths import resolve_path, get_icon_path, load_icon
@@ -42,9 +47,11 @@ class DeploymentOptionsPageFactory(QgsOptionsWidgetFactory):
     def __init__(self):
         super().__init__()
 
+    # noinspection PyMethodMayBeStatic
     def icon(self):
         return load_icon("mp_notext.png")
 
+    # noinspection PyPep8Naming
     def createWidget(self, parent):
         return DeploymentCompanionOptionsPage(parent)
 
@@ -86,6 +93,7 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
             del self.settings_list_model
 
         self.settings_list_model = QStandardItemModel(self.settings_tree_view)
+        self.type_map = {}
 
         for k in sorted(DEFAULT_PROJECT_SETTINGS.keys()):
             #   q = qs.getValue(k, None)  # DEFAULT_PROJECT_SETTINGS[k])
@@ -96,7 +104,10 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
             )
 
             name_item = QStandardItem(k)
+            name_item.setEditable(False)
             state_item = QStandardItem(q)
+            state_item.setDragEnabled(False)
+            self.type_map[k] = type(q)
 
             self.settings_list_model.appendRow(
                 [
@@ -112,6 +123,10 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         for ci, label in enumerate(column_headers):
             self.settings_list_model.setHeaderData(ci, QtCore.Qt.Horizontal, str(label))
 
+        reconnect_signal(
+            self.settings_list_model.itemChanged, self.setting_item_changed
+        )
+
         self.settings_tree_view.setModel(self.settings_list_model)
 
         for ci in range(len(column_headers)):
@@ -122,6 +137,14 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         # self.export_settings_button
         # self.import_settings_button
         # self.settings_file_widget
+
+    def setting_item_changed(self, item):  #: PyQt5.QtGui.QStandardItem
+        try:
+            key = self.settings_list_model.item(item.row(), 0).text()
+            value = self.type_map[key](item.text())
+            store_project_setting(key, value, project_name=PROJECT_NAME)
+        except Exception as e:
+            logging.warning(e)
 
 
 class DeploymentCompanionOptionsPage(QgsOptionsPageWidget):

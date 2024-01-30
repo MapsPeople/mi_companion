@@ -1,14 +1,20 @@
+import logging
 import math
 import os
 from pathlib import Path
 from typing import Any
+
+from integration_client import Dataset
 
 # from warg import ensure_in_sys_path
 # ensure_in_sys_path(Path(__file__).parent.parent / "cms_edit", resolve=True)
 
 from integration_client.rest import ApiException
 
-from integration_system.cms import get_cms_solution
+from integration_system.cms import (
+    get_solution_id,
+    get_integration_api_client,
+)
 from jord.qgis_utilities import plugin_version
 from jord.qgis_utilities.helpers import signals
 from jord.qlive_utilities import add_shapely_layer
@@ -32,6 +38,10 @@ from qgis.core import (
 )
 from warg import reload_module
 
+from integration_system.cms.downloading import (
+    get_geodata_collection,
+    get_venue_key_cms_id_map,
+)
 from ..cms_edit import layer_hierarchy_to_solution, solution_to_layer_hierarchy
 from ..configuration.project_settings import DEFAULT_PROJECT_SETTINGS
 from ..configuration.settings import read_project_setting
@@ -75,12 +85,14 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.sync_button.setEnabled(False)
         self.upload_button.setEnabled(False)
 
-        signals.reconnect_signal(self.reload_button.clicked, self.reload_button_clicked)
-        signals.reconnect_signal(self.sync_button.clicked, self.sync_button_clicked)
+        signals.reconnect_signal(
+            self.solution_reload_button.clicked, self.refresh_solution_combo_box
+        )
+        signals.reconnect_signal(
+            self.venue_reload_button.clicked, self.refresh_venue_button_clicked
+        )
+        signals.reconnect_signal(self.sync_button.clicked, self.download_button_clicked)
         signals.reconnect_signal(self.upload_button.clicked, self.upload_button_clicked)
-
-        self.solution_combo_box.clear()
-        self.solution_combo_box.addItems(["nhl", "kemper", "phoenix", "kingfisher"])
 
         # from .. import entry_points
         # print(dir(entry_points))
@@ -93,11 +105,7 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if True:
             self.repopulate_grid_layout()
 
-    def reload_button_clicked(self) -> None:
-        self.changes_label.setText("Fetching venues")
-        self.sync_button.setEnabled(True)
-        self.upload_button.setEnabled(True)
-
+    def set_os_environment(self):
         env_vars = dict(
             mapsindoors__username=read_project_setting(
                 "MAPS_INDOORS_USERNAME",
@@ -126,24 +134,58 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             ),
         )
         os.environ.update(**env_vars)
-        solution_external_id = str(self.solution_combo_box.currentText())
 
-        self.solution = get_cms_solution(solution_external_id)
+    def refresh_solution_combo_box(self):
+        self.set_os_environment()
+        self.solution_combo_box.clear()
 
-        self.venue_name_id_map = {v.name: v.external_id for v in self.solution.venues}
+        api_client = get_integration_api_client()
+        self.fetched_solution: list[Dataset] = api_client.call_api(
+            resource_path="/api/dataset",
+            method="GET",
+            header_params={
+                "Accept": "application/json",
+                "Authorization": f"Bearer {api_client.configuration.access_token}",
+            },
+            response_type="list[Dataset]",
+            _return_http_data_only=True,
+        )
+        self.solution_combo_box.addItems([s.name for s in self.fetched_solution])
+
+    def refresh_venue_button_clicked(self) -> None:
+        self.changes_label.setText("Fetching venues")
+        self.sync_button.setEnabled(True)
+        self.upload_button.setEnabled(True)
+
+        self.solution_external_id = str(self.solution_combo_box.currentText())
+
+        self.venues = get_geodata_collection(
+            solution_id=get_solution_id(self.solution_external_id), base_types=["venue"]
+        ).get_venues()
+
+        self.venue_name_id_map = {
+            v.properties["name@en"]: v.external_id for v in self.venues
+        }
 
         self.venue_combo_box.clear()
         self.venue_combo_box.addItems([*self.venue_name_id_map.keys()])
 
         self.changes_label.setText("Fetched venues")
 
-    def sync_button_clicked(self) -> None:
+    def download_button_clicked(self) -> None:
         venue_name = str(self.venue_combo_box.currentText())
-        self.changes_label.setText(f"Downloading {venue_name}")
-        solution_to_layer_hierarchy(
-            self, self.solution, self.venue_name_id_map, venue_name
-        )
-        self.changes_label.setText(f"Downloaded {venue_name}")
+        if venue_name.strip() == "":  # TODO: Not supported ATM
+            for v in self.venue_name_id_map.values():
+                solution_to_layer_hierarchy(self, self.solution_external_id, v)
+        else:
+            if venue_name in self.venue_name_id_map:
+                self.changes_label.setText(f"Downloading {venue_name}")
+                solution_to_layer_hierarchy(
+                    self, self.solution_external_id, self.venue_name_id_map[venue_name]
+                )
+                self.changes_label.setText(f"Downloaded {venue_name}")
+            else:
+                logging.warning(f"Venue {venue_name} not found")
 
     def upload_button_clicked(self) -> None:
         venue_name = str(self.venue_combo_box.currentText())
