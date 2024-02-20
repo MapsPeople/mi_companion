@@ -4,6 +4,6 @@ jord>=0.4.1
 numpy
 pandas
 pip
-shapely >= 2.0.0
+shapely>=2.0.0
 validators
 warg>=1.0.2

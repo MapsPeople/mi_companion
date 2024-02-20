@@ -1,5 +1,7 @@
 import logging
 
+from integration_system.cms.config import Settings
+
 LOGGER = logging.getLogger(__name__)
 import math
 import os
@@ -42,7 +44,6 @@ from warg import reload_module
 
 from integration_system.cms.downloading import (
     get_geodata_collection,
-    get_venue_key_cms_id_map,
 )
 from ..cms_edit import layer_hierarchy_to_solution, solution_to_layer_hierarchy
 from ..configuration.project_settings import DEFAULT_PROJECT_SETTINGS
@@ -74,6 +75,7 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             reload_module("warg")
 
         self.plugin_dir = Path(os.path.dirname(__file__))
+        self.sync_module_settings = Settings()
 
         self.setupUi(self)
 
@@ -108,40 +110,54 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.repopulate_grid_layout()
 
     def set_os_environment(self):
-        env_vars = dict(
-            mapsindoors__username=read_project_setting(
+        if False:
+            env_vars = dict(
+                mapsindoors__username=read_project_setting(
+                    "MAPS_INDOORS_USERNAME",
+                    defaults=DEFAULT_PROJECT_SETTINGS,
+                    project_name=PROJECT_NAME,
+                ),
+                mapsindoors__password=read_project_setting(
+                    "MAPS_INDOORS_PASSWORD",
+                    defaults=DEFAULT_PROJECT_SETTINGS,
+                    project_name=PROJECT_NAME,
+                ),
+                mapsindoors__integration_api_host=read_project_setting(
+                    "MAPS_INDOORS_INTEGRATION_API_HOST",
+                    defaults=DEFAULT_PROJECT_SETTINGS,
+                    project_name=PROJECT_NAME,
+                ),
+                mapsindoors__token_endpoint=read_project_setting(
+                    "MAPS_INDOORS_TOKEN_ENDPOINT",
+                    defaults=DEFAULT_PROJECT_SETTINGS,
+                    project_name=PROJECT_NAME,
+                ),
+                mapsindoors__manager_api_host=read_project_setting(
+                    "MAPS_INDOORS_MANAGER_API_HOST",
+                    defaults=DEFAULT_PROJECT_SETTINGS,
+                    project_name=PROJECT_NAME,
+                ),
+            )
+
+            os.environ.update(**env_vars)
+        else:
+            self.sync_module_settings.mapsindoors.username = read_project_setting(
                 "MAPS_INDOORS_USERNAME",
                 defaults=DEFAULT_PROJECT_SETTINGS,
                 project_name=PROJECT_NAME,
-            ),
-            mapsindoors__password=read_project_setting(
+            )
+
+            self.sync_module_settings.mapsindoors.password = read_project_setting(
                 "MAPS_INDOORS_PASSWORD",
                 defaults=DEFAULT_PROJECT_SETTINGS,
                 project_name=PROJECT_NAME,
-            ),
-            mapsindoors__integration_api_host=read_project_setting(
-                "MAPS_INDOORS_INTEGRATION_API_HOST",
-                defaults=DEFAULT_PROJECT_SETTINGS,
-                project_name=PROJECT_NAME,
-            ),
-            mapsindoors__token_endpoint=read_project_setting(
-                "MAPS_INDOORS_TOKEN_ENDPOINT",
-                defaults=DEFAULT_PROJECT_SETTINGS,
-                project_name=PROJECT_NAME,
-            ),
-            mapsindoors__manager_api_host=read_project_setting(
-                "MAPS_INDOORS_MANAGER_API_HOST",
-                defaults=DEFAULT_PROJECT_SETTINGS,
-                project_name=PROJECT_NAME,
-            ),
-        )
-        os.environ.update(**env_vars)
+            )
 
     def refresh_solution_combo_box(self):
         self.set_os_environment()
         self.solution_combo_box.clear()
 
-        api_client = get_integration_api_client()
+        api_client = get_integration_api_client(settings=self.sync_module_settings)
         self.fetched_solution: list[Dataset] = api_client.call_api(
             resource_path="/api/dataset",
             method="GET",
@@ -162,7 +178,11 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.solution_external_id = str(self.solution_combo_box.currentText())
 
         self.venues = get_geodata_collection(
-            solution_id=get_solution_id(self.solution_external_id), base_types=["venue"]
+            solution_id=get_solution_id(
+                self.solution_external_id, settings=self.sync_module_settings
+            ),
+            base_types=["venue"],
+            settings=self.sync_module_settings,
         ).get_venues()
 
         self.venue_name_id_map = {
@@ -178,12 +198,20 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         venue_name = str(self.venue_combo_box.currentText())
         if venue_name.strip() == "":  # TODO: Not supported ATM
             for v in self.venue_name_id_map.values():
-                solution_to_layer_hierarchy(self, self.solution_external_id, v)
+                solution_to_layer_hierarchy(
+                    self,
+                    self.solution_external_id,
+                    v,
+                    settings=self.sync_module_settings,
+                )
         else:
             if venue_name in self.venue_name_id_map:
                 self.changes_label.setText(f"Downloading {venue_name}")
                 solution_to_layer_hierarchy(
-                    self, self.solution_external_id, self.venue_name_id_map[venue_name]
+                    self,
+                    self.solution_external_id,
+                    self.venue_name_id_map[venue_name],
+                    settings=self.sync_module_settings,
                 )
                 self.changes_label.setText(f"Downloaded {venue_name}")
             else:

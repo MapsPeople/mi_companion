@@ -2,7 +2,7 @@ fail_fast: true
 #exclude: '^exclude'
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.0
+    rev: v3.15.1
     hooks:
       - id: pyupgrade
         args:
@@ -10,7 +10,7 @@ repos:
           - --keep-runtime-typing
 
   - repo: https://github.com/ambv/black
-    rev: 23.12.1
+    rev: 24.2.0
     hooks:
       - id: black
         language_version: python3.10
@@ -22,7 +22,7 @@ repos:
         types: [yaml]
 
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.15
+    rev: v0.16
     hooks:
       - id: validate-pyproject
 

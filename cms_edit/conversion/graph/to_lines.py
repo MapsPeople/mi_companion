@@ -1,17 +1,12 @@
-import logging
-from collections import defaultdict
 from typing import Dict, List, Tuple, Any
 
 import geopandas
 import osmnx
 import shapely
 from networkx import MultiDiGraph
-from pandas import json_normalize
-from shapely import LineString
 from warg import ensure_existence
 
 from ....constants import PROJECT_APP_PATH
-
 
 __all__ = []
 

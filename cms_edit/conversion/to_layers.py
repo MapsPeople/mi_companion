@@ -2,17 +2,15 @@ from pathlib import Path
 from typing import Any
 
 import geopandas
-
-from integration_system.cms import get_cms_solution
-
-from integration_system.model.mixins import CollectionMixin
-
 from jord.qlive_utilities import add_dataframe_layer, add_shapely_layer
 from qgis.core import (
     QgsProject,
 )
 from warg import ensure_in_sys_path
 
+from integration_system.cms import get_cms_solution
+from integration_system.cms.config import Settings, get_settings
+from integration_system.model.mixins import CollectionMixin
 from .graph.to_lines import osm_xml_to_lines
 
 ensure_in_sys_path(Path(__file__).parent.parent)
@@ -37,10 +35,14 @@ def solution_to_layer_hierarchy(
     solution_external_id: str,
     venue_external_id: str,
     cms_hierarchy_group_name: str = CMS_HIERARCHY_GROUP_NAME,
+    *,
+    settings: Settings = get_settings(),
 ) -> None:
     layer_tree_root = QgsProject.instance().layerTreeRoot()
 
-    solution = get_cms_solution(solution_external_id, [venue_external_id])
+    solution = get_cms_solution(
+        solution_external_id, [venue_external_id], settings=settings
+    )
     cms_group = layer_tree_root.findGroup(cms_hierarchy_group_name)
 
     if not cms_group:  # add it if it does not exist
@@ -59,7 +61,7 @@ def solution_to_layer_hierarchy(
 
     venue_group = solution_group.insertGroup(0, f"{venue.name} (Venue)")
 
-    if True:  # add graph
+    if False:  # add graph
         (lines, lines_meta_data), (points, points_meta_data) = osm_xml_to_lines(
             venue.graph.osm_xml
         )

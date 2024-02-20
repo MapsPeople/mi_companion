@@ -2,20 +2,15 @@ import os
 import typing
 from typing import Generic, Union
 
-from jord.qgis_utilities.helpers import signals
-
-from qgis.PyQt import QtWidgets
-from qgis.PyQt import uic
 from PyQt5.QtWidgets import (
-    QApplication,
     QWidget,
-    QPushButton,
-    QVBoxLayout,
     QHBoxLayout,
     QLabel,
-    QTextEdit,
     QLineEdit,
 )
+from jord.qgis_utilities.helpers import signals
+from qgis.PyQt import QtWidgets
+from qgis.PyQt import uic
 
 from .main import run
 

@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 from jord.qgis_utilities.helpers import signals
-
 from qgis.PyQt import QtWidgets
 from qgis.PyQt import uic
 

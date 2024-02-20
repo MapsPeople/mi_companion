@@ -1,24 +1,47 @@
-import warnings
-from pathlib import Path
-
-from jord.qt_utilities import DockWidgetAreaFlag
-from jord.qgis_utilities.helpers import signals
-from qgis.PyQt.QtCore import QCoreApplication, QLocale, QTranslator
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction
-from qgis.core import QgsSettings
-
-from . import PROJECT_NAME
-from .configuration.options import DeploymentOptionsPageFactory
-from .configuration.project_settings import DEFAULT_PROJECT_SETTINGS
-from .configuration.settings import read_project_setting
-from .gui.dock_widget import GdsCompanionDockWidget
-
-
 # noinspection PyUnresolvedReferences
 from .resources import *  # Initialize Qt resources from file resources.py
 
 assert qt_version
+
+from qgis.PyQt.QtCore import QCoreApplication, QLocale, QTranslator
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction
+from qgis.core import QgsSettings
+from pathlib import Path
+import logging
+
+try:
+    from jord.qt_utilities import DockWidgetAreaFlag
+    from jord.qgis_utilities.helpers import signals
+
+    from . import PROJECT_NAME
+    from .configuration.options import DeploymentOptionsPageFactory
+    from .configuration.project_settings import DEFAULT_PROJECT_SETTINGS
+    from .configuration.settings import read_project_setting
+    from .gui.dock_widget import GdsCompanionDockWidget
+except ModuleNotFoundError as e1:
+    try:  # TODO MAYbe fetch eqips implementation, # otherwise assume warg was installed during bootstrap
+        # from warg import get_requirements_from_file
+        from warg.packages import install_requirements_from_file
+
+        install_requirements_from_file(Path(__file__).parent / "requirements.txt")
+
+        from jord.qt_utilities import DockWidgetAreaFlag
+        from jord.qgis_utilities.helpers import signals
+
+        from . import PROJECT_NAME
+        from .configuration.options import DeploymentOptionsPageFactory
+        from .configuration.project_settings import DEFAULT_PROJECT_SETTINGS
+        from .configuration.settings import read_project_setting
+        from .gui.dock_widget import GdsCompanionDockWidget
+
+    except ModuleNotFoundError as e2:
+        logging.warning(f"{e2}")
+        raise e1
+
+
+logger = logging.getLogger(__name__)
+
 
 MENU_INSTANCE_NAME = f"&{PROJECT_NAME.lower()}"
 
@@ -64,7 +87,7 @@ class GdsCompanion:
                 self.translator.load(str(locale_path))
                 QCoreApplication.installTranslator(self.translator)
         else:
-            warnings.warn(
+            logger.warn(
                 f"Unable to determine locale for {PROJECT_NAME} was {str(type(locale))} {str(locale)}"
             )
 

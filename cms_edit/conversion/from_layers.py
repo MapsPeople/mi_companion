@@ -1,7 +1,9 @@
 import shapely
-from integration_system.model import Solution
-from integration_system.cms import SyncLevel, get_cms_solution, synchronize
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
+from integration_system.cms import SyncLevel, get_cms_solution, synchronize
+from integration_system.cms.config import get_settings, Settings
+from integration_system.model import Solution
 
 __all__ = ["layer_hierarchy_to_solution"]
 
@@ -15,6 +17,8 @@ from ...configuration.constants import (
 def layer_hierarchy_to_solution(
     cms_hierarchy_group_name: str = CMS_HIERARCHY_GROUP_NAME,
     customer_id: str = POINT_INSIDE_MAPS_INDOORS_CUSTOMER_ID,
+    *,
+    settings: Settings = get_settings(),
 ) -> None:
     layer_tree_root = QgsProject.instance().layerTreeRoot()
 
@@ -132,10 +136,12 @@ def layer_hierarchy_to_solution(
             if True:
                 if VERBOSE:
                     print("Synchronising")
-                existing_solution = get_cms_solution(solution.external_id)
+                existing_solution = get_cms_solution(
+                    solution.external_id, settings=settings
+                )
                 for graph in existing_solution.graphs:
                     solution.add_graph(graph.graph_id, graph.osm_xml)
-                synchronize(solution, sync_level=SyncLevel.Venue)
+                synchronize(solution, sync_level=SyncLevel.VENUE, settings=settings)
                 if VERBOSE:
                     print("Synchronised")
 

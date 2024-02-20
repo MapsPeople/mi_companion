@@ -30,9 +30,7 @@ from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 
 from .project_settings import DEFAULT_PROJECT_SETTINGS
 from .settings import (
-    list_project_settings,
     read_project_setting,
-    restore_default_project_settings,
     store_project_setting,
 )
 from ..constants import PROJECT_NAME, VERSION
@@ -52,7 +50,7 @@ class DeploymentOptionsPageFactory(QgsOptionsWidgetFactory):
     def icon(self):
         return load_icon("mp_notext.png")
 
-    # noinspection PyPep8Naming
+    # noinspection PyPep8Naming,PyMethodMayBeStatic
     def createWidget(self, parent):
         return DeploymentCompanionOptionsPage(parent)
 
@@ -106,8 +104,10 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
 
             name_item = QStandardItem(k)
             name_item.setEditable(False)
+
             state_item = QStandardItem(q)
             state_item.setDragEnabled(False)
+
             self.type_map[k] = type(q)
 
             self.settings_list_model.appendRow(
