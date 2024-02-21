@@ -1,11 +1,13 @@
+import dataclasses
+import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import geopandas
 from jord.qlive_utilities import add_dataframe_layer, add_shapely_layer
-from qgis.core import (
-    QgsProject,
-)
+from pandas import DataFrame, json_normalize
+from qgis.PyQt import QtWidgets
+from qgis.core import QgsProject
 from warg import ensure_in_sys_path
 
 from integration_system.cms import get_cms_solution
@@ -18,11 +20,10 @@ ensure_in_sys_path(Path(__file__).parent.parent)
 from ...configuration.constants import CMS_HIERARCHY_GROUP_NAME
 
 
-import dataclasses
-from pandas import DataFrame, json_normalize
-
-
 __all__ = ["solution_to_layer_hierarchy"]
+
+
+logger = logging.getLogger(__name__)
 
 
 def to_df(coll_mix: CollectionMixin) -> DataFrame:
@@ -37,7 +38,10 @@ def solution_to_layer_hierarchy(
     cms_hierarchy_group_name: str = CMS_HIERARCHY_GROUP_NAME,
     *,
     settings: Settings = get_settings(),
+    progress_bar: Optional[QtWidgets.QProgressBar] = None,
 ) -> None:
+    if progress_bar:
+        progress_bar.setValue(0)
     layer_tree_root = QgsProject.instance().layerTreeRoot()
 
     solution = get_cms_solution(
@@ -58,6 +62,12 @@ def solution_to_layer_hierarchy(
         if v.external_id == venue_external_id:
             venue = v
             break
+
+    if venue is None:
+        logger.warning("Venue was not found!")
+        return
+    if progress_bar:
+        progress_bar.setValue(10)
 
     venue_group = solution_group.insertGroup(0, f"{venue.name} (Venue)")
 
@@ -92,7 +102,15 @@ def solution_to_layer_hierarchy(
         visible=False,
     )
 
-    for building in solution.buildings:
+    if progress_bar:
+        progress_bar.setValue(20)
+
+    num_buildings = float(len(solution.buildings))
+
+    for ith, building in enumerate(solution.buildings):
+        if progress_bar:
+            progress_bar.setValue(int(20 + (float(ith) / num_buildings) * 80))
+
         if building.venue.external_id == venue.external_id:
             building_group = venue_group.insertGroup(0, f"{building.name} (Building)")
 

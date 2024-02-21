@@ -11,7 +11,7 @@ QGIS_PROJECT = QgsProject.instance()
 LOGGER = logging.getLogger(__name__)
 
 
-def restore_default_project_settings(
+def restore_default_plugin_settings(
     defaults: Optional[Mapping] = DEFAULT_PROJECT_SETTINGS,
     *,
     project_name: str = PROJECT_NAME,
@@ -19,8 +19,11 @@ def restore_default_project_settings(
 ) -> None:
     if defaults is None:
         defaults = {}
+
     for key, value in defaults.items():
-        store_project_setting(key, value, project_name=project_name, verbose=verbose)
+        embedded_store_plugin_setting(
+            key, value, project_name=project_name, verbose=verbose
+        )
 
 
 def list_project_settings() -> Dict[str, Any]:
@@ -34,7 +37,7 @@ def list_project_settings() -> Dict[str, Any]:
     return None
 
 
-def store_project_setting(
+def embedded_store_plugin_setting(
     key: str, value: Any, *, project_name: str = PROJECT_NAME, verbose: bool = VERBOSE
 ) -> None:
     if isinstance(value, bool):
@@ -47,11 +50,13 @@ def store_project_setting(
         value = str(value)
         QGIS_PROJECT.writeEntry(project_name, key, value)
 
+    # jord.qgis_utilities.store_plugin_setting()
+
     if verbose:
         print("stored: ", project_name, key, value)
 
 
-def read_project_setting(
+def embedded_read_plugin_setting(
     key: str,
     type_hint: type = None,
     *,
@@ -91,6 +96,8 @@ def read_project_setting(
 
     if type_hint is not None:
         val = type_hint(val)
+
+    # jord.qgis_utilities.read_plugin_setting()
 
     if verbose:
         print("read: ", project_name, key, val)

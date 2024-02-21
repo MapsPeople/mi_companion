@@ -13,11 +13,11 @@ import logging
 try:
     from jord.qt_utilities import DockWidgetAreaFlag
     from jord.qgis_utilities.helpers import signals
+    from jord.qgis_utilities import read_plugin_setting
 
     from . import PROJECT_NAME
     from .configuration.options import DeploymentOptionsPageFactory
-    from .configuration.project_settings import DEFAULT_PROJECT_SETTINGS
-    from .configuration.settings import read_project_setting
+    from .configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
     from .gui.dock_widget import GdsCompanionDockWidget
 except ModuleNotFoundError as e1:
     try:  # TODO MAYbe fetch eqips implementation, # otherwise assume warg was installed during bootstrap
@@ -28,11 +28,11 @@ except ModuleNotFoundError as e1:
 
         from jord.qt_utilities import DockWidgetAreaFlag
         from jord.qgis_utilities.helpers import signals
+        from jord.qgis_utilities import read_plugin_setting
 
         from . import PROJECT_NAME
         from .configuration.options import DeploymentOptionsPageFactory
-        from .configuration.project_settings import DEFAULT_PROJECT_SETTINGS
-        from .configuration.settings import read_project_setting
+        from .configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
         from .gui.dock_widget import GdsCompanionDockWidget
 
     except ModuleNotFoundError as e2:
@@ -125,9 +125,9 @@ class GdsCompanion:
         self.options_factory.setTitle(self.tr(PROJECT_NAME))
         self.iface.registerOptionsWidgetFactory(self.options_factory)
 
-        resource_path = read_project_setting(
+        resource_path = read_plugin_setting(
             "RESOURCES_BASE_PATH",
-            defaults=DEFAULT_PROJECT_SETTINGS,
+            default_value=DEFAULT_PLUGIN_SETTINGS["RESOURCES_BASE_PATH"],
             project_name=PROJECT_NAME,
         )
         self.open_server_dock_window_action = QAction(
@@ -154,16 +154,15 @@ class GdsCompanion:
                 self.gds_companion_dock_widget.plugin_closing,
                 self.on_dock_widget_closed,
             )
+            a = read_plugin_setting(
+                "DEFAULT_WIDGET_AREA",
+                default_value=DEFAULT_PLUGIN_SETTINGS["DEFAULT_WIDGET_AREA"],
+                project_name=PROJECT_NAME,
+            )
+            if not isinstance(a, DockWidgetAreaFlag):
+                a = eval(a)
             self.iface.addDockWidget(
-                DockWidgetAreaFlag(
-                    eval(
-                        read_project_setting(
-                            "DEFAULT_WIDGET_AREA",
-                            defaults=DEFAULT_PROJECT_SETTINGS,
-                            project_name=PROJECT_NAME,
-                        )
-                    )
-                ).value,
+                DockWidgetAreaFlag(a).value,
                 self.gds_companion_dock_widget,
             )
 

@@ -2,12 +2,12 @@ import os
 from pathlib import Path
 from typing import Mapping
 
+from jord.qgis_utilities import read_plugin_setting
 from qgis.PyQt.QtGui import QIcon
 from warg import passes_kws_to
 
 from .. import PROJECT_NAME
-from ..configuration.project_settings import DEFAULT_PROJECT_SETTINGS
-from ..configuration.settings import read_project_setting
+from ..configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
 
 __all__ = ["resolve_path", "load_icon", "get_icon_path"]
 
@@ -33,12 +33,12 @@ def resolve_path(path: str, base_path: Path = None) -> str:
 
 def get_icon_path(
     icon_file_name: str,
-    defaults: Mapping = DEFAULT_PROJECT_SETTINGS,
+    defaults: Mapping = DEFAULT_PLUGIN_SETTINGS,
     project_name: str = PROJECT_NAME,
 ) -> str:
-    resource_path = read_project_setting(
+    resource_path = read_plugin_setting(
         "RESOURCES_BASE_PATH",
-        defaults=defaults,
+        default_value=defaults["RESOURCES_BASE_PATH"],
         project_name=project_name,
     )
     return f"{resource_path}/icons/{icon_file_name}"

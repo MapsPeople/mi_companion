@@ -13,7 +13,7 @@ __all__ = [
 
 import logging
 
-LOGGER = logging.getLogger(__name__)
+from jord.qgis_utilities import read_plugin_setting, store_plugin_setting
 from jord.qgis_utilities.helpers import reconnect_signal
 
 # noinspection PyUnresolvedReferences
@@ -28,16 +28,14 @@ from qgis.core import QgsProject
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 
-from .project_settings import DEFAULT_PROJECT_SETTINGS
-from .settings import (
-    read_project_setting,
-    store_project_setting,
-)
+from .project_settings import DEFAULT_PLUGIN_SETTINGS
 from ..constants import PROJECT_NAME, VERSION
 from ..utilities.paths import resolve_path, get_icon_path, load_icon
 
 QGIS_PROJECT = QgsProject.instance()
 VERBOSE = False
+
+LOGGER = logging.getLogger(__name__)
 
 OptionWidget, OptionWidgetBase = uic.loadUiType(resolve_path("options.ui", __file__))
 
@@ -94,18 +92,18 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         self.settings_list_model = QStandardItemModel(self.settings_tree_view)
         self.type_map = {}
 
-        for k in sorted(DEFAULT_PROJECT_SETTINGS.keys()):
+        for k in sorted(DEFAULT_PLUGIN_SETTINGS.keys()):
             #   q = qs.getValue(k, None)  # DEFAULT_PROJECT_SETTINGS[k])
-            q = read_project_setting(
+            q = read_plugin_setting(
                 k,
                 project_name=PROJECT_NAME,
-                defaults=DEFAULT_PROJECT_SETTINGS,
+                default_value=DEFAULT_PLUGIN_SETTINGS[k],
             )
 
             name_item = QStandardItem(k)
             name_item.setEditable(False)
 
-            state_item = QStandardItem(q)
+            state_item = QStandardItem(str(q))
             state_item.setDragEnabled(False)
 
             self.type_map[k] = type(q)
@@ -143,7 +141,7 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         try:
             key = self.settings_list_model.item(item.row(), 0).text()
             value = self.type_map[key](item.text())
-            store_project_setting(key, value, project_name=PROJECT_NAME)
+            store_plugin_setting(key, value, project_name=PROJECT_NAME)
         except Exception as e:
             LOGGER.warning(e)
 

@@ -46,6 +46,6 @@ DEFAULT_CRS = "EPSG:3857"  # "EPSG:4326"
 
 MANUAL_REQUIREMENTS = [
     "qgis",
-    "osgeo"
+    "osgeo",
     # 'qgis' # not visible to pip?
 ]

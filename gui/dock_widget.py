@@ -1,26 +1,13 @@
 import logging
-
-from integration_system.cms.config import Settings
-
-LOGGER = logging.getLogger(__name__)
 import math
 import os
 from pathlib import Path
 from typing import Any
 
-from integration_client import Dataset
-
-# from warg import ensure_in_sys_path
-# ensure_in_sys_path(Path(__file__).parent.parent / "cms_edit", resolve=True)
-
+from integration_client.integration_model.dataset import Dataset
 from integration_client.rest import ApiException
-
-from integration_system.cms import (
-    get_solution_id,
-    get_integration_api_client,
-)
-from jord.qgis_utilities import plugin_version
-from jord.qgis_utilities.helpers import signals
+from jord.qgis_utilities import plugin_version, read_plugin_setting
+from jord.qgis_utilities.helpers import signals, DialogProgressBar
 from jord.qlive_utilities import add_shapely_layer
 
 # noinspection PyUnresolvedReferences
@@ -42,23 +29,31 @@ from qgis.core import (
 )
 from warg import reload_module
 
+from integration_system.cms import (
+    get_solution_id,
+    get_integration_api_client,
+)
+from integration_system.cms.config import Settings
 from integration_system.cms.downloading import (
     get_geodata_collection,
 )
 from ..cms_edit import layer_hierarchy_to_solution, solution_to_layer_hierarchy
-from ..configuration.project_settings import DEFAULT_PROJECT_SETTINGS
-from ..configuration.settings import read_project_setting
+from ..configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
 from ..constants import PROJECT_NAME, VERSION
 from ..entry_points.cad_area import CadAreaDialog
 from ..entry_points.instance_rooms import InstanceRoomsDialog
 from ..utilities.paths import get_icon_path, resolve_path
 from ..utilities.string_parsing import extract_wkt_elements
 
+# from warg import ensure_in_sys_path
+# ensure_in_sys_path(Path(__file__).parent.parent / "cms_edit", resolve=True)
+
 FORM_CLASS, _ = uic.loadUiType(resolve_path("dock_widget.ui", __file__))
 
 signals.IS_DEBUGGING = True
-
+logger = logging.getLogger(__name__)
 VERBOSE = True
+LOGGER = logger
 
 
 class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
@@ -67,6 +62,13 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def __init__(self, iface: Any, parent: Any = None):
         """Constructor."""
         super().__init__(parent)
+
+        # INITIALISATION OF ATTRS
+        self.fetched_solution = None
+        self.venues = None
+        self.solution_external_id = None
+        #
+
         self.iface = iface
         self.qgis_project = QgsProject.instance()
 
@@ -109,52 +111,46 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if True:
             self.repopulate_grid_layout()
 
-    def set_os_environment(self):
-        if False:
-            env_vars = dict(
-                mapsindoors__username=read_project_setting(
-                    "MAPS_INDOORS_USERNAME",
-                    defaults=DEFAULT_PROJECT_SETTINGS,
-                    project_name=PROJECT_NAME,
-                ),
-                mapsindoors__password=read_project_setting(
-                    "MAPS_INDOORS_PASSWORD",
-                    defaults=DEFAULT_PROJECT_SETTINGS,
-                    project_name=PROJECT_NAME,
-                ),
-                mapsindoors__integration_api_host=read_project_setting(
-                    "MAPS_INDOORS_INTEGRATION_API_HOST",
-                    defaults=DEFAULT_PROJECT_SETTINGS,
-                    project_name=PROJECT_NAME,
-                ),
-                mapsindoors__token_endpoint=read_project_setting(
-                    "MAPS_INDOORS_TOKEN_ENDPOINT",
-                    defaults=DEFAULT_PROJECT_SETTINGS,
-                    project_name=PROJECT_NAME,
-                ),
-                mapsindoors__manager_api_host=read_project_setting(
-                    "MAPS_INDOORS_MANAGER_API_HOST",
-                    defaults=DEFAULT_PROJECT_SETTINGS,
-                    project_name=PROJECT_NAME,
-                ),
-            )
+    def set_update_sync_settings(self):
+        self.sync_module_settings.mapsindoors.username = read_plugin_setting(
+            "MAPS_INDOORS_USERNAME",
+            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_USERNAME"],
+            project_name=PROJECT_NAME,
+        )
 
-            os.environ.update(**env_vars)
-        else:
-            self.sync_module_settings.mapsindoors.username = read_project_setting(
-                "MAPS_INDOORS_USERNAME",
-                defaults=DEFAULT_PROJECT_SETTINGS,
+        self.sync_module_settings.mapsindoors.password = read_plugin_setting(
+            "MAPS_INDOORS_PASSWORD",
+            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_PASSWORD"],
+            project_name=PROJECT_NAME,
+        )
+
+        self.sync_module_settings.mapsindoors.integration_api_host = (
+            read_plugin_setting(
+                "MAPS_INDOORS_INTEGRATION_API_HOST",
+                default_value=DEFAULT_PLUGIN_SETTINGS[
+                    "MAPS_INDOORS_INTEGRATION_API_HOST"
+                ],
                 project_name=PROJECT_NAME,
             )
-
-            self.sync_module_settings.mapsindoors.password = read_project_setting(
-                "MAPS_INDOORS_PASSWORD",
-                defaults=DEFAULT_PROJECT_SETTINGS,
-                project_name=PROJECT_NAME,
-            )
+        )
+        self.sync_module_settings.mapsindoors.token_endpoint = read_plugin_setting(
+            "MAPS_INDOORS_TOKEN_ENDPOINT",
+            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_TOKEN_ENDPOINT"],
+            project_name=PROJECT_NAME,
+        )
+        self.sync_module_settings.mapsindoors.manager_api_host = read_plugin_setting(
+            "MAPS_INDOORS_MANAGER_API_HOST",
+            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_MANAGER_API_HOST"],
+            project_name=PROJECT_NAME,
+        )
+        self.sync_module_settings.mapsindoors.media_api_host = read_plugin_setting(
+            "MAPS_INDOORS_MEDIA_API_HOST",
+            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_MEDIA_API_HOST"],
+            project_name=PROJECT_NAME,
+        )
 
     def refresh_solution_combo_box(self):
-        self.set_os_environment()
+        self.set_update_sync_settings()
         self.solution_combo_box.clear()
 
         api_client = get_integration_api_client(settings=self.sync_module_settings)
@@ -174,48 +170,68 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.changes_label.setText("Fetching venues")
         self.sync_button.setEnabled(True)
         self.upload_button.setEnabled(True)
+        self.set_update_sync_settings()
 
-        self.solution_external_id = str(self.solution_combo_box.currentText())
+        with DialogProgressBar() as bar:
+            self.solution_external_id = str(self.solution_combo_box.currentText())
+            bar.setValue(10)
 
-        self.venues = get_geodata_collection(
-            solution_id=get_solution_id(
+            solution_id = get_solution_id(
                 self.solution_external_id, settings=self.sync_module_settings
-            ),
-            base_types=["venue"],
-            settings=self.sync_module_settings,
-        ).get_venues()
+            )
+            if solution_id is None:
+                logger.error(
+                    f"Could not find solution id for {self.solution_external_id}"
+                )
+                return
+            bar.setValue(30)
 
-        self.venue_name_id_map = {
-            v.properties["name@en"]: v.external_id for v in self.venues
-        }
+            self.venues = get_geodata_collection(
+                solution_id,
+                base_types=["venue"],
+                settings=self.sync_module_settings,
+            ).get_venues()
+            bar.setValue(90)
 
-        self.venue_combo_box.clear()
-        self.venue_combo_box.addItems([*self.venue_name_id_map.keys()])
+            self.venue_name_id_map = {
+                v.properties["name@en"]: v.external_id for v in self.venues
+            }
 
-        self.changes_label.setText("Fetched venues")
+            self.venue_combo_box.clear()
+            self.venue_combo_box.addItems([*self.venue_name_id_map.keys()])
+            bar.setValue(100)
+
+            self.changes_label.setText("Fetched venues")
 
     def download_button_clicked(self) -> None:
         venue_name = str(self.venue_combo_box.currentText())
-        if venue_name.strip() == "":  # TODO: Not supported ATM
-            for v in self.venue_name_id_map.values():
-                solution_to_layer_hierarchy(
-                    self,
-                    self.solution_external_id,
-                    v,
-                    settings=self.sync_module_settings,
-                )
-        else:
-            if venue_name in self.venue_name_id_map:
-                self.changes_label.setText(f"Downloading {venue_name}")
-                solution_to_layer_hierarchy(
-                    self,
-                    self.solution_external_id,
-                    self.venue_name_id_map[venue_name],
-                    settings=self.sync_module_settings,
-                )
-                self.changes_label.setText(f"Downloaded {venue_name}")
+        with DialogProgressBar() as bar:
+            if venue_name.strip() == "":  # TODO: Not supported ATM
+                venues = list(self.venue_name_id_map.values())
+                num_venues = float(len(venues))
+                for i, v in enumerate(venues):
+                    with DialogProgressBar() as venue_bar:
+                        solution_to_layer_hierarchy(
+                            self,
+                            self.solution_external_id,
+                            v,
+                            settings=self.sync_module_settings,
+                            progress_bar=venue_bar,
+                        )
+                    bar.setValue(int((float(i) / num_venues) * 100))
             else:
-                LOGGER.warning(f"Venue {venue_name} not found")
+                if venue_name in self.venue_name_id_map:
+                    self.changes_label.setText(f"Downloading {venue_name}")
+                    solution_to_layer_hierarchy(
+                        self,
+                        self.solution_external_id,
+                        self.venue_name_id_map[venue_name],
+                        settings=self.sync_module_settings,
+                        progress_bar=bar,
+                    )
+                    self.changes_label.setText(f"Downloaded {venue_name}")
+                else:
+                    LOGGER.warning(f"Venue {venue_name} not found")
 
     def upload_button_clicked(self) -> None:
         venue_name = str(self.venue_combo_box.currentText())
@@ -246,9 +262,9 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
     def repopulate_grid_layout(self) -> None:
         num_columns = int(
-            read_project_setting(
+            read_plugin_setting(
                 "NUM_COLUMNS",
-                defaults=DEFAULT_PROJECT_SETTINGS,
+                default_value=DEFAULT_PLUGIN_SETTINGS["NUM_COLUMNS"],
                 project_name=PROJECT_NAME,
             )
         )

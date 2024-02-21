@@ -136,12 +136,16 @@ def layer_hierarchy_to_solution(
             if True:
                 if VERBOSE:
                     print("Synchronising")
+
                 existing_solution = get_cms_solution(
                     solution.external_id, settings=settings
                 )
+
                 for graph in existing_solution.graphs:
                     solution.add_graph(graph.graph_id, graph.osm_xml)
+
                 synchronize(solution, sync_level=SyncLevel.VENUE, settings=settings)
+
                 if VERBOSE:
                     print("Synchronised")
 
