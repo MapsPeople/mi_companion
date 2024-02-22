@@ -7,7 +7,7 @@ from typing import Any
 from integration_client.integration_model.dataset import Dataset
 from integration_client.rest import ApiException
 from jord.qgis_utilities import plugin_version, read_plugin_setting
-from jord.qgis_utilities.helpers import signals, DialogProgressBar
+from jord.qgis_utilities.helpers import signals, DialogProgressBar, InjectedProgressBar
 from jord.qlive_utilities import add_shapely_layer
 
 # noinspection PyUnresolvedReferences
@@ -150,21 +150,26 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         )
 
     def refresh_solution_combo_box(self):
-        self.set_update_sync_settings()
-        self.solution_combo_box.clear()
+        with InjectedProgressBar(parent=self.iface.mainWindow()) as bar:
+            self.set_update_sync_settings()
+            self.solution_combo_box.clear()
 
-        api_client = get_integration_api_client(settings=self.sync_module_settings)
-        self.fetched_solution: list[Dataset] = api_client.call_api(
-            resource_path="/api/dataset",
-            method="GET",
-            header_params={
-                "Accept": "application/json",
-                "Authorization": f"Bearer {api_client.configuration.access_token}",
-            },
-            response_type="list[Dataset]",
-            _return_http_data_only=True,
-        )
-        self.solution_combo_box.addItems([s.name for s in self.fetched_solution])
+            bar.setValue(10)
+
+            api_client = get_integration_api_client(settings=self.sync_module_settings)
+            bar.setValue(30)
+            self.fetched_solution: list[Dataset] = api_client.call_api(
+                resource_path="/api/dataset",
+                method="GET",
+                header_params={
+                    "Accept": "application/json",
+                    "Authorization": f"Bearer {api_client.configuration.access_token}",
+                },
+                response_type="list[Dataset]",
+                _return_http_data_only=True,
+            )
+            bar.setValue(90)
+            self.solution_combo_box.addItems([s.name for s in self.fetched_solution])
 
     def refresh_venue_button_clicked(self) -> None:
         self.changes_label.setText("Fetching venues")
@@ -172,7 +177,7 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.upload_button.setEnabled(True)
         self.set_update_sync_settings()
 
-        with DialogProgressBar() as bar:
+        with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
             self.solution_external_id = str(self.solution_combo_box.currentText())
             bar.setValue(10)
 
@@ -205,12 +210,14 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
     def download_button_clicked(self) -> None:
         venue_name = str(self.venue_combo_box.currentText())
-        with DialogProgressBar() as bar:
+        with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
             if venue_name.strip() == "":  # TODO: Not supported ATM
                 venues = list(self.venue_name_id_map.values())
                 num_venues = float(len(venues))
                 for i, v in enumerate(venues):
-                    with DialogProgressBar() as venue_bar:
+                    with InjectedProgressBar(
+                        parent=self.iface.mainWindow().statusBar()
+                    ) as venue_bar:
                         solution_to_layer_hierarchy(
                             self,
                             self.solution_external_id,
