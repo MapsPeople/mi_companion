@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 from typing import Mapping
 
-from jord.qgis_utilities import read_plugin_setting
 from qgis.PyQt.QtGui import QIcon
 from warg import passes_kws_to
 
@@ -36,6 +35,8 @@ def get_icon_path(
     defaults: Mapping = DEFAULT_PLUGIN_SETTINGS,
     project_name: str = PROJECT_NAME,
 ) -> str:
+    from jord.qgis_utilities import read_plugin_setting
+
     resource_path = read_plugin_setting(
         "RESOURCES_BASE_PATH",
         default_value=defaults["RESOURCES_BASE_PATH"],

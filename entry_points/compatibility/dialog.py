@@ -15,7 +15,7 @@ from .main import run
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
 
-__all__ = ["InstanceRoomsDialog"]
+__all__ = ["CompatibilityDialog"]
 
 
 try:  # Python >= 3.8
@@ -36,7 +36,7 @@ def is_optional(field) -> bool:
     return is_union(field) and type(None) in typing.get_args(field)
 
 
-class InstanceRoomsDialog(QtWidgets.QDialog, FORM_CLASS):
+class CompatibilityDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         from jord.qgis_utilities.helpers import signals
 
@@ -50,8 +50,8 @@ class InstanceRoomsDialog(QtWidgets.QDialog, FORM_CLASS):
 
         self.parameter_lines = {}
         self.parameter_signature = inspect.signature(run).parameters
+
         for k, v in self.parameter_signature.items():
-            h_box = QHBoxLayout()
             label_text = f"{k}"
             default = None
             if v.annotation != v.empty:
@@ -61,8 +61,10 @@ class InstanceRoomsDialog(QtWidgets.QDialog, FORM_CLASS):
                 default = v.default
                 label_text += f" = ({default})"
 
-            h_box.addWidget(QLabel(label_text))
             line_edit = QLineEdit(str(default))
+
+            h_box = QHBoxLayout()
+            h_box.addWidget(QLabel(label_text))
             h_box.addWidget(line_edit)
             h_box_w = QWidget(self)
             h_box_w.setLayout(h_box)

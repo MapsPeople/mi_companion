@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-from jord.qgis_utilities.helpers import signals
 from qgis.PyQt import QtWidgets
 from qgis.PyQt import uic
 
@@ -16,6 +15,8 @@ __all__ = ["CadAreaDialog"]
 
 class CadAreaDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
+        from jord.qgis_utilities.helpers import signals
+
         super().__init__(parent)
         self.setupUi(self)
 

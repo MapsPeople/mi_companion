@@ -59,8 +59,6 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         self.setupUi(self)
 
         self.icon_label.setPixmap(QtGui.QPixmap(get_icon_path("mp_notext.png")))
-        self.title_label.setText(f"{PROJECT_NAME}")
-        self.sponsor_label.setPixmap(QtGui.QPixmap(get_icon_path("mp_notext.png")))
         self.version_label.setText(f"{VERSION}")
 
         self.settings_list_model = None

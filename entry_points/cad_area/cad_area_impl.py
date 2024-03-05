@@ -7,7 +7,6 @@ import traceback
 from pathlib import Path
 from typing import Optional, Sequence, Dict, Mapping
 
-from jord.gdal_utilities import OGR
 from warg import system_open_path
 
 
@@ -25,6 +24,8 @@ def write_csv(csv_file_name: Path, area_list: Sequence[Mapping]) -> None:
 
 
 def area_of_layer(cad_file: Path) -> Optional[Dict]:
+    from jord.gdal_utilities import OGR
+
     a = None
     try:
         print(f"Opening cadfile: {cad_file}")

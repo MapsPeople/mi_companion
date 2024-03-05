@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import (
     QLabel,
     QLineEdit,
 )
-from jord.qgis_utilities.helpers import signals
 from qgis.PyQt import QtWidgets
 from qgis.PyQt import uic
 
@@ -39,6 +38,8 @@ def is_optional(field) -> bool:
 
 class GenerateConnectorsDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
+        from jord.qgis_utilities.helpers import signals
+
         super().__init__(parent)
         self.setupUi(self)
 

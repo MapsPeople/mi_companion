@@ -1,4 +1,4 @@
-from logging import warn
+import logging
 from pathlib import Path
 
 from warg import is_windows
@@ -20,7 +20,7 @@ if __name__ == "__main__":
         try:
             target_folder.symlink_to(source_folder)
         except OSError as e:
-            warn(
+            logging.warning(
                 "Probably missing privileges to make symlink in target parent folder, try running symlinking as administrator or change write access('may be read only') / owner."
             )
             raise e

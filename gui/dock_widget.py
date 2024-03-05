@@ -1,13 +1,12 @@
 import logging
 import math
 import os
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-from integration_client.integration_model.dataset import Dataset
-from integration_client.rest import ApiException
-from jord.qgis_utilities import plugin_version, read_plugin_setting
-from jord.qgis_utilities.helpers import signals, DialogProgressBar, InjectedProgressBar
+from jord.qgis_utilities import read_plugin_setting
+from jord.qgis_utilities.helpers import signals, InjectedProgressBar
 from jord.qlive_utilities import add_shapely_layer
 
 # noinspection PyUnresolvedReferences
@@ -29,18 +28,13 @@ from qgis.core import (
 )
 from warg import reload_module
 
-from integration_system.cms import (
-    get_solution_id,
-    get_integration_api_client,
-)
-from integration_system.cms.config import Settings
-from integration_system.cms.downloading import (
-    get_geodata_collection,
-)
 from ..cms_edit import layer_hierarchy_to_solution, solution_to_layer_hierarchy
+from ..cms_edit.conversion.reversion import revert_venues
 from ..configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
 from ..constants import PROJECT_NAME, VERSION
 from ..entry_points.cad_area import CadAreaDialog
+from ..entry_points.compatibility import CompatibilityDialog
+from ..entry_points.generate_connectors import GenerateConnectorsDialog
 from ..entry_points.instance_rooms import InstanceRoomsDialog
 from ..utilities.paths import get_icon_path, resolve_path
 from ..utilities.string_parsing import extract_wkt_elements
@@ -62,6 +56,7 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def __init__(self, iface: Any, parent: Any = None):
         """Constructor."""
         super().__init__(parent)
+        from integration_system.cms.config import Settings
 
         # INITIALISATION OF ATTRS
         self.fetched_solution = None
@@ -75,6 +70,7 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if VERBOSE:
             reload_module("jord")
             reload_module("warg")
+            reload_module("integration_system")
 
         self.plugin_dir = Path(os.path.dirname(__file__))
         self.sync_module_settings = Settings()
@@ -82,14 +78,15 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.setupUi(self)
 
         self.icon_label.setPixmap(QtGui.QPixmap(get_icon_path("mp_notext.png")))
-        self.sponsor_label.setPixmap(QtGui.QPixmap(get_icon_path("mp_notext.png")))
 
         self.version_label.setText(VERSION)
-        self.plugin_status_label.setText(plugin_version.plugin_status(PROJECT_NAME))
+        # self.plugin_status_label.setText(plugin_version.plugin_status(PROJECT_NAME))
 
         self.changes_label.setText("")
         self.sync_button.setEnabled(False)
         self.upload_button.setEnabled(False)
+
+        self.original_solution_venues = defaultdict(dict)
 
         signals.reconnect_signal(
             self.solution_reload_button.clicked, self.refresh_solution_combo_box
@@ -99,6 +96,7 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         )
         signals.reconnect_signal(self.sync_button.clicked, self.download_button_clicked)
         signals.reconnect_signal(self.upload_button.clicked, self.upload_button_clicked)
+        signals.reconnect_signal(self.revert_button.clicked, self.revert_button_clicked)
 
         # from .. import entry_points
         # print(dir(entry_points))
@@ -106,6 +104,8 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.entry_point_dialogs = {
             "Cad Area": CadAreaDialog(),
             "Instance Rooms": InstanceRoomsDialog(),
+            "Compatibility": CompatibilityDialog(),
+            "Connectors": GenerateConnectorsDialog(),
         }
 
         if True:
@@ -150,35 +150,41 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         )
 
     def refresh_solution_combo_box(self):
-        with InjectedProgressBar(parent=self.iface.mainWindow()) as bar:
+        from integration_system.cms.downloading import get_solution_name_external_id_map
+
+        with InjectedProgressBar(
+            parent=self.iface.mainWindow().statusBar()
+        ) as bar:  # TODO: add a text label or format progress bar with a title
             self.set_update_sync_settings()
             self.solution_combo_box.clear()
 
             bar.setValue(10)
-
-            api_client = get_integration_api_client(settings=self.sync_module_settings)
             bar.setValue(30)
-            self.fetched_solution: list[Dataset] = api_client.call_api(
-                resource_path="/api/dataset",
-                method="GET",
-                header_params={
-                    "Accept": "application/json",
-                    "Authorization": f"Bearer {api_client.configuration.access_token}",
-                },
-                response_type="list[Dataset]",
-                _return_http_data_only=True,
+            solution_name_id_map = get_solution_name_external_id_map(
+                settings=self.sync_module_settings
             )
+
             bar.setValue(90)
-            self.solution_combo_box.addItems([s.name for s in self.fetched_solution])
+            self.external_id_map = solution_name_id_map
+            self.solution_combo_box.addItems(list(self.external_id_map.keys()))
 
     def refresh_venue_button_clicked(self) -> None:
+        from integration_system.cms import (
+            get_solution_id,
+        )
+        from integration_system.cms.downloading import (
+            get_geodata_collection,
+        )
+
         self.changes_label.setText("Fetching venues")
         self.sync_button.setEnabled(True)
         self.upload_button.setEnabled(True)
         self.set_update_sync_settings()
 
         with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
-            self.solution_external_id = str(self.solution_combo_box.currentText())
+            self.solution_external_id = self.external_id_map[
+                str(self.solution_combo_box.currentText())
+            ]
             bar.setValue(10)
 
             solution_id = get_solution_id(
@@ -218,18 +224,22 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                     with InjectedProgressBar(
                         parent=self.iface.mainWindow().statusBar()
                     ) as venue_bar:
-                        solution_to_layer_hierarchy(
-                            self,
-                            self.solution_external_id,
-                            v,
-                            settings=self.sync_module_settings,
-                            progress_bar=venue_bar,
+                        self.original_solution_venues[self.solution_external_id][v] = (
+                            solution_to_layer_hierarchy(
+                                self,
+                                self.solution_external_id,
+                                v,
+                                settings=self.sync_module_settings,
+                                progress_bar=venue_bar,
+                            )
                         )
                     bar.setValue(int((float(i) / num_venues) * 100))
             else:
                 if venue_name in self.venue_name_id_map:
                     self.changes_label.setText(f"Downloading {venue_name}")
-                    solution_to_layer_hierarchy(
+                    self.original_solution_venues[self.solution_external_id][
+                        venue_name
+                    ] = solution_to_layer_hierarchy(
                         self,
                         self.solution_external_id,
                         self.venue_name_id_map[venue_name],
@@ -241,22 +251,44 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                     LOGGER.warning(f"Venue {venue_name} not found")
 
     def upload_button_clicked(self) -> None:
-        venue_name = str(self.venue_combo_box.currentText())
-        self.changes_label.setText(f"Uploading {venue_name}")
-        try:
-            layer_hierarchy_to_solution()
-        except Exception as e:
-            self.display_geometry_in_exception(e)
+        with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
+            self.changes_label.setText(f"Uploading venues")
+            try:
+                layer_hierarchy_to_solution(
+                    settings=self.sync_module_settings, progress_bar=bar
+                )
+            except Exception as e:
+                self.display_geometry_in_exception(e)
 
-            raise e
-        self.changes_label.setText(f"Uploaded {venue_name}")
+                raise e
+            self.changes_label.setText(f"Uploaded venues")
 
-    def display_geometry_in_exception(self, e: ApiException) -> None:
+    def revert_button_clicked(self) -> None:
+        with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
+            self.changes_label.setText(f"Revert venues")
+            try:
+                revert_venues(
+                    original_solution_venues=self.original_solution_venues,
+                    settings=self.sync_module_settings,
+                    progress_bar=bar,
+                )
+            except Exception as e:
+                self.display_geometry_in_exception(e)
+
+                raise e
+            self.changes_label.setText(f"Reverted venues")
+
+    def display_geometry_in_exception(self, e) -> None:
+        from integration_client.rest import ApiException
+
         # string_exception = "\n".join(e.args)
+
+        e: ApiException
+
         string_exception = str(e)
-        rese = zip(*extract_wkt_elements(string_exception))
-        if rese:
-            contexts, elements = rese
+        wkt_elements = list(zip(*extract_wkt_elements(string_exception)))
+        if wkt_elements and len(wkt_elements) == 2:
+            contexts, elements = wkt_elements
 
             contexts = [clean_str(c) for c in contexts]
 
@@ -266,6 +298,8 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 name="exceptions",
                 columns=[{"contexts": c} for c in contexts],
             )
+
+        logger.error(string_exception)
 
     def repopulate_grid_layout(self) -> None:
         num_columns = int(

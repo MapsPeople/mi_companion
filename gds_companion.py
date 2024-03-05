@@ -136,6 +136,8 @@ class GdsCompanion:
             self.iface.mainWindow(),
         )
 
+        self.actions.append(self.open_server_dock_window_action)
+
         signals.reconnect_signal(
             self.open_server_dock_window_action.triggered, self.open_dock_widget
         )
@@ -160,7 +162,8 @@ class GdsCompanion:
                 project_name=PROJECT_NAME,
             )
             if not isinstance(a, DockWidgetAreaFlag):
-                a = eval(a)
+                a = eval(a)  # TODO: REMOVE EVAL?
+
             self.iface.addDockWidget(
                 DockWidgetAreaFlag(a).value,
                 self.gds_companion_dock_widget,

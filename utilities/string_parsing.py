@@ -2,7 +2,6 @@ import json
 from typing import List, Tuple
 
 import shapely.wkt
-from jord.geopandas_utilities.serialisation.well_known_text import WktTypeEnum
 
 __all__ = ["extract_wkt_elements"]
 
@@ -10,6 +9,8 @@ __all__ = ["extract_wkt_elements"]
 def extract_wkt_elements(
     exception_str: str,
 ) -> List[Tuple[str, shapely.geometry.base.BaseGeometry]]:
+    from jord.geopandas_utilities.serialisation.well_known_text import WktTypeEnum
+
     wkt_elements = []
 
     if exception_str:
