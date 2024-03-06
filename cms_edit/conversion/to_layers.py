@@ -31,6 +31,8 @@ from ...configuration.constants import (
     VENUE_POLYGON_DESCRIPTOR,
     NAVIGATION_LINES_DESCRIPTOR,
     NAVIGATION_POINT_DESCRIPTOR,
+    ADD_GRAPH,
+    ONLY_SHOW_FIRST_FLOOR,
 )
 
 
@@ -38,10 +40,6 @@ __all__ = ["solution_to_layer_hierarchy"]
 
 
 logger = logging.getLogger(__name__)
-
-
-ADD_GRAPH = False
-ONLY_SHOW_FIRST_FLOOR = True
 
 
 def to_df(coll_mix: CollectionMixin) -> DataFrame:

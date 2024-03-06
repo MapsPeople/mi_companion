@@ -3,6 +3,7 @@ import logging
 from typing import Optional, Dict
 
 import shapely
+
 from qgis.PyQt import QtWidgets
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
@@ -12,9 +13,7 @@ from integration_system.model import Solution, LocationType
 
 __all__ = ["layer_hierarchy_to_solution"]
 
-from ...configuration.constants import (
-    VERBOSE,
-)
+from ...configuration.constants import VERBOSE, ALLOW_LOCATION_CREATION, ADD_DOORS
 
 
 logger = logging.getLogger(__name__)
@@ -25,6 +24,7 @@ from ...configuration.constants import (
     FLOOR_POLYGON_DESCRIPTOR,
     BUILDING_POLYGON_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
+    ADD_GRAPH,
 )
 
 
@@ -33,7 +33,27 @@ def layer_hierarchy_to_solution(
     *,
     settings: Settings = get_settings(),
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
+    iface: Optional[QtWidgets.QWidget] = None,
 ) -> None:
+    if False:
+        ...
+        # from PyQt6.QtGui import QAction
+        # @pyqtSlot(int)
+        # def addedGeometry(self, intValue):
+        # fun stuff here
+
+        def show_attribute_table(layer) -> None:
+            if layer is None:
+                layer = iface.activeLayer()
+            att_dialog = iface.showAttributeTable(layer)
+            # att_dialog.findChild(QAction, "mActionSelectedFilter").trigger()
+
+        from jord.qgis_utilities.helpers import signals
+
+        # signals.reconnect_signal(vlayer.featureAdded, show_attribute_table)
+        # for feat in iface.activeLayer().getFeatures():
+        #    iface.activeLayer().setSelectedFeatures([feat.id()])
+
     if progress_bar:
         progress_bar.setValue(0)
 
@@ -127,8 +147,9 @@ def layer_hierarchy_to_solution(
                 else:
                     solution = copy.deepcopy(existing_solution)
 
-                for graph in existing_solution.graphs:
-                    solution.add_graph(graph.graph_id, graph.osm_xml)
+                if ADD_GRAPH:
+                    for graph in existing_solution.graphs:
+                        solution.add_graph(graph.graph_id, graph.osm_xml)
 
                 venue_key = None
                 print(f"set venue key back to {venue_key=}")
@@ -291,7 +312,11 @@ def layer_hierarchy_to_solution(
                                         )
                                 assert floor_key, floor_key
                                 add_floor_inventory(
-                                    floor_group_items, floor_key, solution
+                                    floor_group_items=floor_group_items,
+                                    floor_key=floor_key,
+                                    solution=solution,
+                                    graph_key=None,  # graph.key,
+                                    floor_index=floor_attributes["floor_index"],
                                 )
 
                 if False:
@@ -324,7 +349,12 @@ def layer_hierarchy_to_solution(
 
 
 def add_floor_inventory(
-    floor_group_items: QgsLayerTreeGroup, floor_key: str, solution: Solution
+    *,
+    floor_group_items: QgsLayerTreeGroup,
+    floor_key: str,
+    graph_key: str,
+    solution: Solution,
+    floor_index: int,
 ) -> None:
     for inventory_group_items in floor_group_items.children():
         if (
@@ -342,6 +372,14 @@ def add_floor_inventory(
                     )
                 }
 
+                location_type_name = room_attributes["location_type.name"]
+                location_type_key = LocationType.compute_key(location_type_name)
+                if ALLOW_LOCATION_CREATION:  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
+                    if solution.location_types.get(location_type_key) is None:
+                        location_type_key = solution.add_location_type(
+                            location_type_name
+                        )
+
                 room_key = solution.add_room(
                     room_attributes["external_id"],
                     room_attributes["name"],
@@ -349,9 +387,7 @@ def add_floor_inventory(
                     .simplify(0)
                     .buffer(0),
                     floor_key=floor_key,
-                    location_type_key=LocationType.compute_key(
-                        room_attributes["location_type.name"]
-                    ),
+                    location_type_key=location_type_key,
                 )
                 if VERBOSE:
                     logger.info("added room", room_key)
@@ -359,8 +395,8 @@ def add_floor_inventory(
         if (
             isinstance(inventory_group_items, QgsLayerTreeLayer)
             and "doors" in inventory_group_items.name()
-            and floor_key is not None
-            and False  # DISABLED FOR NOW
+            and graph_key is not None
+            and ADD_DOORS  # DISABLED FOR NOW
         ):
             doors_linestring_layer = inventory_group_items.layer()
             for door_feature in doors_linestring_layer.getFeatures():
@@ -378,7 +414,8 @@ def add_floor_inventory(
                     .simplify(0)
                     .buffer(0),
                     door_type=door_attributes["door_type"],
-                    floor_key=floor_key,
+                    floor_index=floor_index,
+                    graph_key=graph_key,
                 )
                 if VERBOSE:
                     logger.info("added door", door_key)
@@ -398,14 +435,20 @@ def add_floor_inventory(
                     )
                 }
 
+                location_type_name = poi_attributes["location_type.name"]
+                location_type_key = LocationType.compute_key(location_type_name)
+                if ALLOW_LOCATION_CREATION:  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
+                    if solution.location_types.get(location_type_key) is None:
+                        location_type_key = solution.add_location_type(
+                            location_type_name
+                        )
+
                 poi_key = solution.add_point_of_interest(
                     poi_attributes["external_id"],
                     name=poi_attributes["external_id"],
                     point=shapely.from_wkt(poi_feature.geometry().asWkt()).simplify(0),
                     floor_key=floor_key,
-                    location_type_key=LocationType.compute_key(
-                        poi_attributes["location_type.name"]
-                    ),
+                    location_type_key=location_type_key,
                 )
                 if VERBOSE:
                     logger.info("added poi", poi_key)
@@ -425,6 +468,14 @@ def add_floor_inventory(
                     )
                 }
 
+                location_type_name = area_attributes["location_type.name"]
+                location_type_key = LocationType.compute_key(location_type_name)
+                if ALLOW_LOCATION_CREATION:  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
+                    if solution.location_types.get(location_type_key) is None:
+                        location_type_key = solution.add_location_type(
+                            location_type_name
+                        )
+
                 area_key = solution.add_area(
                     area_attributes["external_id"],
                     name=area_attributes["external_id"],
@@ -432,9 +483,7 @@ def add_floor_inventory(
                     .simplify(0)
                     .buffer(0),
                     floor_key=floor_key,
-                    location_type_key=LocationType.compute_key(
-                        area_attributes["location_type.name"]
-                    ),
+                    location_type_key=location_type_key,
                 )
 
                 if VERBOSE:

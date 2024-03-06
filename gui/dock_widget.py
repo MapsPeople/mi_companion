@@ -62,6 +62,7 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.fetched_solution = None
         self.venues = None
         self.solution_external_id = None
+        self.external_id_map = None
         #
 
         self.iface = iface
@@ -104,8 +105,12 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.entry_point_dialogs = {
             "Cad Area": CadAreaDialog(),
             "Instance Rooms": InstanceRoomsDialog(),
+            "Diff Tool": InstanceRoomsDialog(),
             "Compatibility": CompatibilityDialog(),
-            "Connectors": GenerateConnectorsDialog(),
+            "Generate Connectors": GenerateConnectorsDialog(),
+            "Generate Doors": InstanceRoomsDialog(),
+            "Generate Walls": InstanceRoomsDialog(),
+            "Classify Location": InstanceRoomsDialog(),
         }
 
         if True:
@@ -155,18 +160,21 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         with InjectedProgressBar(
             parent=self.iface.mainWindow().statusBar()
         ) as bar:  # TODO: add a text label or format progress bar with a title
+            bar.setValue(10)
             self.set_update_sync_settings()
+
+            bar.setValue(30)
             self.solution_combo_box.clear()
 
-            bar.setValue(10)
-            bar.setValue(30)
-            solution_name_id_map = get_solution_name_external_id_map(
+            bar.setValue(50)
+            self.external_id_map = get_solution_name_external_id_map(
                 settings=self.sync_module_settings
             )
 
             bar.setValue(90)
-            self.external_id_map = solution_name_id_map
             self.solution_combo_box.addItems(list(self.external_id_map.keys()))
+
+            bar.setValue(100)
 
     def refresh_venue_button_clicked(self) -> None:
         from integration_system.cms import (
@@ -181,9 +189,20 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.upload_button.setEnabled(True)
         self.set_update_sync_settings()
 
+        if self.external_id_map is None:
+            self.refresh_solution_combo_box()
+
         with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
+            current_selected_solution_name = str(self.solution_combo_box.currentText())
+
+            if current_selected_solution_name not in self.external_id_map:
+                logger.error(
+                    f"Could not find external_id for solution id for {self.solution_external_id}"
+                )
+                return
+
             self.solution_external_id = self.external_id_map[
-                str(self.solution_combo_box.currentText())
+                current_selected_solution_name
             ]
             bar.setValue(10)
 

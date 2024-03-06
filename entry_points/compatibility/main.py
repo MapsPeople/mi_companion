@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import logging
 
-from integration_system.compatibilization_s.external_ids import (
+from integration_system.compatibilization.solution import (
     update_solution_external_id,
 )
 
