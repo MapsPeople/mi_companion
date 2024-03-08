@@ -4,8 +4,8 @@ from typing import Optional, Dict
 from qgis.PyQt import QtWidgets
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.cms import SyncLevel, synchronize
-from integration_system.cms.config import get_settings, Settings
+from integration_system.mi import SyncLevel, synchronize
+from integration_system.mi.config import get_settings, Settings
 from integration_system.model import Solution
 
 __all__ = ["revert_venues"]

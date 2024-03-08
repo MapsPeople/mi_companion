@@ -2,7 +2,7 @@
 name=GDS Companion
 qgisMinimumVersion=3.0
 description=GDS tooling
-version=0.0.6
+version=0.1.0
 author=CHEN @ MapsPeople A/S
 email=chen@mapspeople.com
 
@@ -24,7 +24,7 @@ server=False
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
 
-plugin_dependencies=Eqip
+plugin_dependencies=Eqip>=0.0.5
 
 # Tags are comma separated with spaces allowed
 tags=python, mapsindoors, shapely

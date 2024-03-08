@@ -56,7 +56,7 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def __init__(self, iface: Any, parent: Any = None):
         """Constructor."""
         super().__init__(parent)
-        from integration_system.cms.config import Settings
+        from integration_system.mi.config import Settings
 
         # INITIALISATION OF ATTRS
         self.fetched_solution = None
@@ -155,7 +155,7 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         )
 
     def refresh_solution_combo_box(self):
-        from integration_system.cms.downloading import get_solution_name_external_id_map
+        from integration_system.mi.downloading import get_solution_name_external_id_map
 
         with InjectedProgressBar(
             parent=self.iface.mainWindow().statusBar()
@@ -177,10 +177,10 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             bar.setValue(100)
 
     def refresh_venue_button_clicked(self) -> None:
-        from integration_system.cms import (
+        from integration_system.mi import (
             get_solution_id,
         )
-        from integration_system.cms.downloading import (
+        from integration_system.mi.downloading import (
             get_geodata_collection,
         )
 

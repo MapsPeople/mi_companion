@@ -12,8 +12,8 @@ from qgis.PyQt import QtWidgets
 from qgis.core import QgsProject
 from warg import ensure_in_sys_path
 
-from integration_system.cms import get_remote_solution
-from integration_system.cms.config import Settings, get_settings
+from integration_system.mi import get_remote_solution
+from integration_system.mi.config import Settings, get_settings
 from integration_system.model.mixins import CollectionMixin
 from .graph.to_lines import osm_xml_to_lines
 

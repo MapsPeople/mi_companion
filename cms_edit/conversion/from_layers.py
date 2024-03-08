@@ -7,8 +7,8 @@ import shapely
 from qgis.PyQt import QtWidgets
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.cms import SyncLevel, get_remote_solution, synchronize
-from integration_system.cms.config import get_settings, Settings
+from integration_system.mi import SyncLevel, get_remote_solution, synchronize
+from integration_system.mi.config import get_settings, Settings
 from integration_system.model import Solution, LocationType
 
 __all__ = ["layer_hierarchy_to_solution"]
