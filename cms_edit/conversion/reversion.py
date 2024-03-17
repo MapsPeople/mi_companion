@@ -7,23 +7,32 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 from integration_system.mi import SyncLevel, synchronize
 from integration_system.mi.config import get_settings, Settings
 from integration_system.model import Solution
+from ...configuration.constants import (
+    MI_HIERARCHY_GROUP_NAME,
+)
+
 
 __all__ = ["revert_venues"]
 
 logger = logging.getLogger(__name__)
 HALF_SIZE = 0.5
-from ...configuration.constants import (
-    CMS_HIERARCHY_GROUP_NAME,
-)
 
 
 def revert_venues(
     original_solution_venues: Dict[str, Dict[str, Solution]],
-    cms_hierarchy_group_name: str = CMS_HIERARCHY_GROUP_NAME,
+    cms_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
     *,
     settings: Settings = get_settings(),
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
 ) -> None:
+    """
+
+    :param original_solution_venues:
+    :param cms_hierarchy_group_name:
+    :param settings:
+    :param progress_bar:
+    :return:
+    """
     if progress_bar:
         progress_bar.setValue(0)
     layer_tree_root = QgsProject.instance().layerTreeRoot()

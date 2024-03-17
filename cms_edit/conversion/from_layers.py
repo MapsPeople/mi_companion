@@ -3,13 +3,14 @@ import logging
 from typing import Optional, Dict
 
 import shapely
-
+from jord.shapely_utilities.base import clean_shape
 from qgis.PyQt import QtWidgets
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.mi import SyncLevel, get_remote_solution, synchronize
 from integration_system.mi.config import get_settings, Settings
 from integration_system.model import Solution, LocationType
+from integration_system.mi.downloading import get_solution_name_external_id_map
 
 __all__ = ["layer_hierarchy_to_solution"]
 
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 HALF_SIZE = 0.5
 
 from ...configuration.constants import (
-    CMS_HIERARCHY_GROUP_NAME,
+    MI_HIERARCHY_GROUP_NAME,
     FLOOR_POLYGON_DESCRIPTOR,
     BUILDING_POLYGON_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
@@ -28,165 +29,130 @@ from ...configuration.constants import (
 )
 
 
-def layer_hierarchy_to_solution(
-    cms_hierarchy_group_name: str = CMS_HIERARCHY_GROUP_NAME,
-    *,
-    settings: Settings = get_settings(),
-    progress_bar: Optional[QtWidgets.QProgressBar] = None,
-    iface: Optional[QtWidgets.QWidget] = None,
-) -> None:
-    if False:
-        ...
-        # from PyQt6.QtGui import QAction
-        # @pyqtSlot(int)
-        # def addedGeometry(self, intValue):
-        # fun stuff here
-
-        def show_attribute_table(layer) -> None:
-            if layer is None:
-                layer = iface.activeLayer()
-            att_dialog = iface.showAttributeTable(layer)
-            # att_dialog.findChild(QAction, "mActionSelectedFilter").trigger()
-
-        from jord.qgis_utilities.helpers import signals
-
-        # signals.reconnect_signal(vlayer.featureAdded, show_attribute_table)
-        # for feat in iface.activeLayer().getFeatures():
-        #    iface.activeLayer().setSelectedFeatures([feat.id()])
-
+def convert_solution_layers_to_solution(
+    *, progress_bar, ith_solution, num_solution_elements, solution_group_item, settings
+):
+    # TODO: ASSERT SOLUTION_DESCRIPTOR in group name
     if progress_bar:
-        progress_bar.setValue(0)
+        progress_bar.setValue(
+            int(10 + (90 * (float(ith_solution + 1) / num_solution_elements)))
+        )
+    if isinstance(solution_group_item, QgsLayerTreeGroup):
+        logger.info(f"Serialising {str(solution_group_item.name())}")
 
-    layer_tree_root = QgsProject.instance().layerTreeRoot()
+        solution_layer_name = (
+            str(solution_group_item.name()).split("(Solution)")[0].strip()
+        )
 
-    cms_group = layer_tree_root.findGroup(cms_hierarchy_group_name)
+        solution_data_layer_name = "solution_data"
 
-    if not cms_group:  # did not find the group
-        return
+        found_solution_data = False
+        solution_data_layer: Optional[Dict] = None
+        for c in solution_group_item.children():
+            if solution_data_layer_name in c.name():
+                assert (
+                    found_solution_data == False
+                ), f"Duplicate {solution_data_layer_name=} for {solution_layer_name=}"
+                found_solution_data = True
 
-    if progress_bar:
-        progress_bar.setValue(10)
+                solution_feature = c.layer().getFeature(1)  # 1 is first element
+                solution_data_layer = {
+                    k.name(): v
+                    for k, v in zip(
+                        solution_feature.fields(), solution_feature.attributes()
+                    )
+                }
 
-    solution_elements = cms_group.children()
-    num_solution_elements = len(solution_elements)
-    for ith_solution, solution_group_item in enumerate(solution_elements):
-        # TODO: ASSERT SOLUTION_DESCRIPTOR in group name
-        if progress_bar:
-            progress_bar.setValue(
-                int(10 + (90 * (float(ith_solution + 1) / num_solution_elements)))
-            )
-        if isinstance(solution_group_item, QgsLayerTreeGroup):
-            logger.info(f"Serialising {str(solution_group_item.name())}")
+        assert (
+            found_solution_data
+        ), f"Did not find {solution_data_layer_name=} for {solution_layer_name=}"
 
-            solution_layer_name = (
-                str(solution_group_item.name()).split("(Solution)")[0].strip()
-            )
+        solution_external_id = solution_data_layer["external_id"]
+        solution_customer_id = solution_data_layer["customer_id"]
+        solution_occupants_enabled = solution_data_layer["occupants_enabled"]
+        solution_name = solution_data_layer["name"]
 
-            solution_data_layer_name = "solution_data"
+        if solution_external_id is None:
+            solution_external_id = solution_name
 
-            found_solution_data = False
-            solution_data_layer: Optional[Dict] = None
-            for c in solution_group_item.children():
-                if solution_data_layer_name in c.name():
-                    assert (
-                        found_solution_data == False
-                    ), f"Duplicate {solution_data_layer_name=} for {solution_layer_name=}"
-                    found_solution_data = True
-
-                    solution_feature = c.layer().getFeature(1)  # 1 is first element
-                    solution_data_layer = {
-                        k.name(): v
-                        for k, v in zip(
-                            solution_feature.fields(), solution_feature.attributes()
-                        )
-                    }
-
-            assert (
-                found_solution_data
-            ), f"Did not find {solution_data_layer_name=} for {solution_layer_name=}"
-
-            solution_external_id = solution_data_layer["external_id"]
-            solution_customer_id = solution_data_layer["customer_id"]
-            solution_occupants_enabled = solution_data_layer["occupants_enabled"]
-            solution_name = solution_data_layer["name"]
-
-            if solution_external_id is None:
-                solution_external_id = solution_name
-
+        if (
+            solution_external_id
+            in get_solution_name_external_id_map(settings=settings).values()
+        ):
             existing_solution = get_remote_solution(
                 solution_external_id, venue_keys=[], settings=settings
             )
+        else:
+            existing_solution = None
 
-            logger.info(f"Converting {str(solution_group_item.name())}")
+        logger.info(f"Converting {str(solution_group_item.name())}")
 
-            venue_elements = solution_group_item.children()
-            num_venue_elements = len(venue_elements)
-            for ith_venue, venue_group_items in enumerate(venue_elements):
-                if not isinstance(venue_group_items, QgsLayerTreeGroup):
-                    continue  # Selected the solution_data object
+        venue_elements = solution_group_item.children()
+        num_venue_elements = len(venue_elements)
+        for ith_venue, venue_group_items in enumerate(venue_elements):
+            if not isinstance(venue_group_items, QgsLayerTreeGroup):
+                continue  # Selected the solution_data object
 
-                if progress_bar:
-                    progress_bar.setValue(
-                        int(
-                            10
-                            + (
-                                90
-                                * ((ith_solution + HALF_SIZE) / num_solution_elements)
-                                * ((ith_venue + HALF_SIZE) / num_venue_elements)
-                            )
+            if progress_bar:
+                progress_bar.setValue(
+                    int(
+                        10
+                        + (
+                            90
+                            * ((ith_solution + HALF_SIZE) / num_solution_elements)
+                            * ((ith_venue + HALF_SIZE) / num_venue_elements)
                         )
                     )
+                )
 
-                if existing_solution is None:
-                    solution = Solution(
-                        solution_external_id,
-                        solution_name,
-                        solution_customer_id,
-                        occupants_enabled=solution_occupants_enabled,
-                    )
-                else:
-                    solution = copy.deepcopy(existing_solution)
+            if existing_solution is None:
+                solution = Solution(
+                    solution_external_id,
+                    solution_name,
+                    solution_customer_id,
+                    occupants_enabled=solution_occupants_enabled,
+                )
+            else:
+                solution = copy.deepcopy(existing_solution)
 
-                if ADD_GRAPH:
-                    for graph in existing_solution.graphs:
-                        solution.add_graph(graph.graph_id, graph.osm_xml)
+            if ADD_GRAPH:
+                for graph in existing_solution.graphs:
+                    solution.add_graph(graph.graph_id, graph.osm_xml)
 
-                venue_key = None
-                print(f"set venue key back to {venue_key=}")
-                for building_group_items in venue_group_items.children():
-                    layer_type_test = isinstance(
-                        building_group_items, QgsLayerTreeLayer
-                    )
-                    layer_name = str(building_group_items.name()).lower()
-                    layer_descriptor_test = (
-                        VENUE_POLYGON_DESCRIPTOR.lower() in layer_name
-                    )
+            venue_key = None
+            for building_group_items in venue_group_items.children():
+                layer_type_test = isinstance(building_group_items, QgsLayerTreeLayer)
+                layer_name = str(building_group_items.name()).lower()
+                layer_descriptor_test = VENUE_POLYGON_DESCRIPTOR.lower() in layer_name
 
-                    if layer_type_test and layer_descriptor_test:
-                        assert venue_key is None, f"{venue_key=} was already set"
-                        venue_polygon_layer = building_group_items.layer()
-                        venue_feature = venue_polygon_layer.getFeature(
-                            1
-                        )  # 1 is first element
+                if layer_type_test and layer_descriptor_test:
+                    assert venue_key is None, f"{venue_key=} was already set"
+                    venue_polygon_layer = building_group_items.layer()
+                    venue_feature = venue_polygon_layer.getFeature(
+                        1
+                    )  # 1 is first element
 
-                        venue_attributes = {
-                            k.name(): v
-                            for k, v in zip(
-                                venue_feature.fields(), venue_feature.attributes()
-                            )
-                        }
-                        venue_key = solution.add_venue(
-                            venue_attributes["external_id"],
-                            venue_attributes["name"],
-                            shapely.from_wkt(venue_feature.geometry().asWkt())
-                            .simplify(0)
-                            .buffer(0),
+                    venue_attributes = {
+                        k.name(): v
+                        for k, v in zip(
+                            venue_feature.fields(), venue_feature.attributes()
                         )
-                        print(f"set venue key to {venue_key=}")
-                        assert venue_key, f"Returned {venue_key=}"
+                    }
 
-                assert venue_key, f"Did not find a {venue_key=}"
+                    if len(venue_attributes) == 0:
+                        continue
+                    else:
+                        logger.error(
+                            f"Did not find venue, skipping {building_group_items.name()}"
+                        )
 
+                    venue_key = solution.add_venue(
+                        venue_attributes["external_id"],
+                        venue_attributes["name"],
+                        clean_shape(shapely.from_wkt(venue_feature.geometry().asWkt())),
+                    )
+
+            if venue_key:
                 building_elements = venue_group_items.children()
                 num_building_elements = len(building_elements)
                 for ith_building, building_group_items in enumerate(building_elements):
@@ -230,94 +196,106 @@ def layer_hierarchy_to_solution(
                                         building_feature.attributes(),
                                     )
                                 }
+
+                                if len(building_attributes) == 0:
+                                    continue
+                                else:
+                                    logger.error(
+                                        f"Did not find building, skipping {floor_group_items.name()}"
+                                    )
+
                                 building_key = solution.add_building(
                                     building_attributes["external_id"],
                                     building_attributes["name"],
-                                    shapely.from_wkt(
-                                        building_feature.geometry().asWkt()
-                                    )
-                                    .simplify(0)
-                                    .buffer(0),
+                                    clean_shape(
+                                        shapely.from_wkt(
+                                            building_feature.geometry().asWkt()
+                                        )
+                                    ),
                                     venue_key=venue_key,
                                 )
-                        assert building_key, building_key
-
-                        floor_elements = building_group_items.children()
-                        num_floor_elements = len(floor_elements)
-                        for ith_floor, floor_group_items in enumerate(floor_elements):
-                            if progress_bar:
-                                progress_bar.setValue(
-                                    int(
-                                        10
-                                        + (
-                                            90
-                                            * (
-                                                (ith_solution + HALF_SIZE)
-                                                / num_solution_elements
-                                            )
-                                            * (
-                                                (ith_venue + HALF_SIZE)
-                                                / num_venue_elements
-                                            )
-                                            * (
-                                                (ith_building + HALF_SIZE)
-                                                / num_building_elements
-                                            )
-                                            * (
-                                                (ith_floor + HALF_SIZE)
-                                                / num_floor_elements
+                        if building_key:
+                            floor_elements = building_group_items.children()
+                            num_floor_elements = len(floor_elements)
+                            for ith_floor, floor_group_items in enumerate(
+                                floor_elements
+                            ):
+                                if progress_bar:
+                                    progress_bar.setValue(
+                                        int(
+                                            10
+                                            + (
+                                                90
+                                                * (
+                                                    (ith_solution + HALF_SIZE)
+                                                    / num_solution_elements
+                                                )
+                                                * (
+                                                    (ith_venue + HALF_SIZE)
+                                                    / num_venue_elements
+                                                )
+                                                * (
+                                                    (ith_building + HALF_SIZE)
+                                                    / num_building_elements
+                                                )
+                                                * (
+                                                    (ith_floor + HALF_SIZE)
+                                                    / num_floor_elements
+                                                )
                                             )
                                         )
                                     )
-                                )
 
-                            if isinstance(floor_group_items, QgsLayerTreeGroup):
-                                floor_key = None
-                                for (
-                                    inventory_group_items
-                                ) in floor_group_items.children():
-                                    if (
-                                        isinstance(
-                                            inventory_group_items, QgsLayerTreeLayer
-                                        )
-                                        and FLOOR_POLYGON_DESCRIPTOR.lower()
-                                        in str(inventory_group_items.name()).lower()
-                                        and building_key is not None
-                                        and floor_key is None
-                                    ):
-                                        floor_polygon_layer = (
-                                            inventory_group_items.layer()
-                                        )
-                                        floor_feature = floor_polygon_layer.getFeature(
-                                            1
-                                        )  # 1 is first element
+                                if isinstance(floor_group_items, QgsLayerTreeGroup):
+                                    floor_key = None
+                                    for (
+                                        inventory_group_items
+                                    ) in floor_group_items.children():
+                                        if (
+                                            isinstance(
+                                                inventory_group_items,
+                                                QgsLayerTreeLayer,
+                                            )
+                                            and FLOOR_POLYGON_DESCRIPTOR.lower()
+                                            in str(inventory_group_items.name()).lower()
+                                            and building_key is not None
+                                            and floor_key is None
+                                        ):
+                                            floor_polygon_layer = (
+                                                inventory_group_items.layer()
+                                            )
+                                            floor_feature = (
+                                                floor_polygon_layer.getFeature(1)
+                                            )  # 1 is first element
 
-                                        floor_attributes = {
-                                            k.name(): v
-                                            for k, v in zip(
-                                                floor_feature.fields(),
-                                                floor_feature.attributes(),
+                                            floor_attributes = {
+                                                k.name(): v
+                                                for k, v in zip(
+                                                    floor_feature.fields(),
+                                                    floor_feature.attributes(),
+                                                )
+                                            }
+                                            floor_key = solution.add_floor(
+                                                floor_attributes["external_id"],
+                                                floor_attributes["name"],
+                                                floor_attributes["floor_index"],
+                                                clean_shape(
+                                                    shapely.from_wkt(
+                                                        floor_feature.geometry().asWkt()
+                                                    )
+                                                ),
+                                                building_key=building_key,
                                             )
-                                        }
-                                        floor_key = solution.add_floor(
-                                            floor_attributes["external_id"],
-                                            floor_attributes["name"],
-                                            floor_attributes["floor_index"],
-                                            shapely.from_wkt(
-                                                floor_feature.geometry().asWkt()
-                                            )
-                                            .simplify(0)
-                                            .buffer(0),
-                                            building_key=building_key,
-                                        )
-                                assert floor_key, floor_key
-                                add_floor_inventory(
-                                    floor_group_items=floor_group_items,
-                                    floor_key=floor_key,
-                                    solution=solution,
-                                    graph_key=None,  # graph.key,
-                                    floor_index=floor_attributes["floor_index"],
-                                )
+                                    assert floor_key, floor_key
+                                    add_floor_inventory(
+                                        floor_group_items=floor_group_items,
+                                        floor_key=floor_key,
+                                        solution=solution,
+                                        graph_key=None,  # graph.key,
+                                        floor_index=floor_attributes["floor_index"],
+                                    )
+                        else:
+                            logger.error(f"{building_key=}, skipping")
 
                 if False:
                     existing_venue_solution = get_remote_solution(
@@ -336,16 +314,71 @@ def layer_hierarchy_to_solution(
                                 business_hours=occupant.business_hours,
                                 address=occupant.address,
                                 contact=occupant.contact,
-                                media_key=occupant.logo.key if occupant.logo else None,
+                                media_key=(
+                                    occupant.logo.key if occupant.logo else None
+                                ),
                             )
+            else:
+                f"Did not find a {venue_key=}, skipping"
 
-                if VERBOSE:
-                    logger.info("Synchronising")
+            if VERBOSE:
+                logger.info("Synchronising")
 
-                synchronize(solution, sync_level=SyncLevel.VENUE, settings=settings)
+            synchronize(solution, sync_level=SyncLevel.VENUE, settings=settings)
 
-                if VERBOSE:
-                    logger.info("Synchronised")
+            if VERBOSE:
+                logger.info("Synchronised")
+
+
+def layer_hierarchy_to_solution(
+    mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
+    *,
+    settings: Settings = get_settings(),
+    progress_bar: Optional[QtWidgets.QProgressBar] = None,
+    iface: Optional[QtWidgets.QWidget] = None,
+) -> None:
+    if False:
+        ...
+        # from PyQt6.QtGui import QAction
+        # @pyqtSlot(int)
+        # def addedGeometry(self, intValue):
+        # fun stuff here
+
+        def show_attribute_table(layer) -> None:
+            if layer is None:
+                layer = iface.activeLayer()
+            att_dialog = iface.showAttributeTable(layer)
+            # att_dialog.findChild(QAction, "mActionSelectedFilter").trigger()
+
+        from jord.qgis_utilities.helpers import signals
+
+        # signals.reconnect_signal(vlayer.featureAdded, show_attribute_table)
+        # for feat in iface.activeLayer().getFeatures():
+        #    iface.activeLayer().setSelectedFeatures([feat.id()])
+
+    if progress_bar:
+        progress_bar.setValue(0)
+
+    layer_tree_root = QgsProject.instance().layerTreeRoot()
+
+    mi_group = layer_tree_root.findGroup(mi_hierarchy_group_name)
+
+    if not mi_group:  # did not find the group
+        return
+
+    if progress_bar:
+        progress_bar.setValue(10)
+
+    solution_elements = mi_group.children()
+    num_solution_elements = len(solution_elements)
+    for ith_solution, solution_group_item in enumerate(solution_elements):
+        convert_solution_layers_to_solution(
+            progress_bar=progress_bar,
+            ith_solution=ith_solution,
+            num_solution_elements=num_solution_elements,
+            solution_group_item=solution_group_item,
+            settings=settings,
+        )
 
 
 def add_floor_inventory(
@@ -383,9 +416,7 @@ def add_floor_inventory(
                 room_key = solution.add_room(
                     room_attributes["external_id"],
                     room_attributes["name"],
-                    shapely.from_wkt(room_feature.geometry().asWkt())
-                    .simplify(0)
-                    .buffer(0),
+                    clean_shape(shapely.from_wkt(room_feature.geometry().asWkt())),
                     floor_key=floor_key,
                     location_type_key=location_type_key,
                 )
@@ -410,9 +441,9 @@ def add_floor_inventory(
 
                 door_key = solution.add_door(
                     door_attributes["external_id"],
-                    linestring=shapely.from_wkt(door_feature.geometry().asWkt())
-                    .simplify(0)
-                    .buffer(0),
+                    linestring=clean_shape(
+                        shapely.from_wkt(door_feature.geometry().asWkt())
+                    ),
                     door_type=door_attributes["door_type"],
                     floor_index=floor_index,
                     graph_key=graph_key,
@@ -446,7 +477,7 @@ def add_floor_inventory(
                 poi_key = solution.add_point_of_interest(
                     poi_attributes["external_id"],
                     name=poi_attributes["external_id"],
-                    point=shapely.from_wkt(poi_feature.geometry().asWkt()).simplify(0),
+                    point=clean_shape(shapely.from_wkt(poi_feature.geometry().asWkt())),
                     floor_key=floor_key,
                     location_type_key=location_type_key,
                 )
@@ -479,9 +510,9 @@ def add_floor_inventory(
                 area_key = solution.add_area(
                     area_attributes["external_id"],
                     name=area_attributes["external_id"],
-                    polygon=shapely.from_wkt(area_feature.geometry().asWkt())
-                    .simplify(0)
-                    .buffer(0),
+                    polygon=clean_shape(
+                        shapely.from_wkt(area_feature.geometry().asWkt())
+                    ),
                     floor_key=floor_key,
                     location_type_key=location_type_key,
                 )

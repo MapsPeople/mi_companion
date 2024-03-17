@@ -20,7 +20,7 @@ from .graph.to_lines import osm_xml_to_lines
 ensure_in_sys_path(Path(__file__).parent.parent)
 
 from ...configuration.constants import (
-    CMS_HIERARCHY_GROUP_NAME,
+    MI_HIERARCHY_GROUP_NAME,
     SOLUTION_DESCRIPTOR,
     FLOOR_DESCRIPTOR,
     BUILDING_DESCRIPTOR,
@@ -51,31 +51,32 @@ def solution_to_layer_hierarchy(
     qgis_instance_handle: Any,
     solution_external_id: str,
     venue_external_id: str,
-    cms_hierarchy_group_name: str = CMS_HIERARCHY_GROUP_NAME,
+    mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
     *,
     settings: Settings = get_settings(),
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
 ) -> None:
     if progress_bar:
         progress_bar.setValue(0)
+
     layer_tree_root = QgsProject.instance().layerTreeRoot()
 
     solution = get_remote_solution(
         solution_external_id, [venue_external_id], settings=settings
     )
 
-    cms_group = layer_tree_root.findGroup(cms_hierarchy_group_name)
+    mi_group = layer_tree_root.findGroup(mi_hierarchy_group_name)
 
-    if not cms_group:  # add it if it does not exist
-        cms_group = layer_tree_root.addGroup(cms_hierarchy_group_name)
+    if not mi_group:  # add it if it does not exist
+        mi_group = layer_tree_root.addGroup(mi_hierarchy_group_name)
 
-    cms_group.setExpanded(True)
+    mi_group.setExpanded(True)
     # cms_group.setExpanded(False)
 
     solution_name = f"{solution.name} {SOLUTION_DESCRIPTOR}"
     solution_group = layer_tree_root.findGroup(solution_name)
     if not solution_group:
-        solution_group = cms_group.insertGroup(0, solution_name)
+        solution_group = mi_group.insertGroup(0, solution_name)
 
     solution_group.setExpanded(True)
     # solution_group.setExpanded(False)
@@ -233,92 +234,105 @@ def solution_to_layer_hierarchy(
                         visible=False,
                     )
 
-                    rooms = to_df(solution.rooms)
-                    if not rooms.empty:
-                        rooms = rooms[rooms["floor.external_id"] == floor.external_id]
-                        rooms_df = geopandas.GeoDataFrame(
-                            rooms[
-                                [
-                                    c
-                                    for c in rooms.columns
-                                    if ("." not in c) or ("location_type.name" == c)
-                                ]
-                            ],
-                            geometry="polygon",
-                        )
+                    add_invertory_layers(
+                        qgis_instance_handle=qgis_instance_handle,
+                        solution=solution,
+                        floor=floor,
+                        floor_group=floor_group,
+                        venue=venue,
+                    )
 
-                        add_dataframe_layer(
-                            qgis_instance_handle=qgis_instance_handle,
-                            dataframe=rooms_df,
-                            geometry_column="polygon",
-                            name="rooms",
-                            group=floor_group,
-                            categorise_by_attribute="location_type.name",
-                        )
-
-                    if ADD_GRAPH:
-                        doors = to_df(solution.doors)
-                        if not doors.empty:
-                            doors = doors[
-                                doors["door.floor_index"] == floor.floor_index
-                                and doors["door.graph_id"] == venue.graph.graph_id
-                            ]
-                            door_df = geopandas.GeoDataFrame(
-                                doors[[c for c in doors.columns if ("." not in c)]],
-                                geometry="linestring",
-                            )
-
-                            add_dataframe_layer(
-                                qgis_instance_handle=qgis_instance_handle,
-                                dataframe=door_df,
-                                geometry_column="linestring",
-                                name="doors",
-                                group=floor_group,
-                            )
-
-                    areas = to_df(solution.areas)
-                    if not areas.empty:
-                        areas = areas[areas["floor.external_id"] == floor.external_id]
-                        areas_df = geopandas.GeoDataFrame(
-                            areas[
-                                [
-                                    c
-                                    for c in areas.columns
-                                    if ("." not in c) or ("location_type.name" == c)
-                                ]
-                            ],
-                            geometry="polygon",
-                        )
-
-                        add_dataframe_layer(
-                            qgis_instance_handle=qgis_instance_handle,
-                            dataframe=areas_df,
-                            geometry_column="polygon",
-                            name="areas",
-                            group=floor_group,
-                            categorise_by_attribute="location_type.name",
-                        )
-
-                    pois = to_df(solution.points_of_interest)
-                    if not pois.empty:
-                        pois = pois[pois["floor.external_id"] == floor.external_id]
-                        poi_df = geopandas.GeoDataFrame(
-                            pois[
-                                [
-                                    c
-                                    for c in pois.columns
-                                    if ("." not in c) or ("location_type.name" == c)
-                                ]
-                            ],
-                            geometry="point",
-                        )
-
-                        add_dataframe_layer(
-                            qgis_instance_handle=qgis_instance_handle,
-                            dataframe=poi_df,
-                            geometry_column="point",
-                            name="pois",
-                            group=floor_group,
-                            categorise_by_attribute="location_type.name",
-                        )
     return solution
+
+
+def add_invertory_layers(
+    *, qgis_instance_handle, solution, floor, floor_group, venue
+) -> None:
+    rooms = to_df(solution.rooms)
+    if not rooms.empty:
+        rooms = rooms[rooms["floor.external_id"] == floor.external_id]
+        rooms_df = geopandas.GeoDataFrame(
+            rooms[
+                [
+                    c
+                    for c in rooms.columns
+                    if ("." not in c) or ("location_type.name" == c)
+                ]
+            ],
+            geometry="polygon",
+        )
+
+        add_dataframe_layer(
+            qgis_instance_handle=qgis_instance_handle,
+            dataframe=rooms_df,
+            geometry_column="polygon",
+            name="rooms",
+            group=floor_group,
+            categorise_by_attribute="location_type.name",
+        )
+
+    if ADD_GRAPH:
+        doors = to_df(solution.doors)
+        if not doors.empty:
+            doors = doors[
+                doors["door.floor_index"] == floor.floor_index
+                and doors["door.graph_id"] == venue.graph.graph_id
+            ]
+            door_df = geopandas.GeoDataFrame(
+                doors[[c for c in doors.columns if ("." not in c)]],
+                geometry="linestring",
+            )
+
+            add_dataframe_layer(
+                qgis_instance_handle=qgis_instance_handle,
+                dataframe=door_df,
+                geometry_column="linestring",
+                name="doors",
+                group=floor_group,
+            )
+
+    areas = to_df(solution.areas)
+    if not areas.empty:
+        areas = areas[areas["floor.external_id"] == floor.external_id]
+        areas_df = geopandas.GeoDataFrame(
+            areas[
+                [
+                    c
+                    for c in areas.columns
+                    if ("." not in c) or ("location_type.name" == c)
+                ]
+            ],
+            geometry="polygon",
+        )
+
+        add_dataframe_layer(
+            qgis_instance_handle=qgis_instance_handle,
+            dataframe=areas_df,
+            geometry_column="polygon",
+            name="areas",
+            group=floor_group,
+            categorise_by_attribute="location_type.name",
+        )
+
+    pois = to_df(solution.points_of_interest)
+    if not pois.empty:
+        pois = pois[pois["floor.external_id"] == floor.external_id]
+        poi_df = geopandas.GeoDataFrame(
+            pois[
+                [
+                    c
+                    for c in pois.columns
+                    if ("." not in c) or ("location_type.name" == c)
+                ]
+            ],
+            geometry="point",
+        )
+
+        add_dataframe_layer(
+            qgis_instance_handle=qgis_instance_handle,
+            dataframe=poi_df,
+            geometry_column="point",
+            name="pois",
+            group=floor_group,
+            categorise_by_attribute="location_type.name",
+        )

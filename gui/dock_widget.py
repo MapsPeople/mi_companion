@@ -35,7 +35,9 @@ from ..constants import PROJECT_NAME, VERSION
 from ..entry_points.cad_area import CadAreaDialog
 from ..entry_points.compatibility import CompatibilityDialog
 from ..entry_points.generate_connectors import GenerateConnectorsDialog
+from ..entry_points.svg_import import SvgImportDialog
 from ..entry_points.instance_rooms import InstanceRoomsDialog
+from ..entry_points.duplicate_group import DuplicateGroupDialog
 from ..utilities.paths import get_icon_path, resolve_path
 from ..utilities.string_parsing import extract_wkt_elements
 
@@ -100,11 +102,14 @@ class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         signals.reconnect_signal(self.revert_button.clicked, self.revert_button_clicked)
 
         # from .. import entry_points
+
         # print(dir(entry_points))
 
         self.entry_point_dialogs = {
+            "Duplicate Group": DuplicateGroupDialog(),
             "Cad Area": CadAreaDialog(),
             "Instance Rooms": InstanceRoomsDialog(),
+            "Import SVG": SvgImportDialog(),
             "Diff Tool": InstanceRoomsDialog(),
             "Compatibility": CompatibilityDialog(),
             "Generate Connectors": GenerateConnectorsDialog(),
