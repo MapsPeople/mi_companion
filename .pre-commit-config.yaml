@@ -267,7 +267,7 @@ repos:
     hooks:
       - id: compile-qt-resources
         name: compile-qt-resources
-        entry: pyrcc5 -o resources.py resources.qrc
+        entry: pyrcc5 -o mi_companion/resources.py resources.qrc
         language: system
         pass_filenames: false
         always_run: true

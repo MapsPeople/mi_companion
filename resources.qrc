@@ -1,6 +1,6 @@
 <RCC>
-    <qresource prefix="gds_companion">
-        <file>icon.png</file>
-        <file>icons/mp_notext.png</file>
+    <qresource prefix="mi_companion">
+        <file>mi_companion/icon.png</file>
+        <file>mi_companion/icons/mp_notext.png</file>
     </qresource>
 </RCC>

@@ -1,6 +1,6 @@
-[submodule "cms_edit/integration_system"]
-	path = cms_edit/integration_system
+[submodule "mi_companion/submodules/integration_system"]
+	path = mi_companion/submodules/integration_system
 	url = git@git.rtx.mapspeople.com:MapsIndoors/automation/integrations/integration-system.git
-[submodule "cms_edit/integration_client"]
-	path = cms_edit/integration_client
+[submodule "mi_companion/submodules/integration_client"]
+	path = mi_companion/submodules/integration_client
 	url = https://git.rtx.mapspeople.com/mapsindoors-public/integration-client.git
