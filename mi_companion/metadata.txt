@@ -1,12 +1,12 @@
 [general]
-name=MapsIndoors Companion
+name=MI Companion
 qgisMinimumVersion=3.0
 description=GDS tooling
 version=0.1.3
 author=CHEN @ MapsPeople A/S
 email=chen@mapspeople.com
 
-about=The plugin comprises various tools for the gds workflow
+about=The MapsIndoors Companion plugin comprises various tools for the gds workflows as well as the MapsIndoors Editor
 
 tracker=http://bugs
 repository=http://repo
