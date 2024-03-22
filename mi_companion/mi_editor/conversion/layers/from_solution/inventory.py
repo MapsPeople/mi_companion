@@ -96,8 +96,9 @@ def add_inventory_layers(
 
             if MAKE_DOOR_TYPE_DROPDOWN:
                 available_door_type_map = sorted(
-                    {l.name: l.value for l in integration_system.model.DoorType}
+                    {l.name: l.name for l in integration_system.model.DoorType}
                 )
+
                 for layers_inner in door_layer:
                     if layers_inner:
                         for layer in layers_inner:
