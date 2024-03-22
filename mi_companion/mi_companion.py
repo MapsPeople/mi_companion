@@ -1,7 +1,7 @@
 # noinspection PyUnresolvedReferences
 from .resources import *  # Initialize Qt resources from file resources.py
 
-assert qt_version
+assert qt_resource_data is not None  # from resources.py
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QCoreApplication, QLocale, QTranslator
@@ -25,7 +25,7 @@ try:
     from . import PROJECT_NAME
     from .configuration.options import DeploymentOptionsPageFactory
     from .configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
-    from .gui.dock_widget import GdsCompanionDockWidget
+    from .gui.dock_widget import MapsIndoorsCompanionDockWidget
 except ModuleNotFoundError as e1:
     try:  # TODO MAYbe fetch eqips implementation, # otherwise assume warg was installed during bootstrap
         # from warg import get_requirements_from_file
@@ -40,7 +40,7 @@ except ModuleNotFoundError as e1:
         from . import PROJECT_NAME
         from .configuration.options import DeploymentOptionsPageFactory
         from .configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
-        from .gui.dock_widget import GdsCompanionDockWidget
+        from .gui.dock_widget import MapsIndoorsCompanionDockWidget
 
     except ModuleNotFoundError as e2:
         logging.warning(f"{e2}")
@@ -57,7 +57,7 @@ DEBUGGING = False
 FORCE_RELOAD = False
 
 
-class GdsCompanion:
+class MapsIndoorsCompanion:
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
@@ -99,7 +99,7 @@ class GdsCompanion:
             )
 
         self.open_server_dock_window_action = None
-        self.gds_companion_dock_widget = None
+        self.mi_companion_dock_widget = None
 
         self.options_factory = DeploymentOptionsPageFactory()
 
@@ -157,10 +157,10 @@ class GdsCompanion:
         """
         Opens the dock
         """
-        if self.gds_companion_dock_widget is None:
-            self.gds_companion_dock_widget = GdsCompanionDockWidget(self.iface)
+        if self.mi_companion_dock_widget is None:
+            self.mi_companion_dock_widget = MapsIndoorsCompanionDockWidget(self.iface)
             signals.reconnect_signal(
-                self.gds_companion_dock_widget.plugin_closing,
+                self.mi_companion_dock_widget.plugin_closing,
                 self.on_dock_widget_closed,
             )
             a = read_plugin_setting(
@@ -173,7 +173,7 @@ class GdsCompanion:
 
             self.iface.addDockWidget(
                 DockWidgetAreaFlag(a).value,
-                self.gds_companion_dock_widget,
+                self.mi_companion_dock_widget,
             )
 
     def on_dock_widget_closed(self):  # used when Dock dialog is closed
@@ -181,7 +181,7 @@ class GdsCompanion:
         Gets called when the dock is closed
         All the cleanup of the dock has to be done here
         """
-        self.gds_companion_dock_widget = None
+        self.mi_companion_dock_widget = None
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""

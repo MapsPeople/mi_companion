@@ -52,7 +52,7 @@ VERBOSE = True
 LOGGER = logger
 
 
-class GdsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
+class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     plugin_closing = pyqtSignal()
 
     def __init__(self, iface: Any, parent: Any = None):

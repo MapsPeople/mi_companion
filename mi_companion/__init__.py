@@ -12,6 +12,6 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     #
-    from .mi_companion import GdsCompanion
+    from .mi_companion import MapsIndoorsCompanion
 
-    return GdsCompanion(iface)
+    return MapsIndoorsCompanion(iface)
