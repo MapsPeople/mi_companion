@@ -19,10 +19,6 @@ __all__ = ["layer_hierarchy_to_solution"]
 
 
 logger = logging.getLogger(__name__)
-HALF_SIZE = 0.5
-
-
-GENERATE_MISSING_EXTERNAL_IDS = False
 
 
 def convert_solution_layers_to_solution(

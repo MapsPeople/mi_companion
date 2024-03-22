@@ -19,6 +19,8 @@ from mi_companion.configuration.constants import (
     BUILDING_POLYGON_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
     ADD_GRAPH,
+    GENERATE_MISSING_EXTERNAL_IDS,
+    HALF_SIZE,
 )
 from .inventory import add_floor_inventory
 
@@ -26,10 +28,6 @@ __all__ = ["convert_venues"]
 
 
 logger = logging.getLogger(__name__)
-HALF_SIZE = 0.5
-
-
-GENERATE_MISSING_EXTERNAL_IDS = False
 
 
 def convert_venues(

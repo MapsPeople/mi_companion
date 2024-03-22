@@ -15,16 +15,13 @@ from mi_companion.configuration.constants import (
     VERBOSE,
     ALLOW_LOCATION_CREATION,
     ADD_DOORS,
+    GENERATE_MISSING_EXTERNAL_IDS,
 )
 
 __all__ = ["add_floor_inventory"]
 
 
 logger = logging.getLogger(__name__)
-HALF_SIZE = 0.5
-
-
-GENERATE_MISSING_EXTERNAL_IDS = False
 
 
 def add_floor_inventory(
