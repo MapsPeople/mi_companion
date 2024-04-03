@@ -211,9 +211,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         from integration_system.mi import (
             get_solution_id,
         )
-        from integration_system.mi.downloading import (
-            get_geodata_collection,
-        )
+        from integration_system.mi.integration_api import get_geodata_collection
 
         self.changes_label.setText("Fetching venues")
         self.sync_button.setEnabled(True)
@@ -274,22 +272,24 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                     with InjectedProgressBar(
                         parent=self.iface.mainWindow().statusBar()
                     ) as venue_bar:
-                        self.original_solution_venues[self.solution_external_id][v] = (
-                            solution_venue_to_layer_hierarchy(
-                                self,
-                                self.solution_external_id,
-                                v,
-                                settings=self.sync_module_settings,
-                                progress_bar=venue_bar,
-                            )
+                        (
+                            self.original_solution_venues[self.solution_external_id][v]
+                        ) = solution_venue_to_layer_hierarchy(
+                            self,
+                            self.solution_external_id,
+                            v,
+                            settings=self.sync_module_settings,
+                            progress_bar=venue_bar,
                         )
                     bar.setValue(int((float(i) / num_venues) * 100))
             else:
                 if venue_name in self.venue_name_id_map:
                     self.changes_label.setText(f"Downloading {venue_name}")
-                    self.original_solution_venues[self.solution_external_id][
-                        venue_name
-                    ] = solution_venue_to_layer_hierarchy(
+                    (
+                        self.original_solution_venues[self.solution_external_id][
+                            venue_name
+                        ]
+                    ) = solution_venue_to_layer_hierarchy(
                         self,
                         self.solution_external_id,
                         self.venue_name_id_map[venue_name],

@@ -74,7 +74,7 @@ def add_floor_inventory(
                 name = room_attributes["name"]
                 if name is None:
                     name = external_id
-
+                # TODO: ADD CUSTOM PROPERTIES BACK!!!
                 room_key = solution.add_room(
                     external_id=external_id,
                     name=name,
@@ -164,7 +164,7 @@ def add_floor_inventory(
                 name = poi_attributes["name"]
                 if name is None:
                     name = external_id
-
+                # TODO: ADD CUSTOM PROPERTIES BACK!!!
                 poi_key = solution.add_point_of_interest(
                     external_id=external_id,
                     name=name,
@@ -189,7 +189,7 @@ def add_floor_inventory(
                         area_feature.attributes(),
                     )
                 }
-
+                # TODO: ADD CUSTOM PROPERTIES BACK!!!
                 location_type_name = area_attributes["location_type.name"]
                 location_type_key = LocationType.compute_key(location_type_name)
                 if solution.location_types.get(location_type_key) is None:
