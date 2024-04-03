@@ -5,8 +5,12 @@ ADD_DOORS = True
 
 ONLY_SHOW_FIRST_FLOOR = True
 ALLOW_LOCATION_CREATION = True
-MAKE_LOCATION_TYPE_DROPDOWN = False  # TODO: CRASHES ATM
-MAKE_DOOR_TYPE_DROPDOWN = False  # TODO: CRASHES ATM
+
+OSM_HIGHWAY_TYPES = {"footway": "footway", "elevator": "elevator", "steps": "steps"}
+MAKE_HIGHWAY_TYPE_DROPDOWN = True
+MAKE_LOCATION_TYPE_DROPDOWN = True
+MAKE_DOOR_TYPE_DROPDOWN = True
+
 ALLOW_DUPLICATE_VENUES_IN_PROJECT = False
 SHOW_GRAPH_ON_LOAD = False
 
@@ -28,7 +32,3 @@ BUILDING_POLYGON_DESCRIPTOR = "building_polygon"
 VENUE_POLYGON_DESCRIPTOR = "venue_polygon"
 NAVIGATION_LINES_DESCRIPTOR = "navigation_graph_lines"
 NAVIGATION_POINT_DESCRIPTOR = "navigation_graph_points"
-
-
-OSM_HIGHWAY_TYPES = {"footway": "footway", "elevator": "elevator", "steps": "steps"}
-MAKE_HIGHWAY_TYPE_DROPDOWN = False

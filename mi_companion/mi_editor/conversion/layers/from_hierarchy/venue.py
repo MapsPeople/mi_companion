@@ -325,7 +325,7 @@ def convert_venues(
         # solution.update_building(key=None,polygon=None)
         # solution.update_venue(key=None,polygon=None)
 
-        synchronize(solution, sync_level=SyncLevel.VENUE, settings=settings)
+        synchronize(solution, sync_level=SyncLevel.venue, settings=settings)
 
         if VERBOSE:
             logger.info("Synchronised")

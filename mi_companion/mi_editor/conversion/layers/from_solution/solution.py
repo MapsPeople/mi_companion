@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, Tuple, Iterable
 from xml.etree.ElementTree import ParseError
 
 import shapely
@@ -11,6 +11,7 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject, QgsEditorWidgetSetup
 
+import integration_system
 from integration_system.mi import get_remote_solution
 from integration_system.mi.config import Settings, get_settings
 from integration_system.model import Solution
@@ -29,6 +30,7 @@ from mi_companion.configuration.constants import (
     OSM_HIGHWAY_TYPES,
     MAKE_HIGHWAY_TYPE_DROPDOWN,
     SHOW_GRAPH_ON_LOAD,
+    MAKE_DOOR_TYPE_DROPDOWN,
 )
 from mi_companion.mi_editor.conversion.graph.to_lines import osm_xml_to_lines
 from .building import add_building_layers
@@ -48,6 +50,18 @@ def solution_venue_to_layer_hierarchy(
     settings: Settings = get_settings(),
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
 ) -> Solution:
+    """
+    Return solution and created widget objects
+
+
+    :param qgis_instance_handle:
+    :param solution_external_id:
+    :param venue_external_id:
+    :param mi_hierarchy_group_name:
+    :param settings:
+    :param progress_bar:
+    :return:
+    """
     if progress_bar:
         progress_bar.setValue(0)
 
@@ -77,10 +91,37 @@ def solution_venue_to_layer_hierarchy(
     solution_group.setExpanded(True)
     # solution_group.setExpanded(False)
 
-    available_location_type_map = None
+    available_location_type_dropdown_widget = None
     if MAKE_LOCATION_TYPE_DROPDOWN:
-        available_location_type_map = sorted(
-            {l.name: l.key for l in solution.location_types}
+        available_location_type_dropdown_widget = QgsEditorWidgetSetup(
+            "ValueMap",
+            {
+                "map": {
+                    k: solution.location_types.get(k).name
+                    for k in sorted(solution.location_types.keys)
+                }
+            },
+        )
+
+    door_type_dropdown_widget = None
+    if MAKE_DOOR_TYPE_DROPDOWN:
+        door_type_dropdown_widget = QgsEditorWidgetSetup(
+            "ValueMap",
+            {
+                "map": {
+                    f"({integration_system.model.DoorType.__getitem__(k)})": k
+                    for k in sorted({l.name for l in integration_system.model.DoorType})
+                }
+            },
+        )
+
+    highway_type_dropdown_widget = None
+    if MAKE_HIGHWAY_TYPE_DROPDOWN:
+        highway_type_dropdown_widget = (
+            QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
+                "ValueMap",
+                {"map": {k: OSM_HIGHWAY_TYPES[k] for k in sorted(OSM_HIGHWAY_TYPES)}},
+            )
         )
 
     venue = None
@@ -163,19 +204,21 @@ def solution_venue_to_layer_hierarchy(
                     visible=SHOW_GRAPH_ON_LOAD,
                 )
 
-                if MAKE_HIGHWAY_TYPE_DROPDOWN:
-                    available_highway_type_map = sorted(OSM_HIGHWAY_TYPES)
+                if highway_type_dropdown_widget:
                     for layers_inner in graph_lines_layer:
                         if layers_inner:
-                            for layer in layers_inner:
-                                if layer:
-                                    layer.setEditorWidgetSetup(
-                                        layer.fields().indexFromName("highway"),
-                                        QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
-                                            "ValueMap",
-                                            {"map": available_highway_type_map},
-                                        ),
-                                    )
+                            if isinstance(layers_inner, Iterable):
+                                for layer in layers_inner:
+                                    if layer:
+                                        layer.setEditorWidgetSetup(
+                                            layer.fields().indexFromName("highway"),
+                                            highway_type_dropdown_widget,
+                                        )
+                            else:
+                                layers_inner.setEditorWidgetSetup(
+                                    layers_inner.fields().indexFromName("highway"),
+                                    highway_type_dropdown_widget,
+                                )
 
                 if True:  # SHOW POINTs AS WELL
                     logger.info(f"{len(points)=} loaded!")
@@ -212,7 +255,8 @@ def solution_venue_to_layer_hierarchy(
         venue_group=venue_group,
         qgis_instance_handle=qgis_instance_handle,
         layer_tree_root=layer_tree_root,
-        available_location_type_map=available_location_type_map,
+        available_location_type_map_widget=available_location_type_dropdown_widget,
+        door_type_dropdown_widget=door_type_dropdown_widget,
     )
 
     return solution

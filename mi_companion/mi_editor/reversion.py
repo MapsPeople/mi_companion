@@ -124,6 +124,6 @@ def revert_venues(
                             original_solution_venues[solution_external_id][
                                 venue_attributes["external_id"]
                             ],
-                            sync_level=SyncLevel.VENUE,
+                            sync_level=SyncLevel.venue,
                             settings=settings,
                         )

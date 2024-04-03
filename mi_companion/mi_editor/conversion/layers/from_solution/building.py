@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Mapping
+from typing import Optional, Mapping, Any
 
 from jord.qlive_utilities import add_shapely_layer
 
@@ -25,7 +25,8 @@ def add_building_layers(
     venue_group,
     qgis_instance_handle,
     layer_tree_root,
-    available_location_type_map: Optional[Mapping[str, str]] = None,
+    available_location_type_map_widget: Optional[Any] = None,
+    door_type_dropdown_widget: Optional[Any] = None,
     progress_bar: Optional[callable] = None,
 ):
     num_buildings = float(len(solution.buildings))
@@ -97,5 +98,6 @@ def add_building_layers(
                         floor=floor,
                         floor_group=floor_group,
                         venue=venue,
-                        available_location_type_map=available_location_type_map,
+                        available_location_type_map_widget=available_location_type_map_widget,
+                        door_type_dropdown_widget=door_type_dropdown_widget,
                     )
