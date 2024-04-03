@@ -1,6 +1,6 @@
 import shapely.wkt
 
-from ..utilities.string_parsing import extract_wkt_elements
+from mi_companion.utilities.string_parsing import extract_wkt_elements
 
 
 def test_parsing_duplicate_point_str():

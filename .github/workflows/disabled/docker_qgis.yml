@@ -1,0 +1,15 @@
+package:
+  stage: package
+  only:
+    - tags
+  image: 3liz/qgis-plugin-ci:latest
+  script:
+    - >
+      qgis-plugin-ci
+      package ${CI_COMMIT_REF_NAME}
+      --plugin-repo-url https://custom.server.url/
+  artifacts:
+    expose_as: 'QGIS package'
+    paths:
+      - ${PLUGIN_NAME}.${CI_COMMIT_REF_NAME}.zip
+      - plugins.xml

@@ -8,12 +8,12 @@ email=chen@mapspeople.com
 
 about=The MapsIndoors Companion plugin comprises various tools for the gds workflows as well as the MapsIndoors Editor
 
-tracker=http://bugs
-repository=http://repo
+tracker=https://git.rtx.mapspeople.com/MapsIndoors/
+repository=https://git.rtx.mapspeople.com/MapsIndoors/
 
 hasProcessingProvider=no
 
-homepage=http://homepage
+homepage=https://git.rtx.mapspeople.com/MapsIndoors/
 category=Plugins
 icon=icon.png
 experimental=True

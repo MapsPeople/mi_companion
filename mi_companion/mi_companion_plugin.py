@@ -26,6 +26,7 @@ try:
     from .configuration.options import DeploymentOptionsPageFactory
     from .configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
     from .gui.dock_widget import MapsIndoorsCompanionDockWidget
+
 except ModuleNotFoundError as e1:
     try:  # TODO MAYbe fetch eqips implementation, # otherwise assume warg was installed during bootstrap
         # from warg import get_requirements_from_file
@@ -57,7 +58,7 @@ DEBUGGING = False
 FORCE_RELOAD = False
 
 
-class MapsIndoorsCompanion:
+class MapsIndoorsCompanionPlugin:
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
