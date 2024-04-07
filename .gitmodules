@@ -1,3 +1,3 @@
 [submodule "mi_companion/submodules/integration_system"]
 	path = mi_companion/submodules/integration_system
-	url = git@git.rtx.mapspeople.com:MapsIndoors/automation/integrations/integration-system.git
+	url = git@github.com:automaps/mi-sync.git
