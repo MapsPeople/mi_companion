@@ -6,7 +6,7 @@ version=0.2.0
 author=heider
 email=chen@mapspeople.com
 
-about=The MapsIndoors Companion plugin comprises various tools for the gds workflows as well as the MapsIndoors Editor
+about=The MapsIndoors Companion plugin comprises various tools for the GDS workflows as well as the MapsIndoors Editor
 
 tracker=https://git.rtx.mapspeople.com/MapsIndoors/
 repository=https://git.rtx.mapspeople.com/MapsIndoors/
@@ -25,7 +25,7 @@ server=False
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
 
-plugin_dependencies=Eqip==0.1.1
+plugin_dependencies=Eqip==0.2.3
 
 # Tags are comma separated with spaces allowed
 tags=python, mapsindoors, shapely

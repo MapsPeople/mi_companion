@@ -1,3 +1,14 @@
+"""
+ mi_companion
+
+                              -------------------
+        begin                : 2023-03-03
+        git sha              : $Format:%H$
+        copyright            : (C) 2022 by MapsPeople
+        email                : chen@mapspeople.com
+
+"""
+
 # noinspection PyUnresolvedReferences
 from .resources import *  # Initialize Qt resources from file resources.py
 
@@ -47,9 +58,7 @@ except ModuleNotFoundError as e1:
         logging.warning(f"{e2}")
         raise e1
 
-
 logger = logging.getLogger(__name__)
-
 
 MENU_INSTANCE_NAME = f"&{PROJECT_NAME.lower()}"
 
