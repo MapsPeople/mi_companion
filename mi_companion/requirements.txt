@@ -1,4 +1,3 @@
--e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/integration_client"
 -e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/integration_system"
 
 apppath>=1.0.6

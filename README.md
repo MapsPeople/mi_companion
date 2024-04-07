@@ -1,9 +1,6 @@
 # MI Companion
 
-
 [![pipeline status](https://git.rtx.mapspeople.com/MapsIndoors/automation/gds-tools/gds_companion/badges/develop/pipeline.svg)](https://git.rtx.mapspeople.com/MapsIndoors/automation/gds-tools/gds_companion/-/commits/develop)
-
-
 
         <li>If resources.py is not present in your plugin directory, compile the resources file using pyrcc5
             (simply use <b>pb_tool</b> or <b>make</b> if you have automake)

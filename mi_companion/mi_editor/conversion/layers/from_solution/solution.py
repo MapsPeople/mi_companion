@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional, Tuple, Iterable
+from typing import Any, Optional, Iterable
 from xml.etree.ElementTree import ParseError
 
 import shapely
@@ -47,7 +47,7 @@ def solution_venue_to_layer_hierarchy(
     venue_external_id: str,
     mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
     *,
-    settings: Settings = get_settings(),
+    settings: Optional[Settings] = None,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
 ) -> Solution:
     """
@@ -62,6 +62,8 @@ def solution_venue_to_layer_hierarchy(
     :param progress_bar:
     :return:
     """
+    if settings is None:
+        settings = get_settings()
     if progress_bar:
         progress_bar.setValue(0)
 

@@ -1,6 +1,6 @@
 import dataclasses
 import logging
-from typing import Optional, Mapping, Any, Iterable, List
+from typing import Optional, Any, Iterable, List
 
 import geopandas
 from jord.qlive_utilities import add_dataframe_layer
@@ -9,13 +9,11 @@ from pandas import DataFrame, json_normalize
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
 
-import integration_system.model
 from integration_system.mi.manager_model import MIVenue, MIFloor
 from integration_system.model import Solution
 from integration_system.model.mixins import CollectionMixin
 from mi_companion.configuration.constants import (
     ADD_GRAPH,
-    MAKE_DOOR_TYPE_DROPDOWN,
 )
 
 __all__ = ["add_inventory_layers"]

@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Mapping, Any
+from typing import Optional, Any
 
 from jord.qlive_utilities import add_shapely_layer
 
