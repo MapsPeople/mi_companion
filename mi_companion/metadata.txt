@@ -2,8 +2,8 @@
 name=MI Companion
 qgisMinimumVersion=3.0
 description=GDS tooling
-version=0.1.3
-author=CHEN @ MapsPeople A/S
+version=0.2.0
+author=heider
 email=chen@mapspeople.com
 
 about=The MapsIndoors Companion plugin comprises various tools for the gds workflows as well as the MapsIndoors Editor
@@ -16,7 +16,8 @@ hasProcessingProvider=no
 homepage=https://git.rtx.mapspeople.com/MapsIndoors/
 category=Plugins
 icon=icon.png
-experimental=True
+
+experimental=False
 
 # If the plugin can run on QGIS Server.
 server=False
@@ -29,4 +30,4 @@ plugin_dependencies=Eqip==0.1.1
 # Tags are comma separated with spaces allowed
 tags=python, mapsindoors, shapely
 
-changelog=0.0.1 Introduced some very nice features
+changelog=0.2.0 CI Release
