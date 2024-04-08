@@ -1,12 +1,16 @@
 import logging
 from pathlib import Path
 
-from warg import is_windows
+from warg import is_windows, is_mac
 
 from plugin_config import PROFILE, QGIS_APP_PATH
 
 if is_windows():
     qgis_profile_dir = QGIS_APP_PATH.user_config
+
+elif is_mac():
+    qgis_profile_dir = QGIS_APP_PATH.user_data  # TOOD: USE CORRECT!
+
 else:
     qgis_profile_dir = QGIS_APP_PATH.user_data
 

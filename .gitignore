@@ -305,3 +305,5 @@ cython_debug/
 *.cxxflags
 *.cflags
 .idea/
+
+*.zip

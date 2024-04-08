@@ -18,6 +18,7 @@ from mi_companion.configuration.constants import (
 
 __all__ = ["add_inventory_layers"]
 
+from mi_companion.mi_editor.conversion.layers.type_enums import InventoryTypeEnum
 
 logger = logging.getLogger(__name__)
 
@@ -140,7 +141,7 @@ def add_inventory_layers(
 ) -> None:
     add_inventory_layer(
         solution.rooms,
-        "rooms",
+        InventoryTypeEnum.room.value,
         "polygon",
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
@@ -160,7 +161,7 @@ def add_inventory_layers(
 
     add_inventory_layer(
         solution.areas,
-        "areas",
+        InventoryTypeEnum.area.value,
         "polygon",
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
@@ -170,7 +171,7 @@ def add_inventory_layers(
 
     add_inventory_layer(
         solution.points_of_interest,
-        "pois",
+        InventoryTypeEnum.poi.value,
         "point",
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,

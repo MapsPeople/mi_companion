@@ -1,5 +1,6 @@
 import logging
 import uuid
+from collections import defaultdict
 
 import shapely
 from jord.shapely_utilities.base import clean_shape
@@ -17,11 +18,88 @@ from mi_companion.configuration.constants import (
     ADD_DOORS,
     GENERATE_MISSING_EXTERNAL_IDS,
 )
+from mi_companion.mi_editor.conversion.layers.type_enums import InventoryTypeEnum
 
 __all__ = ["add_floor_inventory"]
 
 
 logger = logging.getLogger(__name__)
+
+
+def add_inventory_type(
+    inventory_group_items, solution, floor_key, inventory_type: InventoryTypeEnum
+) -> None:
+    room_polygon_layer = inventory_group_items.layer()
+    for room_feature in room_polygon_layer.getFeatures():
+        room_attributes = {
+            k.name(): v
+            for k, v in zip(
+                room_feature.fields(),
+                room_feature.attributes(),
+            )
+        }
+
+        location_type_name = room_attributes["location_type.name"]
+        location_type_key = LocationType.compute_key(location_type_name)
+        if solution.location_types.get(location_type_key) is None:
+            if ALLOW_LOCATION_CREATION:  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
+                location_type_key = solution.add_location_type(location_type_name)
+            else:
+                raise ValueError(f"{location_type_key} is not a valid location type")
+
+        custom_props = defaultdict(dict)
+        for k, v in room_attributes.items():
+            if "custom_properties" in k:
+                lang, cname = k.split(".")[-2:]
+                if v != "nan":
+                    custom_props[lang][cname] = v
+                else:
+                    custom_props[lang][cname] = None
+
+        external_id = room_attributes["external_id"]
+        if external_id is None:
+            if GENERATE_MISSING_EXTERNAL_IDS:
+                external_id = uuid.uuid4().hex
+            else:
+                raise ValueError(f"{room_feature} is missing a valid external id")
+
+        name = room_attributes["name"]
+
+        if name is None:
+            name = external_id
+
+        room_key = None
+        if inventory_type == InventoryTypeEnum.room:
+            room_key = solution.add_room(
+                external_id=external_id,
+                name=name,
+                polygon=clean_shape(shapely.from_wkt(room_feature.geometry().asWkt())),
+                floor_key=floor_key,
+                location_type_key=location_type_key,
+                custom_properties=custom_props,
+            )
+        elif inventory_type == InventoryTypeEnum.area:
+            room_key = solution.add_area(
+                external_id=external_id,
+                name=name,
+                polygon=clean_shape(shapely.from_wkt(room_feature.geometry().asWkt())),
+                floor_key=floor_key,
+                location_type_key=location_type_key,
+                custom_properties=custom_props,
+            )
+        elif inventory_type == InventoryTypeEnum.poi:
+            room_key = solution.add_point_of_interest(
+                external_id=external_id,
+                name=name,
+                point=clean_shape(shapely.from_wkt(room_feature.geometry().asWkt())),
+                floor_key=floor_key,
+                location_type_key=location_type_key,
+                custom_properties=custom_props,
+            )
+        else:
+            raise Exception(f"{inventory_type=} is unknown")
+        if VERBOSE:
+            logger.info(f"added {inventory_type} {room_key}")
 
 
 def add_floor_inventory(
@@ -35,57 +113,12 @@ def add_floor_inventory(
     for inventory_group_items in floor_group_items.children():
         if (
             isinstance(inventory_group_items, QgsLayerTreeLayer)
-            and "rooms" in inventory_group_items.name()
+            and InventoryTypeEnum.room.value in inventory_group_items.name()
             and floor_key is not None
         ):
-            room_polygon_layer = inventory_group_items.layer()
-            for room_feature in room_polygon_layer.getFeatures():
-                room_attributes = {
-                    k.name(): v
-                    for k, v in zip(
-                        room_feature.fields(),
-                        room_feature.attributes(),
-                    )
-                }
-
-                location_type_name = room_attributes["location_type.name"]
-                location_type_key = LocationType.compute_key(location_type_name)
-                if solution.location_types.get(location_type_key) is None:
-                    if (
-                        ALLOW_LOCATION_CREATION
-                    ):  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
-                        location_type_key = solution.add_location_type(
-                            location_type_name
-                        )
-                    else:
-                        raise ValueError(
-                            f"{location_type_key} is not a valid location type"
-                        )
-
-                external_id = room_attributes["external_id"]
-                if external_id is None:
-                    if GENERATE_MISSING_EXTERNAL_IDS:
-                        external_id = uuid.uuid4().hex
-                    else:
-                        raise ValueError(
-                            f"{room_feature} is missing a valid external id"
-                        )
-
-                name = room_attributes["name"]
-                if name is None:
-                    name = external_id
-                # TODO: ADD CUSTOM PROPERTIES BACK!!!
-                room_key = solution.add_room(
-                    external_id=external_id,
-                    name=name,
-                    polygon=clean_shape(
-                        shapely.from_wkt(room_feature.geometry().asWkt())
-                    ),
-                    floor_key=floor_key,
-                    location_type_key=location_type_key,
-                )
-                if VERBOSE:
-                    logger.info("added room", room_key)
+            add_inventory_type(
+                inventory_group_items, solution, floor_key, InventoryTypeEnum.room
+            )
 
         if (
             isinstance(inventory_group_items, QgsLayerTreeLayer)
@@ -125,107 +158,18 @@ def add_floor_inventory(
 
         if (
             isinstance(inventory_group_items, QgsLayerTreeLayer)
-            and "pois" in inventory_group_items.name()
+            and InventoryTypeEnum.poi.value in inventory_group_items.name()
             and floor_key is not None
         ):
-            poi_point_layer = inventory_group_items.layer()
-            for poi_feature in poi_point_layer.getFeatures():
-                poi_attributes = {
-                    k.name(): v
-                    for k, v in zip(
-                        poi_feature.fields(),
-                        poi_feature.attributes(),
-                    )
-                }
-
-                location_type_name = poi_attributes["location_type.name"]
-                location_type_key = LocationType.compute_key(location_type_name)
-                if solution.location_types.get(location_type_key) is None:
-                    if (
-                        ALLOW_LOCATION_CREATION
-                    ):  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
-                        location_type_key = solution.add_location_type(
-                            location_type_name
-                        )
-                    else:
-                        raise ValueError(
-                            f"{location_type_key} is not a valid location type"
-                        )
-
-                external_id = poi_attributes["external_id"]
-                if external_id is None:
-                    if GENERATE_MISSING_EXTERNAL_IDS:
-                        external_id = uuid.uuid4().hex
-                    else:
-                        raise ValueError(
-                            f"{poi_feature} is missing a valid external id"
-                        )
-
-                name = poi_attributes["name"]
-                if name is None:
-                    name = external_id
-                # TODO: ADD CUSTOM PROPERTIES BACK!!!
-                poi_key = solution.add_point_of_interest(
-                    external_id=external_id,
-                    name=name,
-                    point=clean_shape(shapely.from_wkt(poi_feature.geometry().asWkt())),
-                    floor_key=floor_key,
-                    location_type_key=location_type_key,
-                )
-                if VERBOSE:
-                    logger.info("added poi", poi_key)
+            add_inventory_type(
+                inventory_group_items, solution, floor_key, InventoryTypeEnum.poi
+            )
 
         if (
             isinstance(inventory_group_items, QgsLayerTreeLayer)
-            and "areas" in inventory_group_items.name()
+            and InventoryTypeEnum.area.value in inventory_group_items.name()
             and floor_key is not None
         ):
-            doors_linestring_layer = inventory_group_items.layer()
-            for area_feature in doors_linestring_layer.getFeatures():
-                area_attributes = {
-                    k.name(): v
-                    for k, v in zip(
-                        area_feature.fields(),
-                        area_feature.attributes(),
-                    )
-                }
-                # TODO: ADD CUSTOM PROPERTIES BACK!!!
-                location_type_name = area_attributes["location_type.name"]
-                location_type_key = LocationType.compute_key(location_type_name)
-                if solution.location_types.get(location_type_key) is None:
-                    if (
-                        ALLOW_LOCATION_CREATION
-                    ):  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
-                        location_type_key = solution.add_location_type(
-                            location_type_name
-                        )
-                    else:
-                        raise ValueError(
-                            f"{location_type_key} is not a valid location type"
-                        )
-
-                external_id = area_attributes["external_id"]
-                if external_id is None:
-                    if GENERATE_MISSING_EXTERNAL_IDS:
-                        external_id = uuid.uuid4().hex
-                    else:
-                        raise ValueError(
-                            f"{area_feature} is missing a valid external id"
-                        )
-
-                name = area_attributes["name"]
-                if name is None:
-                    name = external_id
-
-                area_key = solution.add_area(
-                    external_id=external_id,
-                    name=name,
-                    polygon=clean_shape(
-                        shapely.from_wkt(area_feature.geometry().asWkt())
-                    ),
-                    floor_key=floor_key,
-                    location_type_key=location_type_key,
-                )
-
-                if VERBOSE:
-                    logger.info("added area", area_key)
+            add_inventory_type(
+                inventory_group_items, solution, floor_key, InventoryTypeEnum.area
+            )
