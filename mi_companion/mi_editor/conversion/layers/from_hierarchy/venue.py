@@ -71,10 +71,6 @@ def convert_venues(
         else:
             solution = copy.deepcopy(existing_solution)
 
-        if ADD_GRAPH:
-            for graph in existing_solution.graphs:
-                solution.add_graph(graph.graph_id, graph.osm_xml)
-
         venue_key = None
         for building_group_items in venue_group_items.children():
             layer_type_test = isinstance(building_group_items, QgsLayerTreeLayer)
