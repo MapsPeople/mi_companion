@@ -1,1 +1,0 @@
-#integration_client @ file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/integration_client

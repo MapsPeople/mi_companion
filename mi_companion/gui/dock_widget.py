@@ -5,6 +5,8 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+
+from integration_system.mi.downloading import get_venue_key_mi_venue_map
 from jord.qgis_utilities import read_plugin_setting
 from jord.qgis_utilities.helpers import signals, InjectedProgressBar
 from jord.qlive_utilities import add_shapely_layer
@@ -58,10 +60,12 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def __init__(self, iface: Any, parent: Any = None):
         """Constructor."""
         super().__init__(parent)
+
         from integration_system.mi.config import Settings
 
         # INITIALISATION OF ATTRS
         self.fetched_solution = None
+        self.venue_name_id_map = None
         self.venues = None
         self.solution_external_id = None
         self.external_id_map = None
@@ -211,7 +215,6 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         from integration_system.mi import (
             get_solution_id,
         )
-        from integration_system.mi.integration_api import get_geodata_collection
 
         self.changes_label.setText("Fetching venues")
         self.sync_button.setEnabled(True)
@@ -245,15 +248,16 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 return
             bar.setValue(30)
 
-            self.venues = get_geodata_collection(
+            self.venues = get_venue_key_mi_venue_map(
                 solution_id,
-                base_types=["venue"],
                 settings=self.sync_module_settings,
-            ).get_venues()
+            )
+
             bar.setValue(90)
 
             self.venue_name_id_map = {
-                v.properties["name@en"]: v.external_id for v in self.venues
+                next(iter(v.venueInfo))["name"]: v.externalId
+                for v in self.venues.values()
             }
 
             self.venue_combo_box.clear()
@@ -329,11 +333,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.changes_label.setText(f"Reverted venues")
 
     def display_geometry_in_exception(self, e) -> None:
-        from integration_client.rest import ApiException
-
         # string_exception = "\n".join(e.args)
-
-        e: ApiException
 
         string_exception = str(e)
         wkt_elements = list(zip(*extract_wkt_elements(string_exception)))
