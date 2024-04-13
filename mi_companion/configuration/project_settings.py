@@ -8,9 +8,8 @@ DEFAULT_PLUGIN_SETTINGS = {
     "NUM_COLUMNS": 3,
     "MAPS_INDOORS_PASSWORD": "REPLACE_ME",  # TODO: LOOK INTO GOOGLE AUTHENTICATION
     "MAPS_INDOORS_USERNAME": "REPLACE_ME@mapspeople.com",  # TODO: LOOK INTO GOOGLE AUTHENTICATION
-    "MAPS_INDOORS_INTEGRATION_API_HOST": "https://integration-automation.mapsindoors.com",
     "MAPS_INDOORS_TOKEN_ENDPOINT": "https://auth.mapsindoors.com/connect/token",
-    "MAPS_INDOORS_MANAGER_API_HOST": "https://v2-automation.mapsindoors.com",
+    "MAPS_INDOORS_MANAGER_API_HOST": "https://v2.mapsindoors.com",
     "MAPS_INDOORS_MEDIA_API_HOST": "https://media.mapsindoors.com",
     "MAPS_INDOORS_MANAGER_API_TOKEN": None,
     "MAPS_INDOORS_INTEGRATION_API_TOKEN": None,

@@ -1,8 +1,13 @@
 import copy
 import logging
+import math
 import uuid
+from collections import defaultdict
+from itertools import count
+from typing import Optional, List, Collection
 
 import shapely
+from jord.qlive_utilities import add_shapely_layer
 from jord.shapely_utilities.base import clean_shape
 
 # noinspection PyUnresolvedReferences
@@ -11,18 +16,27 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.mi import SyncLevel, synchronize
+from integration_system.constants import SHAPELY_DIFFERENCE_DESCRIPTION
+from integration_system.mi import MIOperation
+from integration_system.mi import synchronize
+from integration_system.mi.config import Settings
+from integration_system.mi.strategy import SyncLevel, SolutionDepth
 from integration_system.model import Solution
 from mi_companion.configuration.constants import (
     VERBOSE,
     FLOOR_POLYGON_DESCRIPTOR,
     BUILDING_POLYGON_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
-    ADD_GRAPH,
     GENERATE_MISSING_EXTERNAL_IDS,
     HALF_SIZE,
+    CONFIRMATION_DIALOG_ENABLED,
+    OPERATION_PROGRESS_BAR_ENABLED,
+    SOLVING_PROGRESS_BAR_ENABLED,
+    ADD_NONE_CUSTOM_PROPERTY_VALUES,
+    NAN_VALUE,
+    DEFAULT_CUSTOM_PROPERTIES,
 )
-from .inventory import add_floor_inventory
+from .location import add_floor_inventory
 
 __all__ = ["convert_venues"]
 
@@ -30,18 +44,44 @@ __all__ = ["convert_venues"]
 logger = logging.getLogger(__name__)
 
 
+from qgis.PyQt import QtWidgets, QtCore
+from qgis.PyQt.QtWidgets import (
+    QMessageBox,
+)
+
+
+class ResizableMessageBox(QtWidgets.QMessageBox):  # TODO: MOVE THIS TO JORD!
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setSizeGripEnabled(True)
+
+    def event(self, event):
+        if event.type() in (event.LayoutRequest, event.Resize):
+            if event.type() == event.Resize:
+                res = super().event(event)
+            else:
+                res = False
+            details = self.findChild(QtWidgets.QTextEdit)
+            if details:
+                details.setMaximumSize(16777215, 16777215)
+            self.setMaximumSize(16777215, 16777215)
+            return res
+        return super().event(event)
+
+
 def convert_venues(
+    qgis_instance_handle,
     *,
     solution_group_item: QgsLayerTreeGroup,
     existing_solution: Solution,
     progress_bar: callable,
     solution_external_id: str,
-    solution_name,
-    solution_customer_id,
-    solution_occupants_enabled,
-    settings,
-    ith_solution,
-    num_solution_elements,
+    solution_name: str,
+    solution_customer_id: str,
+    solution_occupants_enabled: bool,
+    settings: Settings,
+    ith_solution: int,
+    num_solution_elements: int,
 ) -> None:
     venue_elements = solution_group_item.children()
     num_venue_elements = len(venue_elements)
@@ -107,11 +147,30 @@ def convert_venues(
                 if name is None:
                     name = external_id
 
+                custom_props = defaultdict(dict)
+                for k, v in venue_attributes.items():
+                    if "custom_properties" in k:
+                        lang, cname = k.split(".")[-2:]
+                        if v is None:
+                            if ADD_NONE_CUSTOM_PROPERTY_VALUES:
+                                custom_props[lang][cname] = None
+                        elif isinstance(v, str) and (v.lower().strip() == NAN_VALUE):
+                            if ADD_NONE_CUSTOM_PROPERTY_VALUES:
+                                custom_props[lang][cname] = None
+                        elif isinstance(v, float) and math.isnan(v):
+                            if ADD_NONE_CUSTOM_PROPERTY_VALUES:
+                                custom_props[lang][cname] = None
+                        else:
+                            custom_props[lang][cname] = v
+
                 venue_key = solution.add_venue(
                     external_id=external_id,
                     name=name,
                     polygon=clean_shape(
                         shapely.from_wkt(venue_feature.geometry().asWkt())
+                    ),
+                    custom_properties=(
+                        custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
                     ),
                 )
 
@@ -291,7 +350,6 @@ def convert_venues(
                     solution_name,
                     venue_keys=[venue_key],
                     settings=settings,
-                    only_geodata=True,
                     include_graph=False,
                 )
                 if existing_venue_solution:
@@ -321,7 +379,117 @@ def convert_venues(
         # solution.update_building(key=None,polygon=None)
         # solution.update_venue(key=None,polygon=None)
 
-        synchronize(solution, sync_level=SyncLevel.venue, settings=settings)
+        def solving_progress_bar_callable(ith: int, total: int) -> None:
+            progress_bar.setValue(20 + (ith / total) * 80)
+            logger.info(f"{ith}/{total}")
+
+        def operation_progress_bar_callable(
+            operation: MIOperation, ith: int, total: int
+        ) -> None:
+            progress_bar.setValue(20 + (ith / total) * 80)
+            logger.info(operation)
+            logger.info(f"{ith}/{total}")
+
+            # qgis_instance_handle.iface.messageBar().popWidget()
+            # qgis_instance_handle.iface.messageBar().pushMessage(before, text, level=level, duration=duration)
+
+        def confirmation_dialog(operations: List[MIOperation]) -> bool:
+            window_title = f"Sync {solution_name} Venues"
+
+            if operations is None or len(operations) == 0:
+                QMessageBox.information(
+                    None, window_title, "No difference was found, no operations"
+                )
+                return False
+
+            def aggregate_operation_description(
+                operation: Collection[MIOperation],
+            ) -> str:
+                desc = ""
+                for o in operation:
+                    desc += f"{o.operation_type.name}: {len(o.object_keys)} {o.object_type.__name__}(s)\n"
+
+                return desc
+
+            msg_box = ResizableMessageBox(
+                # parent=qgis_instance_handle.iface
+            )
+            msg_box.setWindowFlags(
+                QtCore.Qt.Dialog  # & ~QtCore.Qt.MSWindowsFixedSizeDialogHint
+            )
+            msg_box.setIcon(QMessageBox.Information)
+            msg_box.setWindowTitle(window_title)
+            msg_box.setText(f"The {solution_name} venue(s) has been modified.")
+            msg_box.setInformativeText(
+                f"Do you want to sync following changes?\n\n{aggregate_operation_description(operations)}"
+            )
+            msg_box.setDetailedText("\n\n".join([str(o) for o in operations]))
+            msg_box.setStandardButtons(
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Help
+            )
+            msg_box.setDefaultButton(QMessageBox.No)
+            msg_box.setEscapeButton(QMessageBox.No)
+            reply = msg_box.exec()
+
+            if reply == QMessageBox.Yes:
+                return True
+
+            if reply == QMessageBox.Help:
+                difference_group_name = "Sync Differences"
+                difference_group = (
+                    QgsProject.instance()
+                    .layerTreeRoot()
+                    .findGroup(difference_group_name)
+                )
+
+                if not difference_group:  # did not find the group
+                    difference_group = (
+                        QgsProject.instance()
+                        .layerTreeRoot()
+                        .insertGroup(0, difference_group_name)
+                    )
+
+                for o in operations:
+                    differences = {}
+                    operation_counter = iter(count())
+                    if SHAPELY_DIFFERENCE_DESCRIPTION in o.context:
+                        for i in o.context.split(SHAPELY_DIFFERENCE_DESCRIPTION)[1:]:
+                            differences[
+                                next(
+                                    operation_counter
+                                )  # TODO: ALL OF THIS CAN BE IMPROVED! WITH SOME proper IDs
+                            ] = shapely.from_wkt(i.split("\n")[0].strip("\n").strip())
+
+                    try:
+                        add_shapely_layer(
+                            qgis_instance_handle,
+                            differences.values(),  # shapely.GeometryCollection(list(differences.values())),
+                            name=f"{solution_name} {o.object_type.__name__} differences",
+                            # columns=[{"contexts": differences.keys()}], # TODO: MAKE SOME USEFULL CONTEXTS
+                            group=difference_group,
+                        )
+                    except:  # TODO: HANDLE MIxed GEOM TYPES!
+                        ...
+
+            return False
+
+        synchronize(
+            solution,
+            sync_level=SyncLevel.VENUE,
+            settings=settings,
+            depth=SolutionDepth.LOCATIONS,
+            operation_progress_callback=(
+                operation_progress_bar_callable
+                if OPERATION_PROGRESS_BAR_ENABLED
+                else None
+            ),
+            solving_progress_callback=(
+                solving_progress_bar_callable if SOLVING_PROGRESS_BAR_ENABLED else None
+            ),
+            confirmation_callback=(
+                confirmation_dialog if CONFIRMATION_DIALOG_ENABLED else None
+            ),
+        )
 
         if VERBOSE:
             logger.info("Synchronised")

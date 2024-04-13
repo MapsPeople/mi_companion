@@ -12,8 +12,6 @@ from PyQt5.QtWidgets import (
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets, uic
 
-from .main import run
-
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
 
 __all__ = ["InstanceRoomsDialog"]
@@ -48,6 +46,7 @@ class InstanceRoomsDialog(QtWidgets.QDialog, FORM_CLASS):
 
         # import required modules
         import inspect
+        from .main import run
 
         self.parameter_lines = {}
         self.parameter_signature = inspect.signature(run).parameters
@@ -71,6 +70,8 @@ class InstanceRoomsDialog(QtWidgets.QDialog, FORM_CLASS):
             self.parameter_lines[k] = line_edit
 
     def on_compute_clicked(self) -> None:
+        from .main import run
+
         call_kwarg = {}
         for k, v in self.parameter_lines.items():
             value = v.text()

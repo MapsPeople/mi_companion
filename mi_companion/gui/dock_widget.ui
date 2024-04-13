@@ -177,7 +177,7 @@
                                                     </sizepolicy>
                                                 </property>
                                                 <property name="text">
-                                                    <string>Download Venue</string>
+                                                    <string>Fetch Venue</string>
                                                 </property>
                                             </widget>
                                         </item>
@@ -227,7 +227,7 @@
                                     </sizepolicy>
                                 </property>
                                 <property name="text">
-                                    <string>Upload Venues</string>
+                                    <string>Sync Venues</string>
                                 </property>
                             </widget>
                         </item>

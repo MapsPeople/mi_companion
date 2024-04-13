@@ -104,7 +104,7 @@ class MapsIndoorsCompanionPlugin:
                 self.translator.load(str(locale_path))
                 QCoreApplication.installTranslator(self.translator)
         else:
-            logger.warn(
+            logger.warning(
                 f"Unable to determine locale for {PROJECT_NAME} was {str(type(locale))} {str(locale)}"
             )
 
@@ -186,10 +186,10 @@ class MapsIndoorsCompanionPlugin:
                 self.mi_companion_dock_widget,
             )
 
-    def on_dock_widget_closed(self):  # used when Dock dialog is closed
+    def on_dock_widget_closed(self):  # used when Dock dialogue is closed
         """
         Gets called when the dock is closed
-        All the cleanup of the dock has to be done here
+        All the clean-up of the dock has to be done here
         """
         self.mi_companion_dock_widget = None
 

@@ -1,20 +1,21 @@
 #!/usr/bin/python
-import shapely
-from jord.shapely_utilities import dilate
-from mi_companion.mi_editor.conversion.from_solution import (
-    add_building_layers,
-)
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-
-# noinspection PyUnresolvedReferences
-from qgis.utils import iface
-
-from integration_system.model import Solution
 
 
 def run(*, appendix: str = "New Building (Building)") -> None:
+    import shapely
+    from jord.shapely_utilities import dilate
+    from mi_companion.mi_editor.conversion import (
+        add_building_layers,
+    )
+
+    # noinspection PyUnresolvedReferences
+    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
+    # noinspection PyUnresolvedReferences
+    from qgis.utils import iface
+
+    from integration_system.model import Solution
+
     parent = None
     selected_nodes = iface.layerTreeView().selectedNodes()
     if len(selected_nodes) == 1:
@@ -61,8 +62,13 @@ def run(*, appendix: str = "New Building (Building)") -> None:
 
 
 def select_layer_in_group(layer_name, group_name):
-    root = QgsProject.instance().layerTreeRoot()
-    group = root.findGroup(group_name)
+    # noinspection PyUnresolvedReferences
+    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
+    # noinspection PyUnresolvedReferences
+    from qgis.utils import iface
+
+    group = QgsProject.instance().layerTreeRoot().findGroup(group_name)
     if group is not None:
         for child in group.children():
             if child.name() == layer_name:
@@ -70,5 +76,11 @@ def select_layer_in_group(layer_name, group_name):
 
 
 def is_group_selected(group_name):
+    # noinspection PyUnresolvedReferences
+    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
+    # noinspection PyUnresolvedReferences
+    from qgis.utils import iface
+
     group = QgsProject.instance().layerTreeRoot().findGroup(group_name)
     return group in iface.layerTreeView().selectedNodes()

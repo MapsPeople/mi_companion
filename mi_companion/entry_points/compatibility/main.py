@@ -1,19 +1,27 @@
 #!/usr/bin/python
 import logging
 
-from integration_system.compatibilization.solution import (
-    update_solution_external_id,
-)
+
+logger = logging.getLogger(__name__)
 
 
 def run(*, solution_id: str) -> None:
-    update_solution_external_id(solution_id, "pike-place-market-qgis")
+    from integration_system.compatibilization import (
+        make_solution_compatible,
+    )
+
+    logger.info(f"Running compatiblisation on {solution_id=}")
+
+    make_solution_compatible(solution_id)
+
+    logger.info(f"Finished compatiblisation on {solution_id=}")
 
 
 if __name__ == "__main__":
-    KEMPER_QGIS = "717003114802465c9793f5ff"
-    PIKE_QGIS = "f26145495da3496e9ac6a7cf"
 
-    logging.basicConfig(level=logging.INFO)
+    def asijdauh():
+        kemper_qgis = "717003114802465c9793f5ff"
 
-    run(solution_id=PIKE_QGIS)
+        logger.basicConfig(level=logging.INFO)
+
+        run(solution_id=kemper_qgis)

@@ -12,7 +12,7 @@ from qgis.PyQt import QtWidgets
 from qgis.core import QgsProject, QgsEditorWidgetSetup
 
 import integration_system
-from integration_system.mi import get_remote_solution
+from integration_system.mi import get_remote_solution, SolutionDepth
 from integration_system.mi.config import Settings, get_settings
 from integration_system.model import Solution
 from mi_companion.configuration.constants import (
@@ -73,8 +73,11 @@ def solution_venue_to_layer_hierarchy(
         solution_external_id,
         venue_keys=[venue_external_id],
         settings=settings,
-        only_geodata=True,
+        include_occupants=False,
+        include_media=False,
+        include_route_elements=True,
         include_graph=ADD_GRAPH,
+        depth=SolutionDepth.LOCATIONS,
     )
 
     mi_group = layer_tree_root.findGroup(mi_hierarchy_group_name)
@@ -193,8 +196,11 @@ def solution_venue_to_layer_hierarchy(
 
                 graph_name = f"{venue.graph.graph_id} {GRAPH_DESCRIPTOR}"
 
-                # graph_group = venue_group.findGroup(graph_name)
                 graph_group = venue_group.insertGroup(0, graph_name)
+                if not SHOW_GRAPH_ON_LOAD:
+                    graph_group.setExpanded(True)
+                    graph_group.setExpanded(False)
+                    graph_group.setItemVisibilityChecked(False)
 
                 graph_lines_layer = add_shapely_layer(
                     qgis_instance_handle=qgis_instance_handle,
@@ -203,7 +209,7 @@ def solution_venue_to_layer_hierarchy(
                     group=graph_group,
                     columns=lines_meta_data,
                     categorise_by_attribute="highway",
-                    visible=SHOW_GRAPH_ON_LOAD,
+                    visible=True,
                 )
 
                 if highway_type_dropdown_widget:

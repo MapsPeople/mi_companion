@@ -1,4 +1,5 @@
 import logging
+import math
 import uuid
 from collections import defaultdict
 
@@ -17,6 +18,9 @@ from mi_companion.configuration.constants import (
     ALLOW_LOCATION_CREATION,
     ADD_DOORS,
     GENERATE_MISSING_EXTERNAL_IDS,
+    NAN_VALUE,
+    ADD_NONE_CUSTOM_PROPERTY_VALUES,
+    DEFAULT_CUSTOM_PROPERTIES,
 )
 from mi_companion.mi_editor.conversion.layers.type_enums import InventoryTypeEnum
 
@@ -51,10 +55,17 @@ def add_inventory_type(
         for k, v in room_attributes.items():
             if "custom_properties" in k:
                 lang, cname = k.split(".")[-2:]
-                if v != "nan":
-                    custom_props[lang][cname] = v
+                if v is None:
+                    if ADD_NONE_CUSTOM_PROPERTY_VALUES:
+                        custom_props[lang][cname] = None
+                elif isinstance(v, str) and (v.lower().strip() == NAN_VALUE):
+                    if ADD_NONE_CUSTOM_PROPERTY_VALUES:
+                        custom_props[lang][cname] = None
+                elif isinstance(v, float) and math.isnan(v):
+                    if ADD_NONE_CUSTOM_PROPERTY_VALUES:
+                        custom_props[lang][cname] = None
                 else:
-                    custom_props[lang][cname] = None
+                    custom_props[lang][cname] = v
 
         external_id = room_attributes["external_id"]
         if external_id is None:
@@ -69,32 +80,38 @@ def add_inventory_type(
             name = external_id
 
         room_key = None
-        if inventory_type == InventoryTypeEnum.room:
+        if inventory_type == InventoryTypeEnum.ROOM:
             room_key = solution.add_room(
                 external_id=external_id,
                 name=name,
                 polygon=clean_shape(shapely.from_wkt(room_feature.geometry().asWkt())),
                 floor_key=floor_key,
                 location_type_key=location_type_key,
-                custom_properties=custom_props,
+                custom_properties=(
+                    custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
+                ),
             )
-        elif inventory_type == InventoryTypeEnum.area:
+        elif inventory_type == InventoryTypeEnum.AREA:
             room_key = solution.add_area(
                 external_id=external_id,
                 name=name,
                 polygon=clean_shape(shapely.from_wkt(room_feature.geometry().asWkt())),
                 floor_key=floor_key,
                 location_type_key=location_type_key,
-                custom_properties=custom_props,
+                custom_properties=(
+                    custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
+                ),
             )
-        elif inventory_type == InventoryTypeEnum.poi:
+        elif inventory_type == InventoryTypeEnum.POI:
             room_key = solution.add_point_of_interest(
                 external_id=external_id,
                 name=name,
                 point=clean_shape(shapely.from_wkt(room_feature.geometry().asWkt())),
                 floor_key=floor_key,
                 location_type_key=location_type_key,
-                custom_properties=custom_props,
+                custom_properties=(
+                    custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
+                ),
             )
         else:
             raise Exception(f"{inventory_type=} is unknown")
@@ -113,11 +130,11 @@ def add_floor_inventory(
     for inventory_group_items in floor_group_items.children():
         if (
             isinstance(inventory_group_items, QgsLayerTreeLayer)
-            and InventoryTypeEnum.room.value in inventory_group_items.name()
+            and InventoryTypeEnum.ROOM.value in inventory_group_items.name()
             and floor_key is not None
         ):
             add_inventory_type(
-                inventory_group_items, solution, floor_key, InventoryTypeEnum.room
+                inventory_group_items, solution, floor_key, InventoryTypeEnum.ROOM
             )
 
         if (
@@ -158,18 +175,18 @@ def add_floor_inventory(
 
         if (
             isinstance(inventory_group_items, QgsLayerTreeLayer)
-            and InventoryTypeEnum.poi.value in inventory_group_items.name()
+            and InventoryTypeEnum.POI.value in inventory_group_items.name()
             and floor_key is not None
         ):
             add_inventory_type(
-                inventory_group_items, solution, floor_key, InventoryTypeEnum.poi
+                inventory_group_items, solution, floor_key, InventoryTypeEnum.POI
             )
 
         if (
             isinstance(inventory_group_items, QgsLayerTreeLayer)
-            and InventoryTypeEnum.area.value in inventory_group_items.name()
+            and InventoryTypeEnum.AREA.value in inventory_group_items.name()
             and floor_key is not None
         ):
             add_inventory_type(
-                inventory_group_items, solution, floor_key, InventoryTypeEnum.area
+                inventory_group_items, solution, floor_key, InventoryTypeEnum.AREA
             )

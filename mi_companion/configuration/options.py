@@ -53,6 +53,17 @@ class DeploymentOptionsPageFactory(QgsOptionsWidgetFactory):
         return DeploymentCompanionOptionsPage(parent)
 
 
+def reload_settings(load_attempts: int = 2) -> None:
+    for a in range(load_attempts):
+        try:
+            return  # success return
+        except Exception as e:
+            # if a > load_attempts - 1:
+            raise e
+
+            # restore_default_project_settings()
+
+
 class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -62,23 +73,15 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         self.version_label.setText(f"{VERSION}")
 
         self.settings_list_model = None
-        self.reload_settings()
+        self.type_map = None
+        reload_settings()
         self.populate_settings()
-
-    def reload_settings(self, load_attempts: int = 2) -> None:
-        for a in range(load_attempts):
-            try:
-                return  # success return
-            except Exception as e:
-                # if a > load_attempts - 1:
-                raise e
-
-                # restore_default_project_settings()
 
     def populate_settings(self):
         # from qgis.core import QgsSettings
+        # noinspection PyUnresolvedReferences
         from qgis.PyQt.QtGui import QStandardItem, QStandardItemModel
-        from PyQt5 import QtCore
+        from qgis.PyQt import QtCore
 
         # qs = QgsSettings()
         # setting_keys = qs.allKeys()

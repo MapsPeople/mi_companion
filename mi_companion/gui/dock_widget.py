@@ -5,8 +5,6 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-
-from integration_system.mi.downloading import get_venue_key_mi_venue_map
 from jord.qgis_utilities import read_plugin_setting
 from jord.qgis_utilities.helpers import signals, InjectedProgressBar
 from jord.qlive_utilities import add_shapely_layer
@@ -30,6 +28,7 @@ from qgis.core import (
 )
 from warg import reload_module
 
+from integration_system.mi.downloading import get_venue_key_mi_venue_map
 from mi_companion.mi_editor import (
     layer_hierarchy_to_solution,
     solution_venue_to_layer_hierarchy,
@@ -73,6 +72,9 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         self.iface = iface
         self.qgis_project = QgsProject.instance()
+
+        # self.setModal(True)
+        # self.setModal(False) # TODO: MAKE MAIN WINDOW RESPONSIVE?
 
         if VERBOSE:
             reload_module("jord")
@@ -122,8 +124,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             "Classify Location": InstanceRoomsDialog(),
         }
 
-        if True:
-            self.repopulate_grid_layout()
+        self.repopulate_grid_layout()
 
     def set_update_sync_settings(self):
         self.sync_module_settings.mapsindoors.username = read_plugin_setting(
@@ -164,15 +165,6 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             project_name=PROJECT_NAME,
         )
 
-        self.sync_module_settings.mapsindoors.integration_api_host = (
-            read_plugin_setting(
-                "MAPS_INDOORS_INTEGRATION_API_HOST",
-                default_value=DEFAULT_PLUGIN_SETTINGS[
-                    "MAPS_INDOORS_INTEGRATION_API_HOST"
-                ],
-                project_name=PROJECT_NAME,
-            )
-        )
         self.sync_module_settings.mapsindoors.token_endpoint = read_plugin_setting(
             "MAPS_INDOORS_TOKEN_ENDPOINT",
             default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_TOKEN_ENDPOINT"],
@@ -309,8 +301,11 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.changes_label.setText(f"Uploading venues")
             try:
                 layer_hierarchy_to_solution(
-                    settings=self.sync_module_settings, progress_bar=bar
+                    self,
+                    settings=self.sync_module_settings,
+                    progress_bar=bar,
                 )
+
             except Exception as e:
                 self.display_geometry_in_exception(e)
 

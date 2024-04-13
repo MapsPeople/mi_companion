@@ -10,8 +10,8 @@ from pandas import DataFrame, json_normalize
 from qgis.core import QgsEditorWidgetSetup
 
 from integration_system.mi.manager_model import MIVenue, MIFloor
+from integration_system.mixins import CollectionMixin
 from integration_system.model import Solution
-from integration_system.model.mixins import CollectionMixin
 from mi_companion.configuration.constants import (
     ADD_GRAPH,
 )
@@ -141,7 +141,7 @@ def add_inventory_layers(
 ) -> None:
     add_inventory_layer(
         solution.rooms,
-        InventoryTypeEnum.room.value,
+        InventoryTypeEnum.ROOM.value,
         "polygon",
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
@@ -161,7 +161,7 @@ def add_inventory_layers(
 
     add_inventory_layer(
         solution.areas,
-        InventoryTypeEnum.area.value,
+        InventoryTypeEnum.AREA.value,
         "polygon",
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
@@ -171,7 +171,7 @@ def add_inventory_layers(
 
     add_inventory_layer(
         solution.points_of_interest,
-        InventoryTypeEnum.poi.value,
+        InventoryTypeEnum.POI.value,
         "point",
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,

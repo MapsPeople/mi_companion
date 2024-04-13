@@ -60,7 +60,7 @@ def network_to_lines(
     point_zips = (*zip(*points),)
     assert len(points) == len(point_zips[0])
 
-    return (linestring_zips, point_zips)
+    return linestring_zips, point_zips
 
 
 def osm_xml_to_lines(

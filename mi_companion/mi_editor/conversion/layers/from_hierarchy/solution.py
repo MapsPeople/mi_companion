@@ -7,11 +7,12 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.mi import get_remote_solution
+from integration_system.mi import get_remote_solution, SolutionDepth
 from integration_system.mi.config import get_settings, Settings
 from integration_system.mi.downloading import get_solution_name_external_id_map
 from mi_companion.configuration.constants import (
     MI_HIERARCHY_GROUP_NAME,
+    SOLUTION_DESCRIPTOR,
 )
 from .venue import convert_venues
 
@@ -22,9 +23,17 @@ logger = logging.getLogger(__name__)
 
 
 def convert_solution_layers_to_solution(
-    *, progress_bar, ith_solution, num_solution_elements, solution_group_item, settings
+    qgis_instance_handle,
+    *,
+    progress_bar: callable,
+    ith_solution: int,
+    num_solution_elements,
+    solution_group_item,
+    settings: Settings,
 ) -> None:
     # TODO: ASSERT SOLUTION_DESCRIPTOR in group name
+    assert SOLUTION_DESCRIPTOR in str(solution_group_item.name())
+
     if progress_bar:
         progress_bar.setValue(
             int(10 + (90 * (float(ith_solution + 1) / num_solution_elements)))
@@ -75,8 +84,11 @@ def convert_solution_layers_to_solution(
                 solution_external_id,
                 venue_keys=[],
                 settings=settings,
-                only_geodata=True,
+                include_occupants=False,
+                include_media=False,
+                include_route_elements=True,
                 include_graph=True,
+                depth=SolutionDepth.LOCATIONS,
             )
         else:
             existing_solution = None
@@ -84,6 +96,7 @@ def convert_solution_layers_to_solution(
         logger.info(f"Converting {str(solution_group_item.name())}")
 
         convert_venues(
+            qgis_instance_handle,
             solution_group_item=solution_group_item,
             existing_solution=existing_solution,
             progress_bar=progress_bar,
@@ -98,11 +111,11 @@ def convert_solution_layers_to_solution(
 
 
 def layer_hierarchy_to_solution(
+    qgis_instance_handle,
     mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
     *,
     settings: Optional[Settings] = None,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
-    iface: Optional[QtWidgets.QWidget] = None,
 ) -> None:
     if settings is None:
         settings = get_settings()
@@ -116,8 +129,8 @@ def layer_hierarchy_to_solution(
 
         def show_attribute_table(layer) -> None:
             if layer is None:
-                layer = iface.activeLayer()
-            att_dialog = iface.showAttributeTable(layer)
+                layer = qgis_instance_handle.iface.activeLayer()
+            att_dialog = qgis_instance_handle.iface.showAttributeTable(layer)
             # att_dialog.findChild(QAction, "mActionSelectedFilter").trigger()
 
         # signals.reconnect_signal(vlayer.featureAdded, show_attribute_table)
@@ -141,6 +154,7 @@ def layer_hierarchy_to_solution(
     num_solution_elements = len(solution_elements)
     for ith_solution, solution_group_item in enumerate(solution_elements):
         convert_solution_layers_to_solution(
+            qgis_instance_handle,
             progress_bar=progress_bar,
             ith_solution=ith_solution,
             num_solution_elements=num_solution_elements,

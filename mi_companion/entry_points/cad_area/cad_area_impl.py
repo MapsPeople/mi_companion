@@ -1,13 +1,10 @@
 #!/usr/bin/python
 
 
-import csv
 import os
 import traceback
 from pathlib import Path
 from typing import Optional, Sequence, Dict, Mapping
-
-from warg import system_open_path
 
 
 def write_csv(csv_file_name: Path, area_list: Sequence[Mapping]) -> None:
@@ -15,6 +12,8 @@ def write_csv(csv_file_name: Path, area_list: Sequence[Mapping]) -> None:
         return
 
     fieldnames = list(area_list[0].keys())
+
+    import csv
 
     with open(csv_file_name, "w", newline="") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -89,6 +88,8 @@ def run(root_dir: Path, out_path: Path) -> None:
                 area_list.append(area_of_layer(Path(Path(subdir) / file)))
 
     write_csv(out_path, area_list)
+
+    from warg import system_open_path
 
     system_open_path(out_path)
 
