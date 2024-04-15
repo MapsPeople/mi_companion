@@ -30,6 +30,11 @@ def convert_solution_layers_to_solution(
     num_solution_elements,
     solution_group_item,
     settings: Settings,
+    solution_depth=SolutionDepth.LOCATIONS,
+    include_route_elements=False,
+    include_occupants=False,
+    include_media=False,
+    include_graph=False,
 ) -> None:
     # TODO: ASSERT SOLUTION_DESCRIPTOR in group name
     assert SOLUTION_DESCRIPTOR in str(solution_group_item.name())
@@ -84,11 +89,11 @@ def convert_solution_layers_to_solution(
                 solution_external_id,
                 venue_keys=[],
                 settings=settings,
-                include_occupants=False,
-                include_media=False,
-                include_route_elements=True,
-                include_graph=True,
-                depth=SolutionDepth.LOCATIONS,
+                depth=solution_depth,
+                include_route_elements=include_route_elements,
+                include_occupants=include_occupants,
+                include_media=include_media,
+                include_graph=include_graph,
             )
         else:
             existing_solution = None
@@ -107,6 +112,11 @@ def convert_solution_layers_to_solution(
             settings=settings,
             ith_solution=ith_solution,
             num_solution_elements=num_solution_elements,
+            solution_depth=solution_depth,
+            include_route_elements=include_route_elements,
+            include_occupants=include_occupants,
+            include_media=include_media,
+            include_graph=include_graph,
         )
 
 
@@ -116,6 +126,11 @@ def layer_hierarchy_to_solution(
     *,
     settings: Optional[Settings] = None,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
+    solution_depth=SolutionDepth.LOCATIONS,
+    include_route_elements=False,
+    include_occupants=False,
+    include_media=False,
+    include_graph=False,
 ) -> None:
     if settings is None:
         settings = get_settings()
@@ -160,4 +175,9 @@ def layer_hierarchy_to_solution(
             num_solution_elements=num_solution_elements,
             solution_group_item=solution_group_item,
             settings=settings,
+            solution_depth=solution_depth,
+            include_route_elements=include_route_elements,
+            include_occupants=include_occupants,
+            include_media=include_media,
+            include_graph=include_graph,
         )

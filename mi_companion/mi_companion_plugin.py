@@ -10,11 +10,6 @@
 """
 
 # noinspection PyUnresolvedReferences
-from .resources import *  # Initialize Qt resources from file resources.py
-
-assert qt_resource_data is not None  # from resources.py
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QCoreApplication, QLocale, QTranslator
 
 # noinspection PyUnresolvedReferences
@@ -28,6 +23,8 @@ from qgis.core import QgsSettings
 from pathlib import Path
 import logging
 
+logger = logging.getLogger(__name__)
+
 try:
     from jord.qt_utilities import DockWidgetAreaFlag
     from jord.qgis_utilities.helpers import signals
@@ -37,6 +34,11 @@ try:
     from .configuration.options import DeploymentOptionsPageFactory
     from .configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
     from .gui.dock_widget import MapsIndoorsCompanionDockWidget
+
+    # noinspection PyUnresolvedReferences
+    from .resources import *  # Initialize Qt resources from file resources.py
+
+    assert qt_resource_data is not None  # from resources.py
 
 except ModuleNotFoundError as e1:
     try:  # TODO MAYbe fetch eqips implementation, # otherwise assume warg was installed during bootstrap
@@ -54,11 +56,15 @@ except ModuleNotFoundError as e1:
         from .configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
         from .gui.dock_widget import MapsIndoorsCompanionDockWidget
 
+        # noinspection PyUnresolvedReferences
+        from .resources import *  # Initialize Qt resources from file resources.py
+
+        assert qt_resource_data is not None  # from resources.py
+
     except ModuleNotFoundError as e2:
-        logging.warning(f"{e2}")
+        logger.warning(f"{e2}")
         raise e1
 
-logger = logging.getLogger(__name__)
 
 MENU_INSTANCE_NAME = f"&{PROJECT_NAME.lower()}"
 

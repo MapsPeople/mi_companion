@@ -49,11 +49,21 @@ def solution_venue_to_layer_hierarchy(
     *,
     settings: Optional[Settings] = None,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
+    include_occupants: bool = False,
+    include_media: bool = False,
+    include_route_elements: bool = True,
+    include_graph: bool = ADD_GRAPH,
+    depth: SolutionDepth = SolutionDepth.LOCATIONS,
 ) -> Solution:
     """
     Return solution and created widget objects
 
 
+    :param include_occupants:
+    :param include_media:
+    :param include_route_elements:
+    :param include_graph:
+    :param depth:
     :param qgis_instance_handle:
     :param solution_external_id:
     :param venue_external_id:
@@ -73,11 +83,11 @@ def solution_venue_to_layer_hierarchy(
         solution_external_id,
         venue_keys=[venue_external_id],
         settings=settings,
-        include_occupants=False,
-        include_media=False,
-        include_route_elements=True,
-        include_graph=ADD_GRAPH,
-        depth=SolutionDepth.LOCATIONS,
+        include_occupants=include_occupants,
+        include_media=include_media,
+        include_route_elements=include_route_elements,
+        include_graph=include_graph,
+        depth=depth,
     )
 
     mi_group = layer_tree_root.findGroup(mi_hierarchy_group_name)

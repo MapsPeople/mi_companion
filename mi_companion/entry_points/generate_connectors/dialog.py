@@ -3,7 +3,10 @@ import typing
 from typing import Generic, Union
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt import QtWidgets, uic
+from qgis.PyQt.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QDialog
+
+# noinspection PyUnresolvedReferences
+from qgis.PyQt import uic
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
 
@@ -28,7 +31,7 @@ def is_optional(field) -> bool:
     return is_union(field) and type(None) in typing.get_args(field)
 
 
-class GenerateConnectorsDialog(QtWidgets.QDialog, FORM_CLASS):
+class GenerateConnectorsDialog(QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         from jord.qgis_utilities.helpers import signals
 
@@ -54,12 +57,12 @@ class GenerateConnectorsDialog(QtWidgets.QDialog, FORM_CLASS):
                 default = v.default
                 label_text += f" = ({default})"
 
-            line_edit = QtWidgets.QLineEdit(str(default))
+            line_edit = QLineEdit(str(default))
 
-            h_box = QtWidgets.QHBoxLayout()
-            h_box.addWidget(QtWidgets.QLabel(label_text))
+            h_box = QHBoxLayout()
+            h_box.addWidget(QLabel(label_text))
             h_box.addWidget(line_edit)
-            h_box_w = QtWidgets.QWidget(self)
+            h_box_w = QWidget(self)
             h_box_w.setLayout(h_box)
             self.parameter_layout.addWidget(h_box_w)
             self.parameter_lines[k] = line_edit

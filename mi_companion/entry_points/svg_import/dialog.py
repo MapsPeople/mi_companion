@@ -1,17 +1,18 @@
-import os
 import typing
+from pathlib import Path
 from typing import Generic, Union
 
-from PyQt5.QtWidgets import (
-    QWidget,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-)
-from qgis.PyQt import QtWidgets
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QDialog
+
+# noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
 
-FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
+# noinspection PyUnresolvedReferences
+import qgis
+
+
+FORM_CLASS, _ = uic.loadUiType(str(Path(__file__).parent / "dialog.ui"))
 
 __all__ = ["SvgImportDialog"]
 
@@ -34,7 +35,7 @@ def is_optional(field) -> bool:
     return is_union(field) and type(None) in typing.get_args(field)
 
 
-class SvgImportDialog(QtWidgets.QDialog, FORM_CLASS):
+class SvgImportDialog(QDialog, FORM_CLASS):
     def __init__(self, parent=None):  #: QWidget
         from jord.qgis_utilities.helpers import signals
 
@@ -61,38 +62,46 @@ class SvgImportDialog(QtWidgets.QDialog, FORM_CLASS):
                 label_text += f" = ({default})"
 
             h_box.addWidget(QLabel(label_text))
-            line_edit = QLineEdit(str(default))
-            h_box.addWidget(line_edit)
+            if True:
+                self.parameter_lines[k] = QLineEdit(str(default))
+            else:
+                file_browser = qgis.gui.QgsFileWidget()
+                file_browser.setFilter(".svg")
+                self.parameter_lines[k] = file_browser
+
+            h_box.addWidget(self.parameter_lines[k])
             h_box_w = QWidget(self)
             h_box_w.setLayout(h_box)
             self.parameter_layout.addWidget(h_box_w)
-            self.parameter_lines[k] = line_edit
 
     def on_compute_clicked(self) -> None:
         from .main import run
 
         call_kwarg = {}
         for k, v in self.parameter_lines.items():
-            value = v.text()
-            if value and value != "None":
-                ano = self.parameter_signature[k].annotation
-                if ano != self.parameter_signature[k].empty:
-                    if is_optional(ano) or is_union(ano):
-                        param_type = get_args(ano)
-                        if not isinstance(value, param_type):
-                            for pt in param_type:
-                                try:
-                                    parsed_t = pt(value)
-                                    value = parsed_t
-                                except Exception as e:
-                                    print(e)
-                    else:
-                        value = ano(value)
-                elif (
-                    self.parameter_signature[k].default
-                    != self.parameter_signature[k].empty
-                ):
-                    value = type(self.parameter_signature[k].default)(value)
-                call_kwarg[k] = value
+            if isinstance(v, QLineEdit):
+                value = v.text()
+                if value and value != "None":
+                    ano = self.parameter_signature[k].annotation
+                    if ano != self.parameter_signature[k].empty:
+                        if is_optional(ano) or is_union(ano):
+                            param_type = get_args(ano)
+                            if not isinstance(value, param_type):
+                                for pt in param_type:
+                                    try:
+                                        parsed_t = pt(value)
+                                        value = parsed_t
+                                    except Exception as e:
+                                        print(e)
+                        else:
+                            value = ano(value)
+                    elif (
+                        self.parameter_signature[k].default
+                        != self.parameter_signature[k].empty
+                    ):
+                        value = type(self.parameter_signature[k].default)(value)
+                    call_kwarg[k] = value
+            elif isinstance(v, qgis.gui.QgsFileWidget):
+                v.filePath  # TODO: FINISH!
 
         run(**call_kwarg)

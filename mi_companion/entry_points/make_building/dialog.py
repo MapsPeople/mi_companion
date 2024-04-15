@@ -2,13 +2,10 @@ import os
 import typing
 from typing import Generic, Union
 
-from PyQt5.QtWidgets import (
-    QWidget,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-)
-from qgis.PyQt import QtWidgets
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QDialog
+
+# noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
@@ -34,7 +31,7 @@ def is_optional(field) -> bool:
     return is_union(field) and type(None) in typing.get_args(field)
 
 
-class MakeBuildingDialog(QtWidgets.QDialog, FORM_CLASS):
+class MakeBuildingDialog(QDialog, FORM_CLASS):
     def __init__(self, parent=None):  #: QWidget
         from jord.qgis_utilities.helpers import signals
 

@@ -16,7 +16,10 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.constants import SHAPELY_DIFFERENCE_DESCRIPTION
+from integration_system.constants import (
+    SHAPELY_DIFFERENCE_DESCRIPTION,
+    DIFFERENCE_GROUP_NAME,
+)
 from integration_system.mi import MIOperation
 from integration_system.mi import synchronize
 from integration_system.mi.config import Settings
@@ -35,6 +38,8 @@ from mi_companion.configuration.constants import (
     ADD_NONE_CUSTOM_PROPERTY_VALUES,
     NAN_VALUE,
     DEFAULT_CUSTOM_PROPERTIES,
+    POST_FIT_VENUES,
+    POST_FIT_BUILDINGS,
 )
 from .location import add_floor_inventory
 
@@ -82,6 +87,11 @@ def convert_venues(
     settings: Settings,
     ith_solution: int,
     num_solution_elements: int,
+    solution_depth=SolutionDepth.LOCATIONS,
+    include_route_elements=False,
+    include_occupants=False,
+    include_media=False,
+    include_graph=False,
 ) -> None:
     venue_elements = solution_group_item.children()
     num_venue_elements = len(venue_elements)
@@ -375,18 +385,22 @@ def convert_venues(
 
         # TODO: REVISE BUILDING -> VENUE POLYGONS TO FIT FLOOR POLYGONS!
         # WITH UPDATES
+        if POST_FIT_BUILDINGS:
+            ...
+            # solution.update_building(key=None,polygon=None)
 
-        # solution.update_building(key=None,polygon=None)
-        # solution.update_venue(key=None,polygon=None)
+        if POST_FIT_VENUES:
+            ...
+            # solution.update_venue(key=None,polygon=None)
 
         def solving_progress_bar_callable(ith: int, total: int) -> None:
-            progress_bar.setValue(20 + (ith / total) * 80)
+            progress_bar.setValue(int(20 + (ith / total) * 80))
             logger.info(f"{ith}/{total}")
 
         def operation_progress_bar_callable(
             operation: MIOperation, ith: int, total: int
         ) -> None:
-            progress_bar.setValue(20 + (ith / total) * 80)
+            progress_bar.setValue(int(20 + (ith / total) * 80))
             logger.info(operation)
             logger.info(f"{ith}/{total}")
 
@@ -435,41 +449,12 @@ def convert_venues(
                 return True
 
             if reply == QMessageBox.Help:
-                difference_group_name = "Sync Differences"
-                difference_group = (
-                    QgsProject.instance()
-                    .layerTreeRoot()
-                    .findGroup(difference_group_name)
+                show_differences(
+                    qgis_instance_handle=qgis_instance_handle,
+                    solution=solution,
+                    solution_name=solution_name,
+                    operations=operations,
                 )
-
-                if not difference_group:  # did not find the group
-                    difference_group = (
-                        QgsProject.instance()
-                        .layerTreeRoot()
-                        .insertGroup(0, difference_group_name)
-                    )
-
-                for o in operations:
-                    differences = {}
-                    operation_counter = iter(count())
-                    if SHAPELY_DIFFERENCE_DESCRIPTION in o.context:
-                        for i in o.context.split(SHAPELY_DIFFERENCE_DESCRIPTION)[1:]:
-                            differences[
-                                next(
-                                    operation_counter
-                                )  # TODO: ALL OF THIS CAN BE IMPROVED! WITH SOME proper IDs
-                            ] = shapely.from_wkt(i.split("\n")[0].strip("\n").strip())
-
-                    try:
-                        add_shapely_layer(
-                            qgis_instance_handle,
-                            differences.values(),  # shapely.GeometryCollection(list(differences.values())),
-                            name=f"{solution_name} {o.object_type.__name__} differences",
-                            # columns=[{"contexts": differences.keys()}], # TODO: MAKE SOME USEFULL CONTEXTS
-                            group=difference_group,
-                        )
-                    except:  # TODO: HANDLE MIxed GEOM TYPES!
-                        ...
 
             return False
 
@@ -477,7 +462,6 @@ def convert_venues(
             solution,
             sync_level=SyncLevel.VENUE,
             settings=settings,
-            depth=SolutionDepth.LOCATIONS,
             operation_progress_callback=(
                 operation_progress_bar_callable
                 if OPERATION_PROGRESS_BAR_ENABLED
@@ -489,7 +473,89 @@ def convert_venues(
             confirmation_callback=(
                 confirmation_dialog if CONFIRMATION_DIALOG_ENABLED else None
             ),
+            depth=solution_depth,
+            include_route_elements=include_route_elements,
+            include_occupants=include_occupants,
+            include_media=include_media,
+            include_graph=include_graph,
         )
 
         if VERBOSE:
             logger.info("Synchronised")
+
+
+def show_differences(
+    *, qgis_instance_handle, solution, solution_name, operations
+) -> None:
+    mi_db_difference_group = (
+        QgsProject.instance().layerTreeRoot().findGroup(DIFFERENCE_GROUP_NAME)
+    )
+
+    if not mi_db_difference_group:  # did not find the group
+        mi_db_difference_group = (
+            QgsProject.instance().layerTreeRoot().insertGroup(0, DIFFERENCE_GROUP_NAME)
+        )
+
+    solution_difference_group = mi_db_difference_group.findGroup(solution_name)
+
+    if not solution_difference_group:  # did not find the group
+        solution_difference_group = mi_db_difference_group.insertGroup(0, solution_name)
+
+    venue = next(iter(solution.venues))
+    venue_diff_name = venue.name
+
+    venue_difference_group = solution_difference_group.findGroup(venue_diff_name)
+
+    if venue_difference_group:  # Found the group
+        for node in [
+            child
+            for child in venue_difference_group.children()
+            # if child.nodeType() == 0
+        ]:
+            venue_difference_group.removeChildNode(node)
+    else:  # did not find the group
+        venue_difference_group = solution_difference_group.insertGroup(
+            0, venue_diff_name
+        )
+
+    for o in operations:
+        differences = {}
+        operation_counter = iter(count())
+        from jord.shapely_utilities import is_multi
+
+        if SHAPELY_DIFFERENCE_DESCRIPTION in o.context:
+            for i in o.context.split(SHAPELY_DIFFERENCE_DESCRIPTION)[1:]:
+                diff_op_ith = next(
+                    operation_counter
+                )  # TODO: ALL OF THIS CAN BE IMPROVED! WITH SOME proper IDs
+
+                differences[diff_op_ith] = shapely.from_wkt(
+                    i.split("\n")[0].strip("\n").strip()
+                )  # Also one parses a single geom per operation
+                if is_multi(differences[diff_op_ith]):
+                    rep_points = []
+                    for g in differences[diff_op_ith].geoms:
+                        rep_points.append(g.representative_point())
+                    differences[f"{diff_op_ith}_translation"] = shapely.LineString(
+                        rep_points
+                    )
+
+        try:
+            import geopandas
+
+            df = geopandas.GeoDataFrame(
+                {"op_ith": differences.keys(), "geometry": differences.values()},
+                crs="EPSG:3857",
+                geometry="geometry",
+            )
+            from jord.qlive_utilities import add_dataframe_layer
+
+            add_dataframe_layer(
+                qgis_instance_handle=qgis_instance_handle,
+                dataframe=df,
+                geometry_column="geometry",
+                name=f"{o.object_type.__name__} differences",
+                group=venue_difference_group,
+            )
+        except Exception as e:  # TODO: HANDLE MIxed GEOM TYPES!
+            logger.error(e)

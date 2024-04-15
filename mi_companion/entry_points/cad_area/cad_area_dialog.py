@@ -2,10 +2,7 @@ import os
 from pathlib import Path
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt import QtWidgets
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import uic
+from qgis.PyQt import QtWidgets, uic
 
 FORM_CLASS, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "cad_area_dialog.ui")
