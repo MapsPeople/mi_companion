@@ -536,7 +536,7 @@ def show_differences(
                     rep_points = []
                     for g in differences[diff_op_ith].geoms:
                         rep_points.append(g.representative_point())
-                    differences[f"{diff_op_ith}_translation"] = shapely.LineString(
+                    differences[f"{diff_op_ith}_coherence"] = shapely.LineString(
                         rep_points
                     )
 
