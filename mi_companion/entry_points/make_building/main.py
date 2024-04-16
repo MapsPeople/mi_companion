@@ -59,28 +59,3 @@ def run(*, appendix: str = "New Building (Building)") -> None:
         # layer_tree_root=layer_tree_root,
         # location_type_drop_down_widget=location_type_down_down_widget,
     )
-
-
-def select_layer_in_group(layer_name, group_name):
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-
-    # noinspection PyUnresolvedReferences
-    from qgis.utils import iface
-
-    group = QgsProject.instance().layerTreeRoot().findGroup(group_name)
-    if group is not None:
-        for child in group.children():
-            if child.name() == layer_name:
-                iface.setActiveLayer(child.layer())
-
-
-def is_group_selected(group_name):
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-
-    # noinspection PyUnresolvedReferences
-    from qgis.utils import iface
-
-    group = QgsProject.instance().layerTreeRoot().findGroup(group_name)
-    return group in iface.layerTreeView().selectedNodes()

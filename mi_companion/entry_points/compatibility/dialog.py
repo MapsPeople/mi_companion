@@ -33,10 +33,10 @@ def is_optional(field) -> bool:
 
 class CompatibilityDialog(QDialog, FORM_CLASS):
     def __init__(self, parent=None):
-        from jord.qgis_utilities.helpers import signals
-
         super().__init__(parent)
         self.setupUi(self)
+
+        from jord.qgis_utilities.helpers import signals
 
         signals.reconnect_signal(self.compute_button.clicked, self.on_compute_clicked)
 

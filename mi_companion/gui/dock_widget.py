@@ -42,8 +42,9 @@ from ..entry_points.cad_area import CadAreaDialog
 from ..entry_points.compatibility import CompatibilityDialog
 from ..entry_points.duplicate_group import DuplicateGroupDialog
 from ..entry_points.generate_connectors import GenerateConnectorsDialog
-from ..entry_points.instance_rooms import InstanceRoomsDialog
+from ..entry_points.regen_external_ids import RegenExternalIdsDialog
 from ..entry_points.svg_import import SvgImportDialog
+from ..entry_points.make_solution import MakeSolutionDialog
 from ..utilities.paths import get_icon_path, resolve_path
 from ..utilities.string_parsing import extract_wkt_elements
 
@@ -125,10 +126,11 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # print(dir(entry_points))
 
         self.entry_point_dialogs = {
+            "Make Solution": MakeSolutionDialog(),
             "Duplicate Group": DuplicateGroupDialog(),
             "Cad Area": CadAreaDialog(),
             # "Import SVG": SvgImportDialog(), # Works but dependencies need to be fixed
-            # "Instance Rooms": InstanceRoomsDialog(),
+            "Regen External Ids": RegenExternalIdsDialog(),
             # "Diff Tool": InstanceRoomsDialog(),
             # "Compatibility": CompatibilityDialog(),
             # "Generate Connectors": GenerateConnectorsDialog(),

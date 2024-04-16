@@ -10,7 +10,7 @@ from qgis.PyQt import uic
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
 
-__all__ = ["RegenExternalIdsDialog"]
+__all__ = ["MakeSolutionDialog"]
 
 
 try:  # Python >= 3.8
@@ -31,7 +31,7 @@ def is_optional(field) -> bool:
     return is_union(field) and type(None) in typing.get_args(field)
 
 
-class RegenExternalIdsDialog(QDialog, FORM_CLASS):
+class MakeSolutionDialog(QDialog, FORM_CLASS):
     def __init__(self, parent=None):  #: QWidget
         from jord.qgis_utilities.helpers import signals
 

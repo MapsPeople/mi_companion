@@ -1,23 +1,15 @@
 #!/usr/bin/python
+import uuid
 
 
-def run(*, appendix: str = " (Copy)") -> None:
-    from jord.qgis_utilities.helpers import duplicate_groups
-
+def run(*, field_name="external_id") -> None:
     # noinspection PyUnresolvedReferences
     from qgis.utils import iface
-
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup
+    from jord.qgis_utilities.helpers import randomize_sub_tree_field
 
     selected_nodes = iface.layerTreeView().selectedNodes()
-    if len(selected_nodes) == 1:
-        group = next(iter(selected_nodes))
-        if isinstance(group, QgsLayerTreeGroup):
-            duplicate_groups(group, appendix=appendix)
-        else:
-            raise ValueError(
-                f"Selected Node is {group.name()} of type {type(group)}, not a QgsLayerTreeGroup"
-            )
+
+    if len(selected_nodes):
+        randomize_sub_tree_field(selected_nodes, field_name)
     else:
         raise ValueError(f"There are {len(selected_nodes)}, please only select one")

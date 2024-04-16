@@ -54,18 +54,20 @@ def add_inventory_type(
         custom_props = defaultdict(dict)
         for k, v in room_attributes.items():
             if "custom_properties" in k:
-                lang, cname = k.split(".")[-2:]
-                if v is None:
-                    if ADD_NONE_CUSTOM_PROPERTY_VALUES:
-                        custom_props[lang][cname] = None
-                elif isinstance(v, str) and (v.lower().strip() == NAN_VALUE):
-                    if ADD_NONE_CUSTOM_PROPERTY_VALUES:
-                        custom_props[lang][cname] = None
-                elif isinstance(v, float) and math.isnan(v):
-                    if ADD_NONE_CUSTOM_PROPERTY_VALUES:
-                        custom_props[lang][cname] = None
-                else:
-                    custom_props[lang][cname] = v
+                split_res = k.split(".")
+                if len(split_res) >= 2:
+                    lang, cname = split_res[-2:]
+                    if v is None:
+                        if ADD_NONE_CUSTOM_PROPERTY_VALUES:
+                            custom_props[lang][cname] = None
+                    elif isinstance(v, str) and (v.lower().strip() == NAN_VALUE):
+                        if ADD_NONE_CUSTOM_PROPERTY_VALUES:
+                            custom_props[lang][cname] = None
+                    elif isinstance(v, float) and math.isnan(v):
+                        if ADD_NONE_CUSTOM_PROPERTY_VALUES:
+                            custom_props[lang][cname] = None
+                    else:
+                        custom_props[lang][cname] = v
 
         external_id = room_attributes["external_id"]
         if external_id is None:

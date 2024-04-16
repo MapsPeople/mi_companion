@@ -46,7 +46,7 @@ def add_dropdown_widget(layer, field_name: str, widget) -> None:
                 )
 
 
-def add_inventory_layer(
+def add_location_layer(
     collection_: CollectionMixin,
     name: str,
     geom_type: str,
@@ -67,7 +67,7 @@ def add_inventory_layer(
                     if ("." not in c)
                     or ("location_type.name" == c)
                     or (
-                        "custom_properties" in c
+                        "custom_properties." in c
                         and (
                             ".custom_properties" not in c
                         )  # Only this objects custom_properties
@@ -139,7 +139,7 @@ def add_inventory_layers(
     available_location_type_map_widget: Optional[Any] = None,
     door_type_dropdown_widget: Optional[Any] = None
 ) -> None:
-    add_inventory_layer(
+    add_location_layer(
         solution.rooms,
         InventoryTypeEnum.ROOM.value,
         "polygon",
@@ -159,7 +159,7 @@ def add_inventory_layers(
             dropdown_widget=door_type_dropdown_widget,
         )
 
-    add_inventory_layer(
+    add_location_layer(
         solution.areas,
         InventoryTypeEnum.AREA.value,
         "polygon",
@@ -169,7 +169,7 @@ def add_inventory_layers(
         dropdown_widget=available_location_type_map_widget,
     )
 
-    add_inventory_layer(
+    add_location_layer(
         solution.points_of_interest,
         InventoryTypeEnum.POI.value,
         "point",

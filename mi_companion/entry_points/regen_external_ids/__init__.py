@@ -1,7 +1,7 @@
-from .dialog import DuplicateGroupDialog
+from .dialog import RegenExternalIdsDialog
 
 
-__all__ = ["ENTRY_POINT_NAME", "ENTRY_POINT_DIALOG", "DuplicateGroupDialog"]
+__all__ = ["ENTRY_POINT_NAME", "ENTRY_POINT_DIALOG", "RegenExternalIdsDialog"]
 
-ENTRY_POINT_NAME = "Duplicate Group"
-ENTRY_POINT_DIALOG = DuplicateGroupDialog
+ENTRY_POINT_NAME = "Regen External Ids"
+ENTRY_POINT_DIALOG = RegenExternalIdsDialog
