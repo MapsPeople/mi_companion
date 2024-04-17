@@ -4,10 +4,10 @@
 import os
 import traceback
 from pathlib import Path
-from typing import Optional, Sequence, Dict, Mapping
+from typing import Optional, Dict, Mapping, Collection
 
 
-def write_csv(csv_file_name: Path, area_list: Sequence[Mapping]) -> None:
+def write_csv(csv_file_name: Path, area_list: Collection[Mapping]) -> None:
     if len(area_list) == 0:
         return
 

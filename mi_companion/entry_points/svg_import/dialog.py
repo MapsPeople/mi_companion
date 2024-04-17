@@ -3,14 +3,13 @@ from pathlib import Path
 from typing import Generic, Union
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QDialog
+import qgis
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
 
 # noinspection PyUnresolvedReferences
-import qgis
-
+from qgis.PyQt.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QDialog
 
 FORM_CLASS, _ = uic.loadUiType(str(Path(__file__).parent / "dialog.ui"))
 

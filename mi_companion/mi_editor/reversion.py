@@ -9,7 +9,7 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.mi import synchronize
 from integration_system.mi.config import get_settings, Settings
-from integration_system.mi.strategy import SyncLevel
+from integration_system.mi.configuration import SyncLevel
 from integration_system.model import Solution
 from mi_companion.configuration.constants import MI_HIERARCHY_GROUP_NAME, HALF_SIZE
 

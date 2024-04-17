@@ -4,10 +4,9 @@ import math
 import uuid
 from collections import defaultdict
 from itertools import count
-from typing import Optional, List, Collection
+from typing import List, Collection
 
 import shapely
-from jord.qlive_utilities import add_shapely_layer
 from jord.shapely_utilities.base import clean_shape
 
 # noinspection PyUnresolvedReferences
@@ -23,7 +22,7 @@ from integration_system.constants import (
 from integration_system.mi import MIOperation
 from integration_system.mi import synchronize
 from integration_system.mi.config import Settings
-from integration_system.mi.strategy import SyncLevel, SolutionDepth
+from integration_system.mi.configuration import SyncLevel, SolutionDepth
 from integration_system.model import Solution
 from mi_companion.configuration.constants import (
     VERBOSE,

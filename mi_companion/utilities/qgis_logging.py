@@ -8,7 +8,6 @@ import google.cloud.logging
 import yaml
 from qgis.core import Qgis, QgsMessageLog
 
-
 __doc__ = "Logging"
 
 __all__ = ["setup_logging"]

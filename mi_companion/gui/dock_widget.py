@@ -5,7 +5,6 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-
 from jord.qgis_utilities import read_plugin_setting
 from jord.qgis_utilities.helpers import signals, InjectedProgressBar
 from jord.qlive_utilities import add_shapely_layer
@@ -39,12 +38,9 @@ from mi_companion.mi_editor import (
 from ..configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
 from ..constants import PROJECT_NAME, VERSION
 from ..entry_points.cad_area import CadAreaDialog
-from ..entry_points.compatibility import CompatibilityDialog
 from ..entry_points.duplicate_group import DuplicateGroupDialog
-from ..entry_points.generate_connectors import GenerateConnectorsDialog
-from ..entry_points.regen_external_ids import RegenExternalIdsDialog
-from ..entry_points.svg_import import SvgImportDialog
 from ..entry_points.make_solution import MakeSolutionDialog
+from ..entry_points.regen_external_ids import RegenExternalIdsDialog
 from ..utilities.paths import get_icon_path, resolve_path
 from ..utilities.string_parsing import extract_wkt_elements
 
