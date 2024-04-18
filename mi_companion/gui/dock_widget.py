@@ -193,7 +193,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             project_name=PROJECT_NAME,
         )
 
-    def refresh_solution_combo_box(self) -> None:
+    def refresh_solution_combo_box(self, reload_venues: bool = True) -> None:
         from integration_system.mi.downloading import get_solution_name_external_id_map
 
         with InjectedProgressBar(
@@ -201,9 +201,13 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         ) as bar:  # TODO: add a text label or format progress bar with a title
             bar.setValue(10)
             self.set_update_sync_settings()
+            current_solution_name = str(self.solution_combo_box.currentText()).strip()
+            logger.debug(f"{current_solution_name=}")
 
             bar.setValue(30)
             self.solution_combo_box.clear()
+            if current_solution_name != "":
+                self.solution_combo_box.setCurrentText(current_solution_name)
 
             bar.setValue(50)
             self.external_id_map = get_solution_name_external_id_map(
@@ -213,9 +217,12 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             bar.setValue(90)
             self.solution_combo_box.addItems(sorted(self.external_id_map.keys()))
 
+            if current_solution_name != "":
+                self.solution_combo_box.setCurrentText(current_solution_name)
+
             bar.setValue(100)
 
-            if True:  # auto load venue dropdown
+            if reload_venues:  # auto load venue dropdown
                 self.refresh_venue_button_clicked()
 
     def refresh_venue_button_clicked(self) -> None:
@@ -227,10 +234,11 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if False:
             self.sync_button.setEnabled(True)
             self.upload_button.setEnabled(True)
+
         self.set_update_sync_settings()
 
         if self.external_id_map is None:
-            self.refresh_solution_combo_box()
+            self.refresh_solution_combo_box(reload_venues=False)
 
         with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
             current_selected_solution_name = str(self.solution_combo_box.currentText())

@@ -379,14 +379,14 @@ def convert_venues(
 
         def solving_progress_bar_callable(ith: int, total: int) -> None:
             progress_bar.setValue(int(20 + (ith / total) * 80))
-            logger.info(f"{ith}/{total}")
+            logger.debug(f"Solving: {ith}/{total}")
 
         def operation_progress_bar_callable(
             operation: MIOperation, ith: int, total: int
         ) -> None:
             progress_bar.setValue(int(20 + (ith / total) * 80))
-            logger.info(operation)
-            logger.info(f"{ith}/{total}")
+            logger.debug(operation)
+            logger.debug(f"Synchronising: {ith}/{total}")
 
             # qgis_instance_handle.iface.messageBar().popWidget()
             # qgis_instance_handle.iface.messageBar().pushMessage(before, text, level=level, duration=duration)

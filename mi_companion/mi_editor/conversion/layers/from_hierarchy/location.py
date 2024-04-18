@@ -150,7 +150,7 @@ def add_floor_inventory(
                 if VERBOSE:
                     logger.info("added door", door_key)
         else:
-            logger.error(
+            logger.debug(
                 f"Skipped adding doors because of "
                 f"{isinstance(inventory_group_items, QgsLayerTreeLayer)=} "
                 f'{"doors" in inventory_group_items.name()=} '
