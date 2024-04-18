@@ -221,11 +221,15 @@ def add_solution_layers(
                     "external_id": venue.external_id,
                     "name": venue.name,
                     "last_verified": venue.last_verified,
-                    **{
-                        f"custom_properties.{lang}.{prop}": str(v)
-                        for lang, props_map in venue.custom_properties.items()
-                        for prop, v in props_map.items()
-                    },
+                    **(
+                        {
+                            f"custom_properties.{lang}.{prop}": str(v)
+                            for lang, props_map in venue.custom_properties.items()
+                            for prop, v in props_map.items()
+                        }
+                        if venue.custom_properties
+                        else {}
+                    ),
                 }
             ],
             group=venue_group,
