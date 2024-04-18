@@ -1,3 +1,4 @@
+import logging
 import typing
 from pathlib import Path
 from typing import Generic, Union
@@ -24,6 +25,8 @@ except ImportError:  # Compatibility
     get_origin = lambda t: getattr(t, "__origin__", None)
 # assert get_origin(Union[int, str]) is Union
 # assert get_args(Union[int, str]) == (int, str)
+
+logger = logging.getLogger(__name__)
 
 
 def is_union(field) -> bool:
@@ -61,17 +64,17 @@ class SvgImportDialog(QDialog, FORM_CLASS):
                 label_text += f" = ({default})"
 
             h_box.addWidget(QLabel(label_text))
-            if True:
-                self.parameter_lines[k] = QLineEdit(str(default))
-            else:
+            if isinstance(v.annotation, type(Path)):
                 file_browser = qgis.gui.QgsFileWidget()
-                file_browser.setFilter(".svg")
+                file_browser.setFilter("*.svg")
                 self.parameter_lines[k] = file_browser
+            else:
+                self.parameter_lines[k] = QLineEdit(str(default))
 
             h_box.addWidget(self.parameter_lines[k])
             h_box_w = QWidget(self)
             h_box_w.setLayout(h_box)
-            self.parameter_layout.addWidget(h_box_w)
+            self.parameter_layout.insertWidget(0, h_box_w)
 
     def on_compute_clicked(self) -> None:
         from .main import run
@@ -101,6 +104,18 @@ class SvgImportDialog(QDialog, FORM_CLASS):
                         value = type(self.parameter_signature[k].default)(value)
                     call_kwarg[k] = value
             elif isinstance(v, qgis.gui.QgsFileWidget):
-                v.filePath  # TODO: FINISH!
+                file_path_str = v.splitFilePaths(v.filePath())[
+                    0
+                ]  # ONLY one supported for now
+                if file_path_str:
+                    file_path = Path(file_path_str)
+                    if file_path.exists() and file_path.is_file():
+                        call_kwarg[k] = file_path
+                    else:
+                        logger.error(f"{file_path=}")
+                else:
+                    logger.error(f"{file_path_str=}")
+            else:
+                logger.error(f"{v=}")
 
         run(**call_kwarg)

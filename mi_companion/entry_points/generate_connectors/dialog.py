@@ -64,7 +64,7 @@ class GenerateConnectorsDialog(QDialog, FORM_CLASS):
             h_box.addWidget(line_edit)
             h_box_w = QWidget(self)
             h_box_w.setLayout(h_box)
-            self.parameter_layout.addWidget(h_box_w)
+            self.parameter_layout.insertWidget(0, h_box_w)
             self.parameter_lines[k] = line_edit
 
     def on_compute_clicked(self) -> None:
