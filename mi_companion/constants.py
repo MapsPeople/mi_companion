@@ -42,6 +42,7 @@ except:
 __version__ = VERSION
 __author__ = PLUGIN_AUTHOR
 
+
 DEFAULT_CRS = "EPSG:3857"  # "EPSG:4326"
 
 MANUAL_REQUIREMENTS = [

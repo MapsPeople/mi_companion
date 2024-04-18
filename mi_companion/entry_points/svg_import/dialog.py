@@ -1,19 +1,18 @@
-import os
+import logging
 import typing
+from pathlib import Path
 from typing import Generic, Union
 
-from PyQt5.QtWidgets import (
-    QWidget,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-)
-from qgis.PyQt import QtWidgets
+# noinspection PyUnresolvedReferences
+import qgis
+
+# noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
 
-from .main import run
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QDialog
 
-FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
+FORM_CLASS, _ = uic.loadUiType(str(Path(__file__).parent / "dialog.ui"))
 
 __all__ = ["SvgImportDialog"]
 
@@ -27,6 +26,8 @@ except ImportError:  # Compatibility
 # assert get_origin(Union[int, str]) is Union
 # assert get_args(Union[int, str]) == (int, str)
 
+logger = logging.getLogger(__name__)
+
 
 def is_union(field) -> bool:
     return typing.get_origin(field) is Union
@@ -36,7 +37,7 @@ def is_optional(field) -> bool:
     return is_union(field) and type(None) in typing.get_args(field)
 
 
-class SvgImportDialog(QtWidgets.QDialog, FORM_CLASS):
+class SvgImportDialog(QDialog, FORM_CLASS):
     def __init__(self, parent=None):  #: QWidget
         from jord.qgis_utilities.helpers import signals
 
@@ -47,6 +48,7 @@ class SvgImportDialog(QtWidgets.QDialog, FORM_CLASS):
 
         # import required modules
         import inspect
+        from .main import run
 
         self.parameter_lines = {}
         self.parameter_signature = inspect.signature(run).parameters
@@ -62,36 +64,58 @@ class SvgImportDialog(QtWidgets.QDialog, FORM_CLASS):
                 label_text += f" = ({default})"
 
             h_box.addWidget(QLabel(label_text))
-            line_edit = QLineEdit(str(default))
-            h_box.addWidget(line_edit)
+            if isinstance(v.annotation, type(Path)):
+                file_browser = qgis.gui.QgsFileWidget()
+                file_browser.setFilter("*.svg")
+                self.parameter_lines[k] = file_browser
+            else:
+                self.parameter_lines[k] = QLineEdit(str(default))
+
+            h_box.addWidget(self.parameter_lines[k])
             h_box_w = QWidget(self)
             h_box_w.setLayout(h_box)
-            self.parameter_layout.addWidget(h_box_w)
-            self.parameter_lines[k] = line_edit
+            self.parameter_layout.insertWidget(0, h_box_w)
 
     def on_compute_clicked(self) -> None:
+        from .main import run
+
         call_kwarg = {}
         for k, v in self.parameter_lines.items():
-            value = v.text()
-            if value and value != "None":
-                ano = self.parameter_signature[k].annotation
-                if ano != self.parameter_signature[k].empty:
-                    if is_optional(ano) or is_union(ano):
-                        param_type = get_args(ano)
-                        if not isinstance(value, param_type):
-                            for pt in param_type:
-                                try:
-                                    parsed_t = pt(value)
-                                    value = parsed_t
-                                except Exception as e:
-                                    print(e)
+            if isinstance(v, QLineEdit):
+                value = v.text()
+                if value and value != "None":
+                    ano = self.parameter_signature[k].annotation
+                    if ano != self.parameter_signature[k].empty:
+                        if is_optional(ano) or is_union(ano):
+                            param_type = get_args(ano)
+                            if not isinstance(value, param_type):
+                                for pt in param_type:
+                                    try:
+                                        parsed_t = pt(value)
+                                        value = parsed_t
+                                    except Exception as e:
+                                        print(e)
+                        else:
+                            value = ano(value)
+                    elif (
+                        self.parameter_signature[k].default
+                        != self.parameter_signature[k].empty
+                    ):
+                        value = type(self.parameter_signature[k].default)(value)
+                    call_kwarg[k] = value
+            elif isinstance(v, qgis.gui.QgsFileWidget):
+                file_path_str = v.splitFilePaths(v.filePath())[
+                    0
+                ]  # ONLY one supported for now
+                if file_path_str:
+                    file_path = Path(file_path_str)
+                    if file_path.exists() and file_path.is_file():
+                        call_kwarg[k] = file_path
                     else:
-                        value = ano(value)
-                elif (
-                    self.parameter_signature[k].default
-                    != self.parameter_signature[k].empty
-                ):
-                    value = type(self.parameter_signature[k].default)(value)
-                call_kwarg[k] = value
+                        logger.error(f"{file_path=}")
+                else:
+                    logger.error(f"{file_path_str=}")
+            else:
+                logger.error(f"{v=}")
 
         run(**call_kwarg)

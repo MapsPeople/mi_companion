@@ -9,7 +9,7 @@ package:
       package ${CI_COMMIT_REF_NAME}
       --plugin-repo-url https://custom.server.url/
   artifacts:
-    expose_as: 'QGIS package'
+    expose_as: "QGIS package"
     paths:
       - ${PLUGIN_NAME}.${CI_COMMIT_REF_NAME}.zip
       - plugins.xml
