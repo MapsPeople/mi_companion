@@ -1,10 +1,11 @@
+import copy
 import dataclasses
 import logging
 from typing import Optional, Any, Iterable, List
 
 import geopandas
 from jord.qlive_utilities import add_dataframe_layer
-from pandas import DataFrame, json_normalize
+from pandas import DataFrame, json_normalize, Series
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
@@ -14,9 +15,12 @@ from integration_system.mixins import CollectionMixin
 from integration_system.model import Solution
 from mi_companion.configuration.constants import (
     ADD_GRAPH,
+    REAL_NONE_JSON_VALUE,
 )
 
 __all__ = ["add_inventory_layers"]
+
+from .custom_props import process_custom_props_df
 
 from mi_companion.mi_editor.conversion.layers.type_enums import InventoryTypeEnum
 
@@ -25,7 +29,17 @@ logger = logging.getLogger(__name__)
 
 def to_df(coll_mix: CollectionMixin) -> DataFrame:
     # noinspection PyTypeChecker
-    return json_normalize(dataclasses.asdict(obj) for obj in coll_mix)
+    cs = []
+    for c in coll_mix:
+        if hasattr(c, "custom_properties"):
+            cps = getattr(c, "custom_properties")
+            for l, lv in copy.deepcopy(cps).items():
+                for cp, cpv in lv.items():
+                    if cpv is None:
+                        cps[l][cp] = REAL_NONE_JSON_VALUE
+            setattr(c, "custom_properties", cps)
+        cs.append(dataclasses.asdict(c))
+    return json_normalize(cs)
 
 
 def add_dropdown_widget(layer, field_name: str, widget) -> None:
@@ -76,6 +90,8 @@ def add_location_layer(
             ],
             geometry=geom_type,
         )
+
+        process_custom_props_df(rooms_df)
 
         added_layers = add_dataframe_layer(
             qgis_instance_handle=qgis_instance_handle,

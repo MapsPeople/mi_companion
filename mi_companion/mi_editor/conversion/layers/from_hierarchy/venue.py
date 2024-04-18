@@ -34,12 +34,11 @@ from mi_companion.configuration.constants import (
     CONFIRMATION_DIALOG_ENABLED,
     OPERATION_PROGRESS_BAR_ENABLED,
     SOLVING_PROGRESS_BAR_ENABLED,
-    ADD_NONE_CUSTOM_PROPERTY_VALUES,
-    NAN_VALUE,
     DEFAULT_CUSTOM_PROPERTIES,
     POST_FIT_VENUES,
     POST_FIT_BUILDINGS,
 )
+from .custom_props import extract_custom_props
 from .location import add_floor_inventory
 
 __all__ = ["convert_venues"]
@@ -156,25 +155,7 @@ def convert_venues(
                 if name is None:
                     name = external_id
 
-                custom_props = defaultdict(dict)
-                for k, v in venue_attributes.items():
-                    if "custom_properties" in k:
-                        split_res = k.split(".")
-                        if len(split_res) >= 2:
-                            lang, cname = split_res[-2:]
-                            if v is None:
-                                if ADD_NONE_CUSTOM_PROPERTY_VALUES:
-                                    custom_props[lang][cname] = None
-                            elif isinstance(v, str) and (
-                                v.lower().strip() == NAN_VALUE
-                            ):
-                                if ADD_NONE_CUSTOM_PROPERTY_VALUES:
-                                    custom_props[lang][cname] = None
-                            elif isinstance(v, float) and math.isnan(v):
-                                if ADD_NONE_CUSTOM_PROPERTY_VALUES:
-                                    custom_props[lang][cname] = None
-                            else:
-                                custom_props[lang][cname] = v
+                custom_props = extract_custom_props(venue_attributes)
 
                 venue_key = solution.add_venue(
                     external_id=external_id,

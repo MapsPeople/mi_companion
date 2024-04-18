@@ -215,6 +215,9 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
             bar.setValue(100)
 
+            if True:  # auto load venue dropdown
+                self.refresh_venue_button_clicked()
+
     def refresh_venue_button_clicked(self) -> None:
         from integration_system.mi import (
             get_solution_id,
@@ -273,6 +276,10 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
     def download_button_clicked(self) -> None:
         venue_name = str(self.venue_combo_box.currentText())
+        if venue_name.strip() == "":
+            logger.error(f"No venue was selected!")
+            return
+
         solution_depth = SolutionDepth.LOCATIONS
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())

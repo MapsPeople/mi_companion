@@ -2,6 +2,7 @@ import logging
 from typing import Any, Optional, Iterable
 from xml.etree.ElementTree import ParseError
 
+import pandas
 import shapely
 from jord.qlive_utilities import add_shapely_layer
 
@@ -215,7 +216,18 @@ def add_solution_layers(
             qgis_instance_handle=qgis_instance_handle,
             geoms=[venue.polygon],
             name=VENUE_POLYGON_DESCRIPTOR,
-            columns=[{"external_id": venue.external_id, "name": venue.name}],
+            columns=[
+                {
+                    "external_id": venue.external_id,
+                    "name": venue.name,
+                    "last_verified": venue.last_verified,
+                    **{
+                        f"custom_properties.{lang}.{prop}": str(v)
+                        for lang, props_map in venue.custom_properties.items()
+                        for prop, v in props_map.items()
+                    },
+                }
+            ],
             group=venue_group,
             visible=False,
         )

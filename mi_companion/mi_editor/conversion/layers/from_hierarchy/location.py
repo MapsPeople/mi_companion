@@ -1,7 +1,5 @@
 import logging
-import math
 import uuid
-from collections import defaultdict
 
 import shapely
 from jord.shapely_utilities.base import clean_shape
@@ -18,9 +16,10 @@ from mi_companion.configuration.constants import (
     ALLOW_LOCATION_CREATION,
     ADD_DOORS,
     GENERATE_MISSING_EXTERNAL_IDS,
-    NAN_VALUE,
-    ADD_NONE_CUSTOM_PROPERTY_VALUES,
     DEFAULT_CUSTOM_PROPERTIES,
+)
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (
+    extract_custom_props,
 )
 from mi_companion.mi_editor.conversion.layers.type_enums import InventoryTypeEnum
 
@@ -51,23 +50,7 @@ def add_inventory_type(
             else:
                 raise ValueError(f"{location_type_key} is not a valid location type")
 
-        custom_props = defaultdict(dict)
-        for k, v in room_attributes.items():
-            if "custom_properties" in k:
-                split_res = k.split(".")
-                if len(split_res) >= 2:
-                    lang, cname = split_res[-2:]
-                    if v is None:
-                        if ADD_NONE_CUSTOM_PROPERTY_VALUES:
-                            custom_props[lang][cname] = None
-                    elif isinstance(v, str) and (v.lower().strip() == NAN_VALUE):
-                        if ADD_NONE_CUSTOM_PROPERTY_VALUES:
-                            custom_props[lang][cname] = None
-                    elif isinstance(v, float) and math.isnan(v):
-                        if ADD_NONE_CUSTOM_PROPERTY_VALUES:
-                            custom_props[lang][cname] = None
-                    else:
-                        custom_props[lang][cname] = v
+        custom_props = extract_custom_props(room_attributes)
 
         external_id = room_attributes["external_id"]
         if external_id is None:
