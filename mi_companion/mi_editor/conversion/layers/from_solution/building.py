@@ -10,7 +10,7 @@ from mi_companion.configuration.constants import (
     BUILDING_POLYGON_DESCRIPTOR,
     ONLY_SHOW_FIRST_FLOOR,
 )
-from .inventory import add_inventory_layers
+from .location import add_inventory_layers
 
 __all__ = ["add_building_layers"]
 
@@ -69,7 +69,7 @@ def add_building_layers(
                         if (
                             building_group.name in building_bottom_floor_tracker
                         ):  # TODO: IMPLEMENT PROPER COMPARISON
-                            layer_tree_root.findGroup(
+                            building_group.findGroup(
                                 floor_name
                             ).setItemVisibilityChecked(False)
                         else:

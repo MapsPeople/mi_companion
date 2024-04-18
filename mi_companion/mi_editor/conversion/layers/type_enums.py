@@ -5,6 +5,6 @@ __all__ = ["InventoryTypeEnum"]
 
 
 class InventoryTypeEnum(Enum):
-    room = "rooms"
-    poi = "pois"
-    area = "areas"
+    ROOM = "rooms"
+    POI = "pois"
+    AREA = "areas"

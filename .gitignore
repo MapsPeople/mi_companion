@@ -307,3 +307,5 @@ cython_debug/
 .idea/
 
 *.zip
+
+.run/

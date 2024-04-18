@@ -11,7 +11,7 @@
             </rect>
         </property>
         <property name="windowTitle">
-            <string>Cad Area Calculator</string>
+            <string>Regen External Ids</string>
         </property>
         <layout class="QVBoxLayout" name="parameter_layout">
             <item>
@@ -27,13 +27,6 @@
             </item>
         </layout>
     </widget>
-    <customwidgets>
-        <customwidget>
-            <class>QgsFileWidget</class>
-            <extends>QWidget</extends>
-            <header>qgsfilewidget.h</header>
-        </customwidget>
-    </customwidgets>
     <resources/>
     <connections/>
 </ui>

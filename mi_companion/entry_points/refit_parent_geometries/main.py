@@ -1,10 +1,7 @@
 #!/usr/bin/python
-from typing import Optional
 
 
-def run(
-    *, appendix: str = " (Copy)", randomize_field: Optional[str] = "external_id"
-) -> None:
+def run(*, appendix: str = " (Copy)") -> None:
     from jord.qgis_utilities.helpers import duplicate_groups
 
     # noinspection PyUnresolvedReferences
@@ -22,9 +19,5 @@ def run(
             raise ValueError(
                 f"Selected Node is {group.name()} of type {type(group)}, not a QgsLayerTreeGroup"
             )
-        if randomize_field:
-            from jord.qgis_utilities.helpers import randomize_sub_tree_field
-
-            randomize_sub_tree_field(group.children(), randomize_field)
     else:
         raise ValueError(f"There are {len(selected_nodes)}, please only select one")

@@ -7,8 +7,9 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.mi import SyncLevel, synchronize
+from integration_system.mi import synchronize
 from integration_system.mi.config import get_settings, Settings
+from integration_system.mi.configuration import SyncLevel
 from integration_system.model import Solution
 from mi_companion.configuration.constants import MI_HIERARCHY_GROUP_NAME, HALF_SIZE
 
@@ -126,6 +127,6 @@ def revert_venues(
                             original_solution_venues[solution_external_id][
                                 venue_attributes["external_id"]
                             ],
-                            sync_level=SyncLevel.venue,
+                            sync_level=SyncLevel.VENUE,
                             settings=settings,
                         )

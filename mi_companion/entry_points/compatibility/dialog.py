@@ -2,17 +2,11 @@ import os
 import typing
 from typing import Generic, Union
 
-from PyQt5.QtWidgets import (
-    QWidget,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-)
+# noinspection PyUnresolvedReferences
+from qgis.PyQt import uic
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt import QtWidgets, uic
-
-from .main import run
+from qgis.PyQt.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QDialog
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
 
@@ -37,17 +31,18 @@ def is_optional(field) -> bool:
     return is_union(field) and type(None) in typing.get_args(field)
 
 
-class CompatibilityDialog(QtWidgets.QDialog, FORM_CLASS):
+class CompatibilityDialog(QDialog, FORM_CLASS):
     def __init__(self, parent=None):
-        from jord.qgis_utilities.helpers import signals
-
         super().__init__(parent)
         self.setupUi(self)
+
+        from jord.qgis_utilities.helpers import signals
 
         signals.reconnect_signal(self.compute_button.clicked, self.on_compute_clicked)
 
         # import required modules
         import inspect
+        from .main import run
 
         self.parameter_lines = {}
         self.parameter_signature = inspect.signature(run).parameters
@@ -69,10 +64,12 @@ class CompatibilityDialog(QtWidgets.QDialog, FORM_CLASS):
             h_box.addWidget(line_edit)
             h_box_w = QWidget(self)
             h_box_w.setLayout(h_box)
-            self.parameter_layout.addWidget(h_box_w)
+            self.parameter_layout.insertWidget(0, h_box_w)
             self.parameter_lines[k] = line_edit
 
     def on_compute_clicked(self) -> None:
+        from .main import run
+
         call_kwarg = {}
         for k, v in self.parameter_lines.items():
             value = v.text()

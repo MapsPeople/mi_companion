@@ -1,22 +1,26 @@
+import copy
 import dataclasses
 import logging
 from typing import Optional, Any, Iterable, List
 
 import geopandas
 from jord.qlive_utilities import add_dataframe_layer
-from pandas import DataFrame, json_normalize
+from pandas import DataFrame, json_normalize, Series
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
 
 from integration_system.mi.manager_model import MIVenue, MIFloor
+from integration_system.mixins import CollectionMixin
 from integration_system.model import Solution
-from integration_system.model.mixins import CollectionMixin
 from mi_companion.configuration.constants import (
     ADD_GRAPH,
+    REAL_NONE_JSON_VALUE,
 )
 
 __all__ = ["add_inventory_layers"]
+
+from .custom_props import process_custom_props_df
 
 from mi_companion.mi_editor.conversion.layers.type_enums import InventoryTypeEnum
 
@@ -25,7 +29,18 @@ logger = logging.getLogger(__name__)
 
 def to_df(coll_mix: CollectionMixin) -> DataFrame:
     # noinspection PyTypeChecker
-    return json_normalize(dataclasses.asdict(obj) for obj in coll_mix)
+    cs = []
+    for c in coll_mix:
+        if hasattr(c, "custom_properties"):
+            cps = getattr(c, "custom_properties")
+            if cps is not None:
+                for language, translations in copy.deepcopy(cps).items():
+                    for cp, cpv in translations.items():
+                        if cpv is None:
+                            cps[language][cp] = REAL_NONE_JSON_VALUE
+                setattr(c, "custom_properties", cps)
+        cs.append(dataclasses.asdict(c))
+    return json_normalize(cs)
 
 
 def add_dropdown_widget(layer, field_name: str, widget) -> None:
@@ -46,7 +61,7 @@ def add_dropdown_widget(layer, field_name: str, widget) -> None:
                 )
 
 
-def add_inventory_layer(
+def add_location_layer(
     collection_: CollectionMixin,
     name: str,
     geom_type: str,
@@ -67,7 +82,7 @@ def add_inventory_layer(
                     if ("." not in c)
                     or ("location_type.name" == c)
                     or (
-                        "custom_properties" in c
+                        "custom_properties." in c
                         and (
                             ".custom_properties" not in c
                         )  # Only this objects custom_properties
@@ -76,6 +91,8 @@ def add_inventory_layer(
             ],
             geometry=geom_type,
         )
+
+        process_custom_props_df(rooms_df)
 
         added_layers = add_dataframe_layer(
             qgis_instance_handle=qgis_instance_handle,
@@ -139,9 +156,9 @@ def add_inventory_layers(
     available_location_type_map_widget: Optional[Any] = None,
     door_type_dropdown_widget: Optional[Any] = None
 ) -> None:
-    add_inventory_layer(
+    add_location_layer(
         solution.rooms,
-        InventoryTypeEnum.room.value,
+        InventoryTypeEnum.ROOM.value,
         "polygon",
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
@@ -159,9 +176,9 @@ def add_inventory_layers(
             dropdown_widget=door_type_dropdown_widget,
         )
 
-    add_inventory_layer(
+    add_location_layer(
         solution.areas,
-        InventoryTypeEnum.area.value,
+        InventoryTypeEnum.AREA.value,
         "polygon",
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
@@ -169,9 +186,9 @@ def add_inventory_layers(
         dropdown_widget=available_location_type_map_widget,
     )
 
-    add_inventory_layer(
+    add_location_layer(
         solution.points_of_interest,
-        InventoryTypeEnum.poi.value,
+        InventoryTypeEnum.POI.value,
         "point",
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,

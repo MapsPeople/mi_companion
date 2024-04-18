@@ -5,8 +5,6 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-
-from integration_system.mi.downloading import get_venue_key_mi_venue_map
 from jord.qgis_utilities import read_plugin_setting
 from jord.qgis_utilities.helpers import signals, InjectedProgressBar
 from jord.qlive_utilities import add_shapely_layer
@@ -30,6 +28,8 @@ from qgis.core import (
 )
 from warg import reload_module
 
+from integration_system.mi import SolutionDepth
+from integration_system.mi.downloading import get_venue_key_mi_venue_map
 from mi_companion.mi_editor import (
     layer_hierarchy_to_solution,
     solution_venue_to_layer_hierarchy,
@@ -38,10 +38,9 @@ from mi_companion.mi_editor import (
 from ..configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
 from ..constants import PROJECT_NAME, VERSION
 from ..entry_points.cad_area import CadAreaDialog
-from ..entry_points.compatibility import CompatibilityDialog
 from ..entry_points.duplicate_group import DuplicateGroupDialog
-from ..entry_points.generate_connectors import GenerateConnectorsDialog
-from ..entry_points.instance_rooms import InstanceRoomsDialog
+from ..entry_points.make_solution import MakeSolutionDialog
+from ..entry_points.regen_external_ids import RegenExternalIdsDialog
 from ..entry_points.svg_import import SvgImportDialog
 from ..utilities.paths import get_icon_path, resolve_path
 from ..utilities.string_parsing import extract_wkt_elements
@@ -50,7 +49,7 @@ FORM_CLASS, _ = uic.loadUiType(resolve_path("dock_widget.ui", __file__))
 
 signals.IS_DEBUGGING = True
 logger = logging.getLogger(__name__)
-VERBOSE = True
+VERBOSE = False
 LOGGER = logger
 
 
@@ -74,6 +73,9 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.iface = iface
         self.qgis_project = QgsProject.instance()
 
+        # self.setModal(True)
+        # self.setModal(False) # TODO: MAKE MAIN WINDOW RESPONSIVE?
+
         if VERBOSE:
             reload_module("jord")
             reload_module("warg")
@@ -81,7 +83,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         self.plugin_dir = Path(os.path.dirname(__file__))
         self.sync_module_settings = Settings()
-
+        self.set_update_sync_settings()
         self.setupUi(self)
 
         self.icon_label.setPixmap(QtGui.QPixmap(get_icon_path("mp_notext.png")))
@@ -90,8 +92,9 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # self.plugin_status_label.setText(plugin_version.plugin_status(PROJECT_NAME))
 
         self.changes_label.setText("")
-        self.sync_button.setEnabled(False)
-        self.upload_button.setEnabled(False)
+        if False:
+            self.sync_button.setEnabled(False)
+            self.upload_button.setEnabled(False)
 
         self.original_solution_venues = defaultdict(dict)
 
@@ -103,27 +106,37 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         )
         signals.reconnect_signal(self.sync_button.clicked, self.download_button_clicked)
         signals.reconnect_signal(self.upload_button.clicked, self.upload_button_clicked)
-        signals.reconnect_signal(self.revert_button.clicked, self.revert_button_clicked)
+        # signals.reconnect_signal(self.revert_button.clicked, self.revert_button_clicked)
+
+        self.solution_depth_combo_box = None
+        if read_plugin_setting(
+            "ADVANCED_MODE",
+            default_value=DEFAULT_PLUGIN_SETTINGS["ADVANCED_MODE"],
+            project_name=PROJECT_NAME,
+        ):
+            self.solution_depth_combo_box = None
+            if False:
+                self.sync_layout.addWidget(self.solution_depth_combo_box)
 
         # from .. import entry_points
 
         # print(dir(entry_points))
 
         self.entry_point_dialogs = {
+            "Make Solution": MakeSolutionDialog(),
             "Duplicate Group": DuplicateGroupDialog(),
             "Cad Area": CadAreaDialog(),
-            "Instance Rooms": InstanceRoomsDialog(),
             "Import SVG": SvgImportDialog(),
-            "Diff Tool": InstanceRoomsDialog(),
-            "Compatibility": CompatibilityDialog(),
-            "Generate Connectors": GenerateConnectorsDialog(),
-            "Generate Doors": InstanceRoomsDialog(),
-            "Generate Walls": InstanceRoomsDialog(),
-            "Classify Location": InstanceRoomsDialog(),
+            "Regen External Ids": RegenExternalIdsDialog(),
+            # "Diff Tool": InstanceRoomsDialog(),
+            # "Compatibility": CompatibilityDialog(),
+            # "Generate Connectors": GenerateConnectorsDialog(),
+            # "Generate Doors": InstanceRoomsDialog(),
+            # "Generate Walls": InstanceRoomsDialog(),
+            # "Classify Location": InstanceRoomsDialog(),
         }
 
-        if True:
-            self.repopulate_grid_layout()
+        self.repopulate_grid_layout()
 
     def set_update_sync_settings(self):
         self.sync_module_settings.mapsindoors.username = read_plugin_setting(
@@ -164,15 +177,6 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             project_name=PROJECT_NAME,
         )
 
-        self.sync_module_settings.mapsindoors.integration_api_host = (
-            read_plugin_setting(
-                "MAPS_INDOORS_INTEGRATION_API_HOST",
-                default_value=DEFAULT_PLUGIN_SETTINGS[
-                    "MAPS_INDOORS_INTEGRATION_API_HOST"
-                ],
-                project_name=PROJECT_NAME,
-            )
-        )
         self.sync_module_settings.mapsindoors.token_endpoint = read_plugin_setting(
             "MAPS_INDOORS_TOKEN_ENDPOINT",
             default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_TOKEN_ENDPOINT"],
@@ -189,7 +193,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             project_name=PROJECT_NAME,
         )
 
-    def refresh_solution_combo_box(self) -> None:
+    def refresh_solution_combo_box(self, reload_venues: bool = True) -> None:
         from integration_system.mi.downloading import get_solution_name_external_id_map
 
         with InjectedProgressBar(
@@ -197,9 +201,13 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         ) as bar:  # TODO: add a text label or format progress bar with a title
             bar.setValue(10)
             self.set_update_sync_settings()
+            current_solution_name = str(self.solution_combo_box.currentText()).strip()
+            logger.debug(f"{current_solution_name=}")
 
             bar.setValue(30)
             self.solution_combo_box.clear()
+            if current_solution_name != "":
+                self.solution_combo_box.setCurrentText(current_solution_name)
 
             bar.setValue(50)
             self.external_id_map = get_solution_name_external_id_map(
@@ -209,7 +217,13 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             bar.setValue(90)
             self.solution_combo_box.addItems(sorted(self.external_id_map.keys()))
 
+            if current_solution_name != "":
+                self.solution_combo_box.setCurrentText(current_solution_name)
+
             bar.setValue(100)
+
+            if reload_venues:  # auto load venue dropdown
+                self.refresh_venue_button_clicked()
 
     def refresh_venue_button_clicked(self) -> None:
         from integration_system.mi import (
@@ -217,12 +231,14 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         )
 
         self.changes_label.setText("Fetching venues")
-        self.sync_button.setEnabled(True)
-        self.upload_button.setEnabled(True)
+        if False:
+            self.sync_button.setEnabled(True)
+            self.upload_button.setEnabled(True)
+
         self.set_update_sync_settings()
 
         if self.external_id_map is None:
-            self.refresh_solution_combo_box()
+            self.refresh_solution_combo_box(reload_venues=False)
 
         with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
             current_selected_solution_name = str(self.solution_combo_box.currentText())
@@ -268,6 +284,17 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
     def download_button_clicked(self) -> None:
         venue_name = str(self.venue_combo_box.currentText())
+        if venue_name.strip() == "":
+            logger.error(f"No venue was selected!")
+            return
+
+        solution_depth = SolutionDepth.LOCATIONS
+        if self.solution_depth_combo_box:
+            solution_depth = str(self.solution_combo_box.currentText())
+        include_route_elements = False
+        include_occupants = False
+        include_media = False
+        include_graph = False
         with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
             if venue_name.strip() == "":  # TODO: Not supported ATM
                 venues = list(self.venue_name_id_map.values())
@@ -284,6 +311,11 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                             v,
                             settings=self.sync_module_settings,
                             progress_bar=venue_bar,
+                            depth=solution_depth,
+                            include_route_elements=include_route_elements,
+                            include_occupants=include_occupants,
+                            include_media=include_media,
+                            include_graph=include_graph,
                         )
                     bar.setValue(int((float(i) / num_venues) * 100))
             else:
@@ -299,18 +331,40 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                         self.venue_name_id_map[venue_name],
                         settings=self.sync_module_settings,
                         progress_bar=bar,
+                        depth=solution_depth,
+                        include_route_elements=include_route_elements,
+                        include_occupants=include_occupants,
+                        include_media=include_media,
+                        include_graph=include_graph,
                     )
                     self.changes_label.setText(f"Downloaded {venue_name}")
                 else:
                     LOGGER.warning(f"Venue {venue_name} not found")
 
     def upload_button_clicked(self) -> None:
+        self.set_update_sync_settings()
+
+        solution_depth = SolutionDepth.LOCATIONS
+        if self.solution_depth_combo_box:
+            solution_depth = str(self.solution_combo_box.currentText())
+        include_route_elements = False
+        include_occupants = False
+        include_media = False
+        include_graph = False
         with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
             self.changes_label.setText(f"Uploading venues")
             try:
                 layer_hierarchy_to_solution(
-                    settings=self.sync_module_settings, progress_bar=bar
+                    self,
+                    settings=self.sync_module_settings,
+                    progress_bar=bar,
+                    solution_depth=solution_depth,
+                    include_route_elements=include_route_elements,
+                    include_occupants=include_occupants,
+                    include_media=include_media,
+                    include_graph=include_graph,
                 )
+
             except Exception as e:
                 self.display_geometry_in_exception(e)
 
@@ -318,6 +372,8 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.changes_label.setText(f"Uploaded venues")
 
     def revert_button_clicked(self) -> None:
+        self.set_update_sync_settings()
+        # TODO: MAKE INTO A RELOAD INSTEAD?
         with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
             self.changes_label.setText(f"Revert venues")
             try:
@@ -336,18 +392,21 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # string_exception = "\n".join(e.args)
 
         string_exception = str(e)
-        wkt_elements = list(zip(*extract_wkt_elements(string_exception)))
-        if wkt_elements and len(wkt_elements) == 2:
-            contexts, elements = wkt_elements
+        try:
+            wkt_elements = list(zip(*extract_wkt_elements(string_exception)))
+            if wkt_elements and len(wkt_elements) == 2:
+                contexts, elements = wkt_elements
 
-            contexts = [clean_str(c) for c in contexts]
+                contexts = [clean_str(c) for c in contexts]
 
-            add_shapely_layer(
-                self,
-                elements,
-                name="exceptions",
-                columns=[{"contexts": c} for c in contexts],
-            )
+                add_shapely_layer(
+                    self,
+                    elements,
+                    name="exceptions",
+                    columns=[{"contexts": c} for c in contexts],
+                )
+        except:
+            ...
 
         logger.error(string_exception)
 

@@ -1,10 +1,8 @@
 import os
 from pathlib import Path
 
-from qgis.PyQt import QtWidgets
-from qgis.PyQt import uic
-
-from .cad_area_impl import run
+# noinspection PyUnresolvedReferences
+from qgis.PyQt import QtWidgets, uic
 
 FORM_CLASS, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "cad_area_dialog.ui")
@@ -23,6 +21,8 @@ class CadAreaDialog(QtWidgets.QDialog, FORM_CLASS):
         signals.reconnect_signal(self.compute_button.clicked, self.on_compute_clicked)
 
     def on_compute_clicked(self):
+        from .cad_area_impl import run
+
         out_path = Path(str(self.out_file_widget.filePath()))
         in_paths = str(self.compute_files_widget.filePath())
 
