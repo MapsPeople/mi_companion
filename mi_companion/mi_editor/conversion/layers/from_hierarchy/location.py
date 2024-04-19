@@ -2,6 +2,7 @@ import logging
 import uuid
 
 import shapely
+from jord.qgis_utilities import read_plugin_setting
 from jord.shapely_utilities.base import clean_shape
 
 # noinspection PyUnresolvedReferences
@@ -11,11 +12,9 @@ from qgis.PyQt import QtWidgets
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.model import Solution, LocationType
+from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
 from mi_companion.configuration.constants import (
     VERBOSE,
-    ALLOW_LOCATION_CREATION,
-    ADD_DOORS,
-    GENERATE_MISSING_EXTERNAL_IDS,
     DEFAULT_CUSTOM_PROPERTIES,
 )
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (
@@ -46,7 +45,13 @@ def add_floor_locations(
             location_type_name = feature_attributes["location_type.name"]
             location_type_key = LocationType.compute_key(location_type_name)
             if solution.location_types.get(location_type_key) is None:
-                if ALLOW_LOCATION_CREATION:  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
+                if read_plugin_setting(
+                    "ALLOW_LOCATION_TYPE_CREATION",
+                    default_value=DEFAULT_PLUGIN_SETTINGS[
+                        "ALLOW_LOCATION_TYPE_CREATION"
+                    ],
+                    project_name=PROJECT_NAME,
+                ):  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
                     location_type_key = solution.add_location_type(location_type_name)
                 else:
                     raise ValueError(
@@ -57,7 +62,13 @@ def add_floor_locations(
 
             external_id = feature_attributes["external_id"]
             if external_id is None:
-                if GENERATE_MISSING_EXTERNAL_IDS:
+                if read_plugin_setting(
+                    "GENERATE_MISSING_EXTERNAL_IDS",
+                    default_value=DEFAULT_PLUGIN_SETTINGS[
+                        "GENERATE_MISSING_EXTERNAL_IDS"
+                    ],
+                    project_name=PROJECT_NAME,
+                ):
                     external_id = uuid.uuid4().hex
                 else:
                     raise ValueError(f"{layer_feature} is missing a valid external id")
@@ -68,11 +79,11 @@ def add_floor_locations(
                 name = external_id
 
             feature_geom = layer_feature.geometry()
-            if feature_geom:
+            if feature_geom is not None:
                 geom_wkt = feature_geom.asWkt()
-                if geom_wkt:
+                if geom_wkt is not None:
                     geom_shapely = shapely.from_wkt(geom_wkt)
-                    if geom_shapely:
+                    if geom_shapely is not None:
                         common_kvs = dict(
                             external_id=external_id,
                             name=name,
@@ -143,7 +154,11 @@ def add_floor_contents(
             isinstance(location_group_items, QgsLayerTreeLayer)
             and "doors" in location_group_items.name()
             and graph_key is not None
-            and ADD_DOORS
+            and read_plugin_setting(
+                "ADD_DOORS",
+                default_value=DEFAULT_PLUGIN_SETTINGS["ADD_DOORS"],
+                project_name=PROJECT_NAME,
+            )
         ):
             doors_linestring_layer = location_group_items.layer()
             for door_feature in doors_linestring_layer.getFeatures():
@@ -167,10 +182,4 @@ def add_floor_contents(
                 if VERBOSE:
                     logger.info("added door", door_key)
         else:
-            logger.debug(
-                f"Skipped adding doors because of "
-                f"{isinstance(location_group_items, QgsLayerTreeLayer)=} "
-                f'{"doors" in location_group_items.name()=} '
-                f"{graph_key is not None=} "
-                f"{ADD_DOORS=}"
-            )
+            logger.debug(f"Skipped adding doors")

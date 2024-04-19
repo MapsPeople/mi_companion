@@ -2,6 +2,7 @@ import logging
 from typing import Any, Optional
 
 import shapely
+from jord.qgis_utilities import read_plugin_setting
 from jord.qlive_utilities import add_shapely_layer
 
 # noinspection PyUnresolvedReferences
@@ -14,15 +15,12 @@ import integration_system
 from integration_system.mi import get_remote_solution, SolutionDepth
 from integration_system.mi.config import Settings, get_settings
 from integration_system.model import Solution
+from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
 from mi_companion.configuration.constants import (
     MI_HIERARCHY_GROUP_NAME,
     SOLUTION_DESCRIPTOR,
     SOLUTION_DATA_DESCRIPTOR,
-    ADD_GRAPH,
-    MAKE_LOCATION_TYPE_DROPDOWN,
     OSM_HIGHWAY_TYPES,
-    MAKE_HIGHWAY_TYPE_DROPDOWN,
-    MAKE_DOOR_TYPE_DROPDOWN,
 )
 from .venue import add_venue_layer
 
@@ -57,7 +55,11 @@ def add_solution_layers(
     # solution_group.setExpanded(False)
 
     available_location_type_dropdown_widget = None
-    if MAKE_LOCATION_TYPE_DROPDOWN:
+    if read_plugin_setting(
+        "MAKE_LOCATION_TYPE_DROPDOWN",
+        default_value=DEFAULT_PLUGIN_SETTINGS["MAKE_LOCATION_TYPE_DROPDOWN"],
+        project_name=PROJECT_NAME,
+    ):
         available_location_type_dropdown_widget = QgsEditorWidgetSetup(
             "ValueMap",
             {
@@ -69,7 +71,11 @@ def add_solution_layers(
         )
 
     door_type_dropdown_widget = None
-    if MAKE_DOOR_TYPE_DROPDOWN:
+    if read_plugin_setting(
+        "MAKE_DOOR_TYPE_DROPDOWN",
+        default_value=DEFAULT_PLUGIN_SETTINGS["MAKE_DOOR_TYPE_DROPDOWN"],
+        project_name=PROJECT_NAME,
+    ):
         door_type_dropdown_widget = QgsEditorWidgetSetup(
             "ValueMap",
             {
@@ -81,7 +87,11 @@ def add_solution_layers(
         )
 
     highway_type_dropdown_widget = None
-    if MAKE_HIGHWAY_TYPE_DROPDOWN:
+    if read_plugin_setting(
+        "MAKE_HIGHWAY_TYPE_DROPDOWN",
+        default_value=DEFAULT_PLUGIN_SETTINGS["MAKE_HIGHWAY_TYPE_DROPDOWN"],
+        project_name=PROJECT_NAME,
+    ):
         highway_type_dropdown_widget = (
             QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
                 "ValueMap",
@@ -150,7 +160,7 @@ def solution_venue_to_layer_hierarchy(
     include_occupants: bool = False,
     include_media: bool = False,
     include_route_elements: bool = True,
-    include_graph: bool = ADD_GRAPH,
+    include_graph: bool = True,
     depth: SolutionDepth = SolutionDepth.LOCATIONS,
 ) -> Solution:
     """

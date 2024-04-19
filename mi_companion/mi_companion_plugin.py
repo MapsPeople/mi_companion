@@ -30,9 +30,8 @@ try:
     from jord.qgis_utilities.helpers import signals
     from jord.qgis_utilities import read_plugin_setting
 
-    from . import PROJECT_NAME
+    from . import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
     from .configuration.options import DeploymentOptionsPageFactory
-    from .configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
     from .gui.dock_widget import MapsIndoorsCompanionDockWidget
 
     # noinspection PyUnresolvedReferences
@@ -51,9 +50,8 @@ except ModuleNotFoundError as e1:
         from jord.qgis_utilities.helpers import signals
         from jord.qgis_utilities import read_plugin_setting
 
-        from . import PROJECT_NAME
+        from . import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
         from .configuration.options import DeploymentOptionsPageFactory
-        from .configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
         from .gui.dock_widget import MapsIndoorsCompanionDockWidget
 
         # noinspection PyUnresolvedReferences

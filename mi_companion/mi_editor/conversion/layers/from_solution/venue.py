@@ -2,21 +2,20 @@ import logging
 from typing import Iterable
 from xml.etree.ElementTree import ParseError
 
+from jord.qgis_utilities import read_plugin_setting
 from jord.qlive_utilities import add_shapely_layer
 
+from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
 from mi_companion.configuration.constants import (
     VENUE_DESCRIPTOR,
     ALLOW_DUPLICATE_VENUES_IN_PROJECT,
-    ADD_GRAPH,
     GRAPH_DESCRIPTOR,
-    SHOW_GRAPH_ON_LOAD,
     NAVIGATION_LINES_DESCRIPTOR,
     NAVIGATION_POINT_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
 )
-from .building import add_building_layers
 from mi_companion.mi_editor.conversion.graph.to_lines import osm_xml_to_lines
-
+from .building import add_building_layers
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +50,11 @@ def add_venue_layer(
         venue_group.setExpanded(True)
         venue_group.setExpanded(False)
 
-        if ADD_GRAPH:  # add graph
+        if read_plugin_setting(
+            "ADD_GRAPH",
+            default_value=DEFAULT_PLUGIN_SETTINGS["ADD_GRAPH"],
+            project_name=PROJECT_NAME,
+        ):  # add graph
             try:
                 if venue.graph and venue.graph.osm_xml:
                     (lines, lines_meta_data), (
@@ -64,7 +67,11 @@ def add_venue_layer(
                     graph_name = f"{venue.graph.graph_id} {GRAPH_DESCRIPTOR}"
 
                     graph_group = venue_group.insertGroup(0, graph_name)
-                    if not SHOW_GRAPH_ON_LOAD:
+                    if not read_plugin_setting(
+                        "SHOW_GRAPH_ON_LOAD",
+                        default_value=DEFAULT_PLUGIN_SETTINGS["SHOW_GRAPH_ON_LOAD"],
+                        project_name=PROJECT_NAME,
+                    ):
                         graph_group.setExpanded(True)
                         graph_group.setExpanded(False)
                         graph_group.setItemVisibilityChecked(False)
@@ -103,7 +110,13 @@ def add_venue_layer(
                             name=NAVIGATION_POINT_DESCRIPTOR,
                             group=graph_group,
                             columns=points_meta_data,
-                            visible=SHOW_GRAPH_ON_LOAD,
+                            visible=read_plugin_setting(
+                                "SHOW_GRAPH_ON_LOAD",
+                                default_value=DEFAULT_PLUGIN_SETTINGS[
+                                    "SHOW_GRAPH_ON_LOAD"
+                                ],
+                                project_name=PROJECT_NAME,
+                            ),
                         )
                 else:
                     logger.warning(f"Venue does not have a valid graph {venue.graph}")

@@ -1,8 +1,8 @@
 [general]
 name=MI Companion
-qgisMinimumVersion=3.0
+qgisMinimumVersion=3.26
 description=GDS tooling
-version=0.2.8
+version=0.2.9
 author=heider
 email=chen@mapspeople.com
 
@@ -25,9 +25,7 @@ server=False
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
 
-plugin_dependencies=Eqip==0.2.7
+plugin_dependencies=Eqip,Memory Layer Saver,First Aid
 
 # Tags are comma separated with spaces allowed
 tags=python, mapsindoors, shapely
-
-changelog=

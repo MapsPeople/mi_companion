@@ -19,7 +19,9 @@ from jord.qgis_utilities import read_plugin_setting, store_plugin_setting
 from jord.qgis_utilities.helpers import reconnect_signal
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt import QtGui, uic
+from qgis.PyQt import QtGui, uic, QtCore
+from qgis.PyQt.QtGui import QStandardItem, QStandardItemModel
+
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QHBoxLayout
@@ -30,7 +32,7 @@ from qgis.core import QgsProject
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 
-from .project_settings import DEFAULT_PLUGIN_SETTINGS
+from .. import DEFAULT_PLUGIN_SETTINGS
 from ..constants import PROJECT_NAME, VERSION
 from ..utilities.paths import resolve_path, get_icon_path, load_icon
 
@@ -82,8 +84,6 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
     def populate_settings(self):
         # from qgis.core import QgsSettings
         # noinspection PyUnresolvedReferences
-        from qgis.PyQt.QtGui import QStandardItem, QStandardItemModel
-        from qgis.PyQt import QtCore
 
         # qs = QgsSettings()
         # setting_keys = qs.allKeys()

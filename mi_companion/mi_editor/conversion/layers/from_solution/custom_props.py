@@ -2,7 +2,6 @@ import logging
 
 from geopandas import GeoDataFrame
 
-
 from mi_companion.configuration.constants import NULL_VALUE
 
 logger = logging.getLogger(__name__)

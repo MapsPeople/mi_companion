@@ -3,7 +3,7 @@ import math
 import os
 from collections import defaultdict
 from pathlib import Path
-from typing import Any
+from typing import Optional, Any
 
 from jord.qgis_utilities import read_plugin_setting
 from jord.qgis_utilities.helpers import signals, InjectedProgressBar
@@ -35,7 +35,7 @@ from mi_companion.mi_editor import (
     solution_venue_to_layer_hierarchy,
     revert_venues,
 )
-from ..configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
+from .. import DEFAULT_PLUGIN_SETTINGS
 from ..constants import PROJECT_NAME, VERSION
 from ..entry_points.cad_area import CadAreaDialog
 from ..entry_points.duplicate_group import DuplicateGroupDialog
@@ -56,7 +56,7 @@ LOGGER = logger
 class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     plugin_closing = pyqtSignal()
 
-    def __init__(self, iface: Any, parent: Any = None):
+    def __init__(self, iface: Any, parent: Optional[Any] = None):
         """Constructor."""
         super().__init__(parent)
 
@@ -291,10 +291,18 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         solution_depth = SolutionDepth.LOCATIONS
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())
-        include_route_elements = False
+        include_route_elements = read_plugin_setting(
+            "ADD_DOORS",
+            default_value=DEFAULT_PLUGIN_SETTINGS["ADD_DOORS"],
+            project_name=PROJECT_NAME,
+        )
         include_occupants = False
         include_media = False
-        include_graph = False
+        include_graph = read_plugin_setting(
+            "ADD_GRAPH",
+            default_value=DEFAULT_PLUGIN_SETTINGS["ADD_GRAPH"],
+            project_name=PROJECT_NAME,
+        )
         with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
             if venue_name.strip() == "":  # TODO: Not supported ATM
                 venues = list(self.venue_name_id_map.values())

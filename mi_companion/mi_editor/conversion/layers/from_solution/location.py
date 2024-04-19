@@ -4,8 +4,9 @@ import logging
 from typing import Optional, Any, Iterable, List
 
 import geopandas
+from jord.qgis_utilities import read_plugin_setting
 from jord.qlive_utilities import add_dataframe_layer
-from pandas import DataFrame, json_normalize, Series
+from pandas import DataFrame, json_normalize
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
@@ -13,8 +14,8 @@ from qgis.core import QgsEditorWidgetSetup
 from integration_system.mi.manager_model import MIVenue, MIFloor
 from integration_system.mixins import CollectionMixin
 from integration_system.model import Solution
+from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
 from mi_companion.configuration.constants import (
-    ADD_GRAPH,
     REAL_NONE_JSON_VALUE,
 )
 
@@ -186,7 +187,11 @@ def add_floor_content_layers(
         dropdown_widget=available_location_type_map_widget,
     )
 
-    if ADD_GRAPH:
+    if read_plugin_setting(
+        "ADD_DOORS",
+        default_value=DEFAULT_PLUGIN_SETTINGS["ADD_DOORS"],
+        project_name=PROJECT_NAME,
+    ):
         add_door_layer(
             solution.doors,
             graph=venue.graph,

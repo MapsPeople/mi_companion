@@ -3,8 +3,8 @@ from typing import Dict, Optional, Mapping, Any
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
-from qlive.qlive import PROJECT_NAME
-from qlive.qlive.configuration.project_settings import DEFAULT_PROJECT_SETTINGS
+
+from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
 
 VERBOSE = True
 QGIS_PROJECT = QgsProject.instance()
@@ -12,7 +12,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def restore_default_plugin_settings(
-    defaults: Optional[Mapping] = DEFAULT_PROJECT_SETTINGS,
+    defaults: Optional[Mapping] = DEFAULT_PLUGIN_SETTINGS,
     *,
     project_name: str = PROJECT_NAME,
     verbose: bool = VERBOSE,
@@ -58,9 +58,9 @@ def embedded_store_plugin_setting(
 
 def embedded_read_plugin_setting(
     key: str,
-    type_hint: type = None,
+    type_hint: Optional[type] = None,
     *,
-    defaults: Mapping = None,
+    defaults: Optional[Mapping] = None,
     project_name: str = PROJECT_NAME,
     verbose: bool = VERBOSE,
 ) -> Any:

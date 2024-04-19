@@ -1,74 +1,113 @@
 import logging
-import uuid
 
 import shapely
 from jord.shapely_utilities.base import clean_shape
 
+# noinspection PyUnresolvedReferences
+from qgis.core import (
+    QgsLayerTreeGroup,
+    QgsLayerTreeLayer,
+    QgsProject,
+    QgsFeatureRequest,
+)
+
 from mi_companion.configuration.constants import (
     FLOOR_POLYGON_DESCRIPTOR,
-    GENERATE_MISSING_EXTERNAL_IDS,
+    HALF_SIZE,
 )
+from .extraction import extract_layer_data
 from .location import add_floor_contents
 
 logger = logging.getLogger(__name__)
 
 
-__all__ = ["add_floor"]
+__all__ = ["add_building_floor"]
 
 
-def add_floor(building_key, floor_group_items, solution):
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+def add_building_floor(
+    *,
+    building_key,
+    venue_group_item,
+    solution,
+    progress_bar,
+    ith_solution,
+    ith_venue,
+    ith_building,
+    num_solution_elements,
+    num_venue_elements,
+    num_building_elements,
+) -> None:
+    building_group_elements = venue_group_item.children()
+    num_building_group_elements = len(building_group_elements)
+    for ith_building_group_item, building_group_item in enumerate(
+        building_group_elements
+    ):
+        if progress_bar:
+            progress_bar.setValue(
+                int(
+                    10
+                    + (
+                        90
+                        * ((ith_solution + HALF_SIZE) / num_solution_elements)
+                        * ((ith_venue + HALF_SIZE) / num_venue_elements)
+                        * ((ith_building + HALF_SIZE) / num_building_elements)
+                        * (
+                            (ith_building_group_item + HALF_SIZE)
+                            / num_building_group_elements
+                        )
+                    )
+                )
+            )
 
-    floor_key = None
-    for inventory_group_items in floor_group_items.children():
+        if not isinstance(building_group_item, QgsLayerTreeGroup):
+            continue
+
+        floor_attributes, floor_key = get_floor_data(
+            building_key, building_group_item, solution
+        )
+
+        if floor_key is None:
+            logger.error(f"Did not find floor in {building_group_item=}, skipping")
+            continue
+
+        add_floor_contents(
+            floor_group_items=building_group_item,
+            floor_key=floor_key,
+            solution=solution,
+            graph_key=(
+                solution.floors.get(floor_key).building.venue.graph.key
+                if solution.floors.get(floor_key).building.venue.graph
+                else None
+            ),
+            floor_index=floor_attributes["floor_index"],
+        )
+
+
+def get_floor_data(building_key, floor_group_items, solution):
+    for floor_level_item in floor_group_items.children():
         if (
             isinstance(
-                inventory_group_items,
+                floor_level_item,
                 QgsLayerTreeLayer,
             )
-            and FLOOR_POLYGON_DESCRIPTOR.lower()
-            in str(inventory_group_items.name()).lower()
-            and building_key is not None
-            and floor_key is None
+            and FLOOR_POLYGON_DESCRIPTOR.lower().strip()
+            in str(floor_level_item.name()).lower().strip()
         ):
-            floor_polygon_layer = inventory_group_items.layer()
-            floor_feature = floor_polygon_layer.getFeature(1)  # 1 is first element
-
-            floor_attributes = {
-                k.name(): v
-                for k, v in zip(
-                    floor_feature.fields(),
-                    floor_feature.attributes(),
-                )
-            }
-            external_id = floor_attributes["external_id"]
-            if external_id is None:
-                if GENERATE_MISSING_EXTERNAL_IDS:
-                    external_id = uuid.uuid4().hex
-                else:
-                    raise ValueError(f"{floor_feature} is missing a valid external id")
-
-            name = floor_attributes["name"]
-            if name is None:
-                name = external_id
-
-            floor_key = solution.add_floor(
-                external_id=external_id,
-                name=name,
-                floor_index=floor_attributes["floor_index"],
-                polygon=clean_shape(shapely.from_wkt(floor_feature.geometry().asWkt())),
-                building_key=building_key,
+            external_id, floor_attributes, floor_feature, name = extract_layer_data(
+                floor_level_item
             )
-    assert floor_key, floor_key
-    add_floor_contents(
-        floor_group_items=floor_group_items,
-        floor_key=floor_key,
-        solution=solution,
-        graph_key=(
-            solution.floors.get(floor_key).building.venue.graph.key
-            if solution.floors.get(floor_key).building.venue.graph
-            else None
-        ),
-        floor_index=floor_attributes["floor_index"],
-    )
+
+            feature_geom = floor_feature.geometry()
+            if feature_geom is not None:
+                geom_wkt = feature_geom.asWkt()
+                if geom_wkt is not None:
+                    geom_shapely = shapely.from_wkt(geom_wkt)
+                    floor_key = solution.add_floor(
+                        external_id=external_id,
+                        name=name,
+                        floor_index=floor_attributes["floor_index"],
+                        polygon=clean_shape(geom_shapely),
+                        building_key=building_key,
+                    )
+                    return floor_attributes, floor_key
+    return None, None

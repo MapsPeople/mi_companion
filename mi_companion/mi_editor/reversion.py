@@ -72,7 +72,7 @@ def revert_venues(
                     ), f"Duplicate {solution_data_layer_name=} for {solution_layer_name=}"
                     found_solution_data = True
 
-                    solution_feature = c.layer().getFeature(1)  # 1 is first element
+                    solution_feature = next(iter(c.layer().getFeatures()))
                     solution_data_layer = {
                         k.name(): v
                         for k, v in zip(
@@ -112,9 +112,7 @@ def revert_venues(
                         and venue_key is None
                     ):
                         venue_polygon_layer = building_group_items.layer()
-                        venue_feature = venue_polygon_layer.getFeature(
-                            1
-                        )  # 1 is first element
+                        venue_feature = next(iter(venue_polygon_layer.getFeatures()))
 
                         venue_attributes = {
                             k.name(): v
