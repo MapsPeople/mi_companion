@@ -33,3 +33,5 @@ class CadAreaDialog(QtWidgets.QDialog, FORM_CLASS):
 
         for p in files:
             run(Path(p), out_path)
+
+        self.close()

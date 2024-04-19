@@ -10,6 +10,7 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 from integration_system.mi import get_remote_solution, SolutionDepth
 from integration_system.mi.config import get_settings, Settings
 from integration_system.mi.downloading import get_solution_name_external_id_map
+
 from mi_companion.configuration.constants import (
     MI_HIERARCHY_GROUP_NAME,
     SOLUTION_DESCRIPTOR,

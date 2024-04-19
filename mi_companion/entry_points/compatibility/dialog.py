@@ -95,3 +95,5 @@ class CompatibilityDialog(QDialog, FORM_CLASS):
                 call_kwarg[k] = value
 
         run(**call_kwarg)
+
+        self.close()

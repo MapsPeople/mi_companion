@@ -1,8 +1,6 @@
 import copy
 import logging
-import math
 import uuid
-from collections import defaultdict
 from itertools import count
 from typing import List, Collection
 
@@ -26,8 +24,6 @@ from integration_system.mi.configuration import SyncLevel, SolutionDepth
 from integration_system.model import Solution
 from mi_companion.configuration.constants import (
     VERBOSE,
-    FLOOR_POLYGON_DESCRIPTOR,
-    BUILDING_POLYGON_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
     GENERATE_MISSING_EXTERNAL_IDS,
     HALF_SIZE,
@@ -38,16 +34,18 @@ from mi_companion.configuration.constants import (
     POST_FIT_VENUES,
     POST_FIT_BUILDINGS,
 )
+from .building import add_building
 from .custom_props import extract_custom_props
-from .location import add_floor_inventory
 
 __all__ = ["convert_venues"]
 
 
 logger = logging.getLogger(__name__)
 
-
+# noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets, QtCore
+
+# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
@@ -169,175 +167,16 @@ def convert_venues(
                 )
 
         if venue_key:
-            building_elements = venue_group_items.children()
-            num_building_elements = len(building_elements)
-            for ith_building, building_group_items in enumerate(building_elements):
-                if progress_bar:
-                    progress_bar.setValue(
-                        int(
-                            10
-                            + (
-                                90
-                                * ((ith_solution + HALF_SIZE) / num_solution_elements)
-                                * ((ith_venue + HALF_SIZE) / num_venue_elements)
-                                * ((ith_building + HALF_SIZE) / num_building_elements)
-                            )
-                        )
-                    )
-                if isinstance(building_group_items, QgsLayerTreeGroup):
-                    building_key = None
-                    for floor_group_items in building_group_items.children():
-                        if (
-                            isinstance(floor_group_items, QgsLayerTreeLayer)
-                            and BUILDING_POLYGON_DESCRIPTOR.lower()
-                            in str(floor_group_items.name()).lower()
-                            and venue_key is not None
-                            and building_key is None
-                        ):
-                            building_polygon_layer = floor_group_items.layer()
-                            building_feature = building_polygon_layer.getFeature(
-                                1  # 1 is the first element
-                            )
-
-                            building_attributes = {
-                                k.name(): v
-                                for k, v in zip(
-                                    building_feature.fields(),
-                                    building_feature.attributes(),
-                                )
-                            }
-
-                            if len(building_attributes) == 0:
-                                continue
-                            else:
-                                logger.error(
-                                    f"Did not find building, skipping {floor_group_items.name()}"
-                                )
-
-                            external_id = building_attributes["external_id"]
-                            if external_id is None:
-                                if GENERATE_MISSING_EXTERNAL_IDS:
-                                    external_id = uuid.uuid4().hex
-                                else:
-                                    raise ValueError(
-                                        f"{building_feature} is missing a valid external id"
-                                    )
-
-                            name = building_attributes["name"]
-                            if name is None:
-                                name = external_id
-
-                            building_key = solution.add_building(
-                                external_id=external_id,
-                                name=name,
-                                polygon=clean_shape(
-                                    shapely.from_wkt(
-                                        building_feature.geometry().asWkt()
-                                    )
-                                ),
-                                venue_key=venue_key,
-                            )
-                    if building_key:
-                        floor_elements = building_group_items.children()
-                        num_floor_elements = len(floor_elements)
-                        for ith_floor, floor_group_items in enumerate(floor_elements):
-                            if progress_bar:
-                                progress_bar.setValue(
-                                    int(
-                                        10
-                                        + (
-                                            90
-                                            * (
-                                                (ith_solution + HALF_SIZE)
-                                                / num_solution_elements
-                                            )
-                                            * (
-                                                (ith_venue + HALF_SIZE)
-                                                / num_venue_elements
-                                            )
-                                            * (
-                                                (ith_building + HALF_SIZE)
-                                                / num_building_elements
-                                            )
-                                            * (
-                                                (ith_floor + HALF_SIZE)
-                                                / num_floor_elements
-                                            )
-                                        )
-                                    )
-                                )
-
-                            if isinstance(floor_group_items, QgsLayerTreeGroup):
-                                floor_key = None
-                                for (
-                                    inventory_group_items
-                                ) in floor_group_items.children():
-                                    if (
-                                        isinstance(
-                                            inventory_group_items,
-                                            QgsLayerTreeLayer,
-                                        )
-                                        and FLOOR_POLYGON_DESCRIPTOR.lower()
-                                        in str(inventory_group_items.name()).lower()
-                                        and building_key is not None
-                                        and floor_key is None
-                                    ):
-                                        floor_polygon_layer = (
-                                            inventory_group_items.layer()
-                                        )
-                                        floor_feature = floor_polygon_layer.getFeature(
-                                            1
-                                        )  # 1 is first element
-
-                                        floor_attributes = {
-                                            k.name(): v
-                                            for k, v in zip(
-                                                floor_feature.fields(),
-                                                floor_feature.attributes(),
-                                            )
-                                        }
-                                        external_id = floor_attributes["external_id"]
-                                        if external_id is None:
-                                            if GENERATE_MISSING_EXTERNAL_IDS:
-                                                external_id = uuid.uuid4().hex
-                                            else:
-                                                raise ValueError(
-                                                    f"{floor_feature} is missing a valid external id"
-                                                )
-
-                                        name = floor_attributes["name"]
-                                        if name is None:
-                                            name = external_id
-
-                                        floor_key = solution.add_floor(
-                                            external_id=external_id,
-                                            name=name,
-                                            floor_index=floor_attributes["floor_index"],
-                                            polygon=clean_shape(
-                                                shapely.from_wkt(
-                                                    floor_feature.geometry().asWkt()
-                                                )
-                                            ),
-                                            building_key=building_key,
-                                        )
-                                assert floor_key, floor_key
-                                add_floor_inventory(
-                                    floor_group_items=floor_group_items,
-                                    floor_key=floor_key,
-                                    solution=solution,
-                                    graph_key=(
-                                        solution.floors.get(
-                                            floor_key
-                                        ).building.venue.graph.key
-                                        if solution.floors.get(
-                                            floor_key
-                                        ).building.venue.graph
-                                        else None
-                                    ),
-                                    floor_index=floor_attributes["floor_index"],
-                                )
-                    else:
-                        logger.error(f"{building_key=}, skipping")
+            add_building(
+                ith_solution,
+                ith_venue,
+                num_solution_elements,
+                num_venue_elements,
+                progress_bar,
+                solution,
+                venue_group_items,
+                venue_key,
+            )
 
             """if False:
                 existing_venue_solution = get_remote_solution(

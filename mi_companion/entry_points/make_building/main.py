@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 
-def run(*, appendix: str = "New Building (Building)") -> None:
+def run(*, name: str = "New Building (Building)") -> None:
     import shapely
     from jord.shapely_utilities import dilate
     from mi_companion.mi_editor.conversion import (

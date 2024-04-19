@@ -1,5 +1,5 @@
 -e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/integration_system"
-
+-e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/svaguely"
 #-e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/integration_system" # --no-deps"
 
 #pytest >=7.4.0

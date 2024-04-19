@@ -18,11 +18,11 @@ from mi_companion.configuration.constants import (
     REAL_NONE_JSON_VALUE,
 )
 
-__all__ = ["add_inventory_layers"]
+__all__ = ["add_floor_content_layers"]
 
 from .custom_props import process_custom_props_df
 
-from mi_companion.mi_editor.conversion.layers.type_enums import InventoryTypeEnum
+from mi_companion.mi_editor.conversion.layers.type_enums import LocationTypeEnum
 
 logger = logging.getLogger(__name__)
 
@@ -146,7 +146,7 @@ def add_door_layer(
             add_dropdown_widget(door_layer, "door_type", dropdown_widget)
 
 
-def add_inventory_layers(
+def add_floor_content_layers(
     *,
     qgis_instance_handle,
     solution: Solution,
@@ -158,8 +158,28 @@ def add_inventory_layers(
 ) -> None:
     add_location_layer(
         solution.rooms,
-        InventoryTypeEnum.ROOM.value,
+        LocationTypeEnum.ROOM.value,
         "polygon",
+        qgis_instance_handle=qgis_instance_handle,
+        floor_group=floor_group,
+        floor=floor,
+        dropdown_widget=available_location_type_map_widget,
+    )
+
+    add_location_layer(
+        solution.areas,
+        LocationTypeEnum.AREA.value,
+        "polygon",
+        qgis_instance_handle=qgis_instance_handle,
+        floor_group=floor_group,
+        floor=floor,
+        dropdown_widget=available_location_type_map_widget,
+    )
+
+    add_location_layer(
+        solution.points_of_interest,
+        LocationTypeEnum.POI.value,
+        "point",
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
         floor=floor,
@@ -175,23 +195,3 @@ def add_inventory_layers(
             floor=floor,
             dropdown_widget=door_type_dropdown_widget,
         )
-
-    add_location_layer(
-        solution.areas,
-        InventoryTypeEnum.AREA.value,
-        "polygon",
-        qgis_instance_handle=qgis_instance_handle,
-        floor_group=floor_group,
-        floor=floor,
-        dropdown_widget=available_location_type_map_widget,
-    )
-
-    add_location_layer(
-        solution.points_of_interest,
-        InventoryTypeEnum.POI.value,
-        "point",
-        qgis_instance_handle=qgis_instance_handle,
-        floor_group=floor_group,
-        floor=floor,
-        dropdown_widget=available_location_type_map_widget,
-    )
