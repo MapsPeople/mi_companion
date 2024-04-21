@@ -18,9 +18,8 @@ from integration_system.constants import (
 from integration_system.mi import MIOperation, synchronize, SyncLevel
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 from mi_companion.configuration.constants import VERBOSE
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
-    ResizableMessageBox,
-)
+from mi_companion.gui.message_box import ResizableMessageBox
+from .pre_upload_processing import post_process_solution
 
 logger = logging.getLogger(__name__)
 
@@ -61,22 +60,8 @@ def sync_build_venue_solution(
             )"""
     if VERBOSE:
         logger.info("Synchronising")
-    # TODO: REVISE BUILDING -> VENUE POLYGONS TO FIT FLOOR POLYGONS!
-    # WITH UPDATES
-    if read_plugin_setting(
-        "POST_FIT_BUILDINGS",
-        default_value=DEFAULT_PLUGIN_SETTINGS["POST_FIT_BUILDINGS"],
-        project_name=PROJECT_NAME,
-    ):
-        ...
-        # solution.update_building(key=None,polygon=None)
-    if read_plugin_setting(
-        "POST_FIT_VENUES",
-        default_value=DEFAULT_PLUGIN_SETTINGS["POST_FIT_VENUES"],
-        project_name=PROJECT_NAME,
-    ):
-        ...
-        # solution.update_venue(key=None,polygon=None)
+
+    post_process_solution(solution)
 
     def solving_progress_bar_callable(ith: int, total: int) -> None:
         progress_bar.setValue(int(20 + (ith / total) * 80))

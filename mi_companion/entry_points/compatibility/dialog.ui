@@ -11,45 +11,9 @@
             </rect>
         </property>
         <property name="windowTitle">
-            <string>Cad Area Calculator</string>
+            <string>Compatibility</string>
         </property>
         <layout class="QVBoxLayout" name="parameter_layout">
-            <item>
-                <layout class="QHBoxLayout" name="horizontalLayout">
-                    <item>
-                        <widget class="QLabel" name="label_2">
-                            <property name="text">
-                                <string>Output file</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="QgsFileWidget" name="out_file_widget">
-                            <property name="storageMode">
-                                <enum>QgsFileWidget::SaveFile</enum>
-                            </property>
-                        </widget>
-                    </item>
-                </layout>
-            </item>
-            <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_2">
-                    <item>
-                        <widget class="QLabel" name="label_3">
-                            <property name="text">
-                                <string>Files to compute</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="QgsFileWidget" name="compute_files_widget">
-                            <property name="storageMode">
-                                <enum>QgsFileWidget::GetDirectory</enum>
-                            </property>
-                        </widget>
-                    </item>
-                </layout>
-            </item>
             <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_4">
                     <item>

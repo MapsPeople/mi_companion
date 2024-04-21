@@ -8,7 +8,7 @@ from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
 
 VERBOSE = True
 QGIS_PROJECT = QgsProject.instance()
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def restore_default_plugin_settings(
@@ -102,7 +102,7 @@ def embedded_read_plugin_setting(
     if verbose:
         print("read: ", project_name, key, val)
         if not type_conversion_ok:
-            LOGGER.warning(f"read_plugin_setting: {key} {val} {type_conversion_ok}")
+            logger.warning(f"read_plugin_setting: {key} {val} {type_conversion_ok}")
 
     return val
 

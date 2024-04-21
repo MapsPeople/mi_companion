@@ -54,22 +54,3 @@ def extract_layer_data(layer_tree_layer):
         name = external_id
 
     return external_id, layer_attributes, layer_feature, name
-
-
-class ResizableMessageBox(QtWidgets.QMessageBox):  # TODO: MOVE THIS TO JORD!
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.setSizeGripEnabled(True)
-
-    def event(self, event):
-        if event.type() in (event.LayoutRequest, event.Resize):
-            if event.type() == event.Resize:
-                res = super().event(event)
-            else:
-                res = False
-            details = self.findChild(QtWidgets.QTextEdit)
-            if details:
-                details.setMaximumSize(16777215, 16777215)
-            self.setMaximumSize(16777215, 16777215)
-            return res
-        return super().event(event)

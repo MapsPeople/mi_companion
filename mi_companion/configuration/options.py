@@ -20,6 +20,8 @@ from jord.qgis_utilities.helpers import reconnect_signal
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, uic, QtCore
+
+# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QStandardItem, QStandardItemModel
 
 
@@ -39,7 +41,7 @@ from ..utilities.paths import resolve_path, get_icon_path, load_icon
 QGIS_PROJECT = QgsProject.instance()
 VERBOSE = False
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 OptionWidget, OptionWidgetBase = uic.loadUiType(resolve_path("options.ui", __file__))
 
@@ -143,10 +145,17 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
     def setting_item_changed(self, item):  #: PyQt5.QtGui.QStandardItem
         try:
             key = self.settings_list_model.item(item.row(), 0).text()
-            value = self.type_map[key](item.text())
+            item_value = item.text()
+            if str(item_value).lower().strip() == ("false"):
+                value = False
+            else:
+                value = self.type_map[key](item_value)
+            logger.warning(
+                f"Storing new setting {id(value)=} for {key}"
+            )  # Only id to obscure sensitive information from logs
             store_plugin_setting(key, value, project_name=PROJECT_NAME)
         except Exception as e:
-            LOGGER.warning(e)
+            logger.warning(e)
 
 
 class DeploymentCompanionOptionsPage(QgsOptionsPageWidget):
