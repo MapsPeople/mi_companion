@@ -1,7 +1,11 @@
+import logging
+
 from geopandas import GeoDataFrame
 
-
 from mi_companion.configuration.constants import NULL_VALUE
+
+logger = logging.getLogger(__name__)
+__all__ = ["process_custom_props_df"]
 
 
 def process_custom_props_df(rooms_df: GeoDataFrame) -> None:

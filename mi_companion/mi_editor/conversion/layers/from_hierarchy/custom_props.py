@@ -1,3 +1,4 @@
+import logging
 import math
 from collections import defaultdict
 
@@ -11,6 +12,10 @@ from mi_companion.configuration.constants import (
     REAL_NONE_JSON_VALUE,
     ADD_REAL_NONE_CUSTOM_PROPERTY_VALUES,
 )
+
+logger = logging.getLogger(__name__)
+
+__all__ = ["extract_custom_props"]
 
 
 def extract_custom_props(layer_attributes):

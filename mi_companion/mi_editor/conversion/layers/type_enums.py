@@ -1,10 +1,10 @@
 from enum import Enum
 
 
-__all__ = ["InventoryTypeEnum"]
+__all__ = ["LocationTypeEnum"]
 
 
-class InventoryTypeEnum(Enum):
+class LocationTypeEnum(Enum):
     ROOM = "rooms"
     POI = "pois"
     AREA = "areas"

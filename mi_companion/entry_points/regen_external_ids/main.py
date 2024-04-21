@@ -1,5 +1,8 @@
 #!/usr/bin/python
-import uuid
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def run(*, field_name="external_id") -> None:
@@ -9,7 +12,8 @@ def run(*, field_name="external_id") -> None:
 
     selected_nodes = iface.layerTreeView().selectedNodes()
 
-    if len(selected_nodes):
-        randomize_sub_tree_field(selected_nodes, field_name)
+    if len(selected_nodes) > 0:
+        for n in iter(selected_nodes):
+            randomize_sub_tree_field(n, field_name)
     else:
-        raise ValueError(f"There are {len(selected_nodes)}, please only select one")
+        logger.error(f"Please select node in the layer tree")

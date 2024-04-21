@@ -3,7 +3,7 @@ import math
 import os
 from collections import defaultdict
 from pathlib import Path
-from typing import Any
+from typing import Optional, Any
 
 from jord.qgis_utilities import read_plugin_setting
 from jord.qgis_utilities.helpers import signals, InjectedProgressBar
@@ -35,13 +35,14 @@ from mi_companion.mi_editor import (
     solution_venue_to_layer_hierarchy,
     revert_venues,
 )
-from ..configuration.project_settings import DEFAULT_PLUGIN_SETTINGS
+from .. import DEFAULT_PLUGIN_SETTINGS
 from ..constants import PROJECT_NAME, VERSION
 from ..entry_points.cad_area import CadAreaDialog
 from ..entry_points.duplicate_group import DuplicateGroupDialog
 from ..entry_points.make_solution import MakeSolutionDialog
 from ..entry_points.regen_external_ids import RegenExternalIdsDialog
 from ..entry_points.svg_import import SvgImportDialog
+from ..entry_points.compatibility import CompatibilityDialog
 from ..utilities.paths import get_icon_path, resolve_path
 from ..utilities.string_parsing import extract_wkt_elements
 
@@ -56,7 +57,7 @@ LOGGER = logger
 class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     plugin_closing = pyqtSignal()
 
-    def __init__(self, iface: Any, parent: Any = None):
+    def __init__(self, iface: Any, parent: Optional[Any] = None):
         """Constructor."""
         super().__init__(parent)
 
@@ -129,7 +130,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             "Import SVG": SvgImportDialog(),
             "Regen External Ids": RegenExternalIdsDialog(),
             # "Diff Tool": InstanceRoomsDialog(),
-            # "Compatibility": CompatibilityDialog(),
+            "Compatibility": CompatibilityDialog(),
             # "Generate Connectors": GenerateConnectorsDialog(),
             # "Generate Doors": InstanceRoomsDialog(),
             # "Generate Walls": InstanceRoomsDialog(),
@@ -144,32 +145,6 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_USERNAME"],
             project_name=PROJECT_NAME,
         )
-
-        self.sync_module_settings.mapsindoors.password = read_plugin_setting(
-            "MAPS_INDOORS_PASSWORD",
-            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_PASSWORD"],
-            project_name=PROJECT_NAME,
-        )
-
-        integration_token = read_plugin_setting(
-            "MAPS_INDOORS_INTEGRATION_API_TOKEN",
-            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_INTEGRATION_API_TOKEN"],
-            project_name=PROJECT_NAME,
-        )
-        if integration_token:
-            self.sync_module_settings.mapsindoors.integration_api_bearer_token = (
-                integration_token
-            )
-
-        manager_token = read_plugin_setting(
-            "MAPS_INDOORS_MANAGER_API_TOKEN",
-            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_MANAGER_API_TOKEN"],
-            project_name=PROJECT_NAME,
-        )
-        if manager_token:
-            self.sync_module_settings.mapsindoors.manager_api_bearer_token = (
-                manager_token
-            )
 
         self.sync_module_settings.mapsindoors.password = read_plugin_setting(
             "MAPS_INDOORS_PASSWORD",
@@ -192,6 +167,26 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_MEDIA_API_HOST"],
             project_name=PROJECT_NAME,
         )
+
+        integration_token = read_plugin_setting(
+            "MAPS_INDOORS_INTEGRATION_API_TOKEN",
+            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_INTEGRATION_API_TOKEN"],
+            project_name=PROJECT_NAME,
+        )
+        if integration_token:
+            self.sync_module_settings.mapsindoors.integration_api_bearer_token = (
+                integration_token
+            )
+
+        manager_token = read_plugin_setting(
+            "MAPS_INDOORS_MANAGER_API_TOKEN",
+            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_MANAGER_API_TOKEN"],
+            project_name=PROJECT_NAME,
+        )
+        if manager_token:
+            self.sync_module_settings.mapsindoors.manager_api_bearer_token = (
+                manager_token
+            )
 
     def refresh_solution_combo_box(self, reload_venues: bool = True) -> None:
         from integration_system.mi.downloading import get_solution_name_external_id_map
@@ -291,10 +286,18 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         solution_depth = SolutionDepth.LOCATIONS
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())
-        include_route_elements = False
+        include_route_elements = read_plugin_setting(
+            "ADD_DOORS",
+            default_value=DEFAULT_PLUGIN_SETTINGS["ADD_DOORS"],
+            project_name=PROJECT_NAME,
+        )
         include_occupants = False
         include_media = False
-        include_graph = False
+        include_graph = read_plugin_setting(
+            "ADD_GRAPH",
+            default_value=DEFAULT_PLUGIN_SETTINGS["ADD_GRAPH"],
+            project_name=PROJECT_NAME,
+        )
         with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
             if venue_name.strip() == "":  # TODO: Not supported ATM
                 venues = list(self.venue_name_id_map.values())

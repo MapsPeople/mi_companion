@@ -11,7 +11,7 @@
             </rect>
         </property>
         <property name="windowTitle">
-            <string>Make Solution</string>
+            <string>Make New Solution</string>
         </property>
         <layout class="QVBoxLayout" name="parameter_layout">
             <item>

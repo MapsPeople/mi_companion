@@ -119,3 +119,5 @@ class SvgImportDialog(QDialog, FORM_CLASS):
                 logger.error(f"{v=}")
 
         run(**call_kwarg)
+
+        self.close()

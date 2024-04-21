@@ -13,8 +13,9 @@ from integration_system.mi.downloading import get_solution_name_external_id_map
 from mi_companion.configuration.constants import (
     MI_HIERARCHY_GROUP_NAME,
     SOLUTION_DESCRIPTOR,
+    SOLUTION_DATA_DESCRIPTOR,
 )
-from .venue import convert_venues
+from .venue import convert_solution_venues
 
 __all__ = ["layer_hierarchy_to_solution"]
 
@@ -26,57 +27,63 @@ def convert_solution_layers_to_solution(
     qgis_instance_handle,
     *,
     progress_bar: callable,
-    ith_solution: int,
-    num_solution_elements,
-    solution_group_item,
+    mi_group,
     settings: Settings,
-    solution_depth=SolutionDepth.LOCATIONS,
-    include_route_elements=False,
-    include_occupants=False,
-    include_media=False,
-    include_graph=False,
+    solution_depth: SolutionDepth = SolutionDepth.LOCATIONS,
+    include_route_elements: bool = False,
+    include_occupants: bool = False,
+    include_media: bool = False,
+    include_graph: bool = False,
 ) -> None:
-    # TODO: ASSERT SOLUTION_DESCRIPTOR in group name
-    assert SOLUTION_DESCRIPTOR in str(solution_group_item.name())
+    mi_group_children = mi_group.children()
+    num_mi_group_elements = len(mi_group_children)
+    for ith_child, mi_group_child in enumerate(mi_group_children):
+        if SOLUTION_DESCRIPTOR not in str(mi_group_child.name()):
+            return
 
-    if progress_bar:
-        progress_bar.setValue(
-            int(10 + (90 * (float(ith_solution + 1) / num_solution_elements)))
-        )
-    if isinstance(solution_group_item, QgsLayerTreeGroup):
-        logger.info(f"Serialising {str(solution_group_item.name())}")
+        if progress_bar:
+            progress_bar.setValue(
+                int(10 + (90 * (float(ith_child + 1) / num_mi_group_elements)))
+            )
+        if not isinstance(mi_group_child, QgsLayerTreeGroup):
+            logger.warning(f"{mi_group_child=} was skipped")
+            continue
 
-        solution_layer_name = (
-            str(solution_group_item.name()).split("(Solution)")[0].strip()
-        )
+        logger.info(f"Serialising {str(mi_group_child.name())}")
 
-        solution_data_layer_name = "solution_data"
+        solution_layer_name = str(mi_group_child.name()).split("(Solution)")[0].strip()
 
         found_solution_data = False
-        solution_data_layer: Optional[Dict] = None
-        for c in solution_group_item.children():
-            if solution_data_layer_name in c.name():
+        solution_data: Optional[Dict] = None
+        for child_solution_group in mi_group_child.children():
+            if SOLUTION_DATA_DESCRIPTOR in child_solution_group.name():
                 assert (
                     found_solution_data == False
-                ), f"Duplicate {solution_data_layer_name=} for {solution_layer_name=}"
+                ), f"Duplicate {SOLUTION_DATA_DESCRIPTOR=} for {solution_layer_name=}"
+
                 found_solution_data = True
 
-                solution_feature = c.layer().getFeature(1)  # 1 is first element
-                solution_data_layer = {
+                solution_point_feature_layer = next(
+                    iter(child_solution_group.layer().getFeatures())
+                )
+                solution_data = {
                     k.name(): v
                     for k, v in zip(
-                        solution_feature.fields(), solution_feature.attributes()
+                        solution_point_feature_layer.fields(),
+                        solution_point_feature_layer.attributes(),
                     )
                 }
 
-        assert (
-            found_solution_data
-        ), f"Did not find {solution_data_layer_name=} for {solution_layer_name=}"
+        if not solution_data:
+            logger.error(
+                f"Did not find solution_data layer, skipping {solution_layer_name}"
+            )
+            continue
 
-        solution_external_id = solution_data_layer["external_id"]
-        solution_customer_id = solution_data_layer["customer_id"]
-        solution_occupants_enabled = solution_data_layer["occupants_enabled"]
-        solution_name = solution_data_layer["name"]
+        solution_external_id = solution_data["external_id"]
+        solution_customer_id = solution_data["customer_id"]
+        solution_occupants_enabled = solution_data["occupants_enabled"]
+        solution_name = solution_data["name"]
 
         if solution_external_id is None:
             solution_external_id = solution_name
@@ -98,11 +105,11 @@ def convert_solution_layers_to_solution(
         else:
             existing_solution = None
 
-        logger.info(f"Converting {str(solution_group_item.name())}")
+        logger.info(f"Converting {str(mi_group_child.name())}")
 
-        convert_venues(
+        convert_solution_venues(
             qgis_instance_handle,
-            solution_group_item=solution_group_item,
+            mi_group_child=mi_group_child,
             existing_solution=existing_solution,
             progress_bar=progress_bar,
             solution_external_id=solution_external_id,
@@ -110,8 +117,8 @@ def convert_solution_layers_to_solution(
             solution_customer_id=solution_customer_id,
             solution_occupants_enabled=solution_occupants_enabled,
             settings=settings,
-            ith_solution=ith_solution,
-            num_solution_elements=num_solution_elements,
+            ith_solution=ith_child,
+            num_solution_elements=num_mi_group_elements,
             solution_depth=solution_depth,
             include_route_elements=include_route_elements,
             include_occupants=include_occupants,
@@ -165,19 +172,14 @@ def layer_hierarchy_to_solution(
     if progress_bar:
         progress_bar.setValue(10)
 
-    solution_elements = mi_group.children()
-    num_solution_elements = len(solution_elements)
-    for ith_solution, solution_group_item in enumerate(solution_elements):
-        convert_solution_layers_to_solution(
-            qgis_instance_handle,
-            progress_bar=progress_bar,
-            ith_solution=ith_solution,
-            num_solution_elements=num_solution_elements,
-            solution_group_item=solution_group_item,
-            settings=settings,
-            solution_depth=solution_depth,
-            include_route_elements=include_route_elements,
-            include_occupants=include_occupants,
-            include_media=include_media,
-            include_graph=include_graph,
-        )
+    convert_solution_layers_to_solution(
+        qgis_instance_handle,
+        progress_bar=progress_bar,
+        mi_group=mi_group,
+        settings=settings,
+        solution_depth=solution_depth,
+        include_route_elements=include_route_elements,
+        include_occupants=include_occupants,
+        include_media=include_media,
+        include_graph=include_graph,
+    )

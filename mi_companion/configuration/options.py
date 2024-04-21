@@ -19,7 +19,11 @@ from jord.qgis_utilities import read_plugin_setting, store_plugin_setting
 from jord.qgis_utilities.helpers import reconnect_signal
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt import QtGui, uic
+from qgis.PyQt import QtGui, uic, QtCore
+
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtGui import QStandardItem, QStandardItemModel
+
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QHBoxLayout
@@ -30,14 +34,14 @@ from qgis.core import QgsProject
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 
-from .project_settings import DEFAULT_PLUGIN_SETTINGS
+from .. import DEFAULT_PLUGIN_SETTINGS
 from ..constants import PROJECT_NAME, VERSION
 from ..utilities.paths import resolve_path, get_icon_path, load_icon
 
 QGIS_PROJECT = QgsProject.instance()
 VERBOSE = False
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 OptionWidget, OptionWidgetBase = uic.loadUiType(resolve_path("options.ui", __file__))
 
@@ -82,8 +86,6 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
     def populate_settings(self):
         # from qgis.core import QgsSettings
         # noinspection PyUnresolvedReferences
-        from qgis.PyQt.QtGui import QStandardItem, QStandardItemModel
-        from qgis.PyQt import QtCore
 
         # qs = QgsSettings()
         # setting_keys = qs.allKeys()
@@ -143,10 +145,17 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
     def setting_item_changed(self, item):  #: PyQt5.QtGui.QStandardItem
         try:
             key = self.settings_list_model.item(item.row(), 0).text()
-            value = self.type_map[key](item.text())
+            item_value = item.text()
+            if str(item_value).lower().strip() == ("false"):
+                value = False
+            else:
+                value = self.type_map[key](item_value)
+            logger.warning(
+                f"Storing new setting {id(value)=} for {key}"
+            )  # Only id to obscure sensitive information from logs
             store_plugin_setting(key, value, project_name=PROJECT_NAME)
         except Exception as e:
-            LOGGER.warning(e)
+            logger.warning(e)
 
 
 class DeploymentCompanionOptionsPage(QgsOptionsPageWidget):

@@ -10,7 +10,7 @@ from qgis.PyQt import uic
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
 
-__all__ = ["MakeBuildingDialog"]
+__all__ = ["GenerateConnectorsDialog"]
 
 
 try:  # Python >= 3.8
@@ -31,8 +31,8 @@ def is_optional(field) -> bool:
     return is_union(field) and type(None) in typing.get_args(field)
 
 
-class MakeBuildingDialog(QDialog, FORM_CLASS):
-    def __init__(self, parent=None):  #: QWidget
+class GenerateConnectorsDialog(QDialog, FORM_CLASS):
+    def __init__(self, parent=None):
         from jord.qgis_utilities.helpers import signals
 
         super().__init__(parent)
@@ -46,12 +46,8 @@ class MakeBuildingDialog(QDialog, FORM_CLASS):
 
         self.parameter_lines = {}
         self.parameter_signature = inspect.signature(run).parameters
-        self.ignore_keys = ["iface"]
 
         for k, v in self.parameter_signature.items():
-            if k in self.ignore_keys:
-                continue
-            h_box = QHBoxLayout()
             label_text = f"{k}"
             default = None
             if v.annotation != v.empty:
@@ -61,8 +57,10 @@ class MakeBuildingDialog(QDialog, FORM_CLASS):
                 default = v.default
                 label_text += f" = ({default})"
 
-            h_box.addWidget(QLabel(label_text))
             line_edit = QLineEdit(str(default))
+
+            h_box = QHBoxLayout()
+            h_box.addWidget(QLabel(label_text))
             h_box.addWidget(line_edit)
             h_box_w = QWidget(self)
             h_box_w.setLayout(h_box)
@@ -97,3 +95,5 @@ class MakeBuildingDialog(QDialog, FORM_CLASS):
                 call_kwarg[k] = value
 
         run(**call_kwarg)
+
+        self.close()
