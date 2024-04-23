@@ -3,7 +3,6 @@ import logging
 from typing import Optional
 
 import shapely
-from jord.shapely_utilities.base import clean_shape
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets

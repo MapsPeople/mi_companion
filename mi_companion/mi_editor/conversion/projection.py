@@ -10,22 +10,17 @@ __all__ = [
 ]
 
 import shapely
-from jord.qgis_utilities import read_plugin_setting
 
 from jord.shapely_utilities.base import clean_shape
 
-from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
+from mi_companion.configuration.options import read_bool_setting
 
 MI_EPSG_NUMBER = 4326
 GDS_EPSG_NUMBER = 3857
 
 
 def should_reproject() -> bool:
-    return read_plugin_setting(
-        "REPROJECT_SHAPES",
-        default_value=DEFAULT_PLUGIN_SETTINGS["REPROJECT_SHAPES"],
-        project_name=PROJECT_NAME,
-    )
+    return read_bool_setting("REPROJECT_SHAPES")
 
 
 SOURCE_CRS = pyproj.CRS(MI_EPSG_NUMBER)

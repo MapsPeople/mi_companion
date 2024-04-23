@@ -3,11 +3,10 @@ from collections import defaultdict
 from itertools import chain
 
 import shapely
-from jord.qgis_utilities import read_plugin_setting
 from jord.shapely_utilities import is_multi
 
 from integration_system.model import Room, Area
-from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
+from mi_companion.configuration.options import read_bool_setting
 
 logger = logging.getLogger(__name__)
 
@@ -55,11 +54,7 @@ def post_process_solution(solution):
                     building_floor_extras[building.key]
                 )
 
-    if read_plugin_setting(
-        "POST_FIT_FLOORS",
-        default_value=DEFAULT_PLUGIN_SETTINGS["POST_FIT_FLOORS"],
-        project_name=PROJECT_NAME,
-    ):
+    if read_bool_setting("POST_FIT_FLOORS"):
         logger.warning(f"Post fitting floors")
         if False:
             logger.error(floor_child_geoms)
@@ -75,11 +70,7 @@ def post_process_solution(solution):
                 continue
             solution.update_floor(f_id, polygon=new_floor_poly)
 
-    if read_plugin_setting(
-        "POST_FIT_BUILDINGS",
-        default_value=DEFAULT_PLUGIN_SETTINGS["POST_FIT_BUILDINGS"],
-        project_name=PROJECT_NAME,
-    ):
+    if read_bool_setting("POST_FIT_BUILDINGS"):
         logger.warning(f"Post fitting buildings")
         if False:
             logger.error(building_floor_polygons)
@@ -100,11 +91,7 @@ def post_process_solution(solution):
                 continue
             solution.update_building(b_id, polygon=new_building_poly)
 
-    if read_plugin_setting(
-        "POST_FIT_VENUES",
-        default_value=DEFAULT_PLUGIN_SETTINGS["POST_FIT_VENUES"],
-        project_name=PROJECT_NAME,
-    ):
+    if read_bool_setting("POST_FIT_VENUES"):
         logger.warning(f"Post fitting venues")
         if False:
             logger.error(venue_building_polygons)

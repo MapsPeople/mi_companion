@@ -2,7 +2,6 @@ import logging
 from typing import Optional
 
 import shapely
-from jord.shapely_utilities.base import clean_shape
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
@@ -10,6 +9,7 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 from mi_companion.configuration.constants import (
     HALF_SIZE,
     BUILDING_POLYGON_DESCRIPTOR,
+    GRAPH_DESCRIPTOR,
 )
 from .extraction import extract_layer_data
 from .floor import add_building_floor
@@ -53,10 +53,18 @@ def add_venue_buildings(
         if not isinstance(venue_group_item, QgsLayerTreeGroup):
             continue
 
+        if GRAPH_DESCRIPTOR in venue_group_item.name():
+            logger.warning(
+                f"Not handling graphs yet, {venue_group_item.name()}, skipping"
+            )
+            continue
+
         building_key = get_building_key(venue_group_item, solution, venue_key)
 
         if building_key is None:
-            logger.error(f"did not find building in {venue_group_item=}, skipping")
+            logger.error(
+                f"did not find building in {venue_group_item.name()}, skipping"
+            )
             continue
 
         add_building_floor(

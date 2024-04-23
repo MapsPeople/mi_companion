@@ -15,13 +15,13 @@ import integration_system
 from integration_system.mi import get_remote_solution, SolutionDepth
 from integration_system.mi.config import Settings, get_settings
 from integration_system.model import Solution
-from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
 from mi_companion.configuration.constants import (
     MI_HIERARCHY_GROUP_NAME,
     SOLUTION_DESCRIPTOR,
     SOLUTION_DATA_DESCRIPTOR,
     OSM_HIGHWAY_TYPES,
 )
+from mi_companion.configuration.options import read_bool_setting
 from .venue import add_venue_layer
 
 __all__ = ["solution_venue_to_layer_hierarchy", "add_solution_layers"]
@@ -61,11 +61,7 @@ def add_solution_layers(
     # solution_group.setExpanded(False)
 
     available_location_type_dropdown_widget = None
-    if read_plugin_setting(
-        "MAKE_LOCATION_TYPE_DROPDOWN",
-        default_value=DEFAULT_PLUGIN_SETTINGS["MAKE_LOCATION_TYPE_DROPDOWN"],
-        project_name=PROJECT_NAME,
-    ):
+    if read_bool_setting("MAKE_LOCATION_TYPE_DROPDOWN"):
         available_location_type_dropdown_widget = QgsEditorWidgetSetup(
             "ValueMap",
             {
@@ -77,11 +73,7 @@ def add_solution_layers(
         )
 
     door_type_dropdown_widget = None
-    if read_plugin_setting(
-        "MAKE_DOOR_TYPE_DROPDOWN",
-        default_value=DEFAULT_PLUGIN_SETTINGS["MAKE_DOOR_TYPE_DROPDOWN"],
-        project_name=PROJECT_NAME,
-    ):
+    if read_bool_setting("MAKE_DOOR_TYPE_DROPDOWN"):
         door_type_dropdown_widget = QgsEditorWidgetSetup(
             "ValueMap",
             {
@@ -95,11 +87,7 @@ def add_solution_layers(
         )
 
     highway_type_dropdown_widget = None
-    if read_plugin_setting(
-        "MAKE_HIGHWAY_TYPE_DROPDOWN",
-        default_value=DEFAULT_PLUGIN_SETTINGS["MAKE_HIGHWAY_TYPE_DROPDOWN"],
-        project_name=PROJECT_NAME,
-    ):
+    if read_plugin_setting("MAKE_HIGHWAY_TYPE_DROPDOWN"):
         highway_type_dropdown_widget = (
             QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
                 "ValueMap",

@@ -3,7 +3,6 @@ from itertools import count
 from typing import List, Collection
 
 import shapely
-from jord.qgis_utilities import read_plugin_setting
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtWidgets
@@ -16,12 +15,10 @@ from integration_system.constants import (
     SHAPELY_DIFFERENCE_DESCRIPTION,
 )
 from integration_system.mi import MIOperation, synchronize, SyncLevel
-from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 from mi_companion.configuration.constants import VERBOSE
+from mi_companion.configuration.options import read_bool_setting
 from mi_companion.gui.message_box import ResizableMessageBox
 from mi_companion.mi_editor.conversion.projection import (
-    should_reproject,
-    GDS_EPSG_NUMBER,
     MI_EPSG_NUMBER,
 )
 from .pre_upload_processing import post_process_solution
@@ -141,43 +138,27 @@ def sync_build_venue_solution(
         settings=settings,
         operation_progress_callback=(
             operation_progress_bar_callable
-            if read_plugin_setting(
-                "OPERATION_PROGRESS_BAR_ENABLED",
-                default_value=DEFAULT_PLUGIN_SETTINGS["OPERATION_PROGRESS_BAR_ENABLED"],
-                project_name=PROJECT_NAME,
-            )
+            if read_bool_setting("OPERATION_PROGRESS_BAR_ENABLED")
             else None
         ),
         solving_progress_callback=(
             solving_progress_bar_callable
-            if read_plugin_setting(
-                "SOLVING_PROGRESS_BAR_ENABLED",
-                default_value=DEFAULT_PLUGIN_SETTINGS["SOLVING_PROGRESS_BAR_ENABLED"],
-                project_name=PROJECT_NAME,
-            )
+            if read_bool_setting("SOLVING_PROGRESS_BAR_ENABLED")
             else None
         ),
         confirmation_callback=(
             confirmation_dialog
-            if read_plugin_setting(
-                "CONFIRMATION_DIALOG_ENABLED",
-                default_value=DEFAULT_PLUGIN_SETTINGS["CONFIRMATION_DIALOG_ENABLED"],
-                project_name=PROJECT_NAME,
-            )
+            if read_bool_setting("CONFIRMATION_DIALOG_ENABLED")
             else None
         ),
         depth=solution_depth,
-        include_route_elements=read_plugin_setting(
-            "SYNC_GRAPH_AND_ROUTE_ELEMENTS",
-            default_value=DEFAULT_PLUGIN_SETTINGS["SYNC_GRAPH_AND_ROUTE_ELEMENTS"],
-            project_name=PROJECT_NAME,
+        include_route_elements=read_bool_setting(
+            "SYNC_GRAPH_AND_ROUTE_ELEMENTS"
         ),  # include_route_elements,
         include_occupants=include_occupants,
         include_media=include_media,
-        include_graph=read_plugin_setting(
-            "SYNC_GRAPH_AND_ROUTE_ELEMENTS",
-            default_value=DEFAULT_PLUGIN_SETTINGS["SYNC_GRAPH_AND_ROUTE_ELEMENTS"],
-            project_name=PROJECT_NAME,
+        include_graph=read_bool_setting(
+            "SYNC_GRAPH_AND_ROUTE_ELEMENTS"
         ),  # include_graph,
     )
 

@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Sized, Collection
+from typing import Dict, Tuple, Collection
 
 import geopandas
 import osmnx

@@ -4,7 +4,6 @@ import logging
 from typing import Optional, Any, Iterable, List
 
 import geopandas
-from jord.qgis_utilities import read_plugin_setting
 from jord.qlive_utilities import add_dataframe_layer
 from pandas import DataFrame, json_normalize
 
@@ -14,12 +13,13 @@ from qgis.core import QgsEditorWidgetSetup
 from integration_system.mi.manager_model import MIVenue, MIFloor
 from integration_system.mixins import CollectionMixin
 from integration_system.model import Solution
-from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
 from mi_companion.configuration.constants import (
     REAL_NONE_JSON_VALUE,
 )
 
 __all__ = ["add_floor_content_layers"]
+
+from mi_companion.configuration.options import read_bool_setting
 
 from .custom_props import process_custom_props_df
 
@@ -199,11 +199,7 @@ def add_floor_content_layers(
         dropdown_widget=available_location_type_map_widget,
     )
 
-    if read_plugin_setting(
-        "ADD_DOORS",
-        default_value=DEFAULT_PLUGIN_SETTINGS["ADD_DOORS"],
-        project_name=PROJECT_NAME,
-    ):
+    if read_bool_setting("ADD_DOORS"):
         add_door_layer(
             solution.doors,
             graph=venue.graph,

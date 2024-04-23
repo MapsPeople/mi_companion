@@ -2,10 +2,8 @@ import logging
 from typing import Iterable
 from xml.etree.ElementTree import ParseError
 
-from jord.qgis_utilities import read_plugin_setting
 from jord.qlive_utilities import add_shapely_layer
 
-from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
 from mi_companion.configuration.constants import (
     VENUE_DESCRIPTOR,
     ALLOW_DUPLICATE_VENUES_IN_PROJECT,
@@ -14,6 +12,7 @@ from mi_companion.configuration.constants import (
     NAVIGATION_POINT_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
 )
+from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.graph.to_lines import osm_xml_to_lines
 from .building import add_building_layers
 from ...projection import (
@@ -84,11 +83,7 @@ def add_venue_layer(
             crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
         )
 
-        if read_plugin_setting(
-            "ADD_GRAPH",
-            default_value=DEFAULT_PLUGIN_SETTINGS["ADD_GRAPH"],
-            project_name=PROJECT_NAME,
-        ):  # add graph
+        if read_bool_setting("ADD_GRAPH"):  # add graph
             try:
                 if venue.graph and venue.graph.osm_xml:
                     (lines, lines_meta_data), (
@@ -104,11 +99,7 @@ def add_venue_layer(
                     graph_name = f"{venue.graph.graph_id} {GRAPH_DESCRIPTOR}"
 
                     graph_group = venue_group.insertGroup(INSERT_INDEX, graph_name)
-                    if not read_plugin_setting(
-                        "SHOW_GRAPH_ON_LOAD",
-                        default_value=DEFAULT_PLUGIN_SETTINGS["SHOW_GRAPH_ON_LOAD"],
-                        project_name=PROJECT_NAME,
-                    ):
+                    if not read_bool_setting("SHOW_GRAPH_ON_LOAD"):
                         graph_group.setExpanded(True)
                         graph_group.setExpanded(False)
                         graph_group.setItemVisibilityChecked(False)
@@ -148,12 +139,8 @@ def add_venue_layer(
                             name=NAVIGATION_POINT_DESCRIPTOR,
                             group=graph_group,
                             columns=points_meta_data,
-                            visible=read_plugin_setting(
+                            visible=read_bool_setting(
                                 "SHOW_GRAPH_ON_LOAD",
-                                default_value=DEFAULT_PLUGIN_SETTINGS[
-                                    "SHOW_GRAPH_ON_LOAD"
-                                ],
-                                project_name=PROJECT_NAME,
                             ),
                             crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
                         )

@@ -9,6 +9,9 @@
 
 """
 
+import logging
+from pathlib import Path
+
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QCoreApplication, QLocale, QTranslator
 
@@ -20,8 +23,6 @@ from qgis.PyQt.QtWidgets import QAction
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsSettings
-from pathlib import Path
-import logging
 
 logger = logging.getLogger(__name__)
 

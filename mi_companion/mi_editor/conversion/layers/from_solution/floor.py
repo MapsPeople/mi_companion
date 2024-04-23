@@ -1,13 +1,12 @@
 import logging
 
-from jord.qgis_utilities import read_plugin_setting
 from jord.qlive_utilities import add_shapely_layer
 
-from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
 from mi_companion.configuration.constants import (
     FLOOR_DESCRIPTOR,
     FLOOR_POLYGON_DESCRIPTOR,
 )
+from mi_companion.configuration.options import read_bool_setting
 from .location import add_floor_content_layers
 from ...projection import (
     prepare_geom_for_qgis,
@@ -41,10 +40,8 @@ def add_floor_layers(
             floor_group.setExpanded(True)
             floor_group.setExpanded(False)
 
-            if read_plugin_setting(
-                "ONLY_SHOW_FIRST_FLOOR",
-                default_value=DEFAULT_PLUGIN_SETTINGS["ONLY_SHOW_FIRST_FLOOR"],
-                project_name=PROJECT_NAME,
+            if read_bool_setting(
+                "ONLY_SHOW_FIRST_FLOOR"
             ):  # Only make first floor of building visible
                 if (
                     building_group.name in building_bottom_floor_tracker

@@ -2,8 +2,6 @@
 import uuid
 from typing import Optional
 
-from mi_companion.mi_editor.conversion.projection import MI_EPSG_NUMBER
-
 SOME_COMMENT_IGNORE_THIS = """
     decimal                            Distinguisable                          N/S or E/W  | E/W     E/W      E/W
 places  degrees     DMS                at this scale                           at equator  | 23N/S   45N/S    67N/S

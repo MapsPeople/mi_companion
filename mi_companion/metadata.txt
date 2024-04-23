@@ -1,5 +1,5 @@
 [general]
-name=MI Companion Dev
+name=MI Companion
 qgisMinimumVersion=3.26
 description=GDS tooling
 version=0.3.1
@@ -16,7 +16,7 @@ hasProcessingProvider=no
 homepage=https://git.rtx.mapspeople.com/MapsIndoors/
 category=Plugins
 #icon=icon.png
-icon=dev_icon.png
+icon=icon.png
 
 experimental=False
 

@@ -1,7 +1,6 @@
 import logging
 
 import shapely
-from jord.shapely_utilities.base import clean_shape
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (

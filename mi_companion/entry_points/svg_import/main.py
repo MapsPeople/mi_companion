@@ -3,12 +3,6 @@
 
 from pathlib import Path
 
-from mi_companion.mi_editor.conversion.projection import (
-    GDS_EPSG_NUMBER,
-    MI_EPSG_NUMBER,
-    should_reproject,
-)
-
 
 def run(*, path: str) -> None:
     from svaguely import parse_svg
