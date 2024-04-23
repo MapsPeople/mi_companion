@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Sized
+from typing import Dict, Tuple, Sized, Collection
 
 import geopandas
 import osmnx
@@ -20,7 +20,7 @@ def osm_xml_to_network(osm_xml: str) -> MultiDiGraph:
 
 def network_to_lines(
     graph: MultiDiGraph,
-) -> Tuple[Tuple[Sized, Dict], Tuple[Sized, Dict]]:
+) -> Tuple[Tuple[Collection, Dict], Tuple[Collection, Dict]]:
     if False:
         gpkg_cache_path = (
             ensure_existence(PROJECT_APP_PATH.site_cache) / "to_shape_file.gpkg"
@@ -65,7 +65,7 @@ def network_to_lines(
 
 def osm_xml_to_lines(
     osm_xml: str,
-) -> tuple[tuple[Sized, dict], tuple[Sized, dict]]:
+) -> tuple[tuple[Collection, dict], tuple[Collection, dict]]:
     (lines, lines_meta_data), (points, points_meta_data) = network_to_lines(
         osm_xml_to_network(osm_xml)
     )

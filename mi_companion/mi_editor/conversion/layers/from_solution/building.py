@@ -11,6 +11,13 @@ from .floor import add_floor_layers
 
 __all__ = ["add_building_layers"]
 
+from ...projection import (
+    prepare_geom_for_qgis,
+    GDS_EPSG_NUMBER,
+    should_reproject,
+    MI_EPSG_NUMBER,
+    INSERT_INDEX,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,18 +42,20 @@ def add_building_layers(
 
         if building.venue.external_id == venue.external_id:
             building_group = venue_group.insertGroup(
-                0, f"{building.name} {BUILDING_DESCRIPTOR}"
+                INSERT_INDEX + 1,  # 1+ for GRAPH
+                f"{building.name} {BUILDING_DESCRIPTOR}",
             )
             building_group.setExpanded(True)
             building_group.setExpanded(False)
 
             add_shapely_layer(
                 qgis_instance_handle=qgis_instance_handle,
-                geoms=[building.polygon],
+                geoms=[prepare_geom_for_qgis(building.polygon)],
                 name=BUILDING_POLYGON_DESCRIPTOR,
                 columns=[{"external_id": building.external_id, "name": building.name}],
                 group=building_group,
                 visible=False,
+                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
             )
 
             add_floor_layers(

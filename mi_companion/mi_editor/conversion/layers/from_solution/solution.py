@@ -26,6 +26,12 @@ from .venue import add_venue_layer
 
 __all__ = ["solution_venue_to_layer_hierarchy", "add_solution_layers"]
 
+from ...projection import (
+    GDS_EPSG_NUMBER,
+    should_reproject,
+    MI_EPSG_NUMBER,
+    prepare_geom_for_qgis,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +70,7 @@ def add_solution_layers(
             "ValueMap",
             {
                 "map": {
-                    k: solution.location_types.get(k).name
+                    solution.location_types.get(k).name: k
                     for k in sorted(solution.location_types.keys)
                 }
             },
@@ -80,8 +86,10 @@ def add_solution_layers(
             "ValueMap",
             {
                 "map": {
-                    f"({integration_system.model.DoorType.__getitem__(k)})": k
-                    for k in sorted({l.name for l in integration_system.model.DoorType})
+                    name: f"{integration_system.model.DoorType.__getitem__(name)}"
+                    for name in sorted(
+                        {l.name for l in integration_system.model.DoorType}
+                    )
                 }
             },
         )
@@ -119,7 +127,9 @@ def add_solution_layers(
                 qgis_instance_handle=qgis_instance_handle,
                 name=SOLUTION_DATA_DESCRIPTOR,
                 group=solution_group,
-                geoms=[solution_point],  # Does not really matter where this point is
+                geoms=[
+                    prepare_geom_for_qgis(solution_point)
+                ],  # Does not really matter where this point is
                 columns=[
                     {
                         "external_id": solution.external_id,
@@ -129,6 +139,7 @@ def add_solution_layers(
                     }
                 ],
                 visible=False,
+                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
             )
 
         if venue is None:

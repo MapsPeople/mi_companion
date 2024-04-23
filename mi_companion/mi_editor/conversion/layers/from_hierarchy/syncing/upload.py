@@ -19,6 +19,11 @@ from integration_system.mi import MIOperation, synchronize, SyncLevel
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 from mi_companion.configuration.constants import VERBOSE
 from mi_companion.gui.message_box import ResizableMessageBox
+from mi_companion.mi_editor.conversion.projection import (
+    should_reproject,
+    GDS_EPSG_NUMBER,
+    MI_EPSG_NUMBER,
+)
 from .pre_upload_processing import post_process_solution
 
 logger = logging.getLogger(__name__)
@@ -241,7 +246,7 @@ def show_differences(
 
             df = geopandas.GeoDataFrame(
                 {"op_ith": differences.keys(), "geometry": differences.values()},
-                crs="EPSG:3857",
+                crs=f"EPSG:{MI_EPSG_NUMBER}",
                 geometry="geometry",
             )
             from jord.qlive_utilities import add_dataframe_layer
@@ -252,6 +257,7 @@ def show_differences(
                 geometry_column="geometry",
                 name=f"{o.object_type.__name__} differences",
                 group=venue_difference_group,
+                crs=f"EPSG:{MI_EPSG_NUMBER}",
             )
         except Exception as e:  # TODO: HANDLE MIxed GEOM TYPES!
             logger.error(e)

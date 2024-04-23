@@ -16,6 +16,13 @@ from mi_companion.configuration.constants import (
 )
 from mi_companion.mi_editor.conversion.graph.to_lines import osm_xml_to_lines
 from .building import add_building_layers
+from ...projection import (
+    prepare_geom_for_qgis,
+    should_reproject,
+    MI_EPSG_NUMBER,
+    GDS_EPSG_NUMBER,
+    INSERT_INDEX,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -46,9 +53,36 @@ def add_venue_layer(
                 logger.error("Venue already loaded!")
                 continue
 
-        venue_group = solution_group.insertGroup(0, venue_name)
+        venue_group = solution_group.insertGroup(
+            INSERT_INDEX, venue_name
+        )  # Skip solution data
         venue_group.setExpanded(True)
         venue_group.setExpanded(False)
+
+        add_shapely_layer(
+            qgis_instance_handle=qgis_instance_handle,
+            geoms=[prepare_geom_for_qgis(venue.polygon)],
+            name=VENUE_POLYGON_DESCRIPTOR,
+            columns=[
+                {
+                    "external_id": venue.external_id,
+                    "name": venue.name,
+                    "last_verified": venue.last_verified,
+                    **(
+                        {
+                            f"custom_properties.{lang}.{prop}": str(v)
+                            for lang, props_map in venue.custom_properties.items()
+                            for prop, v in props_map.items()
+                        }
+                        if venue.custom_properties
+                        else {}
+                    ),
+                }
+            ],
+            group=venue_group,
+            visible=False,
+            crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
+        )
 
         if read_plugin_setting(
             "ADD_GRAPH",
@@ -62,11 +96,14 @@ def add_venue_layer(
                         points_meta_data,
                     ) = osm_xml_to_lines(venue.graph.osm_xml)
 
+                    lines = [prepare_geom_for_qgis(l) for l in lines]
+                    points = [prepare_geom_for_qgis(l) for l in points]
+
                     logger.info(f"{len(lines)=} loaded!")
 
                     graph_name = f"{venue.graph.graph_id} {GRAPH_DESCRIPTOR}"
 
-                    graph_group = venue_group.insertGroup(0, graph_name)
+                    graph_group = venue_group.insertGroup(INSERT_INDEX, graph_name)
                     if not read_plugin_setting(
                         "SHOW_GRAPH_ON_LOAD",
                         default_value=DEFAULT_PLUGIN_SETTINGS["SHOW_GRAPH_ON_LOAD"],
@@ -84,6 +121,7 @@ def add_venue_layer(
                         columns=lines_meta_data,
                         categorise_by_attribute="highway",
                         visible=True,
+                        crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
                     )
 
                     if highway_type_dropdown_widget:
@@ -117,36 +155,13 @@ def add_venue_layer(
                                 ],
                                 project_name=PROJECT_NAME,
                             ),
+                            crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
                         )
                 else:
                     logger.warning(f"Venue does not have a valid graph {venue.graph}")
 
             except ParseError as e:
                 logger.error(e)
-
-        add_shapely_layer(
-            qgis_instance_handle=qgis_instance_handle,
-            geoms=[venue.polygon],
-            name=VENUE_POLYGON_DESCRIPTOR,
-            columns=[
-                {
-                    "external_id": venue.external_id,
-                    "name": venue.name,
-                    "last_verified": venue.last_verified,
-                    **(
-                        {
-                            f"custom_properties.{lang}.{prop}": str(v)
-                            for lang, props_map in venue.custom_properties.items()
-                            for prop, v in props_map.items()
-                        }
-                        if venue.custom_properties
-                        else {}
-                    ),
-                }
-            ],
-            group=venue_group,
-            visible=False,
-        )
 
         if progress_bar:
             progress_bar.setValue(20)

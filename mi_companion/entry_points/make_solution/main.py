@@ -2,6 +2,7 @@
 import uuid
 from typing import Optional
 
+from mi_companion.mi_editor.conversion.projection import MI_EPSG_NUMBER
 
 SOME_COMMENT_IGNORE_THIS = """
     decimal                            Distinguisable                          N/S or E/W  | E/W     E/W      E/W
@@ -25,9 +26,9 @@ def run(
     *,
     name: str = "New Solution",
     customer_id: str = "4ba27f32c1034ca880431259",
-    lat: Optional[float] = None,
-    long: Optional[float] = None,
-    diagonal_decimal_degrees: float = 1e-4
+    wgs84_degree_lat: Optional[float] = None,
+    wgs84_degree_long: Optional[float] = None,
+    wgs84_degree_venue_size_sq: float = 1e-4,
 ) -> None:
     import shapely
     from jord.shapely_utilities import dilate
@@ -35,10 +36,11 @@ def run(
         add_solution_layers,
     )
 
-    if lat is None:
-        lat = 0
-    if long is None:
-        long = 0
+    if wgs84_degree_lat is None:
+        wgs84_degree_lat = 0
+
+    if wgs84_degree_long is None:
+        wgs84_degree_long = 0
 
     # noinspection PyUnresolvedReferences
     from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
@@ -51,8 +53,8 @@ def run(
     s = Solution(uuid.uuid4().hex, name, customer_id=customer_id)
     venue_name = "Empty Venue"
     venue_polygon = dilate(
-        shapely.Point(lat, long),
-        distance=diagonal_decimal_degrees,
+        shapely.Point(wgs84_degree_lat, wgs84_degree_long),
+        distance=wgs84_degree_venue_size_sq,
         cap_style=shapely.BufferCapStyle.square,
     )
     venue_key = s.add_venue(venue_name, venue_name, polygon=venue_polygon)

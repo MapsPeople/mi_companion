@@ -84,6 +84,7 @@ def convert_solution_layers_to_solution(
         solution_customer_id = solution_data["customer_id"]
         solution_occupants_enabled = solution_data["occupants_enabled"]
         solution_name = solution_data["name"]
+        # cached_solution_object =solution_data['cached_solution_object'] # TODO: Store a string to cached Solution object pickle
 
         if solution_external_id is None:
             solution_external_id = solution_name

@@ -26,6 +26,7 @@ __all__ = ["convert_solution_venues"]
 
 from .extraction import extract_layer_data
 from .syncing import sync_build_venue_solution
+from ...projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
 
@@ -135,7 +136,7 @@ def get_venue_key(solution, venue_group_items) -> Optional[str]:
                 return solution.add_venue(
                     external_id=external_id,
                     name=name,
-                    polygon=clean_shape(geom_shapely),
+                    polygon=prepare_geom_for_mi_db(geom_shapely),
                     custom_properties=(
                         custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
                     ),

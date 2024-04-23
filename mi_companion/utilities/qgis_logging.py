@@ -6,6 +6,8 @@ import google.auth.exceptions
 import google.cloud
 import google.cloud.logging
 import yaml
+
+# noinspection PyUnresolvedReferences
 from qgis.core import Qgis, QgsMessageLog
 
 __doc__ = "Logging"

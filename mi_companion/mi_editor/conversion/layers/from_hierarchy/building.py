@@ -13,6 +13,7 @@ from mi_companion.configuration.constants import (
 )
 from .extraction import extract_layer_data
 from .floor import add_building_floor
+from ...projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
 
@@ -94,6 +95,6 @@ def get_building_key(building_group_items, solution, venue_key) -> Optional[str]
                     return solution.add_building(
                         external_id=external_id,
                         name=name,
-                        polygon=clean_shape(geom_shapely),
+                        polygon=prepare_geom_for_mi_db(geom_shapely),
                         venue_key=venue_key,
                     )

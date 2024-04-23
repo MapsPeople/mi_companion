@@ -3,6 +3,12 @@
 
 from pathlib import Path
 
+from mi_companion.mi_editor.conversion.projection import (
+    GDS_EPSG_NUMBER,
+    MI_EPSG_NUMBER,
+    should_reproject,
+)
+
 
 def run(*, path: str) -> None:
     from svaguely import parse_svg
@@ -33,4 +39,6 @@ def run(*, path: str) -> None:
         dataframe=df,
         geometry_column="geometry",
         name=str(path),
+        crs="EPSG:3857",
+        # crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
     )

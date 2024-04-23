@@ -24,6 +24,7 @@ from mi_companion.mi_editor.conversion.layers.type_enums import LocationTypeEnum
 
 __all__ = ["add_floor_contents"]
 
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
 
@@ -98,15 +99,17 @@ def add_floor_locations(
 
                         if location_type == LocationTypeEnum.ROOM:
                             room_key = solution.add_room(
-                                polygon=clean_shape(geom_shapely), **common_kvs
+                                polygon=prepare_geom_for_mi_db(geom_shapely),
+                                **common_kvs,
                             )
                         elif location_type == LocationTypeEnum.AREA:
                             room_key = solution.add_area(
-                                polygon=clean_shape(geom_shapely), **common_kvs
+                                polygon=prepare_geom_for_mi_db(geom_shapely),
+                                **common_kvs,
                             )
                         elif location_type == LocationTypeEnum.POI:
                             room_key = solution.add_point_of_interest(
-                                point=clean_shape(geom_shapely), **common_kvs
+                                point=prepare_geom_for_mi_db(geom_shapely), **common_kvs
                             )
                         else:
                             raise Exception(f"{location_type=} is unknown")
@@ -172,7 +175,7 @@ def add_floor_contents(
 
                 door_key = solution.add_door(
                     door_attributes["external_id"],
-                    linestring=clean_shape(
+                    linestring=prepare_geom_for_mi_db(
                         shapely.from_wkt(door_feature.geometry().asWkt())
                     ),
                     door_type=door_attributes["door_type"],

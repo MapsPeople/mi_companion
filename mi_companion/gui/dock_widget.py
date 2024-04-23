@@ -37,12 +37,14 @@ from mi_companion.mi_editor import (
 )
 from .. import DEFAULT_PLUGIN_SETTINGS
 from ..constants import PROJECT_NAME, VERSION
-from ..entry_points.cad_area import CadAreaDialog
+
+# from ..entry_points.cad_area import CadAreaDialog
 from ..entry_points.duplicate_group import DuplicateGroupDialog
 from ..entry_points.make_solution import MakeSolutionDialog
 from ..entry_points.regen_external_ids import RegenExternalIdsDialog
 from ..entry_points.svg_import import SvgImportDialog
 from ..entry_points.compatibility import CompatibilityDialog
+from ..mi_editor.conversion.projection import MI_EPSG_NUMBER
 from ..utilities.paths import get_icon_path, resolve_path
 from ..utilities.string_parsing import extract_wkt_elements
 
@@ -126,7 +128,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.entry_point_dialogs = {
             "Make Solution": MakeSolutionDialog(),
             "Duplicate Group": DuplicateGroupDialog(),
-            "Cad Area": CadAreaDialog(),
+            # "Cad Area": CadAreaDialog(),
             "Import SVG": SvgImportDialog(),
             "Regen External Ids": RegenExternalIdsDialog(),
             # "Diff Tool": InstanceRoomsDialog(),
@@ -407,6 +409,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                     elements,
                     name="exceptions",
                     columns=[{"contexts": c} for c in contexts],
+                    crs=f"EPSG:{ MI_EPSG_NUMBER }",
                 )
         except:
             ...

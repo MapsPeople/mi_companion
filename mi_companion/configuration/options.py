@@ -146,13 +146,16 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         try:
             key = self.settings_list_model.item(item.row(), 0).text()
             item_value = item.text()
-            if str(item_value).lower().strip() == ("false"):
+
+            if str(item_value).lower().strip() == "false":
                 value = False
             else:
                 value = self.type_map[key](item_value)
+
             logger.warning(
                 f"Storing new setting {id(value)=} for {key}"
             )  # Only id to obscure sensitive information from logs
+
             store_plugin_setting(key, value, project_name=PROJECT_NAME)
         except Exception as e:
             logger.warning(e)
