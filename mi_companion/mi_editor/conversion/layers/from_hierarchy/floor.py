@@ -1,6 +1,7 @@
 import logging
 
 import shapely
+from integration_system.model import Solution
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -26,9 +27,9 @@ __all__ = ["add_building_floor"]
 
 def add_building_floor(
     *,
-    building_key,
+    building_key: str,
     venue_group_item,
-    solution,
+    solution: Solution,
     progress_bar,
     ith_solution,
     ith_venue,

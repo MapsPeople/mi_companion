@@ -7,6 +7,7 @@ from mi_companion.configuration.constants import (
     BUILDING_DESCRIPTOR,
     BUILDING_POLYGON_DESCRIPTOR,
 )
+from .fields import make_field_unique
 from .floor import add_floor_layers
 
 __all__ = ["add_building_layers"]
@@ -48,7 +49,7 @@ def add_building_layers(
             building_group.setExpanded(True)
             building_group.setExpanded(False)
 
-            add_shapely_layer(
+            building_layer = add_shapely_layer(
                 qgis_instance_handle=qgis_instance_handle,
                 geoms=[prepare_geom_for_qgis(building.polygon)],
                 name=BUILDING_POLYGON_DESCRIPTOR,
@@ -57,6 +58,7 @@ def add_building_layers(
                 visible=False,
                 crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
             )
+            make_field_unique(building_layer)
 
             add_floor_layers(
                 available_location_type_map_widget,

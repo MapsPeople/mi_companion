@@ -65,6 +65,8 @@ def sync_build_venue_solution(
 
     post_process_solution(solution)
 
+    window_title = f"Sync {solution_name}:{next(iter(solution.venues)).name} venue"
+
     def solving_progress_bar_callable(ith: int, total: int) -> None:
         progress_bar.setValue(int(20 + (ith / total) * 80))
         logger.debug(f"Solving: {ith}/{total}")
@@ -80,8 +82,6 @@ def sync_build_venue_solution(
         # qgis_instance_handle.iface.messageBar().pushMessage(before, text, level=level, duration=duration)
 
     def confirmation_dialog(operations: List[MIOperation]) -> bool:
-        window_title = f"Sync {solution_name} Venues"
-
         if operations is None or len(operations) == 0:
             QtWidgets.QMessageBox.information(
                 None, window_title, "No difference was found, no operations"
@@ -132,7 +132,7 @@ def sync_build_venue_solution(
 
         return False
 
-    synchronize(
+    success = synchronize(
         solution,
         sync_level=SyncLevel.VENUE,
         settings=settings,
@@ -164,6 +164,9 @@ def sync_build_venue_solution(
 
     if VERBOSE:
         logger.info("Synchronised")
+
+    if success:
+        QtWidgets.QMessageBox.information(None, window_title, "Success")
 
 
 def show_differences(

@@ -15,6 +15,7 @@ from mi_companion.configuration.constants import (
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.graph.to_lines import osm_xml_to_lines
 from .building import add_building_layers
+from .fields import make_field_unique
 from ...projection import (
     prepare_geom_for_qgis,
     should_reproject,
@@ -58,7 +59,7 @@ def add_venue_layer(
         venue_group.setExpanded(True)
         venue_group.setExpanded(False)
 
-        add_shapely_layer(
+        venue_layer = add_shapely_layer(
             qgis_instance_handle=qgis_instance_handle,
             geoms=[prepare_geom_for_qgis(venue.polygon)],
             name=VENUE_POLYGON_DESCRIPTOR,
@@ -82,6 +83,8 @@ def add_venue_layer(
             visible=False,
             crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
         )
+
+        make_field_unique(venue_layer)
 
         if read_bool_setting("ADD_GRAPH"):  # add graph
             try:

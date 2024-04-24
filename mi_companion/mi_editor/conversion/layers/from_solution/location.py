@@ -1,7 +1,7 @@
 import copy
 import dataclasses
 import logging
-from typing import Optional, Any, Iterable, List
+from typing import Optional, Any, List
 
 import geopandas
 from jord.qlive_utilities import add_dataframe_layer
@@ -24,6 +24,7 @@ from mi_companion.configuration.options import read_bool_setting
 from .custom_props import process_custom_props_df
 
 from mi_companion.mi_editor.conversion.layers.type_enums import LocationTypeEnum
+from .fields import add_dropdown_widget, make_field_unique
 from ...projection import (
     reproject_geometry_df,
     MI_EPSG_NUMBER,
@@ -48,24 +49,6 @@ def to_df(coll_mix: CollectionMixin) -> DataFrame:
                 setattr(c, "custom_properties", cps)
         cs.append(dataclasses.asdict(c))
     return json_normalize(cs)
-
-
-def add_dropdown_widget(layer, field_name: str, widget) -> None:
-    # https://gis.stackexchange.com/questions/470963/setting-dropdown-on-feature-attribute-form-using-plugin
-    for layers_inner in layer:
-        if layers_inner:
-            if isinstance(layers_inner, Iterable):
-                for layer in layers_inner:
-                    if layer:
-                        layer.setEditorWidgetSetup(
-                            layer.fields().indexFromName(field_name),
-                            widget,
-                        )
-            else:
-                layers_inner.setEditorWidgetSetup(
-                    layers_inner.fields().indexFromName(field_name),
-                    widget,
-                )
 
 
 def add_location_layer(
@@ -120,6 +103,8 @@ def add_location_layer(
                 dropdown_widget,
             )
 
+        make_field_unique(added_layers)
+
         return added_layers
 
 
@@ -157,6 +142,8 @@ def add_door_layer(
 
         if dropdown_widget:
             add_dropdown_widget(door_layer, "door_type", dropdown_widget)
+
+        make_field_unique(door_layer)
 
 
 def add_floor_content_layers(

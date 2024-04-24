@@ -7,6 +7,7 @@ from mi_companion.configuration.constants import (
     FLOOR_POLYGON_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
+from .fields import make_field_unique
 from .location import add_floor_content_layers
 from ...projection import (
     prepare_geom_for_qgis,
@@ -52,8 +53,9 @@ def add_floor_layers(
                         floor.floor_index
                     )
 
+            floor_layer = None
             if INSERT_INDEX == 0:
-                add_shapely_layer(
+                floor_layer = add_shapely_layer(
                     qgis_instance_handle=qgis_instance_handle,
                     geoms=[prepare_geom_for_qgis(floor.polygon)],
                     name=FLOOR_POLYGON_DESCRIPTOR,
@@ -80,7 +82,7 @@ def add_floor_layers(
             )
 
             if INSERT_INDEX > 0:
-                add_shapely_layer(
+                floor_layer = add_shapely_layer(
                     qgis_instance_handle=qgis_instance_handle,
                     geoms=[prepare_geom_for_qgis(floor.polygon)],
                     name=FLOOR_POLYGON_DESCRIPTOR,
@@ -95,3 +97,6 @@ def add_floor_layers(
                     visible=False,
                     crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
                 )
+
+            assert floor_layer is not None
+            make_field_unique(floor_layer)
