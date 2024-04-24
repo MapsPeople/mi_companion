@@ -1,15 +1,15 @@
 fail_fast: true
 #exclude: '^exclude'
 repos:
-  - repo: local
-    hooks:
-      - id: no_implicit_optional
-        name: no_implicit_optional
-        entry: pipx run no_implicit_optional
-        language: system
-        pass_filenames: true
-        types: [file, python]
-        files: \.(py.j2|py)$
+  #  - repo: local
+  #    hooks:
+  #      - id: no_implicit_optional
+  #        name: no_implicit_optional
+  #        entry: pipx run no_implicit_optional
+  #        language: system
+  #        pass_filenames: true
+  #        types: [file, python]
+  #        files: \.(py.j2|py)$
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.15.1

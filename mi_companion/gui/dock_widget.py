@@ -36,13 +36,16 @@ from mi_companion.mi_editor import (
     revert_venues,
 )
 from .. import DEFAULT_PLUGIN_SETTINGS
+from ..configuration.options import read_bool_setting
 from ..constants import PROJECT_NAME, VERSION
-from ..entry_points.cad_area import CadAreaDialog
+from ..entry_points.compatibility import CompatibilityDialog
+
+# from ..entry_points.cad_area import CadAreaDialog
 from ..entry_points.duplicate_group import DuplicateGroupDialog
 from ..entry_points.make_solution import MakeSolutionDialog
 from ..entry_points.regen_external_ids import RegenExternalIdsDialog
 from ..entry_points.svg_import import SvgImportDialog
-from ..entry_points.compatibility import CompatibilityDialog
+from ..mi_editor.conversion.projection import MI_EPSG_NUMBER
 from ..utilities.paths import get_icon_path, resolve_path
 from ..utilities.string_parsing import extract_wkt_elements
 
@@ -110,11 +113,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # signals.reconnect_signal(self.revert_button.clicked, self.revert_button_clicked)
 
         self.solution_depth_combo_box = None
-        if read_plugin_setting(
-            "ADVANCED_MODE",
-            default_value=DEFAULT_PLUGIN_SETTINGS["ADVANCED_MODE"],
-            project_name=PROJECT_NAME,
-        ):
+        if read_bool_setting("ADVANCED_MODE"):
             self.solution_depth_combo_box = None
             if False:
                 self.sync_layout.addWidget(self.solution_depth_combo_box)
@@ -126,9 +125,10 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.entry_point_dialogs = {
             "Make Solution": MakeSolutionDialog(),
             "Duplicate Group": DuplicateGroupDialog(),
-            "Cad Area": CadAreaDialog(),
+            # "Cad Area": CadAreaDialog(),
             "Import SVG": SvgImportDialog(),
-            "Regen External Ids": RegenExternalIdsDialog(),
+            "Regen Group/Layer Field": RegenExternalIdsDialog(),
+            # "Regen Selected Feature Field": RegenExternalIdsDialog(),
             # "Diff Tool": InstanceRoomsDialog(),
             "Compatibility": CompatibilityDialog(),
             # "Generate Connectors": GenerateConnectorsDialog(),
@@ -286,18 +286,10 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         solution_depth = SolutionDepth.LOCATIONS
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())
-        include_route_elements = read_plugin_setting(
-            "ADD_DOORS",
-            default_value=DEFAULT_PLUGIN_SETTINGS["ADD_DOORS"],
-            project_name=PROJECT_NAME,
-        )
+        include_route_elements = read_bool_setting("ADD_DOORS")
         include_occupants = False
         include_media = False
-        include_graph = read_plugin_setting(
-            "ADD_GRAPH",
-            default_value=DEFAULT_PLUGIN_SETTINGS["ADD_GRAPH"],
-            project_name=PROJECT_NAME,
-        )
+        include_graph = read_bool_setting("ADD_GRAPH")
         with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
             if venue_name.strip() == "":  # TODO: Not supported ATM
                 venues = list(self.venue_name_id_map.values())
@@ -407,6 +399,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                     elements,
                     name="exceptions",
                     columns=[{"contexts": c} for c in contexts],
+                    crs=f"EPSG:{ MI_EPSG_NUMBER }",
                 )
         except:
             ...

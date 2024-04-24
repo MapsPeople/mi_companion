@@ -1,7 +1,8 @@
 import logging
 import uuid
 
-from jord.qgis_utilities import read_plugin_setting
+# noinspection PyUnresolvedReferences
+from qgis.PyQt import QtWidgets, uic
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -11,10 +12,7 @@ from qgis.core import (
     QgsFeatureRequest,
 )
 
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtWidgets, uic
-
-from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
+from mi_companion.configuration.options import read_bool_setting
 
 logger = logging.getLogger(__name__)
 
@@ -39,11 +37,7 @@ def extract_layer_data(layer_tree_layer):
 
     external_id = layer_attributes["external_id"]
     if external_id is None:
-        if read_plugin_setting(
-            "GENERATE_MISSING_EXTERNAL_IDS",
-            default_value=DEFAULT_PLUGIN_SETTINGS["GENERATE_MISSING_EXTERNAL_IDS"],
-            project_name=PROJECT_NAME,
-        ):
+        if read_bool_setting("GENERATE_MISSING_EXTERNAL_IDS"):
             external_id = uuid.uuid4().hex
         else:
             raise ValueError(f"{layer_feature} is missing a valid external id")

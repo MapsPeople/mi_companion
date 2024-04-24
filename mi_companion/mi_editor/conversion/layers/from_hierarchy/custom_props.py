@@ -2,6 +2,11 @@ import logging
 import math
 from collections import defaultdict
 
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtCore import QVariant
+
+# noinspection PyUnresolvedReferences
+# from qgis.core.QgsVariantUtils import isNull, typeToDisplayString
 import numpy
 
 from mi_companion.configuration.constants import (
@@ -49,6 +54,12 @@ def extract_custom_props(layer_attributes):
                         custom_props[lang][cname] = v
                 elif v is None:
                     custom_props[lang][cname] = None
+                elif isinstance(v, QVariant):
+                    # logger.warning(f"{typeToDisplayString(type(v))}")
+                    if v.isNull():  # isNull(v):
+                        custom_props[lang][cname] = None
+                    else:
+                        custom_props[lang][cname] = v.value()
                 else:
                     custom_props[lang][cname] = v
     return custom_props

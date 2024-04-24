@@ -1,3 +1,5 @@
+0.3.1 More robust hierarchy parsing, and change default target CRS to 3857 and convert back to 4326 on upload
+
 0.3.0 Graph disabled, compat entry point and square new solution default polygons
 
 0.2.9 Major parsing refactor, more logging

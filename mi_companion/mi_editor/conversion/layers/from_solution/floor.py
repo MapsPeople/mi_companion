@@ -1,14 +1,21 @@
 import logging
 
-from jord.qgis_utilities import read_plugin_setting
 from jord.qlive_utilities import add_shapely_layer
 
-from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
 from mi_companion.configuration.constants import (
     FLOOR_DESCRIPTOR,
     FLOOR_POLYGON_DESCRIPTOR,
 )
+from mi_companion.configuration.options import read_bool_setting
+from .fields import make_field_unique
 from .location import add_floor_content_layers
+from ...projection import (
+    prepare_geom_for_qgis,
+    should_reproject,
+    GDS_EPSG_NUMBER,
+    MI_EPSG_NUMBER,
+    INSERT_INDEX,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -29,15 +36,13 @@ def add_floor_layers(
         if floor.building.external_id == building.external_id:
             floor_name = f"{floor.name} {FLOOR_DESCRIPTOR}"
             floor_group = building_group.insertGroup(
-                0, floor_name
+                INSERT_INDEX, floor_name
             )  # MutuallyExclusive = True # TODO: Maybe only show on floor at a time?
             floor_group.setExpanded(True)
             floor_group.setExpanded(False)
 
-            if read_plugin_setting(
-                "ONLY_SHOW_FIRST_FLOOR",
-                default_value=DEFAULT_PLUGIN_SETTINGS["ONLY_SHOW_FIRST_FLOOR"],
-                project_name=PROJECT_NAME,
+            if read_bool_setting(
+                "ONLY_SHOW_FIRST_FLOOR"
             ):  # Only make first floor of building visible
                 if (
                     building_group.name in building_bottom_floor_tracker
@@ -48,20 +53,23 @@ def add_floor_layers(
                         floor.floor_index
                     )
 
-            add_shapely_layer(
-                qgis_instance_handle=qgis_instance_handle,
-                geoms=[floor.polygon],
-                name=FLOOR_POLYGON_DESCRIPTOR,
-                columns=[
-                    {
-                        "external_id": floor.external_id,
-                        "name": floor.name,
-                        "floor_index": floor.floor_index,
-                    }
-                ],
-                group=floor_group,
-                visible=False,
-            )
+            floor_layer = None
+            if INSERT_INDEX == 0:
+                floor_layer = add_shapely_layer(
+                    qgis_instance_handle=qgis_instance_handle,
+                    geoms=[prepare_geom_for_qgis(floor.polygon)],
+                    name=FLOOR_POLYGON_DESCRIPTOR,
+                    columns=[
+                        {
+                            "external_id": floor.external_id,
+                            "name": floor.name,
+                            "floor_index": floor.floor_index,
+                        }
+                    ],
+                    group=floor_group,
+                    visible=False,
+                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
+                )
 
             add_floor_content_layers(
                 qgis_instance_handle=qgis_instance_handle,
@@ -72,3 +80,23 @@ def add_floor_layers(
                 available_location_type_map_widget=available_location_type_map_widget,
                 door_type_dropdown_widget=door_type_dropdown_widget,
             )
+
+            if INSERT_INDEX > 0:
+                floor_layer = add_shapely_layer(
+                    qgis_instance_handle=qgis_instance_handle,
+                    geoms=[prepare_geom_for_qgis(floor.polygon)],
+                    name=FLOOR_POLYGON_DESCRIPTOR,
+                    columns=[
+                        {
+                            "external_id": floor.external_id,
+                            "name": floor.name,
+                            "floor_index": floor.floor_index,
+                        }
+                    ],
+                    group=floor_group,
+                    visible=False,
+                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
+                )
+
+            assert floor_layer is not None
+            make_field_unique(floor_layer)

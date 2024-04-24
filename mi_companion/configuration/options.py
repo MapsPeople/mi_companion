@@ -24,7 +24,6 @@ from qgis.PyQt import QtGui, uic, QtCore
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QStandardItem, QStandardItemModel
 
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QHBoxLayout
 
@@ -111,7 +110,7 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
             state_item = QStandardItem(str(q))
             state_item.setDragEnabled(False)
 
-            self.type_map[k] = type(q)
+            self.type_map[k] = type(DEFAULT_PLUGIN_SETTINGS[k])
 
             self.settings_list_model.appendRow(
                 [
@@ -146,16 +145,43 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         try:
             key = self.settings_list_model.item(item.row(), 0).text()
             item_value = item.text()
-            if str(item_value).lower().strip() == ("false"):
+
+            if "false" in str(item_value).lower().strip():
                 value = False
             else:
                 value = self.type_map[key](item_value)
+
+            if isinstance(value, bool):
+                logger.warning(f"{key} = {value}")
+
             logger.warning(
                 f"Storing new setting {id(value)=} for {key}"
             )  # Only id to obscure sensitive information from logs
+
             store_plugin_setting(key, value, project_name=PROJECT_NAME)
         except Exception as e:
             logger.warning(e)
+
+
+def read_bool_setting(key: str) -> bool:
+    v = read_plugin_setting(
+        key,
+        default_value=DEFAULT_PLUGIN_SETTINGS[key],
+        project_name=PROJECT_NAME,
+    )
+    if isinstance(v, bool):
+        return v
+
+    elif isinstance(v, str):
+        # logger.warning(f"Bool {key} setting was a string with the value {v}")
+        if "false" in str(v).lower().strip():
+            # logger.warning(f"{key} = {False}")
+            return False
+        else:
+            # logger.warning(f"{key} = {True}")
+            return True
+    else:
+        raise Exception(f"{v=} was invalid for bool setting")
 
 
 class DeploymentCompanionOptionsPage(QgsOptionsPageWidget):

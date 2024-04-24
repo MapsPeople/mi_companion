@@ -1,10 +1,9 @@
 import copy
 import dataclasses
 import logging
-from typing import Optional, Any, Iterable, List
+from typing import Optional, Any, List
 
 import geopandas
-from jord.qgis_utilities import read_plugin_setting
 from jord.qlive_utilities import add_dataframe_layer
 from pandas import DataFrame, json_normalize
 
@@ -14,16 +13,24 @@ from qgis.core import QgsEditorWidgetSetup
 from integration_system.mi.manager_model import MIVenue, MIFloor
 from integration_system.mixins import CollectionMixin
 from integration_system.model import Solution
-from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
 from mi_companion.configuration.constants import (
     REAL_NONE_JSON_VALUE,
 )
 
 __all__ = ["add_floor_content_layers"]
 
+from mi_companion.configuration.options import read_bool_setting
+
 from .custom_props import process_custom_props_df
 
 from mi_companion.mi_editor.conversion.layers.type_enums import LocationTypeEnum
+from .fields import add_dropdown_widget, make_field_unique
+from ...projection import (
+    reproject_geometry_df,
+    MI_EPSG_NUMBER,
+    should_reproject,
+    GDS_EPSG_NUMBER,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -44,24 +51,6 @@ def to_df(coll_mix: CollectionMixin) -> DataFrame:
     return json_normalize(cs)
 
 
-def add_dropdown_widget(layer, field_name: str, widget) -> None:
-    # https://gis.stackexchange.com/questions/470963/setting-dropdown-on-feature-attribute-form-using-plugin
-    for layers_inner in layer:
-        if layers_inner:
-            if isinstance(layers_inner, Iterable):
-                for layer in layers_inner:
-                    if layer:
-                        layer.setEditorWidgetSetup(
-                            layer.fields().indexFromName(field_name),
-                            widget,
-                        )
-            else:
-                layers_inner.setEditorWidgetSetup(
-                    layers_inner.fields().indexFromName(field_name),
-                    widget,
-                )
-
-
 def add_location_layer(
     collection_: CollectionMixin,
     name: str,
@@ -70,12 +59,12 @@ def add_location_layer(
     qgis_instance_handle,
     floor_group,
     floor,
-    dropdown_widget
+    dropdown_widget,
 ) -> List:
     shape_df = to_df(collection_)
     if not shape_df.empty:
         shape_df = shape_df[shape_df["floor.external_id"] == floor.external_id]
-        rooms_df = geopandas.GeoDataFrame(
+        locations_df = geopandas.GeoDataFrame(
             shape_df[
                 [
                     c
@@ -93,15 +82,18 @@ def add_location_layer(
             geometry=geom_type,
         )
 
-        process_custom_props_df(rooms_df)
+        process_custom_props_df(locations_df)
+
+        reproject_geometry_df(locations_df)
 
         added_layers = add_dataframe_layer(
             qgis_instance_handle=qgis_instance_handle,
-            dataframe=rooms_df,
+            dataframe=locations_df,
             geometry_column=geom_type,
             name=name,
             group=floor_group,
             categorise_by_attribute="location_type.name",
+            crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
         )
 
         if dropdown_widget:
@@ -110,6 +102,8 @@ def add_location_layer(
                 "location_type.name",
                 dropdown_widget,
             )
+
+        make_field_unique(added_layers)
 
         return added_layers
 
@@ -121,7 +115,7 @@ def add_door_layer(
     floor_group,
     floor,
     graph,
-    dropdown_widget
+    dropdown_widget,
 ):
     doors = to_df(collection_)
     if not doors.empty:
@@ -134,6 +128,8 @@ def add_door_layer(
             geometry="linestring",
         )
 
+        reproject_geometry_df(door_df)
+
         door_layer = add_dataframe_layer(
             qgis_instance_handle=qgis_instance_handle,
             dataframe=door_df,
@@ -141,10 +137,13 @@ def add_door_layer(
             name="doors",
             categorise_by_attribute="door_type",
             group=floor_group,
+            crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
         )
 
         if dropdown_widget:
             add_dropdown_widget(door_layer, "door_type", dropdown_widget)
+
+        make_field_unique(door_layer)
 
 
 def add_floor_content_layers(
@@ -155,7 +154,7 @@ def add_floor_content_layers(
     floor_group,
     venue: MIVenue,
     available_location_type_map_widget: Optional[Any] = None,
-    door_type_dropdown_widget: Optional[Any] = None
+    door_type_dropdown_widget: Optional[Any] = None,
 ) -> None:
     add_location_layer(
         solution.rooms,
@@ -187,11 +186,7 @@ def add_floor_content_layers(
         dropdown_widget=available_location_type_map_widget,
     )
 
-    if read_plugin_setting(
-        "ADD_DOORS",
-        default_value=DEFAULT_PLUGIN_SETTINGS["ADD_DOORS"],
-        project_name=PROJECT_NAME,
-    ):
+    if read_bool_setting("ADD_DOORS"):
         add_door_layer(
             solution.doors,
             graph=venue.graph,

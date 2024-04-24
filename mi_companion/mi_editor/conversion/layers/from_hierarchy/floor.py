@@ -1,7 +1,7 @@
 import logging
 
 import shapely
-from jord.shapely_utilities.base import clean_shape
+from integration_system.model import Solution
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -17,6 +17,7 @@ from mi_companion.configuration.constants import (
 )
 from .extraction import extract_layer_data
 from .location import add_floor_contents
+from ...projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
 
@@ -26,9 +27,9 @@ __all__ = ["add_building_floor"]
 
 def add_building_floor(
     *,
-    building_key,
+    building_key: str,
     venue_group_item,
-    solution,
+    solution: Solution,
     progress_bar,
     ith_solution,
     ith_venue,
@@ -106,7 +107,7 @@ def get_floor_data(building_key, floor_group_items, solution):
                         external_id=external_id,
                         name=name,
                         floor_index=floor_attributes["floor_index"],
-                        polygon=clean_shape(geom_shapely),
+                        polygon=prepare_geom_for_mi_db(geom_shapely),
                         building_key=building_key,
                     )
                     return floor_attributes, floor_key
