@@ -111,7 +111,7 @@ def add_solution_layers(
             else:
                 solution_point = shapely.Point(0, 0)
 
-            add_shapely_layer(
+            layer = add_shapely_layer(
                 qgis_instance_handle=qgis_instance_handle,
                 name=SOLUTION_DATA_DESCRIPTOR,
                 group=solution_group,
@@ -129,6 +129,13 @@ def add_solution_layers(
                 visible=False,
                 crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
             )
+
+            if False:
+                for l in layer:
+                    for f in l.features():
+                        # f:QgsFeature
+                        f.clearGeometry()
+                        # TODO: REMOVE POINT GEOMETRY AS THIS IS NOT NEEDED!
 
         if venue is None:
             logger.warning("Venue was not found!")

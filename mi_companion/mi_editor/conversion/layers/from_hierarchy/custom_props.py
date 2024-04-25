@@ -5,6 +5,7 @@ from collections import defaultdict
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
 
+
 # noinspection PyUnresolvedReferences
 # from qgis.core.QgsVariantUtils import isNull, typeToDisplayString
 import numpy
@@ -54,7 +55,7 @@ def extract_custom_props(layer_attributes):
                         custom_props[lang][cname] = v
                 elif v is None:
                     custom_props[lang][cname] = None
-                elif isinstance(v, QVariant):
+                elif isinstance(v, QVariant):  # Handle this (qgis.core.NULL) aswell? #
                     # logger.warning(f"{typeToDisplayString(type(v))}")
                     if v.isNull():  # isNull(v):
                         custom_props[lang][cname] = None

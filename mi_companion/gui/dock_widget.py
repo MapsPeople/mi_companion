@@ -43,7 +43,8 @@ from ..entry_points.compatibility import CompatibilityDialog
 # from ..entry_points.cad_area import CadAreaDialog
 from ..entry_points.duplicate_group import DuplicateGroupDialog
 from ..entry_points.make_solution import MakeSolutionDialog
-from ..entry_points.regen_external_ids import RegenExternalIdsDialog
+from ..entry_points.regen_group_external_ids import RegenGroupExternalIdsDialog
+from ..entry_points.regen_feature_external_ids import RegenFeatureExternalIdsDialog
 from ..entry_points.svg_import import SvgImportDialog
 from ..mi_editor.conversion.projection import MI_EPSG_NUMBER
 from ..utilities.paths import get_icon_path, resolve_path
@@ -134,8 +135,8 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             "Duplicate Group": DuplicateGroupDialog(),
             # "Cad Area": CadAreaDialog(),
             "Import SVG": SvgImportDialog(),
-            "Regen Group/Layer Field": RegenExternalIdsDialog(),
-            # "Regen Selected Feature Field": RegenExternalIdsDialog(),
+            "Regen Group/Layer Field": RegenGroupExternalIdsDialog(),
+            "Regen Selected Feature Field": RegenFeatureExternalIdsDialog(),
             # "Diff Tool": InstanceRoomsDialog(),
             "Compatibility": CompatibilityDialog(),
             # "Generate Connectors": GenerateConnectorsDialog(),
