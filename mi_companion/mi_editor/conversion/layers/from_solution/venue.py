@@ -24,6 +24,9 @@ from ...projection import (
     INSERT_INDEX,
 )
 
+# noinspection PyUnresolvedReferences
+from qgis.PyQt import QtWidgets
+
 logger = logging.getLogger(__name__)
 
 __all__ = ["add_venue_layer"]
@@ -48,10 +51,18 @@ def add_venue_layer(
         venue_group = solution_group.findGroup(venue_name)
         if (
             not ALLOW_DUPLICATE_VENUES_IN_PROJECT
-        ):  # TODO: base this in external ids instead
+        ):  # TODO: base this in external ids rather than group name
             if venue_group:
-                logger.error("Venue already loaded!")
-                continue
+                logger.error(f"Venue {venue.name} already loaded!")
+                reply = QtWidgets.QMessageBox.question(
+                    None,
+                    f'f"Venue {venue.name} already loaded!"',
+                    f"Would you like to reload the {venue.name} venue from the MI Database?",
+                )
+                if reply == QtWidgets.QMessageBox.Yes:
+                    solution_group.removeChildNode(venue_group)
+                else:
+                    continue
 
         venue_group = solution_group.insertGroup(
             INSERT_INDEX, venue_name
