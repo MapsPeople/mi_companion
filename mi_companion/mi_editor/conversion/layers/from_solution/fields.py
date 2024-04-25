@@ -74,5 +74,9 @@ def make_field_unique(layer, field_name: str = "external_id"):
                     idx,
                     unique_widget,
                 )
-                layer.setFieldConstraint(idx, QgsFieldConstraints.ConstraintNotNull)
-                layer.setFieldConstraint(idx, QgsFieldConstraints.ConstraintUnique)
+                layers_inner.setFieldConstraint(
+                    idx, QgsFieldConstraints.ConstraintNotNull
+                )
+                layers_inner.setFieldConstraint(
+                    idx, QgsFieldConstraints.ConstraintUnique
+                )
