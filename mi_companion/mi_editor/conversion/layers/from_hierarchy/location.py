@@ -25,6 +25,8 @@ __all__ = ["add_floor_contents"]
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtCore import QVariant
 
 
 def add_floor_locations(
@@ -42,6 +44,15 @@ def add_floor_locations(
             }
 
             location_type_name = feature_attributes["location_type.name"]
+            if isinstance(location_type_name, str):
+                ...
+            elif isinstance(location_type_name, QVariant):
+                # logger.warning(f"{typeToDisplayString(type(v))}")
+                if location_type_name.isNull():  # isNull(v):
+                    location_type_name = None
+                else:
+                    location_type_name = location_type_name.value()
+
             location_type_key = LocationType.compute_key(location_type_name)
             if solution.location_types.get(location_type_key) is None:
                 if read_bool_setting(

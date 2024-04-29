@@ -18,11 +18,23 @@ def process_custom_props_df(rooms_df: GeoDataFrame) -> None:
     #     {'generic': {'alternative_name': 'None'}}
 
     for column_name, series in rooms_df.items():
-        if "custom_properties" in column_name:
-            if all(series.isna()) and False:
-                rooms_df[column_name] = [None] * len(series)
+        if "custom_properties" in column_name:  # Drop custom properties
+            if all(series.isna()):
+                if False:
+                    rooms_df[column_name] = [None] * len(series)
+                else:  # Drop custom properties
+                    rooms_df.drop(columns=column_name, inplace=True)
             elif False:
                 rooms_df[column_name] = rooms_df[column_name].fillna(NULL_VALUE)
+
+    for column_name, series in rooms_df.items():
+        if len(series) > 0:
+            if series.isna().iloc[0]:
+                if not all(series.isna()):
+                    # assert not any(series.isna())  # UNIFI TYPES!
+                    example = series.notna().infer_objects().dtypes
+                    rooms_df[column_name] = series.astype(example)
+
     if False:
         rooms_df.fillna(NULL_VALUE, inplace=True)
 
@@ -30,3 +42,7 @@ def process_custom_props_df(rooms_df: GeoDataFrame) -> None:
         for column_name, series in rooms_df.items():
             if "custom_properties" in column_name:
                 rooms_df[column_name] = rooms_df[column_name].astype(str)
+
+    if False:
+        for column_name, series in rooms_df.items():
+            assert not all(series.isna()), f"{column_name}:\n{series}"

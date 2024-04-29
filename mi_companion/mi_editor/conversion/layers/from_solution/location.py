@@ -60,10 +60,11 @@ def add_location_layer(
     floor_group,
     floor,
     dropdown_widget,
-) -> List:
+) -> Optional[List[Any]]:  # QgsVectorLayer
     shape_df = to_df(collection_)
     if not shape_df.empty:
         shape_df = shape_df[shape_df["floor.external_id"] == floor.external_id]
+
         locations_df = geopandas.GeoDataFrame(
             shape_df[
                 [
@@ -81,10 +82,19 @@ def add_location_layer(
             ],
             geometry=geom_type,
         )
+        assert len(shape_df) == len(
+            locations_df
+        ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
 
         process_custom_props_df(locations_df)
+        assert len(shape_df) == len(
+            locations_df
+        ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
 
         reproject_geometry_df(locations_df)
+        assert len(shape_df) == len(
+            locations_df
+        ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
 
         added_layers = add_dataframe_layer(
             qgis_instance_handle=qgis_instance_handle,
@@ -95,6 +105,18 @@ def add_location_layer(
             categorise_by_attribute="location_type.name",
             crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
         )
+
+        for a in added_layers:
+            if a:
+                layer = next(iter(a))
+                break
+        else:
+            logger.error(f"Did not add any layers!")
+            return
+
+        assert (
+            len(shape_df) == layer.featureCount()
+        ), f"Some Features where dropped, should not happen! {len(shape_df)}!={layer.featureCount()}"
 
         if dropdown_widget:
             add_dropdown_widget(

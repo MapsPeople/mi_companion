@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def randomize_fields_selected_features(feature, field_name: str) -> Any:  # QgsFeature
-    """
+    """https://qgis.org/pyqgis/3.2/core/Feature/QgsFeature.html#qgis.core.QgsFeature.setAttribute
         Regarding layer.updateFeature()
     Always try to avoid the QgsVectorLayer.updateFeature() method. It's less efficient than changeAttributeValue().
 

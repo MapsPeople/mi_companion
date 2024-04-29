@@ -177,9 +177,22 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Fetch Venue</string>
+             <string>Download Venue</string>
             </property>
            </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
@@ -240,7 +253,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Sync Venues</string>
+         <string>Upload Venues</string>
         </property>
        </widget>
       </item>
