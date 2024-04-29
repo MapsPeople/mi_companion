@@ -6,10 +6,10 @@ from qgis.PyQt import QtWidgets, uic
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
+    QgsFeatureRequest,
     QgsLayerTreeGroup,
     QgsLayerTreeLayer,
     QgsProject,
-    QgsFeatureRequest,
 )
 
 from mi_companion.configuration.options import read_bool_setting
@@ -46,5 +46,12 @@ def extract_layer_data(layer_tree_layer):
 
     if name is None:
         name = external_id
+
+    for k in layer_attributes.keys():
+        if (
+            isinstance(layer_attributes[k], str)
+            and layer_attributes[k].lower().strip() == "none"
+        ):
+            layer_attributes[k] = None
 
     return external_id, layer_attributes, layer_feature, name

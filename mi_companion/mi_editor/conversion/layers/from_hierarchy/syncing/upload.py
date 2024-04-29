@@ -1,6 +1,6 @@
 import logging
 from itertools import count
-from typing import List, Collection
+from typing import Collection, List
 
 import shapely
 
@@ -14,7 +14,7 @@ from integration_system.constants import (
     DIFFERENCE_GROUP_NAME,
     SHAPELY_DIFFERENCE_DESCRIPTION,
 )
-from integration_system.mi import MIOperation, synchronize, SyncLevel
+from integration_system.mi import MIOperation, SyncLevel, synchronize
 from mi_companion.configuration.constants import VERBOSE
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.gui.message_box import ResizableMessageBox

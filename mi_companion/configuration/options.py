@@ -10,6 +10,7 @@ __doc__ = r"""
 __all__ = [
     "DeploymentCompanionOptionsPage",
     "DeploymentOptionsPageFactory",
+    "read_bool_setting",
 ]
 
 

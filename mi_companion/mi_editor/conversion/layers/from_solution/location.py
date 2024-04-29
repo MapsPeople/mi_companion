@@ -1,7 +1,7 @@
 import copy
 import dataclasses
 import logging
-from typing import Optional, Any, List
+from typing import Any, List, Optional
 
 import geopandas
 from jord.qlive_utilities import add_dataframe_layer
@@ -10,7 +10,7 @@ from pandas import DataFrame, json_normalize
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
 
-from integration_system.mi.manager_model import MIVenue, MIFloor
+from integration_system.mi import MIFloor, MIVenue
 from integration_system.mixins import CollectionMixin
 from integration_system.model import Solution
 from mi_companion.configuration.constants import (
@@ -149,6 +149,8 @@ def add_door_layer(
             doors[[c for c in doors.columns if ("." not in c)]],
             geometry="linestring",
         )
+
+        # door_df["door_type"] = door_df["door_type"].apply(lambda x: x.name, axis=1)
 
         reproject_geometry_df(door_df)
 

@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -7,13 +7,17 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.mi import get_remote_solution, SolutionDepth
-from integration_system.mi.config import get_settings, Settings
-from integration_system.mi.downloading import get_solution_name_external_id_map
+from integration_system.mi import (
+    Settings,
+    SolutionDepth,
+    get_remote_solution,
+    get_settings,
+    get_solution_name_external_id_map,
+)
 from mi_companion.configuration.constants import (
     MI_HIERARCHY_GROUP_NAME,
-    SOLUTION_DESCRIPTOR,
     SOLUTION_DATA_DESCRIPTOR,
+    SOLUTION_DESCRIPTOR,
 )
 from .venue import convert_solution_venues
 

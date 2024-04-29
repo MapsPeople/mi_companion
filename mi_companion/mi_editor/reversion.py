@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -7,11 +7,9 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.mi import synchronize
-from integration_system.mi.config import get_settings, Settings
-from integration_system.mi.configuration import SyncLevel
+from integration_system.mi import Settings, SyncLevel, get_settings, synchronize
 from integration_system.model import Solution
-from mi_companion.configuration.constants import MI_HIERARCHY_GROUP_NAME, HALF_SIZE
+from mi_companion.configuration.constants import HALF_SIZE, MI_HIERARCHY_GROUP_NAME
 
 __all__ = ["revert_venues"]
 

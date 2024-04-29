@@ -3,20 +3,19 @@ import math
 from collections import defaultdict
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt.QtCore import QVariant
-
-
-# noinspection PyUnresolvedReferences
 # from qgis.core.QgsVariantUtils import isNull, typeToDisplayString
 import numpy
 
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtCore import QVariant
+
 from mi_companion.configuration.constants import (
+    ADD_FLOAT_NAN_CUSTOM_PROPERTY_VALUES,
+    ADD_REAL_NONE_CUSTOM_PROPERTY_VALUES,
+    ADD_STRING_NAN_CUSTOM_PROPERTY_VALUES,
     NAN_VALUE,
     NULL_VALUE,
-    ADD_FLOAT_NAN_CUSTOM_PROPERTY_VALUES,
-    ADD_STRING_NAN_CUSTOM_PROPERTY_VALUES,
     REAL_NONE_JSON_VALUE,
-    ADD_REAL_NONE_CUSTOM_PROPERTY_VALUES,
 )
 
 logger = logging.getLogger(__name__)
