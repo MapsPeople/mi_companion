@@ -9,13 +9,48 @@ __all__ = ["process_custom_props_df"]
 
 
 def process_custom_props_df(df: GeoDataFrame) -> None:
-    # TODO: !IH! IHIH
-    # fix 'None', 'near landmark': 'None'}}
-    # Unspecified:
-    #     custom_properties:
-    #       {'generic': {'alternative_name': None}}
-    #     ->
-    #     {'generic': {'alternative_name': 'None'}}
+    """
+    UPDATE: Venue(s):
+      Updating
+        Venue: Amsterdam - Schiphol Airport (AMS):
+            custom_properties:
+              {'en': {'lastauditedtimestamp': 'None'}}
+            ->
+            {'en': {'lastauditedtimestamp': None}}
+
+    UPDATE: Area(s):
+      Updating
+        Area: Restroom, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
+            custom_properties:
+              {}
+            ->
+            {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
+        Area: Transfer Desk, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
+            custom_properties:
+              {'generic': {'transform': 'None', 'servicetype': 'Transfer Desk', 'markupjson': 'None'}}
+            ->
+            {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
+        Area: Restroom, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
+            custom_properties:
+              {}
+            ->
+            {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
+
+            :param df:
+            :return:
+    """
+
+    IGNORE_THIS = """
+            apply works on a row / column basis of a DataFrame
+    applymap works element-wise on a DataFrame
+    map works element-wise on a Series
+            """
+
+    if False:
+        for column_name, series in df.items():
+            if "custom_properties" in column_name:
+                if series.apply(type).nunique() > 1:
+                    logger.error(series.dtypes)
 
     for column_name, series in df.items():
         if "custom_properties" in column_name:  # Drop custom properties
@@ -24,6 +59,8 @@ def process_custom_props_df(df: GeoDataFrame) -> None:
                     df[column_name] = [None] * len(series)
                 else:  # Drop custom properties
                     df.drop(columns=column_name, inplace=True)
+            elif True:
+                df[column_name] = series.astype(str)
             elif False:
                 df[column_name] = df[column_name].fillna(NULL_VALUE)
 
@@ -45,6 +82,7 @@ def process_custom_props_df(df: GeoDataFrame) -> None:
             if "custom_properties" in column_name:
                 if series.apply(type).nunique() > 1:
                     logger.error(series.dtypes)
+                    logger.error(series.apply(lambda a: str(type(a))))
 
     if False:
         df.applymap(type).nunique().eq(1).sum()

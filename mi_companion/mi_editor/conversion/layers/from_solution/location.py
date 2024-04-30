@@ -111,7 +111,7 @@ def add_location_layer(
                 layer = next(iter(a))
                 break
         else:
-            logger.error(f"Did not add any layers!")
+            logger.info(f"Did not add any {geom_type} layers for {name}:{floor}!")
             return
 
         assert (
