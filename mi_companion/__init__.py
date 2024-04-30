@@ -1,6 +1,7 @@
 import logging
 
 from jord.qgis_utilities import read_plugin_setting
+from jord.qgis_utilities.helpers.logging import add_logging_handler_once
 from jord.qt_utilities import DockWidgetAreaFlag
 
 from .constants import *
@@ -18,6 +19,28 @@ def classFactory(iface):  # pylint: disable=invalid-name
     """
     #
     from .mi_companion_plugin import MapsIndoorsCompanionPlugin
+
+    if False:
+        try:
+            import sentry_sdk  # I hate this interface!
+
+            sentry_sdk.init(
+                dsn="https://0d5b385b29467264d1f54f67318b1c52@o351128.ingest.us.sentry.io/4507175970996224",
+                # Set traces_sample_rate to 1.0 to capture 100%
+                # of transactions for performance monitoring.
+                traces_sample_rate=1.0,
+                default_integrations=True,
+                # integrations=[
+                #    sentry_sdk.integrations.LoggingIntegration(
+                #        level=logging.INFO,  # Capture info and above as breadcrumbs
+                #        event_level=logging.INFO,  # Send records as events
+                #    ),
+                # ],
+            )
+            # add_logging_handler_once(            logger, sentry_sdk.integrations.logging.EventHandler(level=0)        )
+            # add_logging_handler_once(            logger, sentry_sdk.integrations.logging.BreadcrumbHandler(level=0)        )
+        except:
+            ...
 
     try:
         from jord.qgis_utilities.helpers.logging import setup_logger
@@ -42,6 +65,7 @@ def classFactory(iface):  # pylint: disable=invalid-name
         logger.debug(
             f"Setup {setup_logger('integration_system', logger_level=logging_level).name=}"
         )
+
     except:
         ...
 
