@@ -1,6 +1,6 @@
 import logging
 from itertools import count
-from typing import List, Collection
+from typing import Collection, List
 
 import shapely
 
@@ -14,7 +14,7 @@ from integration_system.constants import (
     DIFFERENCE_GROUP_NAME,
     SHAPELY_DIFFERENCE_DESCRIPTION,
 )
-from integration_system.mi import MIOperation, synchronize, SyncLevel
+from integration_system.mi import MIOperation, SyncLevel, synchronize
 from mi_companion.configuration.constants import VERBOSE
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.gui.message_box import ResizableMessageBox
@@ -65,7 +65,8 @@ def sync_build_venue_solution(
 
     post_process_solution(solution)
 
-    window_title = f"Sync {solution_name}:{next(iter(solution.venues)).name} venue"
+    venue_name = next(iter(solution.venues)).name
+    window_title = f"Sync {solution_name}:{venue_name} venue"
 
     def solving_progress_bar_callable(ith: int, total: int) -> None:
         progress_bar.setValue(int(20 + (ith / total) * 80))
@@ -105,7 +106,7 @@ def sync_build_venue_solution(
         )
         msg_box.setIcon(QtWidgets.QMessageBox.Information)
         msg_box.setWindowTitle(window_title)
-        msg_box.setText(f"The {solution_name} venue(s) has been modified.")
+        msg_box.setText(f"The {solution_name}:{venue_name} venue has been modified.")
         msg_box.setInformativeText(
             f"Do you want to sync following changes?\n\n{aggregate_operation_description(operations)}"
         )
@@ -166,7 +167,11 @@ def sync_build_venue_solution(
         logger.info("Synchronised")
 
     if success:
-        QtWidgets.QMessageBox.information(None, window_title, "Success")
+        QtWidgets.QMessageBox.information(
+            None,
+            window_title,
+            f"Successfully uploaded {solution_name}:{venue_name} venue",
+        )
 
 
 def show_differences(

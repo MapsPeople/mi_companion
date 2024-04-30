@@ -1,16 +1,16 @@
 import logging
 
 import shapely
-from integration_system.model import Solution
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
+    QgsFeatureRequest,
     QgsLayerTreeGroup,
     QgsLayerTreeLayer,
     QgsProject,
-    QgsFeatureRequest,
 )
 
+from integration_system.model import Solution
 from mi_companion.configuration.constants import (
     FLOOR_POLYGON_DESCRIPTOR,
     HALF_SIZE,

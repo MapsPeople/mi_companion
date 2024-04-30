@@ -10,11 +10,11 @@ from mi_companion.configuration.options import read_bool_setting
 from .fields import make_field_unique
 from .location import add_floor_content_layers
 from ...projection import (
+    GDS_EPSG_NUMBER,
+    INSERT_INDEX,
+    MI_EPSG_NUMBER,
     prepare_geom_for_qgis,
     should_reproject,
-    GDS_EPSG_NUMBER,
-    MI_EPSG_NUMBER,
-    INSERT_INDEX,
 )
 
 logger = logging.getLogger(__name__)

@@ -9,17 +9,21 @@ from jord.qlive_utilities import add_shapely_layer
 from qgis.PyQt import QtWidgets
 
 # noinspection PyUnresolvedReferences
-from qgis.core import QgsProject, QgsEditorWidgetSetup
+from qgis.core import QgsEditorWidgetSetup, QgsProject
 
 import integration_system
-from integration_system.mi import get_remote_solution, SolutionDepth
-from integration_system.mi.config import Settings, get_settings
-from integration_system.model import Solution
+from integration_system.mi import (
+    Settings,
+    SolutionDepth,
+    get_remote_solution,
+    get_settings,
+)
+from integration_system.model import Solution, VenueType
 from mi_companion.configuration.constants import (
     MI_HIERARCHY_GROUP_NAME,
-    SOLUTION_DESCRIPTOR,
-    SOLUTION_DATA_DESCRIPTOR,
     OSM_HIGHWAY_TYPES,
+    SOLUTION_DATA_DESCRIPTOR,
+    SOLUTION_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
 from .venue import add_venue_layer
@@ -95,6 +99,20 @@ def add_solution_layers(
             )
         )
 
+    venue_type_dropdown_widget = None
+    if read_plugin_setting("MAKE_VENUE_TYPE_DROPDOWN"):
+        venue_type_dropdown_widget = (
+            QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
+                "ValueMap",
+                {
+                    "map": {
+                        name: f"{VenueType.__getitem__(name)}"
+                        for name in sorted({l.name for l in VenueType})
+                    }
+                },
+            )
+        )
+
     # solution_layer_name = f"{solution.name}_solution_data"
     # solution_data_layers = QgsProject.instance().mapLayersByName(solution_layer_name)
     # logger.info(f"Found {solution_data_layers}")
@@ -130,12 +148,15 @@ def add_solution_layers(
                 crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
             )
 
-            if False:
+            if False:  # CLEAR GEOMETRY AS IT IS NOT NEEDED, TODO: DOES NOT WORK
                 for l in layer:
-                    for f in l.features():
+                    l.startEditing()
+                    for f in l.getFeatures():
                         # f:QgsFeature
                         f.clearGeometry()
-                        # TODO: REMOVE POINT GEOMETRY AS THIS IS NOT NEEDED!
+                        # l.changeGeometry(fid, geom)
+                        assert not f.hasGeometry()
+                    l.commitChanges()
 
         if venue is None:
             logger.warning("Venue was not found!")
@@ -145,13 +166,14 @@ def add_solution_layers(
             progress_bar.setValue(10)
 
     add_venue_layer(
-        available_location_type_dropdown_widget,
-        door_type_dropdown_widget,
-        highway_type_dropdown_widget,
-        progress_bar,
-        qgis_instance_handle,
-        solution,
-        solution_group,
+        available_location_type_dropdown_widget=available_location_type_dropdown_widget,
+        door_type_dropdown_widget=door_type_dropdown_widget,
+        highway_type_dropdown_widget=highway_type_dropdown_widget,
+        venue_type_dropdown_widget=venue_type_dropdown_widget,
+        progress_bar=progress_bar,
+        qgis_instance_handle=qgis_instance_handle,
+        solution=solution,
+        solution_group=solution_group,
     )
 
 

@@ -3,10 +3,10 @@ import math
 import os
 from collections import defaultdict
 from pathlib import Path
-from typing import Optional, Any
+from typing import Any, Optional
 
 from jord.qgis_utilities import read_plugin_setting
-from jord.qgis_utilities.helpers import signals, InjectedProgressBar
+from jord.qgis_utilities.helpers import InjectedProgressBar, signals
 from jord.qlive_utilities import add_shapely_layer
 
 # noinspection PyUnresolvedReferences
@@ -28,12 +28,11 @@ from qgis.core import (
 )
 from warg import reload_module
 
-from integration_system.mi import SolutionDepth
-from integration_system.mi.downloading import get_venue_key_mi_venue_map
+from integration_system.mi import SolutionDepth, get_venue_key_mi_venue_map
 from mi_companion.mi_editor import (
     layer_hierarchy_to_solution,
-    solution_venue_to_layer_hierarchy,
     revert_venues,
+    solution_venue_to_layer_hierarchy,
 )
 from .. import DEFAULT_PLUGIN_SETTINGS
 from ..configuration.options import read_bool_setting
@@ -43,8 +42,8 @@ from ..entry_points.compatibility import CompatibilityDialog
 # from ..entry_points.cad_area import CadAreaDialog
 from ..entry_points.duplicate_group import DuplicateGroupDialog
 from ..entry_points.make_solution import MakeSolutionDialog
-from ..entry_points.regen_group_external_ids import RegenGroupExternalIdsDialog
 from ..entry_points.regen_feature_external_ids import RegenFeatureExternalIdsDialog
+from ..entry_points.regen_group_external_ids import RegenGroupExternalIdsDialog
 from ..entry_points.svg_import import SvgImportDialog
 from ..mi_editor.conversion.projection import MI_EPSG_NUMBER
 from ..utilities.paths import get_icon_path, resolve_path
@@ -65,7 +64,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         """Constructor."""
         super().__init__(parent)
 
-        from integration_system.mi.config import Settings
+        from integration_system.mi import Settings
 
         # INITIALISATION OF ATTRS
         self.fetched_solution = None
@@ -197,7 +196,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             )
 
     def refresh_solution_combo_box(self, reload_venues: bool = True) -> None:
-        from integration_system.mi.downloading import get_solution_name_external_id_map
+        from integration_system.mi import get_solution_name_external_id_map
 
         with InjectedProgressBar(
             parent=self.iface.mainWindow().statusBar()

@@ -7,9 +7,9 @@ import shapely
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from mi_companion.configuration.constants import (
-    HALF_SIZE,
     BUILDING_POLYGON_DESCRIPTOR,
     GRAPH_DESCRIPTOR,
+    HALF_SIZE,
 )
 from .extraction import extract_layer_data
 from .floor import add_building_floor

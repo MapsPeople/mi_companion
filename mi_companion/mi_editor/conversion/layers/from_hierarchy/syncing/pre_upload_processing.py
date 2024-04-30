@@ -5,7 +5,7 @@ from itertools import chain
 import shapely
 from jord.shapely_utilities import is_multi
 
-from integration_system.model import Room, Area
+from integration_system.model import Area, Room
 from mi_companion.configuration.options import read_bool_setting
 
 logger = logging.getLogger(__name__)

@@ -8,15 +8,17 @@ import shapely
 from qgis.PyQt import QtWidgets
 
 # noinspection PyUnresolvedReferences
+from qgis.PyQt.QtCore import QVariant
+
+# noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.mi.config import Settings
-from integration_system.mi.configuration import SolutionDepth
-from integration_system.model import Solution
+from integration_system.mi import Settings, SolutionDepth
+from integration_system.model import Solution, VenueType
 from mi_companion.configuration.constants import (
-    VENUE_POLYGON_DESCRIPTOR,
-    HALF_SIZE,
     DEFAULT_CUSTOM_PROPERTIES,
+    HALF_SIZE,
+    VENUE_POLYGON_DESCRIPTOR,
 )
 from .building import add_venue_buildings
 from .custom_props import extract_custom_props
@@ -129,6 +131,20 @@ def get_venue_key(solution, venue_group_items) -> Optional[str]:
             external_id, layer_attributes, layer_feature, name = extract_layer_data(
                 venue_level_item
             )
+
+            venue_type_str = layer_attributes["venue_type"]
+            if isinstance(venue_type_str, str):
+                ...
+            elif isinstance(venue_type_str, QVariant):
+                # logger.warning(f"{typeToDisplayString(type(v))}")
+                if venue_type_str.isNull():  # isNull(v):
+                    venue_type_str = None
+                else:
+                    venue_type_str = venue_type_str.value()
+
+            venue_type = VenueType.__getitem__(venue_type_str)
+            last_verified = layer_attributes["last_verified"]
+
             geom_shapely = feature_to_shapely(layer_feature)
             if geom_shapely:
                 custom_props = extract_custom_props(layer_attributes)
@@ -136,6 +152,8 @@ def get_venue_key(solution, venue_group_items) -> Optional[str]:
                     external_id=external_id,
                     name=name,
                     polygon=prepare_geom_for_mi_db(geom_shapely),
+                    venue_type=venue_type,
+                    last_verified=last_verified,
                     custom_properties=(
                         custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
                     ),

@@ -1,12 +1,12 @@
 import os
 from pathlib import Path
-from typing import Optional, Mapping
+from typing import Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QIcon
 from warg import passes_kws_to
 
-from .. import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
+from .. import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 
 __all__ = ["resolve_path", "load_icon", "get_icon_path"]
 

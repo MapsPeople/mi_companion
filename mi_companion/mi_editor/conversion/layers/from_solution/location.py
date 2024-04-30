@@ -1,7 +1,7 @@
 import copy
 import dataclasses
 import logging
-from typing import Optional, Any, List
+from typing import Any, List, Optional
 
 import geopandas
 from jord.qlive_utilities import add_dataframe_layer
@@ -10,7 +10,7 @@ from pandas import DataFrame, json_normalize
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
 
-from integration_system.mi.manager_model import MIVenue, MIFloor
+from integration_system.mi import MIFloor, MIVenue
 from integration_system.mixins import CollectionMixin
 from integration_system.model import Solution
 from mi_companion.configuration.constants import (
@@ -60,10 +60,11 @@ def add_location_layer(
     floor_group,
     floor,
     dropdown_widget,
-) -> List:
+) -> Optional[List[Any]]:  # QgsVectorLayer
     shape_df = to_df(collection_)
     if not shape_df.empty:
         shape_df = shape_df[shape_df["floor.external_id"] == floor.external_id]
+
         locations_df = geopandas.GeoDataFrame(
             shape_df[
                 [
@@ -81,10 +82,19 @@ def add_location_layer(
             ],
             geometry=geom_type,
         )
+        assert len(shape_df) == len(
+            locations_df
+        ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
 
         process_custom_props_df(locations_df)
+        assert len(shape_df) == len(
+            locations_df
+        ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
 
         reproject_geometry_df(locations_df)
+        assert len(shape_df) == len(
+            locations_df
+        ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
 
         added_layers = add_dataframe_layer(
             qgis_instance_handle=qgis_instance_handle,
@@ -95,6 +105,18 @@ def add_location_layer(
             categorise_by_attribute="location_type.name",
             crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
         )
+
+        for a in added_layers:
+            if a:
+                layer = next(iter(a))
+                break
+        else:
+            logger.info(f"Did not add any {geom_type} layers for {name}:{floor}!")
+            return
+
+        assert (
+            len(shape_df) == layer.featureCount()
+        ), f"Some Features where dropped, should not happen! {len(shape_df)}!={layer.featureCount()}"
 
         if dropdown_widget:
             add_dropdown_widget(
@@ -117,16 +139,18 @@ def add_door_layer(
     graph,
     dropdown_widget,
 ):
-    doors = to_df(collection_)
-    if not doors.empty:
-        doors = doors[
-            (doors["floor_index"] == floor.floor_index)
-            & (doors["graph.graph_id"] == graph.graph_id)
+    df = to_df(collection_)
+    if not df.empty:
+        df = df[
+            (df["floor_index"] == floor.floor_index)
+            & (df["graph.graph_id"] == graph.graph_id)
         ]
         door_df = geopandas.GeoDataFrame(
-            doors[[c for c in doors.columns if ("." not in c)]],
+            df[[c for c in df.columns if ("." not in c)]],
             geometry="linestring",
         )
+
+        # door_df["door_type"] = door_df["door_type"].apply(lambda x: x.name, axis=1)
 
         reproject_geometry_df(door_df)
 

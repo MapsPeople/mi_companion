@@ -9,11 +9,8 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.model import Solution, LocationType
-from mi_companion.configuration.constants import (
-    VERBOSE,
-    DEFAULT_CUSTOM_PROPERTIES,
-)
+from integration_system.model import DoorType, LocationType, Solution
+from mi_companion.configuration.constants import DEFAULT_CUSTOM_PROPERTIES, VERBOSE
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (
     extract_custom_props,
@@ -25,6 +22,8 @@ __all__ = ["add_floor_contents"]
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtCore import QVariant
 
 
 def add_floor_locations(
@@ -42,6 +41,15 @@ def add_floor_locations(
             }
 
             location_type_name = feature_attributes["location_type.name"]
+            if isinstance(location_type_name, str):
+                ...
+            elif isinstance(location_type_name, QVariant):
+                # logger.warning(f"{typeToDisplayString(type(v))}")
+                if location_type_name.isNull():  # isNull(v):
+                    location_type_name = None
+                else:
+                    location_type_name = location_type_name.value()
+
             location_type_key = LocationType.compute_key(location_type_name)
             if solution.location_types.get(location_type_key) is None:
                 if read_bool_setting(
@@ -157,12 +165,22 @@ def add_floor_contents(
                     )
                 }
 
+                door_type = door_attributes["door_type"]
+                if isinstance(door_type, str):
+                    ...
+                elif isinstance(door_type, QVariant):
+                    # logger.warning(f"{typeToDisplayString(type(v))}")
+                    if door_type.isNull():  # isNull(v):
+                        door_type = None
+                    else:
+                        door_type = door_type.value()
+
                 door_key = solution.add_door(
                     door_attributes["external_id"],
                     linestring=prepare_geom_for_mi_db(
                         shapely.from_wkt(door_feature.geometry().asWkt())
                     ),
-                    door_type=door_attributes["door_type"],
+                    door_type=DoorType.__getitem__(door_type),
                     floor_index=floor_index,
                     graph_key=graph_key,
                 )

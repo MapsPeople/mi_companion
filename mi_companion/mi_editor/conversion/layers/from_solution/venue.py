@@ -4,12 +4,15 @@ from xml.etree.ElementTree import ParseError
 
 from jord.qlive_utilities import add_shapely_layer
 
+# noinspection PyUnresolvedReferences
+from qgis.PyQt import QtWidgets
+
 from mi_companion.configuration.constants import (
-    VENUE_DESCRIPTOR,
     ALLOW_DUPLICATE_VENUES_IN_PROJECT,
     GRAPH_DESCRIPTOR,
     NAVIGATION_LINES_DESCRIPTOR,
     NAVIGATION_POINT_DESCRIPTOR,
+    VENUE_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
@@ -17,15 +20,12 @@ from mi_companion.mi_editor.conversion.graph.to_lines import osm_xml_to_lines
 from .building import add_building_layers
 from .fields import make_field_unique
 from ...projection import (
-    prepare_geom_for_qgis,
-    should_reproject,
-    MI_EPSG_NUMBER,
     GDS_EPSG_NUMBER,
     INSERT_INDEX,
+    MI_EPSG_NUMBER,
+    prepare_geom_for_qgis,
+    should_reproject,
 )
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtWidgets
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +33,11 @@ __all__ = ["add_venue_layer"]
 
 
 def add_venue_layer(
+    *,
     available_location_type_dropdown_widget,
     door_type_dropdown_widget,
     highway_type_dropdown_widget,
+    venue_type_dropdown_widget,
     progress_bar,
     qgis_instance_handle,
     solution,
@@ -79,6 +81,7 @@ def add_venue_layer(
                     "external_id": venue.external_id,
                     "name": venue.name,
                     "last_verified": venue.last_verified,
+                    "venue_type": venue.venue_type.name,
                     **(
                         {
                             f"custom_properties.{lang}.{prop}": str(v)
@@ -94,6 +97,22 @@ def add_venue_layer(
             visible=False,
             crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
         )
+
+        if venue_type_dropdown_widget:
+            for layers_inner in venue_layer:
+                if layers_inner:
+                    if isinstance(layers_inner, Iterable):
+                        for layer in layers_inner:
+                            if layer:
+                                layer.setEditorWidgetSetup(
+                                    layer.fields().indexFromName("venue_type"),
+                                    venue_type_dropdown_widget,
+                                )
+                    else:
+                        layers_inner.setEditorWidgetSetup(
+                            layers_inner.fields().indexFromName("venue_type"),
+                            venue_type_dropdown_widget,
+                        )
 
         make_field_unique(venue_layer)
 
