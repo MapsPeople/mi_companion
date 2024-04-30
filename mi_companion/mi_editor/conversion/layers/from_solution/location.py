@@ -139,14 +139,14 @@ def add_door_layer(
     graph,
     dropdown_widget,
 ):
-    doors = to_df(collection_)
-    if not doors.empty:
-        doors = doors[
-            (doors["floor_index"] == floor.floor_index)
-            & (doors["graph.graph_id"] == graph.graph_id)
+    df = to_df(collection_)
+    if not df.empty:
+        df = df[
+            (df["floor_index"] == floor.floor_index)
+            & (df["graph.graph_id"] == graph.graph_id)
         ]
         door_df = geopandas.GeoDataFrame(
-            doors[[c for c in doors.columns if ("." not in c)]],
+            df[[c for c in df.columns if ("." not in c)]],
             geometry="linestring",
         )
 

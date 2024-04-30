@@ -1,6 +1,7 @@
 import logging
 import math
 from collections import defaultdict
+from typing import Any, Mapping
 
 # noinspection PyUnresolvedReferences
 # from qgis.core.QgsVariantUtils import isNull, typeToDisplayString
@@ -23,7 +24,9 @@ logger = logging.getLogger(__name__)
 __all__ = ["extract_custom_props"]
 
 
-def extract_custom_props(layer_attributes):
+def extract_custom_props(
+    layer_attributes: Mapping[str, Any]
+) -> Mapping[str, Mapping[str, Any]]:
     custom_props = defaultdict(dict)
     for k, v in layer_attributes.items():
         if "custom_properties" in k:

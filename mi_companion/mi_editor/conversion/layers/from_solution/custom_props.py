@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 __all__ = ["process_custom_props_df"]
 
 
-def process_custom_props_df(rooms_df: GeoDataFrame) -> None:
+def process_custom_props_df(df: GeoDataFrame) -> None:
     # TODO: !IH! IHIH
     # fix 'None', 'near landmark': 'None'}}
     # Unspecified:
@@ -17,32 +17,46 @@ def process_custom_props_df(rooms_df: GeoDataFrame) -> None:
     #     ->
     #     {'generic': {'alternative_name': 'None'}}
 
-    for column_name, series in rooms_df.items():
+    for column_name, series in df.items():
         if "custom_properties" in column_name:  # Drop custom properties
             if all(series.isna()):
                 if False:
-                    rooms_df[column_name] = [None] * len(series)
+                    df[column_name] = [None] * len(series)
                 else:  # Drop custom properties
-                    rooms_df.drop(columns=column_name, inplace=True)
+                    df.drop(columns=column_name, inplace=True)
             elif False:
-                rooms_df[column_name] = rooms_df[column_name].fillna(NULL_VALUE)
+                df[column_name] = df[column_name].fillna(NULL_VALUE)
 
-    for column_name, series in rooms_df.items():
+    for column_name, series in df.items():
         if len(series) > 0:
             if series.isna().iloc[0]:
                 if not all(series.isna()):
                     # assert not any(series.isna())  # UNIFI TYPES!
                     example = series.notna().infer_objects().dtypes
-                    rooms_df[column_name] = series.astype(example)
+                    df[column_name] = series.astype(example)
+
+    converted_df = df.convert_dtypes()
+
+    for column_name, series in converted_df.items():  # COPY OVER SERIES!
+        df[column_name] = series
 
     if False:
-        rooms_df.fillna(NULL_VALUE, inplace=True)
-
-    if False:
-        for column_name, series in rooms_df.items():
+        for column_name, series in df.items():
             if "custom_properties" in column_name:
-                rooms_df[column_name] = rooms_df[column_name].astype(str)
+                if series.apply(type).nunique() > 1:
+                    logger.error(series.dtypes)
 
     if False:
-        for column_name, series in rooms_df.items():
+        df.applymap(type).nunique().eq(1).sum()
+
+    if False:
+        df.fillna(NULL_VALUE, inplace=True)
+
+    if False:
+        for column_name, series in df.items():
+            if "custom_properties" in column_name:
+                df[column_name] = df[column_name].astype(str)
+
+    if False:
+        for column_name, series in df.items():
             assert not all(series.isna()), f"{column_name}:\n{series}"
