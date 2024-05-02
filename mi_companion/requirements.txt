@@ -20,7 +20,7 @@ PySide2>=5.0.0
 pytest-xdist>=3.3.1
 python_dateutil >= 2.5.3
 scipy==1.10.1 # PIN BECAUSE APPLE M1
-sentry-sdk>=2.0.1
+sentry-sdk>=2.0.1 # PRETTY BAD INTERFACE!
 setuptools >= 21.0.0
 shapely >= 2.0.0
 six >= 1.10

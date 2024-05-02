@@ -11,8 +11,7 @@ from pandas import DataFrame, json_normalize
 from qgis.core import QgsEditorWidgetSetup
 
 from integration_system.mi import MIFloor, MIVenue
-from integration_system.mixins import CollectionMixin
-from integration_system.model import Solution
+from integration_system.model import Solution, CollectionMixin
 from mi_companion.configuration.constants import (
     REAL_NONE_JSON_VALUE,
 )
