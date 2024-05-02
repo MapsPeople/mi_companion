@@ -64,7 +64,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         """Constructor."""
         super().__init__(parent)
 
-        from integration_system.mi import Settings
+        from integration_system.config import Settings
 
         # INITIALISATION OF ATTRS
         self.fetched_solution = None

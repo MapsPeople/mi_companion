@@ -3,7 +3,7 @@ import logging
 
 from jord.qgis_utilities import read_plugin_setting
 
-from integration_system.mi import Settings
+from integration_system.config import Settings
 from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
 
 logger = logging.getLogger(__name__)

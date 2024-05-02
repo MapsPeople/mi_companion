@@ -6,12 +6,10 @@ from qgis.PyQt import QtWidgets
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-
+from integration_system.config import Settings, get_settings
 from integration_system.mi import (
-    Settings,
     SolutionDepth,
     get_remote_solution,
-    get_settings,
     get_solution_name_external_id_map,
 )
 from mi_companion.configuration.constants import (

@@ -8,9 +8,11 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from mi_companion.configuration.constants import (
     BUILDING_POLYGON_DESCRIPTOR,
+    DEFAULT_CUSTOM_PROPERTIES,
     GRAPH_DESCRIPTOR,
     HALF_SIZE,
 )
+from .custom_props import extract_custom_props
 from .extraction import extract_layer_data
 from .floor import add_building_floor
 from ...projection import prepare_geom_for_mi_db
@@ -99,10 +101,14 @@ def get_building_key(building_group_items, solution, venue_key) -> Optional[str]
             if feature_geom is not None:
                 geom_wkt = feature_geom.asWkt()
                 if geom_wkt is not None:
+                    custom_props = extract_custom_props(layer_attributes)
                     geom_shapely = shapely.from_wkt(geom_wkt)
                     return solution.add_building(
                         external_id=external_id,
                         name=name,
                         polygon=prepare_geom_for_mi_db(geom_shapely),
                         venue_key=venue_key,
+                        custom_properties=(
+                            custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
+                        ),
                     )

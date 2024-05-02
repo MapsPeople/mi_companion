@@ -53,7 +53,21 @@ def add_building_layers(
                 qgis_instance_handle=qgis_instance_handle,
                 geoms=[prepare_geom_for_qgis(building.polygon)],
                 name=BUILDING_POLYGON_DESCRIPTOR,
-                columns=[{"external_id": building.external_id, "name": building.name}],
+                columns=[
+                    {
+                        "external_id": building.external_id,
+                        "name": building.name,
+                        **(
+                            {
+                                f"custom_properties.{lang}.{prop}": str(v)
+                                for lang, props_map in venue.custom_properties.items()
+                                for prop, v in props_map.items()
+                            }
+                            if venue.custom_properties
+                            else {}
+                        ),
+                    }
+                ],
                 group=building_group,
                 visible=False,
                 crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",

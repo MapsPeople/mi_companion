@@ -12,9 +12,11 @@ from qgis.core import (
 
 from integration_system.model import Solution
 from mi_companion.configuration.constants import (
+    DEFAULT_CUSTOM_PROPERTIES,
     FLOOR_POLYGON_DESCRIPTOR,
     HALF_SIZE,
 )
+from .custom_props import extract_custom_props
 from .extraction import extract_layer_data
 from .location import add_floor_contents
 from ...projection import prepare_geom_for_mi_db
@@ -102,6 +104,7 @@ def get_floor_data(building_key, floor_group_items, solution):
             if feature_geom is not None:
                 geom_wkt = feature_geom.asWkt()
                 if geom_wkt is not None:
+                    custom_props = extract_custom_props(floor_attributes)
                     geom_shapely = shapely.from_wkt(geom_wkt)
                     floor_key = solution.add_floor(
                         external_id=external_id,
@@ -109,6 +112,9 @@ def get_floor_data(building_key, floor_group_items, solution):
                         floor_index=floor_attributes["floor_index"],
                         polygon=prepare_geom_for_mi_db(geom_shapely),
                         building_key=building_key,
+                        custom_properties=(
+                            custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
+                        ),
                     )
                     return floor_attributes, floor_key
     return None, None

@@ -6,8 +6,8 @@ from qgis.PyQt import QtWidgets
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-
-from integration_system.mi import Settings, SyncLevel, get_settings, synchronize
+from integration_system.config import Settings, get_settings
+from integration_system.mi import SyncLevel, synchronize
 from integration_system.model import Solution
 from mi_companion.configuration.constants import HALF_SIZE, MI_HIERARCHY_GROUP_NAME
 
