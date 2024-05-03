@@ -1,11 +1,16 @@
+import copy
+import dataclasses
 import logging
+from typing import Mapping
 
 from geopandas import GeoDataFrame
+from pandas import DataFrame, json_normalize
 
-from mi_companion.configuration.constants import NULL_VALUE
+from integration_system.model import CollectionMixin
+from mi_companion.configuration.constants import NULL_VALUE, REAL_NONE_JSON_VALUE
 
 logger = logging.getLogger(__name__)
-__all__ = ["process_custom_props_df"]
+__all__ = ["process_custom_props_df", "to_df"]
 
 
 def process_custom_props_df(df: GeoDataFrame) -> None:
@@ -98,3 +103,38 @@ def process_custom_props_df(df: GeoDataFrame) -> None:
     if False:
         for column_name, series in df.items():
             assert not all(series.isna()), f"{column_name}:\n{series}"
+
+
+def to_df_2(coll_mix: CollectionMixin) -> DataFrame:
+    # noinspection PyTypeChecker
+    cs = []
+    for c in coll_mix:
+        if c and hasattr(c, "custom_properties"):
+            cps = getattr(c, "custom_properties")
+            if cps is not None:
+                if isinstance(cps, Mapping) and len(cps):
+                    for language, translations in copy.deepcopy(cps).items():
+                        for cp, cpv in translations.items():
+                            if cpv is None:
+                                cps[language][cp] = REAL_NONE_JSON_VALUE
+                    setattr(c, "custom_properties", cps)
+                else:
+                    setattr(c, "custom_properties", None)
+        cs.append(dataclasses.asdict(c))
+    return json_normalize(cs)
+
+
+def to_df(coll_mix: CollectionMixin) -> DataFrame:
+    # noinspection PyTypeChecker
+    cs = []
+    for c in coll_mix:
+        if hasattr(c, "custom_properties"):
+            cps = getattr(c, "custom_properties")
+            if cps is not None:
+                for language, translations in copy.deepcopy(cps).items():
+                    for cp, cpv in translations.items():
+                        if cpv is None:
+                            cps[language][cp] = REAL_NONE_JSON_VALUE
+                setattr(c, "custom_properties", cps)
+        cs.append(dataclasses.asdict(c))
+    return json_normalize(cs)

@@ -1,27 +1,20 @@
-import copy
-import dataclasses
 import logging
 from typing import Any, List, Optional
 
 import geopandas
 from jord.qlive_utilities import add_dataframe_layer
-from pandas import DataFrame, json_normalize
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
 
 from integration_system.mi import MIFloor, MIVenue
-from integration_system.mixins import CollectionMixin
-from integration_system.model import Solution
-from mi_companion.configuration.constants import (
-    REAL_NONE_JSON_VALUE,
-)
+from integration_system.model import Solution, CollectionMixin
 
 __all__ = ["add_floor_content_layers"]
 
 from mi_companion.configuration.options import read_bool_setting
 
-from .custom_props import process_custom_props_df
+from .custom_props import process_custom_props_df, to_df
 
 from mi_companion.mi_editor.conversion.layers.type_enums import LocationTypeEnum
 from .fields import add_dropdown_widget, make_field_unique
@@ -33,22 +26,6 @@ from ...projection import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-def to_df(coll_mix: CollectionMixin) -> DataFrame:
-    # noinspection PyTypeChecker
-    cs = []
-    for c in coll_mix:
-        if hasattr(c, "custom_properties"):
-            cps = getattr(c, "custom_properties")
-            if cps is not None:
-                for language, translations in copy.deepcopy(cps).items():
-                    for cp, cpv in translations.items():
-                        if cpv is None:
-                            cps[language][cp] = REAL_NONE_JSON_VALUE
-                setattr(c, "custom_properties", cps)
-        cs.append(dataclasses.asdict(c))
-    return json_normalize(cs)
 
 
 def add_location_layer(

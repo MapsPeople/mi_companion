@@ -12,11 +12,10 @@ from qgis.PyQt import QtWidgets
 from qgis.core import QgsEditorWidgetSetup, QgsProject
 
 import integration_system
+from integration_system.config import Settings, get_settings
 from integration_system.mi import (
-    Settings,
     SolutionDepth,
     get_remote_solution,
-    get_settings,
 )
 from integration_system.model import Solution, VenueType
 from mi_companion.configuration.constants import (

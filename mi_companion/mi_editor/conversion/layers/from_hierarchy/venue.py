@@ -13,7 +13,8 @@ from qgis.PyQt.QtCore import QVariant
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.mi import Settings, SolutionDepth
+from integration_system.config import Settings
+from integration_system.mi import SolutionDepth
 from integration_system.model import Solution, VenueType
 from mi_companion.configuration.constants import (
     DEFAULT_CUSTOM_PROPERTIES,

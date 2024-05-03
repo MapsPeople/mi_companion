@@ -7,6 +7,7 @@ __all__ = [
     "GDS_EPSG_NUMBER",
     "reproject_geometry_df",
     "should_reproject",
+    "INSERT_INDEX",
 ]
 
 import shapely

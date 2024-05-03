@@ -10,7 +10,7 @@ from qgis.PyQt import QtCore, QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
-from integration_system.constants import (
+from integration_system.model import (
     DIFFERENCE_GROUP_NAME,
     SHAPELY_DIFFERENCE_DESCRIPTION,
 )

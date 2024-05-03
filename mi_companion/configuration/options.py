@@ -16,8 +16,6 @@ __all__ = [
 
 import logging
 
-from jord.qgis_utilities import read_plugin_setting, store_plugin_setting
-from jord.qgis_utilities.helpers import reconnect_signal
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, uic, QtCore
@@ -37,6 +35,9 @@ from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 from .. import DEFAULT_PLUGIN_SETTINGS
 from ..constants import PROJECT_NAME, VERSION
 from ..utilities.paths import resolve_path, get_icon_path, load_icon
+
+from jord.qgis_utilities import read_plugin_setting, store_plugin_setting
+from jord.qgis_utilities.helpers import reconnect_signal
 
 QGIS_PROJECT = QgsProject.instance()
 VERBOSE = False
