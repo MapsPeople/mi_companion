@@ -60,6 +60,7 @@ def sync_build_venue_solution(
                 contact=occupant.contact,
                 media_key=(occupant.logo.key if occupant.logo else None),
             )"""
+
     if VERBOSE:
         logger.info("Synchronising")
 

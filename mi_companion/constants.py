@@ -36,7 +36,7 @@ try:
     from apppath import AppPath
 
     PROJECT_APP_PATH = AppPath(PROJECT_NAME, app_author=PLUGIN_AUTHOR)
-except:
+except Exception:
     PROJECT_APP_PATH = None
 
 __version__ = VERSION

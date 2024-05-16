@@ -84,7 +84,7 @@ def classFactory(iface):  # pylint: disable=invalid-name
                 # ],
             )
 
-        except:
+        except Exception:
             ...
 
     try:
@@ -112,7 +112,7 @@ def classFactory(iface):  # pylint: disable=invalid-name
                 add_logging_handler_once(
                     logger, sentry_sdk.integrations.logging.BreadcrumbHandler(level=0)
                 )
-            except:
+            except Exception:
                 ...
 
         logger.debug(f"Setup {logger.name=}")
@@ -124,7 +124,7 @@ def classFactory(iface):  # pylint: disable=invalid-name
             f"Setup {setup_logger('integration_system', logger_level=logging_level).name=}"
         )
 
-    except:
+    except Exception:
         ...
 
     return MapsIndoorsCompanionPlugin(iface)
