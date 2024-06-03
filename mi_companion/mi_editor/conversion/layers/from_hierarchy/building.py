@@ -1,7 +1,8 @@
 import logging
-from typing import Optional
+from typing import Any, Optional
 
 import shapely
+from integration_system.model import Solution
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
@@ -24,15 +25,15 @@ __all__ = ["add_venue_buildings"]
 
 def add_venue_buildings(
     *,
-    ith_solution,
-    ith_venue,
-    num_solution_elements,
-    num_venue_elements,
-    progress_bar,
-    solution,
-    solution_group_item,
-    venue_key,
-):
+    ith_solution: int,
+    ith_venue: int,
+    num_solution_elements: int,
+    num_venue_elements: int,
+    progress_bar: Optional[Any],
+    solution: Solution,
+    solution_group_item: Any,
+    venue_key: str,
+) -> None:
     venue_group_elements = solution_group_item.children()
     num_venue_group_elements = len(venue_group_elements)
     for ith_venue_group_item, venue_group_item in enumerate(venue_group_elements):
@@ -99,10 +100,10 @@ def get_building_key(building_group_items, solution, venue_key) -> Optional[str]
 
             feature_geom = layer_feature.geometry()
             if feature_geom is not None:
-                geom_wkt = feature_geom.asWkt()
+                geom_wkt = feature_geom.asWkt()  # TODO: Try asWkb instead
                 if geom_wkt is not None:
                     custom_props = extract_custom_props(layer_attributes)
-                    geom_shapely = shapely.from_wkt(geom_wkt)
+                    geom_shapely = shapely.from_wkt(geom_wkt)  # from wkb instead
                     return solution.add_building(
                         external_id=external_id,
                         name=name,

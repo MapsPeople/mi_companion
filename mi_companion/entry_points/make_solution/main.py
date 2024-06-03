@@ -60,7 +60,7 @@ def run(
         venue_name, venue_name, polygon=venue_polygon, venue_key=venue_key
     )
     floor_key = s.add_floor(
-        venue_name, venue_name, 0, venue_polygon, building_key=building_key
+        floor_index=0, building_key=building_key, name=venue_name, polygon=venue_polygon
     )
     s.add_room(venue_name, venue_name, polygon=venue_polygon, floor_key=floor_key)
     s.add_area(venue_name, venue_name, polygon=venue_polygon, floor_key=floor_key)

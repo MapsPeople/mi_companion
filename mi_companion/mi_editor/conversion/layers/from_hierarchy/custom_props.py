@@ -1,7 +1,7 @@
 import logging
 import math
 from collections import defaultdict
-from typing import Any, Mapping
+from typing import Any, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 # from qgis.core.QgsVariantUtils import isNull, typeToDisplayString
@@ -27,7 +27,7 @@ __all__ = ["extract_custom_props"]
 
 def extract_custom_props(
     layer_attributes: Mapping[str, Any]
-) -> Mapping[str, Mapping[str, Any]]:
+) -> Optional[Mapping[str, Mapping[str, Any]]]:
     """
     THIS IS THE DIRTIEST function ever written, null is a hell of a concept
 
@@ -84,5 +84,8 @@ def extract_custom_props(
                     custom_props[lang][cname] = v
             else:
                 logger.error(f"IGNORING {split_res}")
+
+    if len(custom_props) == 0:
+        return None
 
     return custom_props

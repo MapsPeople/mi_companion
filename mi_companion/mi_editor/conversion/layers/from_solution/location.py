@@ -8,7 +8,14 @@ from jord.qlive_utilities import add_dataframe_layer
 from qgis.core import QgsEditorWidgetSetup
 
 from integration_system.mi import MIFloor, MIVenue
-from integration_system.model import Solution, CollectionMixin
+from integration_system.model import (
+    Floor,
+    Graph,
+    Solution,
+    CollectionMixin,
+    SolutionObject,
+    Venue,
+)
 
 __all__ = ["add_floor_content_layers"]
 
@@ -33,88 +40,92 @@ def add_location_layer(
     name: str,
     geom_type: str,
     *,
-    qgis_instance_handle,
-    floor_group,
-    floor,
-    dropdown_widget,
+    qgis_instance_handle: Any,
+    floor_group: Any,
+    floor: Floor,
+    dropdown_widget: Optional[Any] = None,
 ) -> Optional[List[Any]]:  # QgsVectorLayer
     shape_df = to_df(collection_)
-    if not shape_df.empty:
-        shape_df = shape_df[shape_df["floor.external_id"] == floor.external_id]
+    if shape_df.empty:
+        logger.warning(f"{name=} {shape_df=} was empty!")
 
-        locations_df = geopandas.GeoDataFrame(
-            shape_df[
-                [
-                    c
-                    for c in shape_df.columns
-                    if ("." not in c)
-                    or ("location_type.name" == c)
-                    or (
-                        "custom_properties." in c
-                        and (
-                            ".custom_properties" not in c
-                        )  # Only this objects custom_properties
-                    )
-                ]
-            ],
-            geometry=geom_type,
+        return
+
+    shape_df = shape_df[shape_df["floor.external_id"] == floor.external_id]
+
+    locations_df = geopandas.GeoDataFrame(
+        shape_df[
+            [
+                c
+                for c in shape_df.columns
+                if ("." not in c)
+                or ("location_type.name" == c)
+                or (
+                    "custom_properties." in c
+                    and (
+                        ".custom_properties" not in c
+                    )  # Only this objects custom_properties
+                )
+            ]
+        ],
+        geometry=geom_type,
+    )
+    assert len(shape_df) == len(
+        locations_df
+    ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
+
+    process_custom_props_df(locations_df)
+    assert len(shape_df) == len(
+        locations_df
+    ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
+
+    reproject_geometry_df(locations_df)
+    assert len(shape_df) == len(
+        locations_df
+    ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
+
+    added_layers = add_dataframe_layer(
+        qgis_instance_handle=qgis_instance_handle,
+        dataframe=locations_df,
+        geometry_column=geom_type,
+        name=name,
+        group=floor_group,
+        categorise_by_attribute="location_type.name",
+        crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
+    )
+
+    for a in added_layers:
+        if a:
+            layer = next(iter(a))
+            break
+    else:
+        logger.info(f"Did not add any {geom_type} layers for {name}:{floor}!")
+        return
+
+    assert (
+        len(shape_df) == layer.featureCount()
+    ), f"Some Features where dropped, should not happen! {len(shape_df)}!={layer.featureCount()}"
+
+    if dropdown_widget:
+        add_dropdown_widget(
+            added_layers,
+            "location_type.name",
+            dropdown_widget,
         )
-        assert len(shape_df) == len(
-            locations_df
-        ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
 
-        process_custom_props_df(locations_df)
-        assert len(shape_df) == len(
-            locations_df
-        ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
+    make_field_unique(added_layers)
 
-        reproject_geometry_df(locations_df)
-        assert len(shape_df) == len(
-            locations_df
-        ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
-
-        added_layers = add_dataframe_layer(
-            qgis_instance_handle=qgis_instance_handle,
-            dataframe=locations_df,
-            geometry_column=geom_type,
-            name=name,
-            group=floor_group,
-            categorise_by_attribute="location_type.name",
-            crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
-        )
-
-        for a in added_layers:
-            if a:
-                layer = next(iter(a))
-                break
-        else:
-            logger.info(f"Did not add any {geom_type} layers for {name}:{floor}!")
-            return
-
-        assert (
-            len(shape_df) == layer.featureCount()
-        ), f"Some Features where dropped, should not happen! {len(shape_df)}!={layer.featureCount()}"
-
-        if dropdown_widget:
-            add_dropdown_widget(
-                added_layers,
-                "location_type.name",
-                dropdown_widget,
-            )
-
-        make_field_unique(added_layers)
-
-        return added_layers
+    return added_layers
 
 
 def add_door_layer(
-    collection_: CollectionMixin,
+    collection_: CollectionMixin[SolutionObject],
     *,
-    qgis_instance_handle,
-    floor_group,
-    floor,
-    graph,
-    dropdown_widget,
+    qgis_instance_handle: Any,
+    floor_group: Any,
+    floor: Floor,
+    graph: Graph,
+    dropdown_widget: Optional[Any] = None,
 ):
     df = to_df(collection_)
     if not df.empty:
@@ -149,11 +160,11 @@ def add_door_layer(
 
 def add_floor_content_layers(
     *,
-    qgis_instance_handle,
+    qgis_instance_handle: Any,
     solution: Solution,
-    floor: MIFloor,
-    floor_group,
-    venue: MIVenue,
+    floor: Floor,
+    floor_group: Any,
+    venue: Venue,
     available_location_type_map_widget: Optional[Any] = None,
     door_type_dropdown_widget: Optional[Any] = None,
 ) -> None:

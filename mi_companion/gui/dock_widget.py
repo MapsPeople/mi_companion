@@ -28,6 +28,7 @@ from qgis.core import (
 )
 from warg import reload_module
 
+from integration_system.config import MapsIndoors, Settings, set_settings
 from integration_system.mi import SolutionDepth, get_venue_key_mi_venue_map
 from mi_companion.mi_editor import (
     layer_hierarchy_to_solution,
@@ -147,53 +148,43 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.repopulate_grid_layout()
 
     def set_update_sync_settings(self):
-        self.sync_module_settings.mapsindoors.username = read_plugin_setting(
-            "MAPS_INDOORS_USERNAME",
-            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_USERNAME"],
-            project_name=PROJECT_NAME,
-        )
-
-        self.sync_module_settings.mapsindoors.password = read_plugin_setting(
-            "MAPS_INDOORS_PASSWORD",
-            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_PASSWORD"],
-            project_name=PROJECT_NAME,
-        )
-
-        self.sync_module_settings.mapsindoors.token_endpoint = read_plugin_setting(
-            "MAPS_INDOORS_TOKEN_ENDPOINT",
-            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_TOKEN_ENDPOINT"],
-            project_name=PROJECT_NAME,
-        )
-        self.sync_module_settings.mapsindoors.manager_api_host = read_plugin_setting(
-            "MAPS_INDOORS_MANAGER_API_HOST",
-            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_MANAGER_API_HOST"],
-            project_name=PROJECT_NAME,
-        )
-        self.sync_module_settings.mapsindoors.media_api_host = read_plugin_setting(
-            "MAPS_INDOORS_MEDIA_API_HOST",
-            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_MEDIA_API_HOST"],
-            project_name=PROJECT_NAME,
-        )
-
-        integration_token = read_plugin_setting(
-            "MAPS_INDOORS_INTEGRATION_API_TOKEN",
-            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_INTEGRATION_API_TOKEN"],
-            project_name=PROJECT_NAME,
-        )
-        if integration_token:
-            self.sync_module_settings.mapsindoors.integration_api_bearer_token = (
-                integration_token
+        self.sync_module_settings = Settings(
+            mapsindoors=MapsIndoors(
+                username=read_plugin_setting(
+                    "MAPS_INDOORS_USERNAME",
+                    default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_USERNAME"],
+                    project_name=PROJECT_NAME,
+                ),
+                password=read_plugin_setting(
+                    "MAPS_INDOORS_PASSWORD",
+                    default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_PASSWORD"],
+                    project_name=PROJECT_NAME,
+                ),
+                token_endpoint=read_plugin_setting(
+                    "MAPS_INDOORS_TOKEN_ENDPOINT",
+                    default_value=DEFAULT_PLUGIN_SETTINGS[
+                        "MAPS_INDOORS_TOKEN_ENDPOINT"
+                    ],
+                    project_name=PROJECT_NAME,
+                ),
+                manager_api_host=read_plugin_setting(
+                    "MAPS_INDOORS_MANAGER_API_HOST",
+                    default_value=DEFAULT_PLUGIN_SETTINGS[
+                        "MAPS_INDOORS_MANAGER_API_HOST"
+                    ],
+                    project_name=PROJECT_NAME,
+                ),
+                media_api_host=read_plugin_setting(
+                    "MAPS_INDOORS_MEDIA_API_HOST",
+                    default_value=DEFAULT_PLUGIN_SETTINGS[
+                        "MAPS_INDOORS_MEDIA_API_HOST"
+                    ],
+                    project_name=PROJECT_NAME,
+                ),
             )
-
-        manager_token = read_plugin_setting(
-            "MAPS_INDOORS_MANAGER_API_TOKEN",
-            default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_MANAGER_API_TOKEN"],
-            project_name=PROJECT_NAME,
         )
-        if manager_token:
-            self.sync_module_settings.mapsindoors.manager_api_bearer_token = (
-                manager_token
-            )
+
+        set_settings(self.sync_module_settings)
 
     def refresh_solution_combo_box(self, reload_venues: bool = True) -> None:
         from integration_system.mi import get_solution_name_external_id_map
@@ -212,9 +203,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 self.solution_combo_box.setCurrentText(current_solution_name)
 
             bar.setValue(50)
-            self.external_id_map = get_solution_name_external_id_map(
-                settings=self.sync_module_settings
-            )
+            self.external_id_map = get_solution_name_external_id_map()
 
             bar.setValue(90)
             self.solution_combo_box.addItems(sorted(self.external_id_map.keys()))
@@ -259,9 +248,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             ]
             bar.setValue(10)
 
-            solution_id = get_solution_id(
-                self.solution_external_id, settings=self.sync_module_settings
-            )
+            solution_id = get_solution_id(self.solution_external_id)
             if solution_id is None:
                 logger.error(
                     f"Could not find solution id for {self.solution_external_id}"
@@ -271,7 +258,6 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
             self.venues = get_venue_key_mi_venue_map(
                 solution_id,
-                settings=self.sync_module_settings,
             )
 
             bar.setValue(90)
@@ -294,8 +280,10 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             return
 
         solution_depth = SolutionDepth.LOCATIONS
+
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())
+
         include_route_elements = read_bool_setting("ADD_DOORS")
         include_occupants = False
         include_media = False
@@ -314,7 +302,6 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                             self,
                             self.solution_external_id,
                             v,
-                            settings=self.sync_module_settings,
                             progress_bar=venue_bar,
                             depth=solution_depth,
                             include_route_elements=include_route_elements,
@@ -334,7 +321,6 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                         self,
                         self.solution_external_id,
                         self.venue_name_id_map[venue_name],
-                        settings=self.sync_module_settings,
                         progress_bar=bar,
                         depth=solution_depth,
                         include_route_elements=include_route_elements,
@@ -352,16 +338,17 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         solution_depth = SolutionDepth.LOCATIONS
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())
+
         include_route_elements = False
         include_occupants = False
         include_media = False
         include_graph = False
+
         with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
             self.changes_label.setText(f"Uploading venues")
             try:
                 layer_hierarchy_to_solution(
                     self,
-                    settings=self.sync_module_settings,
                     progress_bar=bar,
                     solution_depth=solution_depth,
                     include_route_elements=include_route_elements,
@@ -384,7 +371,6 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             try:
                 revert_venues(
                     original_solution_venues=self.original_solution_venues,
-                    settings=self.sync_module_settings,
                     progress_bar=bar,
                 )
             except Exception as e:
@@ -411,7 +397,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                     columns=[{"contexts": c} for c in contexts],
                     crs=f"EPSG:{ MI_EPSG_NUMBER }",
                 )
-        except:
+        except Exception:
             ...
 
         logger.error(string_exception)

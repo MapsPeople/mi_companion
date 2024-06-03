@@ -1,4 +1,5 @@
 import logging
+from typing import Any, Optional, Tuple
 
 import shapely
 
@@ -30,15 +31,15 @@ __all__ = ["add_building_floor"]
 def add_building_floor(
     *,
     building_key: str,
-    venue_group_item,
+    venue_group_item: Any,
     solution: Solution,
-    progress_bar,
-    ith_solution,
-    ith_venue,
-    ith_building,
-    num_solution_elements,
-    num_venue_elements,
-    num_building_elements,
+    progress_bar: Optional[Any],
+    ith_solution: int,
+    ith_venue: int,
+    ith_building: int,
+    num_solution_elements: int,
+    num_venue_elements: int,
+    num_building_elements: int,
 ) -> None:
     building_group_elements = venue_group_item.children()
     num_building_group_elements = len(building_group_elements)
@@ -86,7 +87,9 @@ def add_building_floor(
         )
 
 
-def get_floor_data(building_key, floor_group_items, solution):
+def get_floor_data(
+    building_key: str, floor_group_items: Any, solution: Solution
+) -> Tuple:
     for floor_level_item in floor_group_items.children():
         if (
             isinstance(

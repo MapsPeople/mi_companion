@@ -60,10 +60,10 @@ def add_building_layers(
                         **(
                             {
                                 f"custom_properties.{lang}.{prop}": str(v)
-                                for lang, props_map in venue.custom_properties.items()
+                                for lang, props_map in building.custom_properties.items()
                                 for prop, v in props_map.items()
                             }
-                            if venue.custom_properties
+                            if building.custom_properties
                             else {}
                         ),
                     }
