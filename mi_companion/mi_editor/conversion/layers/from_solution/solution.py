@@ -42,8 +42,8 @@ logger = logging.getLogger(__name__)
 def add_solution_layers(
     *,
     qgis_instance_handle: Any,
-    solution,
-    layer_tree_root,
+    solution: Solution,
+    layer_tree_root: Any,
     mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
 ) -> None:
@@ -182,7 +182,6 @@ def solution_venue_to_layer_hierarchy(
     venue_external_id: str,
     mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
     *,
-    settings: Optional[Settings] = None,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
     include_occupants: bool = False,
     include_media: bool = False,
@@ -207,8 +206,6 @@ def solution_venue_to_layer_hierarchy(
     :param progress_bar:
     :return:
     """
-    if settings is None:
-        settings = get_settings()
     if progress_bar:
         progress_bar.setValue(0)
 
@@ -217,7 +214,6 @@ def solution_venue_to_layer_hierarchy(
     solution = get_remote_solution(
         solution_external_id,
         venue_keys=[venue_external_id],
-        settings=settings,
         include_occupants=include_occupants,
         include_media=include_media,
         include_route_elements=include_route_elements,

@@ -1,7 +1,8 @@
 import logging
-from typing import Iterable
+from typing import Any, Callable, Iterable, Optional
 from xml.etree.ElementTree import ParseError
 
+from integration_system.model import Solution
 from jord.qlive_utilities import add_shapely_layer
 
 # noinspection PyUnresolvedReferences
@@ -34,15 +35,15 @@ __all__ = ["add_venue_layer"]
 
 def add_venue_layer(
     *,
-    available_location_type_dropdown_widget,
-    door_type_dropdown_widget,
-    highway_type_dropdown_widget,
-    venue_type_dropdown_widget,
-    progress_bar,
-    qgis_instance_handle,
-    solution,
-    solution_group,
-):
+    available_location_type_dropdown_widget: Any,
+    door_type_dropdown_widget: Any,
+    highway_type_dropdown_widget: Any,
+    venue_type_dropdown_widget: Any,
+    progress_bar: Optional[Any],
+    qgis_instance_handle: Any,
+    solution: Solution,
+    solution_group: Any,
+) -> None:
     for venue in solution.venues:
         if venue is None:
             logger.warning("Venue was None!")

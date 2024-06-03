@@ -1,5 +1,9 @@
 import logging
 import uuid
+from typing import Any, Tuple
+
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtCore import QVariant
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets, uic
@@ -17,7 +21,7 @@ from mi_companion.configuration.options import read_bool_setting
 logger = logging.getLogger(__name__)
 
 
-def extract_layer_data(layer_tree_layer):
+def extract_layer_data(layer_tree_layer: Any) -> Tuple:
     geometry_layer = layer_tree_layer.layer()
     layer_feature = next(iter(geometry_layer.getFeatures()))
     layer_attributes = {
@@ -43,6 +47,9 @@ def extract_layer_data(layer_tree_layer):
             raise ValueError(f"{layer_feature} is missing a valid external id")
 
     name = layer_attributes["name"]
+
+    if isinstance(name, QVariant):
+        name = name.value()
 
     if name is None:
         name = external_id

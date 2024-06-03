@@ -5,8 +5,11 @@ from typing import Dict, Optional
 from qgis.PyQt import QtWidgets
 
 # noinspection PyUnresolvedReferences
+from qgis.PyQt.QtCore import QVariant
+
+# noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-from integration_system.config import Settings, get_settings
+from warg.arguments import str_to_bool
 from integration_system.mi import (
     SolutionDepth,
     get_remote_solution,
@@ -30,7 +33,6 @@ def convert_solution_layers_to_solution(
     *,
     progress_bar: callable,
     mi_group,
-    settings: Settings,
     solution_depth: SolutionDepth = SolutionDepth.LOCATIONS,
     include_route_elements: bool = False,
     include_occupants: bool = False,
@@ -57,6 +59,7 @@ def convert_solution_layers_to_solution(
 
         found_solution_data = False
         solution_data: Optional[Dict] = None
+
         for child_solution_group in mi_group_child.children():
             if SOLUTION_DATA_DESCRIPTOR in child_solution_group.name():
                 assert (
@@ -69,7 +72,7 @@ def convert_solution_layers_to_solution(
                     iter(child_solution_group.layer().getFeatures())
                 )
                 solution_data = {
-                    k.name(): v
+                    k.name(): v.value() if isinstance(v, QVariant) else v
                     for k, v in zip(
                         solution_point_feature_layer.fields(),
                         solution_point_feature_layer.attributes(),
@@ -84,21 +87,17 @@ def convert_solution_layers_to_solution(
 
         solution_external_id = solution_data["external_id"]
         solution_customer_id = solution_data["customer_id"]
-        solution_occupants_enabled = solution_data["occupants_enabled"]
+        solution_occupants_enabled = str_to_bool(solution_data["occupants_enabled"])
         solution_name = solution_data["name"]
         # cached_solution_object =solution_data['cached_solution_object'] # TODO: Store a string to cached Solution object pickle
 
         if solution_external_id is None:
             solution_external_id = solution_name
 
-        if (
-            solution_external_id
-            in get_solution_name_external_id_map(settings=settings).values()
-        ):
+        if solution_external_id in get_solution_name_external_id_map().values():
             existing_solution = get_remote_solution(
                 solution_external_id,
                 venue_keys=[],
-                settings=settings,
                 depth=solution_depth,
                 include_route_elements=include_route_elements,
                 include_occupants=include_occupants,
@@ -119,7 +118,6 @@ def convert_solution_layers_to_solution(
             solution_name=solution_name,
             solution_customer_id=solution_customer_id,
             solution_occupants_enabled=solution_occupants_enabled,
-            settings=settings,
             ith_solution=ith_child,
             num_solution_elements=num_mi_group_elements,
             solution_depth=solution_depth,
@@ -134,7 +132,6 @@ def layer_hierarchy_to_solution(
     qgis_instance_handle,
     mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
     *,
-    settings: Optional[Settings] = None,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
     solution_depth=SolutionDepth.LOCATIONS,
     include_route_elements=False,
@@ -142,9 +139,6 @@ def layer_hierarchy_to_solution(
     include_media=False,
     include_graph=False,
 ) -> None:
-    if settings is None:
-        settings = get_settings()
-
     if False:
         ...
         # from PyQt6.QtGui import QAction
@@ -179,7 +173,6 @@ def layer_hierarchy_to_solution(
         qgis_instance_handle,
         progress_bar=progress_bar,
         mi_group=mi_group,
-        settings=settings,
         solution_depth=solution_depth,
         include_route_elements=include_route_elements,
         include_occupants=include_occupants,

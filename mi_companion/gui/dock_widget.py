@@ -203,9 +203,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 self.solution_combo_box.setCurrentText(current_solution_name)
 
             bar.setValue(50)
-            self.external_id_map = get_solution_name_external_id_map(
-                settings=self.sync_module_settings
-            )
+            self.external_id_map = get_solution_name_external_id_map()
 
             bar.setValue(90)
             self.solution_combo_box.addItems(sorted(self.external_id_map.keys()))
@@ -250,9 +248,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             ]
             bar.setValue(10)
 
-            solution_id = get_solution_id(
-                self.solution_external_id, settings=self.sync_module_settings
-            )
+            solution_id = get_solution_id(self.solution_external_id)
             if solution_id is None:
                 logger.error(
                     f"Could not find solution id for {self.solution_external_id}"
@@ -262,7 +258,6 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
             self.venues = get_venue_key_mi_venue_map(
                 solution_id,
-                settings=self.sync_module_settings,
             )
 
             bar.setValue(90)
@@ -285,8 +280,10 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             return
 
         solution_depth = SolutionDepth.LOCATIONS
+
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())
+
         include_route_elements = read_bool_setting("ADD_DOORS")
         include_occupants = False
         include_media = False
@@ -305,7 +302,6 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                             self,
                             self.solution_external_id,
                             v,
-                            settings=self.sync_module_settings,
                             progress_bar=venue_bar,
                             depth=solution_depth,
                             include_route_elements=include_route_elements,
@@ -325,7 +321,6 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                         self,
                         self.solution_external_id,
                         self.venue_name_id_map[venue_name],
-                        settings=self.sync_module_settings,
                         progress_bar=bar,
                         depth=solution_depth,
                         include_route_elements=include_route_elements,
@@ -343,16 +338,17 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         solution_depth = SolutionDepth.LOCATIONS
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())
+
         include_route_elements = False
         include_occupants = False
         include_media = False
         include_graph = False
+
         with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
             self.changes_label.setText(f"Uploading venues")
             try:
                 layer_hierarchy_to_solution(
                     self,
-                    settings=self.sync_module_settings,
                     progress_bar=bar,
                     solution_depth=solution_depth,
                     include_route_elements=include_route_elements,
@@ -375,7 +371,6 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             try:
                 revert_venues(
                     original_solution_venues=self.original_solution_venues,
-                    settings=self.sync_module_settings,
                     progress_bar=bar,
                 )
             except Exception as e:

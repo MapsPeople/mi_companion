@@ -32,7 +32,6 @@ def sync_build_venue_solution(
     include_media,
     include_occupants,
     include_route_elements,  # IGNORED
-    settings,
     solution,
     solution_depth,
     solution_name,
@@ -42,7 +41,6 @@ def sync_build_venue_solution(
     existing_venue_solution = get_remote_solution(
         solution_name,
         venue_keys=[venue_key],
-        settings=settings,
         include_graph=False,
     )
     if existing_venue_solution:
@@ -137,7 +135,6 @@ def sync_build_venue_solution(
     success = synchronize(
         solution,
         sync_level=SyncLevel.VENUE,
-        settings=settings,
         operation_progress_callback=(
             operation_progress_bar_callable
             if read_bool_setting("OPERATION_PROGRESS_BAR_ENABLED")

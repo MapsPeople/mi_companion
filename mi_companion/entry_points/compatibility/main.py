@@ -48,7 +48,7 @@ def run(*, solution_id: str) -> None:
 
     logger.info(f"Running compatiblisation on {solution_id=}")
 
-    make_solution_compatible(solution_id, settings=sync_module_settings)
+    make_solution_compatible(solution_id)
 
     logger.info(f"Finished compatiblisation on {solution_id=}")
 

@@ -20,7 +20,6 @@ def revert_venues(
     original_solution_venues: Dict[str, Dict[str, Solution]],
     mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
     *,
-    settings: Optional[Settings] = None,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
 ) -> None:
     """
@@ -31,8 +30,7 @@ def revert_venues(
     :param progress_bar:
     :return:
     """
-    if settings is None:
-        settings = get_settings()
+
     if progress_bar:
         progress_bar.setValue(0)
     layer_tree_root = QgsProject.instance().layerTreeRoot()
@@ -124,5 +122,4 @@ def revert_venues(
                                 venue_attributes["external_id"]
                             ],
                             sync_level=SyncLevel.VENUE,
-                            settings=settings,
                         )

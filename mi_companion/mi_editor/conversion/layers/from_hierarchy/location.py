@@ -10,6 +10,7 @@ from qgis.PyQt import QtWidgets
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.model import DoorType, LocationType, Solution
+
 from mi_companion.configuration.constants import DEFAULT_CUSTOM_PROPERTIES, VERBOSE
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (
