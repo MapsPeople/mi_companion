@@ -3,4 +3,4 @@
 	url = git@github.com:automaps/mi-sync.git
 [submodule "mi_companion/submodules/svaguely"]
 	path = mi_companion/submodules/svaguely
-	url = git@git.rtx.mapspeople.com:MapsIndoors/automation/tooling/svaguely.git
+	url = git@github.com:automaps/svaguely.git
