@@ -6,7 +6,7 @@ authlib >=1.2.1
 certifi >= 14.05.14
 geojson>=3.1.0
 geopandas>=0.14.0
-jord[qt, shapely]>=0.6.1
+jord[qt, shapely]>=0.6.2
 matplotlib >=3.7.1
 numpy==1.20.0 # PIN BECAUSE APPLE M1
 osmnx>=1.8.0
