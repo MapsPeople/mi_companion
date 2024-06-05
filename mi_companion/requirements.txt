@@ -4,11 +4,13 @@
 apppath>=1.0.6
 authlib >=1.2.1
 certifi >= 14.05.14
+exdxf>=1.3.0
 geojson>=3.1.0
 geopandas>=0.14.0
 jord[qt, shapely]>=0.6.2
 matplotlib >=3.7.1
-numpy==1.20.0 # PIN BECAUSE APPLE M1
+#numpy==1.20.0 # PIN BECAUSE APPLE M1
+numpy>=1.26.4
 osmnx>=1.8.0
 pandas>=1.4.4
 pip>=23.3.2
@@ -19,7 +21,8 @@ pyproj
 #PySide2>=5.0.0
 pytest-xdist>=3.3.1
 python_dateutil >= 2.5.3
-scipy==1.10.1 # PIN BECAUSE APPLE M1
+#scipy==1.10.1 # PIN BECAUSE APPLE M1
+scipy
 sentry-sdk>=2.0.1 # PRETTY BAD INTERFACE!
 setuptools >= 21.0.0
 shapely >= 2.0.0

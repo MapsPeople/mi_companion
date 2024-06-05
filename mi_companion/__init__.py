@@ -59,6 +59,26 @@ def classFactory(iface):  # pylint: disable=invalid-name
     from jord.qgis_utilities import read_plugin_setting
     from jord.qgis_utilities.helpers.logging import add_logging_handler_once
 
+    logger = None
+
+    try:
+        from jord.qgis_utilities.helpers.logging import setup_logger
+        import logging
+
+        logging_level = read_plugin_setting(
+            "LOGGING_LEVEL",
+            default_value=DEFAULT_PLUGIN_SETTINGS["LOGGING_LEVEL"],
+            project_name=PROJECT_NAME,
+        )
+
+        logger: logging.Logger = setup_logger(
+            __name__,
+            logger_level=logging_level,
+        )
+    except Exception as e:
+        if logger:
+            logger.error(f"{e}")
+
     ADD_SENTRY_LOGGER = False
     if ADD_SENTRY_LOGGER:
         try:
@@ -84,8 +104,9 @@ def classFactory(iface):  # pylint: disable=invalid-name
                 # ],
             )
 
-        except Exception:
-            ...
+        except Exception as e:
+            if logger:
+                logger.error(f"{e}")
 
     try:
         from jord.qgis_utilities.helpers.logging import setup_logger
@@ -119,12 +140,13 @@ def classFactory(iface):  # pylint: disable=invalid-name
         logger.debug(
             f"Setup {setup_logger('svaguely', logger_level=logging_level).name=}"
         )
-        logger.debug(f"Setup {setup_logger('jord', logger_level=logging_level).name=}")
+        logger.debug(f"Setup {setup_logger('jord', logger_level=logging.INFO).name=}")
         logger.debug(
             f"Setup {setup_logger('integration_system', logger_level=logging_level).name=}"
         )
 
-    except Exception:
-        ...
+    except Exception as e:
+        if logger:
+            logger.error(f"{e}")
 
     return MapsIndoorsCompanionPlugin(iface)

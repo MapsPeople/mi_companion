@@ -46,6 +46,7 @@ from ..entry_points.make_solution import MakeSolutionDialog
 from ..entry_points.regen_feature_external_ids import RegenFeatureExternalIdsDialog
 from ..entry_points.regen_group_external_ids import RegenGroupExternalIdsDialog
 from ..entry_points.svg_import import SvgImportDialog
+from ..entry_points.dwg_import import DwgImportDialog
 from ..mi_editor.conversion.projection import MI_EPSG_NUMBER
 from ..utilities.paths import get_icon_path, resolve_path
 from ..utilities.string_parsing import extract_wkt_elements
@@ -135,6 +136,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             "Duplicate Group": DuplicateGroupDialog(),
             # "Cad Area": CadAreaDialog(),
             "Import SVG": SvgImportDialog(),
+            "Import DWG": DwgImportDialog(),
             "Regen Group/Layer Field": RegenGroupExternalIdsDialog(),
             "Regen Selected Feature Field": RegenFeatureExternalIdsDialog(),
             # "Diff Tool": InstanceRoomsDialog(),
