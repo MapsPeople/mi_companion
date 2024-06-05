@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import logging
 import uuid
 from typing import Optional
 
@@ -18,6 +19,8 @@ ________________________________________________________________________________
 ________________________________________________________________________________________________________________________
 https://en.wikipedia.org/wiki/Decimal_degrees#:~:text=Decimal%20degrees%20(DD)%20is%20a,as%20OpenStreetMap%2C%20and%20GPS%20devices
 """
+
+logger = logging.getLogger(__name__)
 
 
 def run(

@@ -1,10 +1,11 @@
 #!/usr/bin/python
-
-
+import logging
 import os
 import traceback
 from pathlib import Path
 from typing import Optional, Dict, Mapping, Collection
+
+logger = logging.getLogger(__name__)
 
 
 def write_csv(csv_file_name: Path, area_list: Collection[Mapping]) -> None:

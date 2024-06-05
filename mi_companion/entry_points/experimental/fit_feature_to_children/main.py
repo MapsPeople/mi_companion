@@ -1,4 +1,7 @@
 #!/usr/bin/python
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def run(*, appendix: str = " (Copy)") -> None:
