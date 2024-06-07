@@ -2,7 +2,7 @@
 name=MI Companion
 qgisMinimumVersion=3.26
 description=GDS tooling
-version=0.4.5
+version=0.4.6
 author=heider
 email=chen@mapspeople.com
 
