@@ -4,7 +4,7 @@
 apppath>=1.0.6
 authlib >=1.2.1
 certifi >= 14.05.14
-exdxf>=1.3.0
+ezdxf>=1.3.0
 geojson>=3.1.0
 geopandas>=0.14.0
 jord[qt, shapely]>=0.6.2

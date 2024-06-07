@@ -1,13 +1,19 @@
 #!/usr/bin/python
 import logging
 from pathlib import Path
+from typing import Optional
 
 from warg import system_open_path
 
 logger = logging.getLogger(__name__)
 
 
-def run(*, path: str, auto_add_layers: bool = True) -> None:
+def run(
+    *,
+    path: str,
+    auto_add_layers: bool = True,
+    oda_converter_path: str = r"C:\Program Files\ODA\ODAFileConverter 25.4.0\ODAFileConverter.exe",
+) -> None:
     from jord.cad_utilities import convert_to_dxf
     import os
 
@@ -33,7 +39,7 @@ def run(*, path: str, auto_add_layers: bool = True) -> None:
     """
 
     svg_file_path = Path(path)
-    new_dxf_path: Path = convert_to_dxf(svg_file_path)
+    new_dxf_path: Path = convert_to_dxf(svg_file_path, oda_converter_path)
 
     logger.info(f"Emitted {new_dxf_path}")
     # dxf_info = ""  # "|layername=entities|geometrytype=LineString"
