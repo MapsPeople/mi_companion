@@ -144,13 +144,17 @@ def get_venue_key(solution, venue_group_items) -> Optional[str]:
             venue_type = VenueType.__getitem__(venue_type_str)
             last_verified = layer_attributes["last_verified"]
 
-            address = PostalAddress(
-                city=layer_attributes["address.city"],
-                region=layer_attributes["address.region"],
-                street1=layer_attributes["address.street1"],
-                country=layer_attributes["address.country"],
-                street2=layer_attributes["address.street2"],
-                postal_code=layer_attributes["address.postal_code"],
+            address = (
+                PostalAddress(
+                    city=layer_attributes["address.city"],
+                    region=layer_attributes["address.region"],
+                    street1=layer_attributes["address.street1"],
+                    country=layer_attributes["address.country"],
+                    street2=layer_attributes["address.street2"],
+                    postal_code=layer_attributes["address.postal_code"],
+                )
+                if "address.city" in layer_attributes
+                else None
             )
 
             geom_shapely = feature_to_shapely(layer_feature)

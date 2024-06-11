@@ -83,12 +83,18 @@ def add_venue_layer(
                     "name": venue.name,
                     "last_verified": venue.last_verified,
                     "venue_type": venue.venue_type.name,
-                    f"address.city": venue.address.city,
-                    f"address.region": venue.address.region,
-                    f"address.country": venue.address.country,
-                    f"address.street1": venue.address.street1,
-                    f"address.postal_code": venue.address.postal_code,
-                    f"address.street2": venue.address.street2,
+                    **(
+                        {
+                            f"address.city": venue.address.city,
+                            f"address.region": venue.address.region,
+                            f"address.country": venue.address.country,
+                            f"address.street1": venue.address.street1,
+                            f"address.postal_code": venue.address.postal_code,
+                            f"address.street2": venue.address.street2,
+                        }
+                        if venue.address
+                        else {}
+                    ),
                     **(
                         {
                             f"custom_properties.{lang}.{prop}": str(v)
