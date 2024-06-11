@@ -140,7 +140,7 @@ def classFactory(iface):  # pylint: disable=invalid-name
         logger.debug(
             f"Setup {setup_logger('svaguely', logger_level=logging_level).name=}"
         )
-        logger.debug(f"Setup {setup_logger('jord', logger_level=logging.INFO).name=}")
+        logger.debug(f"Setup {setup_logger('jord', logger_level=logging_level).name=}")
         logger.debug(
             f"Setup {setup_logger('integration_system', logger_level=logging_level).name=}"
         )

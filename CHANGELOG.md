@@ -1,3 +1,5 @@
+0.4.8 Address on Venue now supported
+
 0.4.0 Support Multi Polygon floors
 
 0.3.6 Handle Custom PROPERties PROPERly

@@ -41,6 +41,11 @@ def convert_solution_layers_to_solution(
 ) -> None:
     mi_group_children = mi_group.children()
     num_mi_group_elements = len(mi_group_children)
+
+    if num_mi_group_elements == 0:
+        logger.warning("No solutions to upload")
+        return
+
     for ith_child, mi_group_child in enumerate(mi_group_children):
         if SOLUTION_DESCRIPTOR not in str(mi_group_child.name()):
             return
@@ -59,6 +64,10 @@ def convert_solution_layers_to_solution(
 
         found_solution_data = False
         solution_data: Optional[Dict] = None
+
+        if len(mi_group_child.children()) == 0:
+            logger.warning("No venues to upload")
+            continue
 
         for child_solution_group in mi_group_child.children():
             if SOLUTION_DATA_DESCRIPTOR in child_solution_group.name():

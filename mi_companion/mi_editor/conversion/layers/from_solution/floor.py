@@ -67,10 +67,10 @@ def add_floor_layers(
                             **(
                                 {
                                     f"custom_properties.{lang}.{prop}": str(v)
-                                    for lang, props_map in venue.custom_properties.items()
+                                    for lang, props_map in floor.custom_properties.items()
                                     for prop, v in props_map.items()
                                 }
-                                if venue.custom_properties
+                                if floor.custom_properties
                                 else {}
                             ),
                         }
@@ -100,6 +100,15 @@ def add_floor_layers(
                             "external_id": floor.external_id,
                             "name": floor.name,
                             "floor_index": floor.floor_index,
+                            **(
+                                {
+                                    f"custom_properties.{lang}.{prop}": str(v)
+                                    for lang, props_map in floor.custom_properties.items()
+                                    for prop, v in props_map.items()
+                                }
+                                if floor.custom_properties
+                                else {}
+                            ),
                         }
                     ],
                     group=floor_group,

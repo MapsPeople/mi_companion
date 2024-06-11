@@ -15,7 +15,7 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.config import Settings
 from integration_system.mi import SolutionDepth
-from integration_system.model import Solution, VenueType
+from integration_system.model import PostalAddress, Solution, VenueType
 from mi_companion.configuration.constants import (
     DEFAULT_CUSTOM_PROPERTIES,
     HALF_SIZE,
@@ -144,6 +144,15 @@ def get_venue_key(solution, venue_group_items) -> Optional[str]:
             venue_type = VenueType.__getitem__(venue_type_str)
             last_verified = layer_attributes["last_verified"]
 
+            address = PostalAddress(
+                city=layer_attributes["address.city"],
+                region=layer_attributes["address.region"],
+                street1=layer_attributes["address.street1"],
+                country=layer_attributes["address.country"],
+                street2=layer_attributes["address.street2"],
+                postal_code=layer_attributes["address.postal_code"],
+            )
+
             geom_shapely = feature_to_shapely(layer_feature)
             if geom_shapely:
                 custom_props = extract_custom_props(layer_attributes)
@@ -156,6 +165,7 @@ def get_venue_key(solution, venue_group_items) -> Optional[str]:
                     custom_properties=(
                         custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
                     ),
+                    address=address,
                 )
     logger.error(f"Did not find venue in {venue_group_items.children()=}")
 
