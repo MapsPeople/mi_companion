@@ -39,6 +39,7 @@ from .. import DEFAULT_PLUGIN_SETTINGS
 from ..configuration.options import read_bool_setting
 from ..constants import PROJECT_NAME, VERSION
 from ..entry_points.compatibility import CompatibilityDialog
+from ..entry_points import generate_door_buffers
 
 # from ..entry_points.cad_area import CadAreaDialog
 from ..entry_points.duplicate_group import DuplicateGroupDialog
@@ -141,6 +142,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             "Regen Selected Feature Field": RegenFeatureExternalIdsDialog(),
             # "Diff Tool": InstanceRoomsDialog(),
             "Compatibility": CompatibilityDialog(),
+            generate_door_buffers.ENTRY_POINT_NAME: generate_door_buffers.ENTRY_POINT_DIALOG(),
             # "Generate Connectors": GenerateConnectorsDialog(),
             # "Generate Doors": InstanceRoomsDialog(),
             # "Generate Walls": InstanceRoomsDialog(),

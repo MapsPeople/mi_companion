@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import logging
+from typing import Optional
 
 from jord.qgis_utilities import read_plugin_setting
 
@@ -9,7 +10,7 @@ from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
 logger = logging.getLogger(__name__)
 
 
-def run(*, solution_id: str) -> None:
+def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> None:
     from integration_system.compatibilization import (
         make_solution_compatible,
     )
@@ -48,7 +49,11 @@ def run(*, solution_id: str) -> None:
 
     logger.info(f"Running compatiblisation on {solution_id=}")
 
-    make_solution_compatible(solution_id)
+    solution_external_id = None
+    if new_solution_external_id:
+        solution_external_id = new_solution_external_id
+
+    make_solution_compatible(solution_id, new_external_id=solution_external_id)
 
     logger.info(f"Finished compatiblisation on {solution_id=}")
 
@@ -56,8 +61,8 @@ def run(*, solution_id: str) -> None:
 if __name__ == "__main__":
 
     def asijdauh():
-        kemper_qgis = "717003114802465c9793f5ff"
-
-        logger.basicConfig(level=logging.INFO)
+        kemper_qgis = "4b2592bdd05342f2ada9cca3"
 
         run(solution_id=kemper_qgis)
+
+    asijdauh()

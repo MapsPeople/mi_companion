@@ -38,8 +38,6 @@ def run(*, field_name: str = "external_id", only_active_layer: bool = False) -> 
     # noinspection PyUnresolvedReferences
     from qgis.core import QgsProject
 
-    layers = []
-
     if only_active_layer:
         if False:
             layers = list(iface.activeLayer())
