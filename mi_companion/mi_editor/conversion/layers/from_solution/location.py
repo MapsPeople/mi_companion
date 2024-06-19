@@ -7,19 +7,13 @@ from jord.qlive_utilities import add_dataframe_layer
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
 
-from integration_system.mi import MIFloor, MIVenue
 from integration_system.model import (
-    Floor,
-    Graph,
-    Solution,
     CollectionMixin,
-    SolutionObject,
-    Venue,
+    Floor,
+    Solution,
 )
 
 __all__ = ["add_floor_content_layers"]
-
-from mi_companion.configuration.options import read_bool_setting
 
 from .custom_props import process_custom_props_df, to_df
 
@@ -149,55 +143,13 @@ def add_location_layer(
     return added_layers
 
 
-def add_door_layer(
-    collection_: CollectionMixin[SolutionObject],
-    *,
-    qgis_instance_handle: Any,
-    floor_group: Any,
-    floor: Floor,
-    graph: Graph,
-    dropdown_widget: Optional[Any] = None,
-):
-    df = to_df(collection_)
-    if not df.empty:
-        df = df[
-            (df["floor_index"] == floor.floor_index)
-            & (df["graph.graph_id"] == graph.graph_id)
-        ]
-        door_df = geopandas.GeoDataFrame(
-            df[[c for c in df.columns if ("." not in c)]],
-            geometry="linestring",
-        )
-
-        # door_df["door_type"] = door_df["door_type"].apply(lambda x: x.name, axis=1)
-
-        reproject_geometry_df(door_df)
-
-        door_layer = add_dataframe_layer(
-            qgis_instance_handle=qgis_instance_handle,
-            dataframe=door_df,
-            geometry_column="linestring",
-            name="doors",
-            categorise_by_attribute="door_type",
-            group=floor_group,
-            crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
-        )
-
-        if dropdown_widget:
-            add_dropdown_widget(door_layer, "door_type", dropdown_widget)
-
-        make_field_unique(door_layer)
-
-
 def add_floor_content_layers(
     *,
     qgis_instance_handle: Any,
     solution: Solution,
     floor: Floor,
     floor_group: Any,
-    venue: Venue,
     available_location_type_map_widget: Optional[Any] = None,
-    door_type_dropdown_widget: Optional[Any] = None,
 ) -> None:
     add_location_layer(
         solution.rooms,
@@ -229,12 +181,12 @@ def add_floor_content_layers(
         dropdown_widget=available_location_type_map_widget,
     )
 
-    if read_bool_setting("ADD_DOORS"):
-        add_door_layer(
-            solution.doors,
-            graph=venue.graph,
-            qgis_instance_handle=qgis_instance_handle,
-            floor_group=floor_group,
-            floor=floor,
-            dropdown_widget=door_type_dropdown_widget,
-        )
+    # TODO: Maybe one day.
+    # if read_bool_setting("ADD_DOORS"):
+    #    add_door_layers(
+    #        graph=graph,
+    #        qgis_instance_handle=qgis_instance_handle,
+    #        graph_group=graph_group,
+    #        dropdown_widget=door_type_dropdown_widget,
+    #        solution=solution,
+    #    )

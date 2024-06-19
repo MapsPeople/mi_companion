@@ -3,7 +3,7 @@ import logging
 import os
 import traceback
 from pathlib import Path
-from typing import Optional, Dict, Mapping, Collection
+from typing import Collection, Dict, Mapping, Optional
 
 logger = logging.getLogger(__name__)
 

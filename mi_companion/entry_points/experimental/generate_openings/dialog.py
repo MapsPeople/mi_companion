@@ -6,7 +6,7 @@ from typing import Generic, Union
 from qgis.PyQt import uic
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QDialog
+from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
 

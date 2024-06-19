@@ -1,7 +1,7 @@
-from .dialog import SvgImportDialog
+from .dialog import Dialog
 
 
-__all__ = ["ENTRY_POINT_NAME", "ENTRY_POINT_DIALOG", "SvgImportDialog"]
+__all__ = ["ENTRY_POINT_NAME", "ENTRY_POINT_DIALOG", "Dialog"]
 
-ENTRY_POINT_NAME = "Import SVG"
-ENTRY_POINT_DIALOG = SvgImportDialog
+ENTRY_POINT_NAME = " ".join(s.capitalize() for s in __name__.split(".")[-1].split("_"))
+ENTRY_POINT_DIALOG = Dialog

@@ -1,7 +1,7 @@
-from .dialog import RegenGroupExternalIdsDialog
+from .dialog import Dialog
 
 
-__all__ = ["ENTRY_POINT_NAME", "ENTRY_POINT_DIALOG", "RegenGroupExternalIdsDialog"]
+__all__ = ["ENTRY_POINT_NAME", "ENTRY_POINT_DIALOG", "Dialog"]
 
-ENTRY_POINT_NAME = "Regen External Ids"
-ENTRY_POINT_DIALOG = RegenGroupExternalIdsDialog
+ENTRY_POINT_NAME = " ".join(s.capitalize() for s in __name__.split(".")[-1].split("_"))
+ENTRY_POINT_DIALOG = Dialog

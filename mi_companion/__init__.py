@@ -1,6 +1,5 @@
 import logging
 
-
 from .constants import *
 
 __version__ = VERSION
@@ -35,6 +34,7 @@ DEFAULT_PLUGIN_SETTINGS = {
     "MAKE_LOCATION_TYPE_DROPDOWN": True,
     "MAKE_DOOR_TYPE_DROPDOWN": True,
     "MAKE_VENUE_TYPE_DROPDOWN": True,
+    "GROUPS_FIRST": True,
     "SHOW_GRAPH_ON_LOAD": False,
     "POST_FIT_FLOORS": False,
     "POST_FIT_BUILDINGS": False,

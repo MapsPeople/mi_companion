@@ -5,7 +5,7 @@ from typing import Optional
 from jord.qgis_utilities import read_plugin_setting
 
 from integration_system.config import MapsIndoors, Settings, set_settings
-from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
+from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import logging
 from pathlib import Path
-from typing import Optional
 
 from warg import system_open_path
 

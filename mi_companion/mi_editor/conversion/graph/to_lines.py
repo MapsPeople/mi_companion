@@ -15,7 +15,24 @@ def osm_xml_to_network(osm_xml: str) -> MultiDiGraph:
     osm_cache_path = ensure_existence(PROJECT_APP_PATH.site_cache) / "from_mi_rep.xml"
     with open(osm_cache_path, "w") as f:
         f.write(osm_xml)
-    return osmnx.graph_from_xml(osm_cache_path)
+
+    osmnx.settings.useful_tags_node = list(
+        {*osmnx.settings.useful_tags_node, "level", "floorname"}
+    )
+    osmnx.settings.useful_tags_way = list(
+        {
+            *osmnx.settings.useful_tags_way,
+            "level",
+            "abutters",
+            "distance",
+            "highway",
+            "level",
+            "waittime",
+        }
+    )
+    return osmnx.graph_from_xml(
+        osm_cache_path, retain_all=True, bidirectional=True, simplify=False
+    )
 
 
 def network_to_lines(

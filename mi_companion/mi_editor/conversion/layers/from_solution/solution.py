@@ -12,7 +12,6 @@ from qgis.PyQt import QtWidgets
 from qgis.core import QgsEditorWidgetSetup, QgsProject
 
 import integration_system
-from integration_system.config import Settings, get_settings
 from integration_system.mi import (
     SolutionDepth,
     get_remote_solution,

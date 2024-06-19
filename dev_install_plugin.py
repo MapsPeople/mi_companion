@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from warg import is_windows, is_mac
+from warg import is_mac, is_windows
 
 from plugin_config import PROFILE, QGIS_APP_PATH
 

@@ -1,4 +1,30 @@
+import logging
+import pkgutil
 from typing import Dict
+
+logger = logging.getLogger(__name__)
+
+
+def get_entry_points(
+    module_: object,
+    entry_point_name_field: str = "ENTRY_POINT_NAME",
+    entry_point_callable_field: str = "ENTRY_POINT_DIALOG",
+) -> Dict[str, callable]:
+    entry_points_ = {}
+    import importlib
+
+    for entry_point in list_submodules(module_):
+        module = importlib.import_module(f"{module_.__name__}.{entry_point}")
+        module_dir = dir(module)
+        if (
+            entry_point_name_field in module_dir
+            and entry_point_callable_field in module_dir
+        ):
+            entry_points_[getattr(module, entry_point_name_field)] = getattr(
+                module, entry_point_callable_field
+            )
+
+    return entry_points_
 
 
 def list_submodules(a_module: object) -> list[str]:
@@ -27,7 +53,6 @@ def list_submodules(a_module: object) -> list[str]:
         return submodules
 
     # Finally, we can just scan for submodules via pkgutil.
-    import pkgutil
 
     # pkgutill will invoke `importlib.machinery.all_suffixes()`
     # to determine whether a file is a module, so if you get any
@@ -37,28 +62,3 @@ def list_submodules(a_module: object) -> list[str]:
     # need to clarify this by putting a `__init__.py` file in the
     # folder, even for Python3.
     return [x.name for x in pkgutil.iter_modules(a_module.__path__)]
-
-
-def get_entry_points(module_: object) -> Dict[str, callable]:
-    entry_points_ = {}
-    import importlib
-
-    for entry_point in list_submodules(module_):
-        module = importlib.import_module(f"{module_.__name__}.{entry_point}")
-        module_dir = dir(module)
-        if "ENTRY_POINT_NAME" in module_dir and "ENTRY_POINT_DIALOG" in module_dir:
-            entry_points_[getattr(module, "ENTRY_POINT_NAME")] = getattr(
-                module, "ENTRY_POINT_DIALOG"
-            )
-
-    return entry_points_
-
-
-if __name__ == "__main__":
-
-    def a():
-        from exclude import entry_points
-
-        print(get_entry_points(entry_points))
-
-    a()

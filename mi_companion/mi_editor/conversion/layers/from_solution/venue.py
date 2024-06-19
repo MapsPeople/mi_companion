@@ -1,25 +1,21 @@
 import logging
-from typing import Any, Callable, Iterable, Optional
-from xml.etree.ElementTree import ParseError
+from typing import Any, Iterable, Optional
 
-from integration_system.model import Solution
 from jord.qlive_utilities import add_shapely_layer
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
+from integration_system.model import Solution
 from mi_companion.configuration.constants import (
     ALLOW_DUPLICATE_VENUES_IN_PROJECT,
-    GRAPH_DESCRIPTOR,
-    NAVIGATION_LINES_DESCRIPTOR,
-    NAVIGATION_POINT_DESCRIPTOR,
     VENUE_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
-from mi_companion.mi_editor.conversion.graph.to_lines import osm_xml_to_lines
 from .building import add_building_layers
 from .fields import make_field_unique
+from .graph import add_graph_layers
 from ...projection import (
     GDS_EPSG_NUMBER,
     INSERT_INDEX,
@@ -130,71 +126,15 @@ def add_venue_layer(
         make_field_unique(venue_layer)
 
         if read_bool_setting("ADD_GRAPH"):  # add graph
-            try:
-                if venue.graph and venue.graph.osm_xml:
-                    (lines, lines_meta_data), (
-                        points,
-                        points_meta_data,
-                    ) = osm_xml_to_lines(venue.graph.osm_xml)
-
-                    lines = [prepare_geom_for_qgis(l) for l in lines]
-                    points = [prepare_geom_for_qgis(l) for l in points]
-
-                    logger.info(f"{len(lines)=} loaded!")
-
-                    graph_name = f"{venue.graph.graph_id} {GRAPH_DESCRIPTOR}"
-
-                    graph_group = venue_group.insertGroup(INSERT_INDEX, graph_name)
-                    if not read_bool_setting("SHOW_GRAPH_ON_LOAD"):
-                        graph_group.setExpanded(True)
-                        graph_group.setExpanded(False)
-                        graph_group.setItemVisibilityChecked(False)
-
-                    graph_lines_layer = add_shapely_layer(
-                        qgis_instance_handle=qgis_instance_handle,
-                        geoms=lines,
-                        name=NAVIGATION_LINES_DESCRIPTOR,
-                        group=graph_group,
-                        columns=lines_meta_data,
-                        categorise_by_attribute="highway",
-                        visible=True,
-                        crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
-                    )
-
-                    if highway_type_dropdown_widget:
-                        for layers_inner in graph_lines_layer:
-                            if layers_inner:
-                                if isinstance(layers_inner, Iterable):
-                                    for layer in layers_inner:
-                                        if layer:
-                                            layer.setEditorWidgetSetup(
-                                                layer.fields().indexFromName("highway"),
-                                                highway_type_dropdown_widget,
-                                            )
-                                else:
-                                    layers_inner.setEditorWidgetSetup(
-                                        layers_inner.fields().indexFromName("highway"),
-                                        highway_type_dropdown_widget,
-                                    )
-
-                    if True:  # SHOW POINTs AS WELL
-                        logger.info(f"{len(points)=} loaded!")
-                        graph_points_layer = add_shapely_layer(
-                            qgis_instance_handle=qgis_instance_handle,
-                            geoms=points,
-                            name=NAVIGATION_POINT_DESCRIPTOR,
-                            group=graph_group,
-                            columns=points_meta_data,
-                            visible=read_bool_setting(
-                                "SHOW_GRAPH_ON_LOAD",
-                            ),
-                            crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
-                        )
-                else:
-                    logger.warning(f"Venue does not have a valid graph {venue.graph}")
-
-            except ParseError as e:
-                logger.error(e)
+            if venue.graph:
+                add_graph_layers(
+                    graph=venue.graph,
+                    venue_group=venue_group,
+                    qgis_instance_handle=qgis_instance_handle,
+                    highway_type_dropdown_widget=highway_type_dropdown_widget,
+                    door_type_dropdown_widget=door_type_dropdown_widget,
+                    solution=solution,
+                )
 
         if progress_bar:
             progress_bar.setValue(20)
@@ -206,5 +146,4 @@ def add_venue_layer(
             venue_group=venue_group,
             qgis_instance_handle=qgis_instance_handle,
             available_location_type_map_widget=available_location_type_dropdown_widget,
-            door_type_dropdown_widget=door_type_dropdown_widget,
         )

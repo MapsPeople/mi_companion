@@ -33,7 +33,7 @@ try:
 
     from . import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
     from .configuration.options import DeploymentOptionsPageFactory
-    from .gui.dock_widget import MapsIndoorsCompanionDockWidget
+    from .gui.main_dock import MapsIndoorsCompanionDockWidget
 
     # noinspection PyUnresolvedReferences
     from .resources import *  # Initialize Qt resources from file resources.py
@@ -53,7 +53,7 @@ except ModuleNotFoundError as e1:
 
         from . import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
         from .configuration.options import DeploymentOptionsPageFactory
-        from .gui.dock_widget import MapsIndoorsCompanionDockWidget
+        from .gui.main_dock import MapsIndoorsCompanionDockWidget
 
         # noinspection PyUnresolvedReferences
         from .resources import *  # Initialize Qt resources from file resources.py
@@ -174,15 +174,18 @@ class MapsIndoorsCompanionPlugin:
         """
         if self.mi_companion_dock_widget is None:
             self.mi_companion_dock_widget = MapsIndoorsCompanionDockWidget(self.iface)
+
             signals.reconnect_signal(
                 self.mi_companion_dock_widget.plugin_closing,
                 self.on_dock_widget_closed,
             )
+
             a = read_plugin_setting(
                 "DEFAULT_WIDGET_AREA",
                 default_value=DEFAULT_PLUGIN_SETTINGS["DEFAULT_WIDGET_AREA"],
                 project_name=PROJECT_NAME,
             )
+
             if not isinstance(a, DockWidgetAreaFlag):
                 a = eval(a)  # TODO: REMOVE EVAL?
 

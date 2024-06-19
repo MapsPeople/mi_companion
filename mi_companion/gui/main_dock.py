@@ -2,12 +2,12 @@ import logging
 import math
 import os
 from collections import defaultdict
-from pathlib import Path
 from typing import Any, Optional
 
 from jord.qgis_utilities import read_plugin_setting
 from jord.qgis_utilities.helpers import InjectedProgressBar, signals
 from jord.qlive_utilities import add_shapely_layer
+from jord.qt_utilities import DockWidgetAreaFlag
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets, uic
@@ -26,7 +26,10 @@ from qgis.core import (
     QgsRasterLayer,
     QgsVectorLayer,
 )
-from warg import reload_module
+
+# noinspection PyUnresolvedReferences
+from qgis.gui import QgsDockWidget
+from warg import get_submodules_by_path, reload_module
 
 from integration_system.config import MapsIndoors, Settings, set_settings
 from integration_system.mi import SolutionDepth, get_venue_key_mi_venue_map
@@ -35,35 +38,60 @@ from mi_companion.mi_editor import (
     revert_venues,
     solution_venue_to_layer_hierarchy,
 )
+from .gui_utilities import clean_str
 from .. import DEFAULT_PLUGIN_SETTINGS
 from ..configuration.options import read_bool_setting
 from ..constants import PROJECT_NAME, VERSION
-from ..entry_points.compatibility import CompatibilityDialog
-from ..entry_points import generate_door_buffers
-
-# from ..entry_points.cad_area import CadAreaDialog
-from ..entry_points.duplicate_group import DuplicateGroupDialog
-from ..entry_points.make_solution import MakeSolutionDialog
-from ..entry_points.regen_feature_external_ids import RegenFeatureExternalIdsDialog
-from ..entry_points.regen_group_external_ids import RegenGroupExternalIdsDialog
-from ..entry_points.svg_import import SvgImportDialog
-from ..entry_points.dwg_import import DwgImportDialog
 from ..mi_editor.conversion.projection import MI_EPSG_NUMBER
 from ..utilities.paths import get_icon_path, resolve_path
 from ..utilities.string_parsing import extract_wkt_elements
 
-FORM_CLASS, _ = uic.loadUiType(resolve_path("dock_widget.ui", __file__))
+FORM_CLASS, _ = uic.loadUiType(resolve_path("main_dock.ui", __file__))
 
 signals.IS_DEBUGGING = True
 logger = logging.getLogger(__name__)
 VERBOSE = False
 LOGGER = logger
 
+from pathlib import Path
 
-class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
+from warg import ensure_in_sys_path
+
+ensure_in_sys_path(Path(__file__).parent.parent)
+
+
+class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
     plugin_closing = pyqtSignal()
 
-    def __init__(self, iface: Any, parent: Optional[Any] = None):
+    def entry_point_wrapper(self, k, a: callable):
+        def f():
+            if k not in self.entry_point_instances:
+                self.entry_point_instances[k] = a()
+
+            if isinstance(self.entry_point_instances[k], QtWidgets.QDialog):
+                self.entry_point_instances[k].show()
+            elif isinstance(self.entry_point_instances[k], QtWidgets.QDockWidget):
+                if False:
+                    try:
+                        self.iface_.mainWindow().removeDockWidget(
+                            self.entry_point_instances[k]
+                        )
+                    except Exception as e:
+                        logger.exception(e)
+
+                self.iface_.mainWindow().addDockWidget(
+                    DockWidgetAreaFlag.left.value,
+                    self.entry_point_instances[k],
+                )
+                self.entry_point_instances[k].show()
+                # self.entry_point_instances[k].setUserVisible(True)
+
+            else:
+                ...
+
+        return f
+
+    def __init__(self, iface_: Any, parent: Optional[Any] = None):
         """Constructor."""
         super().__init__(parent)
 
@@ -77,7 +105,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.external_id_map = None
         #
 
-        self.iface = iface
+        self.iface_ = iface_
         self.qgis_project = QgsProject.instance()
 
         # self.setModal(True)
@@ -124,30 +152,26 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         self.solution_depth_combo_box = None
         if read_bool_setting("ADVANCED_MODE"):
-            self.solution_depth_combo_box = None
             if False:
                 self.sync_layout.addWidget(self.solution_depth_combo_box)
 
-        # from .. import entry_points
+        entry_point_modules = get_submodules_by_path(
+            Path(__file__).parent.parent / "entry_points"
+        )
 
-        # print(dir(entry_points))
-
-        self.entry_point_dialogs = {
-            "Make Solution": MakeSolutionDialog(),
-            "Duplicate Group": DuplicateGroupDialog(),
-            # "Cad Area": CadAreaDialog(),
-            "Import SVG": SvgImportDialog(),
-            "Import DWG": DwgImportDialog(),
-            "Regen Group/Layer Field": RegenGroupExternalIdsDialog(),
-            "Regen Selected Feature Field": RegenFeatureExternalIdsDialog(),
-            # "Diff Tool": InstanceRoomsDialog(),
-            "Compatibility": CompatibilityDialog(),
-            generate_door_buffers.ENTRY_POINT_NAME: generate_door_buffers.ENTRY_POINT_DIALOG(),
-            # "Generate Connectors": GenerateConnectorsDialog(),
-            # "Generate Doors": InstanceRoomsDialog(),
-            # "Generate Walls": InstanceRoomsDialog(),
-            # "Classify Location": InstanceRoomsDialog(),
+        self.entry_point_instances = {}
+        self.entry_point_definitions = {
+            getattr(d, "ENTRY_POINT_NAME"): self.entry_point_wrapper(
+                getattr(d, "ENTRY_POINT_NAME"), getattr(d, "ENTRY_POINT_DIALOG")
+            )
+            for d in entry_point_modules
+            if hasattr(d, "ENTRY_POINT_NAME")
         }
+
+        if False:
+            assert len(self.entry_point_definitions) == len(
+                entry_point_modules
+            ), f"{len(self.entry_point_definitions)=} {len(entry_point_modules)=} are not the same length, probably there are duplicate ENTRY_POINT_DIALOG"
 
         self.repopulate_grid_layout()
 
@@ -194,7 +218,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         from integration_system.mi import get_solution_name_external_id_map
 
         with InjectedProgressBar(
-            parent=self.iface.mainWindow().statusBar()
+            parent=self.iface_.mainWindow().statusBar()
         ) as bar:  # TODO: add a text label or format progress bar with a title
             bar.setValue(10)
             self.set_update_sync_settings()
@@ -238,7 +262,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if self.external_id_map is None:
             self.refresh_solution_combo_box(reload_venues=False)
 
-        with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
+        with InjectedProgressBar(parent=self.iface_.mainWindow().statusBar()) as bar:
             current_selected_solution_name = str(self.solution_combo_box.currentText())
 
             if current_selected_solution_name not in self.external_id_map:
@@ -292,13 +316,13 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         include_occupants = False
         include_media = False
         include_graph = read_bool_setting("ADD_GRAPH")
-        with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
+        with InjectedProgressBar(parent=self.iface_.mainWindow().statusBar()) as bar:
             if venue_name.strip() == "":  # TODO: Not supported ATM
                 venues = list(self.venue_name_id_map.values())
                 num_venues = float(len(venues))
                 for i, v in enumerate(venues):
                     with InjectedProgressBar(
-                        parent=self.iface.mainWindow().statusBar()
+                        parent=self.iface_.mainWindow().statusBar()
                     ) as venue_bar:
                         (
                             self.original_solution_venues[self.solution_external_id][v]
@@ -348,7 +372,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         include_media = False
         include_graph = False
 
-        with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
+        with InjectedProgressBar(parent=self.iface_.mainWindow().statusBar()) as bar:
             self.changes_label.setText(f"Uploading venues")
             try:
                 layer_hierarchy_to_solution(
@@ -370,7 +394,7 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def revert_button_clicked(self) -> None:
         self.set_update_sync_settings()
         # TODO: MAKE INTO A RELOAD INSTEAD?
-        with InjectedProgressBar(parent=self.iface.mainWindow().statusBar()) as bar:
+        with InjectedProgressBar(parent=self.iface_.mainWindow().statusBar()) as bar:
             self.changes_label.setText(f"Revert venues")
             try:
                 revert_venues(
@@ -414,9 +438,12 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 project_name=PROJECT_NAME,
             )
         )
-        for i, (k, dialog) in enumerate(self.entry_point_dialogs.items()):
+        for i, (k, entry_callable_definition) in enumerate(
+            self.entry_point_definitions.items()
+        ):
             button = QtWidgets.QPushButton(k)
-            signals.reconnect_signal(button.clicked, dialog.show)
+
+            signals.reconnect_signal(button.clicked, entry_callable_definition)
 
             self.entry_point_grid.addWidget(
                 button, math.floor(i / num_columns), i % num_columns
@@ -426,11 +453,3 @@ class MapsIndoorsCompanionDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     def closeEvent(self, event) -> None:  # pylint: disable=invalid-name
         self.plugin_closing.emit()
         event.accept()
-
-
-def clean_str(s: str) -> str:
-    import re
-
-    return re.compile(r"\W+").sub(" ", s).strip()[:200]
-
-    # return s.translate({ord("\n"): None})

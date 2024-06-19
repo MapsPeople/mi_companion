@@ -1,10 +1,10 @@
 import logging
-from typing import Dict, Optional, Mapping, Any
+from typing import Any, Dict, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
-from mi_companion import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
+from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 
 VERBOSE = True
 QGIS_PROJECT = QgsProject.instance()

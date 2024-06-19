@@ -8,10 +8,10 @@ FORM_CLASS, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "cad_area_dialog.ui")
 )
 
-__all__ = ["CadAreaDialog"]
+__all__ = ["Dialog"]
 
 
-class CadAreaDialog(QtWidgets.QDialog, FORM_CLASS):
+class Dialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         from jord.qgis_utilities.helpers import signals
 

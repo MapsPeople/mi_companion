@@ -10,11 +10,11 @@ import qgis
 from qgis.PyQt import uic
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QDialog
+from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
 FORM_CLASS, _ = uic.loadUiType(str(Path(__file__).parent / "dialog.ui"))
 
-__all__ = ["SvgImportDialog"]
+__all__ = ["Dialog"]
 
 
 try:  # Python >= 3.8
@@ -37,7 +37,7 @@ def is_optional(field) -> bool:
     return is_union(field) and type(None) in typing.get_args(field)
 
 
-class SvgImportDialog(QDialog, FORM_CLASS):
+class Dialog(QDialog, FORM_CLASS):
     def __init__(self, parent=None):  #: QWidget
         from jord.qgis_utilities.helpers import signals
 

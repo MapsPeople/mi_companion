@@ -3,10 +3,10 @@ import uuid
 from typing import Any, Tuple
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt import QtWidgets, uic
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt import QtWidgets, uic
+from qgis.PyQt.QtCore import QVariant
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (

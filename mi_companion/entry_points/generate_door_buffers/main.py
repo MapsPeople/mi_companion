@@ -3,8 +3,8 @@ import logging
 
 import shapely
 from jord.geometric_analysis import buffer_principal_axis
-from jord.shapely_utilities import dilate, is_multi
 from jord.qlive_utilities import add_shapely_layer
+from jord.shapely_utilities import dilate, is_multi
 
 logger = logging.getLogger(__name__)
 

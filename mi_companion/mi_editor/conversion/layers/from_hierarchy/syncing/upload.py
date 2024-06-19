@@ -10,11 +10,11 @@ from qgis.PyQt import QtCore, QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
+from integration_system.mi import MIOperation, SyncLevel, synchronize
 from integration_system.model import (
     DIFFERENCE_GROUP_NAME,
     SHAPELY_DIFFERENCE_DESCRIPTION,
 )
-from integration_system.mi import MIOperation, SyncLevel, synchronize
 from mi_companion.configuration.constants import VERBOSE
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.gui.message_box import ResizableMessageBox

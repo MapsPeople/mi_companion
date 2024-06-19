@@ -10,6 +10,7 @@ from qgis.PyQt.QtCore import QVariant
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 from warg.arguments import str_to_bool
+
 from integration_system.mi import (
     SolutionDepth,
     get_remote_solution,
@@ -157,8 +158,8 @@ def layer_hierarchy_to_solution(
 
         def show_attribute_table(layer) -> None:
             if layer is None:
-                layer = qgis_instance_handle.iface.activeLayer()
-            att_dialog = qgis_instance_handle.iface.showAttributeTable(layer)
+                layer = qgis_instance_handle.iface_.activeLayer()
+            att_dialog = qgis_instance_handle.iface_.showAttributeTable(layer)
             # att_dialog.findChild(QAction, "mActionSelectedFilter").trigger()
 
         # signals.reconnect_signal(vlayer.featureAdded, show_attribute_table)

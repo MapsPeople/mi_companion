@@ -26,15 +26,13 @@ def add_floor_layers(
     available_location_type_map_widget,
     building,
     building_group,
-    door_type_dropdown_widget,
     qgis_instance_handle,
     solution,
-    venue,
 ):
     building_bottom_floor_tracker = {}
     for floor in sorted(solution.floors, key=lambda floor: floor.floor_index):
         if floor.building.external_id == building.external_id:
-            floor_name = f"{floor.name} {FLOOR_DESCRIPTOR}"
+            floor_name = f"{floor.name} {FLOOR_DESCRIPTOR}:{floor.floor_index}"
             floor_group = building_group.insertGroup(
                 INSERT_INDEX, floor_name
             )  # MutuallyExclusive = True # TODO: Maybe only show on floor at a time?
@@ -85,9 +83,7 @@ def add_floor_layers(
                 solution=solution,
                 floor=floor,
                 floor_group=floor_group,
-                venue=venue,
                 available_location_type_map_widget=available_location_type_map_widget,
-                door_type_dropdown_widget=door_type_dropdown_widget,
             )
 
             if INSERT_INDEX > 0:

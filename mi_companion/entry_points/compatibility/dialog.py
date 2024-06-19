@@ -6,11 +6,11 @@ from typing import Generic, Union
 from qgis.PyQt import uic
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QDialog
+from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
 
-__all__ = ["CompatibilityDialog"]
+__all__ = ["Dialog"]
 
 
 try:  # Python >= 3.8
@@ -31,7 +31,7 @@ def is_optional(field) -> bool:
     return is_union(field) and type(None) in typing.get_args(field)
 
 
-class CompatibilityDialog(QDialog, FORM_CLASS):
+class Dialog(QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)

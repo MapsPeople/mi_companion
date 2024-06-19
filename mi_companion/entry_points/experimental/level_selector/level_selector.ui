@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>level_selector_widget</class>
+    <widget class="QDockWidget" name="level_selector_widget">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>282</width>
+                <height>65</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>1</horstretch>
+                <verstretch>1</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="windowTitle">
+            <string>Level Selector</string>
+        </property>
+        <widget class="QWidget" name="dockWidgetContents">
+            <property name="enabled">
+                <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>1</horstretch>
+                    <verstretch>1</verstretch>
+                </sizepolicy>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
+                <property name="sizeConstraint">
+                    <enum>QLayout::SetMinimumSize</enum>
+                </property>
+                <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_4">
+                        <item>
+                            <widget class="QLabel" name="level_label">
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="text">
+                                    <string>Level</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QComboBox" name="level_combo_box">
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="editable">
+                                    <bool>true</bool>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QPushButton" name="enable_button">
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="text">
+                                    <string>Enable</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QPushButton" name="unfold_button">
+                                <property name="sizePolicy">
+                                    <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
+                                <property name="text">
+                                    <string>Unfold</string>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
+                </item>
+            </layout>
+        </widget>
+    </widget>
+    <resources/>
+    <connections/>
+</ui>

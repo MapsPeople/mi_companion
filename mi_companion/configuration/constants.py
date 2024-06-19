@@ -4,6 +4,7 @@ OSM_HIGHWAY_TYPES = {"footway": "footway", "elevator": "elevator", "steps": "ste
 
 
 ALLOW_DUPLICATE_VENUES_IN_PROJECT = False
+MAKE_FLOOR_WISE_LAYERS = False
 
 
 ADD_STRING_NAN_CUSTOM_PROPERTY_VALUES = False
@@ -28,9 +29,12 @@ BUILDING_DESCRIPTOR = "(Building)"
 VENUE_DESCRIPTOR = "(Venue)"
 GRAPH_DESCRIPTOR = "(Graph)"
 
+
 SOLUTION_DATA_DESCRIPTOR = "solution_data"
 FLOOR_POLYGON_DESCRIPTOR = "floor_polygon"
 BUILDING_POLYGON_DESCRIPTOR = "building_polygon"
 VENUE_POLYGON_DESCRIPTOR = "venue_polygon"
-NAVIGATION_LINES_DESCRIPTOR = "navigation_graph_lines"
-NAVIGATION_POINT_DESCRIPTOR = "navigation_graph_points"
+NAVIGATION_LINES_DESCRIPTOR = "graph_lines"
+NAVIGATION_POINT_DESCRIPTOR = "graph_points"
+DOORS_DESCRIPTOR = "doors"
+CONNECTORS_DESCRIPTOR = "connectors"

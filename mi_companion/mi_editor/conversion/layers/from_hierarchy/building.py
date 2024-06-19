@@ -2,11 +2,11 @@ import logging
 from typing import Any, Optional
 
 import shapely
-from integration_system.model import Solution
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
+from integration_system.model import Solution
 from mi_companion.configuration.constants import (
     BUILDING_POLYGON_DESCRIPTOR,
     DEFAULT_CUSTOM_PROPERTIES,
