@@ -84,7 +84,9 @@ def add_venue_buildings(
         )
 
 
-def get_building_key(building_group_items, solution, venue_key) -> Optional[str]:
+def get_building_key(
+    building_group_items: Any, solution: Solution, venue_key: str
+) -> Optional[str]:
     for floor_group_items in building_group_items.children():
         if (
             isinstance(floor_group_items, QgsLayerTreeLayer)

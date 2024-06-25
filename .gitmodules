@@ -4,3 +4,6 @@
 [submodule "mi_companion/submodules/svaguely"]
 	path = mi_companion/submodules/svaguely
 	url = git@github.com:automaps/svaguely.git
+[submodule "mi_companion/submodules/caddy"]
+	path = mi_companion/submodules/caddy
+	url = git@git.rtx.mapspeople.com:MapsIndoors/automation/caddy.git

@@ -152,6 +152,16 @@ def add_floor_content_layers(
     available_location_type_map_widget: Optional[Any] = None,
 ) -> None:
     add_location_layer(
+        solution.points_of_interest,
+        LocationTypeEnum.POI.value,
+        "point",
+        qgis_instance_handle=qgis_instance_handle,
+        floor_group=floor_group,
+        floor=floor,
+        dropdown_widget=available_location_type_map_widget,
+    )
+
+    add_location_layer(
         solution.rooms,
         LocationTypeEnum.ROOM.value,
         "polygon",
@@ -165,16 +175,6 @@ def add_floor_content_layers(
         solution.areas,
         LocationTypeEnum.AREA.value,
         "polygon",
-        qgis_instance_handle=qgis_instance_handle,
-        floor_group=floor_group,
-        floor=floor,
-        dropdown_widget=available_location_type_map_widget,
-    )
-
-    add_location_layer(
-        solution.points_of_interest,
-        LocationTypeEnum.POI.value,
-        "point",
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
         floor=floor,

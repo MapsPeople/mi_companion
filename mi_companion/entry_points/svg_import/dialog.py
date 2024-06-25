@@ -76,6 +76,8 @@ class Dialog(QDialog, FORM_CLASS):
             h_box_w.setLayout(h_box)
             self.parameter_layout.insertWidget(0, h_box_w)
 
+        self.parameter_layout.insertWidget(0, QLabel(run.__doc__))
+
     def on_compute_clicked(self) -> None:
         from .main import run
 

@@ -1,9 +1,9 @@
-from typing import Iterable
+from typing import Any, Iterable
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup, QgsFieldConstraints
 
-__all__ = ["add_dropdown_widget", "make_field_unique"]
+__all__ = ["add_dropdown_widget", "make_field_unique", "HIDDEN_WIDGET"]
 
 
 IGNORE_THIS_STRING = """
@@ -46,7 +46,7 @@ def add_dropdown_widget(layer, field_name: str, widget) -> None:
 HIDDEN_WIDGET = QgsEditorWidgetSetup("Hidden", {})
 
 
-def make_field_unique(layer, field_name: str = "external_id"):
+def make_field_unique(layer: Any, field_name: str = "external_id") -> None:
     unique_widget = QgsEditorWidgetSetup(
         "UuidGenerator",
         {},

@@ -3,7 +3,7 @@ from typing import Any, Optional
 import geopandas
 from jord.qlive_utilities import add_dataframe_layer
 
-from integration_system.model import Graph, Solution
+from integration_system.model import DoorCollection, Graph, Solution
 from mi_companion.configuration.constants import (
     CONNECTORS_DESCRIPTOR,
     DOORS_DESCRIPTOR,
@@ -68,7 +68,7 @@ def add_route_element_layers(
     graph: Graph,
     dropdown_widget: Optional[Any] = None,
     solution: Solution,
-):
+) -> None:
     add_door_layers(
         dropdown_widget=dropdown_widget,
         graph=graph,
@@ -80,8 +80,13 @@ def add_route_element_layers(
 
 
 def add_door_layers(
-    *, dropdown_widget, graph, graph_group, qgis_instance_handle, doors
-):
+    *,
+    dropdown_widget: Any,
+    graph: Graph,
+    graph_group: Any,
+    qgis_instance_handle: Any,
+    doors: DoorCollection,
+) -> None:
     doors_name = f"{DOORS_DESCRIPTOR}"
     df = to_df(doors)
     df["floor_index"] = df["floor_index"].astype(str)

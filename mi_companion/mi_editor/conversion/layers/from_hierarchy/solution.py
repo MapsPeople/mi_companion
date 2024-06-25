@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -30,10 +30,10 @@ logger = logging.getLogger(__name__)
 
 
 def convert_solution_layers_to_solution(
-    qgis_instance_handle,
+    qgis_instance_handle: Any,
     *,
     progress_bar: callable,
-    mi_group,
+    mi_group: Any,
     solution_depth: SolutionDepth = SolutionDepth.LOCATIONS,
     include_route_elements: bool = False,
     include_occupants: bool = False,
@@ -139,15 +139,15 @@ def convert_solution_layers_to_solution(
 
 
 def layer_hierarchy_to_solution(
-    qgis_instance_handle,
+    qgis_instance_handle: Any,
     mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
     *,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
-    solution_depth=SolutionDepth.LOCATIONS,
-    include_route_elements=False,
-    include_occupants=False,
-    include_media=False,
-    include_graph=False,
+    solution_depth: SolutionDepth = SolutionDepth.LOCATIONS,
+    include_route_elements: bool = False,
+    include_occupants: bool = False,
+    include_media: bool = False,
+    include_graph: bool = False,
 ) -> None:
     if False:
         ...

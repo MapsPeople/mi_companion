@@ -24,6 +24,9 @@ from qgis.core import (
 )
 
 # noinspection PyUnresolvedReferences
+from qgis.utils import iface
+
+# noinspection PyUnresolvedReferences
 from qgis.gui import QgsDockWidget
 from warg import ensure_in_sys_path
 
@@ -42,8 +45,6 @@ LOGGER = logger
 
 ensure_in_sys_path(Path(__file__).parent.parent)
 
-from qgis.utils import iface
-
 
 class LevelSelectorWidget(QgsDockWidget, FORM_CLASS):
     plugin_closing = pyqtSignal()
@@ -52,7 +53,7 @@ class LevelSelectorWidget(QgsDockWidget, FORM_CLASS):
         """Constructor."""
         super().__init__(parent)
 
-        self.selectedLayers = None
+        self.selected_layers = None
         self.iface_ = iface_
         self.qgis_project = QgsProject.instance()
 
@@ -75,13 +76,13 @@ class LevelSelectorWidget(QgsDockWidget, FORM_CLASS):
 
         if selected_layers:
             if isinstance(selected_layers, Iterable):
-                self.selectedLayers = selected_layers
+                self.selected_layers = selected_layers
             else:
-                self.selectedLayers = [selected_layers]
+                self.selected_layers = [selected_layers]
 
         unique_level_values = set()
-        if len(self.selectedLayers):
-            self.gather_unique_levels(self.selectedLayers, unique_level_values)
+        if len(self.selected_layers):
+            self.gather_unique_levels(self.selected_layers, unique_level_values)
 
         self.level_combo_box.addItems(sorted(unique_level_values))
 
@@ -89,8 +90,10 @@ class LevelSelectorWidget(QgsDockWidget, FORM_CLASS):
         for layer in layers:
             if isinstance(layer, QgsRasterLayer):
                 ...
+
             elif isinstance(layer, QgsLayerTreeGroup):
                 self.gather_unique_levels([layer], unique_level_values)
+
             elif isinstance(layer, QgsVectorLayer):
                 field_names = layer.fields().names()
                 col_idx = None
@@ -101,8 +104,10 @@ class LevelSelectorWidget(QgsDockWidget, FORM_CLASS):
                     col_idx = layer.fields().indexFromName("floor_index")
 
                 if col_idx is not None:
-                    for v in layer.getFeatures():
-                        unique_level_values.add(str(v.attributes()[col_idx]))
+                    for feature in layer.getFeatures():
+                        value = str(feature.attributes()[col_idx])
+                        logger.error(f"Found {value}")
+                        unique_level_values.add(value)
 
     def enable_button_clicked(self) -> None:
         ...

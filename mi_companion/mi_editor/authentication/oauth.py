@@ -99,13 +99,14 @@ def get_credentials_path() -> str:
 def get_credentials_arguments() -> Dict[str, Any]:
     with open(get_credentials_path()) as creds:
         stored = json.load(creds)
-        args = {}
-        args["token_uri"] = TOKEN_URI  # Not overridable in file
-        args["refresh_token"] = stored.get("refresh_token")
-        args["client_id"] = stored.get("client_id", CLIENT_ID)
-        args["client_secret"] = stored.get("client_secret", CLIENT_SECRET)
-        args["scopes"] = stored.get("scopes", SCOPES)
-        args["quota_project_id"] = stored.get("project")
+        args = {
+            "token_uri": TOKEN_URI,
+            "refresh_token": stored.get("refresh_token"),
+            "client_id": stored.get("client_id", CLIENT_ID),
+            "client_secret": stored.get("client_secret", CLIENT_SECRET),
+            "scopes": stored.get("scopes", SCOPES),
+            "quota_project_id": stored.get("project"),
+        }
         return args
 
 

@@ -3,6 +3,7 @@ from typing import Any, Optional
 
 from jord.qlive_utilities import add_shapely_layer
 
+from integration_system.model import Building, Solution, Venue
 from mi_companion.configuration.constants import (
     BUILDING_DESCRIPTOR,
     BUILDING_POLYGON_DESCRIPTOR,
@@ -25,10 +26,10 @@ logger = logging.getLogger(__name__)
 
 def add_building_layers(
     *,
-    solution,
-    venue,
-    venue_group,
-    qgis_instance_handle,
+    solution: Solution,
+    venue: Venue,
+    venue_group: Any,
+    qgis_instance_handle: Any,
     available_location_type_map_widget: Optional[Any] = None,
     progress_bar: Optional[callable] = None,
 ):
@@ -37,12 +38,13 @@ def add_building_layers(
     for ith, building in enumerate(
         sorted(solution.buildings, key=lambda building_: building_.name)
     ):
+        building: Building
         if progress_bar:
             progress_bar.setValue(int(20 + (float(ith) / num_buildings) * 80))
 
         if building.venue.external_id == venue.external_id:
             building_group = venue_group.insertGroup(
-                INSERT_INDEX + 1,  # 1+ for GRAPH
+                INSERT_INDEX,
                 f"{building.name} {BUILDING_DESCRIPTOR}",
             )
 

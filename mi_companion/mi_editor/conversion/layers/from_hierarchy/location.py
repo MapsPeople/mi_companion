@@ -1,5 +1,6 @@
 import logging
 import uuid
+from typing import Any
 
 import shapely
 
@@ -9,7 +10,7 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.model import DoorType, LocationType, Solution
+from integration_system.model import LocationType, Solution
 from mi_companion.configuration.constants import DEFAULT_CUSTOM_PROPERTIES, VERBOSE
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (
@@ -27,7 +28,10 @@ from qgis.PyQt.QtCore import QVariant
 
 
 def add_floor_locations(
-    location_group_items, solution, floor_key, location_type: LocationTypeEnum
+    location_group_items: Any,
+    solution: Solution,
+    floor_key: str,
+    location_type: LocationTypeEnum,
 ) -> None:
     layer = location_group_items.layer()
     if layer:
@@ -148,43 +152,3 @@ def add_floor_contents(
             add_floor_locations(
                 location_group_items, solution, floor_key, LocationTypeEnum.AREA
             )
-
-        if (
-            isinstance(location_group_items, QgsLayerTreeLayer)
-            and "doors" in location_group_items.name()
-            and graph_key is not None
-            and read_bool_setting("ADD_DOORS")
-        ):
-            doors_linestring_layer = location_group_items.layer()
-            for door_feature in doors_linestring_layer.getFeatures():
-                door_attributes = {
-                    k.name(): v
-                    for k, v in zip(
-                        door_feature.fields(),
-                        door_feature.attributes(),
-                    )
-                }
-
-                door_type = door_attributes["door_type"]
-                if isinstance(door_type, str):
-                    ...
-                elif isinstance(door_type, QVariant):
-                    # logger.warning(f"{typeToDisplayString(type(v))}")
-                    if door_type.isNull():  # isNull(v):
-                        door_type = None
-                    else:
-                        door_type = door_type.value()
-
-                door_key = solution.add_door(
-                    door_attributes["external_id"],
-                    linestring=prepare_geom_for_mi_db(
-                        shapely.from_wkt(door_feature.geometry().asWkt())
-                    ),
-                    door_type=DoorType.__getitem__(door_type),
-                    floor_index=floor_index,
-                    graph_key=graph_key,
-                )
-                if VERBOSE:
-                    logger.info("added door", door_key)
-        else:
-            logger.debug(f"Skipped adding doors")

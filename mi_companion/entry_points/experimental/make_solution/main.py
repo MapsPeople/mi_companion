@@ -82,5 +82,5 @@ def run(
     add_solution_layers(
         qgis_instance_handle=None,
         solution=s,
-        layer_tree_root=QgsProject.instance().layerTreeRoot(),
+        layer_tree_root=root,
     )

@@ -16,7 +16,6 @@ from mi_companion.mi_editor.conversion.layers.from_solution.doors import (
 )
 from mi_companion.mi_editor.conversion.projection import (
     GDS_EPSG_NUMBER,
-    INSERT_INDEX,
     MI_EPSG_NUMBER,
     prepare_geom_for_qgis,
     should_reproject,
@@ -48,7 +47,7 @@ def add_graph_layers(
 
             graph_name = f"{graph.graph_id} {GRAPH_DESCRIPTOR}"
 
-            graph_group = venue_group.insertGroup(INSERT_INDEX, graph_name)
+            graph_group = venue_group.insertGroup(0, graph_name)
             if not read_bool_setting("SHOW_GRAPH_ON_LOAD"):
                 graph_group.setExpanded(True)
                 graph_group.setExpanded(False)

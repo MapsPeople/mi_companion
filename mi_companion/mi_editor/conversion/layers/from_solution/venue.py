@@ -68,73 +68,62 @@ def add_venue_layer(
         )  # Skip solution data
         venue_group.setExpanded(True)
         venue_group.setExpanded(False)
+        if INSERT_INDEX == 0:
+            venue_layer = add_shapely_layer(
+                qgis_instance_handle=qgis_instance_handle,
+                geoms=[prepare_geom_for_qgis(venue.polygon)],
+                name=VENUE_POLYGON_DESCRIPTOR,
+                columns=[
+                    {
+                        "external_id": venue.external_id,
+                        "name": venue.name,
+                        "last_verified": venue.last_verified,
+                        "venue_type": venue.venue_type.name,
+                        **(
+                            {
+                                f"address.city": venue.address.city,
+                                f"address.region": venue.address.region,
+                                f"address.country": venue.address.country,
+                                f"address.street1": venue.address.street1,
+                                f"address.postal_code": venue.address.postal_code,
+                                f"address.street2": venue.address.street2,
+                            }
+                            if venue.address
+                            else {}
+                        ),
+                        **(
+                            {
+                                f"custom_properties.{lang}.{prop}": str(v)
+                                for lang, props_map in venue.custom_properties.items()
+                                for prop, v in props_map.items()
+                            }
+                            if venue.custom_properties
+                            else {}
+                        ),
+                    }
+                ],
+                group=venue_group,
+                visible=False,
+                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
+            )
 
-        venue_layer = add_shapely_layer(
-            qgis_instance_handle=qgis_instance_handle,
-            geoms=[prepare_geom_for_qgis(venue.polygon)],
-            name=VENUE_POLYGON_DESCRIPTOR,
-            columns=[
-                {
-                    "external_id": venue.external_id,
-                    "name": venue.name,
-                    "last_verified": venue.last_verified,
-                    "venue_type": venue.venue_type.name,
-                    **(
-                        {
-                            f"address.city": venue.address.city,
-                            f"address.region": venue.address.region,
-                            f"address.country": venue.address.country,
-                            f"address.street1": venue.address.street1,
-                            f"address.postal_code": venue.address.postal_code,
-                            f"address.street2": venue.address.street2,
-                        }
-                        if venue.address
-                        else {}
-                    ),
-                    **(
-                        {
-                            f"custom_properties.{lang}.{prop}": str(v)
-                            for lang, props_map in venue.custom_properties.items()
-                            for prop, v in props_map.items()
-                        }
-                        if venue.custom_properties
-                        else {}
-                    ),
-                }
-            ],
-            group=venue_group,
-            visible=False,
-            crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
-        )
+            if venue_type_dropdown_widget:
+                for layers_inner in venue_layer:
+                    if layers_inner:
+                        if isinstance(layers_inner, Iterable):
+                            for layer in layers_inner:
+                                if layer:
+                                    layer.setEditorWidgetSetup(
+                                        layer.fields().indexFromName("venue_type"),
+                                        venue_type_dropdown_widget,
+                                    )
+                        else:
+                            layers_inner.setEditorWidgetSetup(
+                                layers_inner.fields().indexFromName("venue_type"),
+                                venue_type_dropdown_widget,
+                            )
 
-        if venue_type_dropdown_widget:
-            for layers_inner in venue_layer:
-                if layers_inner:
-                    if isinstance(layers_inner, Iterable):
-                        for layer in layers_inner:
-                            if layer:
-                                layer.setEditorWidgetSetup(
-                                    layer.fields().indexFromName("venue_type"),
-                                    venue_type_dropdown_widget,
-                                )
-                    else:
-                        layers_inner.setEditorWidgetSetup(
-                            layers_inner.fields().indexFromName("venue_type"),
-                            venue_type_dropdown_widget,
-                        )
-
-        make_field_unique(venue_layer)
-
-        if read_bool_setting("ADD_GRAPH"):  # add graph
-            if venue.graph:
-                add_graph_layers(
-                    graph=venue.graph,
-                    venue_group=venue_group,
-                    qgis_instance_handle=qgis_instance_handle,
-                    highway_type_dropdown_widget=highway_type_dropdown_widget,
-                    door_type_dropdown_widget=door_type_dropdown_widget,
-                    solution=solution,
-                )
+            make_field_unique(venue_layer)
 
         if progress_bar:
             progress_bar.setValue(20)
@@ -147,3 +136,71 @@ def add_venue_layer(
             qgis_instance_handle=qgis_instance_handle,
             available_location_type_map_widget=available_location_type_dropdown_widget,
         )
+
+        if read_bool_setting("ADD_GRAPH"):  # add graph
+            if venue.graph:
+                add_graph_layers(
+                    graph=venue.graph,
+                    venue_group=venue_group,
+                    qgis_instance_handle=qgis_instance_handle,
+                    highway_type_dropdown_widget=highway_type_dropdown_widget,
+                    door_type_dropdown_widget=door_type_dropdown_widget,
+                    solution=solution,
+                )
+
+        if INSERT_INDEX > 0:
+            venue_layer = add_shapely_layer(
+                qgis_instance_handle=qgis_instance_handle,
+                geoms=[prepare_geom_for_qgis(venue.polygon)],
+                name=VENUE_POLYGON_DESCRIPTOR,
+                columns=[
+                    {
+                        "external_id": venue.external_id,
+                        "name": venue.name,
+                        "last_verified": venue.last_verified,
+                        "venue_type": venue.venue_type.name,
+                        **(
+                            {
+                                f"address.city": venue.address.city,
+                                f"address.region": venue.address.region,
+                                f"address.country": venue.address.country,
+                                f"address.street1": venue.address.street1,
+                                f"address.postal_code": venue.address.postal_code,
+                                f"address.street2": venue.address.street2,
+                            }
+                            if venue.address
+                            else {}
+                        ),
+                        **(
+                            {
+                                f"custom_properties.{lang}.{prop}": str(v)
+                                for lang, props_map in venue.custom_properties.items()
+                                for prop, v in props_map.items()
+                            }
+                            if venue.custom_properties
+                            else {}
+                        ),
+                    }
+                ],
+                group=venue_group,
+                visible=False,
+                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
+            )
+
+            if venue_type_dropdown_widget:
+                for layers_inner in venue_layer:
+                    if layers_inner:
+                        if isinstance(layers_inner, Iterable):
+                            for layer in layers_inner:
+                                if layer:
+                                    layer.setEditorWidgetSetup(
+                                        layer.fields().indexFromName("venue_type"),
+                                        venue_type_dropdown_widget,
+                                    )
+                        else:
+                            layers_inner.setEditorWidgetSetup(
+                                layers_inner.fields().indexFromName("venue_type"),
+                                venue_type_dropdown_widget,
+                            )
+
+            make_field_unique(venue_layer)

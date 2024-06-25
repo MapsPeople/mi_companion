@@ -65,6 +65,8 @@ class Dialog(QDialog, FORM_CLASS):
             self.parameter_layout.insertWidget(0, h_box_w)
             self.parameter_lines[k] = line_edit
 
+        self.parameter_layout.insertWidget(0, QLabel(run.__doc__))
+
     def on_compute_clicked(self) -> None:
         from .main import run
 

@@ -59,4 +59,4 @@ def reproject_geometry_df(df):
     return df
 
 
-INSERT_INDEX = 1  # if zero first, if one after hierarchy data
+INSERT_INDEX = 0  # if zero first, if one after hierarchy data

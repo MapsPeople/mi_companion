@@ -1,7 +1,9 @@
 import logging
+from typing import Any
 
 from jord.qlive_utilities import add_shapely_layer
 
+from integration_system.model import Building, Floor, Solution
 from mi_companion.configuration.constants import (
     FLOOR_DESCRIPTOR,
     FLOOR_POLYGON_DESCRIPTOR,
@@ -23,14 +25,15 @@ __all__ = ["add_floor_layers"]
 
 
 def add_floor_layers(
-    available_location_type_map_widget,
-    building,
-    building_group,
-    qgis_instance_handle,
-    solution,
+    available_location_type_map_widget: Any,
+    building: Building,
+    building_group: Any,
+    qgis_instance_handle: Any,
+    solution: Solution,
 ):
     building_bottom_floor_tracker = {}
     for floor in sorted(solution.floors, key=lambda floor: floor.floor_index):
+        floor: Floor
         if floor.building.external_id == building.external_id:
             floor_name = f"{floor.name} {FLOOR_DESCRIPTOR}:{floor.floor_index}"
             floor_group = building_group.insertGroup(

@@ -1,6 +1,6 @@
 import logging
 from itertools import count
-from typing import Collection, List
+from typing import Any, Collection, List, Optional
 
 import shapely
 
@@ -10,10 +10,11 @@ from qgis.PyQt import QtCore, QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
-from integration_system.mi import MIOperation, SyncLevel, synchronize
+from integration_system.mi import MIOperation, SolutionDepth, SyncLevel, synchronize
 from integration_system.model import (
     DIFFERENCE_GROUP_NAME,
     SHAPELY_DIFFERENCE_DESCRIPTION,
+    Solution,
 )
 from mi_companion.configuration.constants import VERBOSE
 from mi_companion.configuration.options import read_bool_setting
@@ -27,16 +28,17 @@ logger = logging.getLogger(__name__)
 
 
 def sync_build_venue_solution(
-    qgis_instance_handle,
-    include_graph,  # IGNORED FOR NOW
-    include_media,
-    include_occupants,
-    include_route_elements,  # IGNORED
-    solution,
-    solution_depth,
-    solution_name,
-    progress_bar,
-):
+    *,
+    qgis_instance_handle: Any,
+    include_graph: bool,  # IGNORED FOR NOW
+    include_media: bool,
+    include_occupants: bool,
+    include_route_elements: bool,  # IGNORED
+    solution: Solution,
+    solution_depth: SolutionDepth,
+    solution_name: str,
+    progress_bar: Optional[Any] = None,
+) -> None:
     """if False:
     existing_venue_solution = get_remote_solution(
         solution_name,
@@ -173,7 +175,11 @@ def sync_build_venue_solution(
 
 
 def show_differences(
-    *, qgis_instance_handle, solution, solution_name, operations
+    *,
+    qgis_instance_handle: Any,
+    solution: Solution,
+    solution_name: str,
+    operations: Collection[MIOperation],
 ) -> None:
     mi_db_difference_group = (
         QgsProject.instance().layerTreeRoot().findGroup(DIFFERENCE_GROUP_NAME)

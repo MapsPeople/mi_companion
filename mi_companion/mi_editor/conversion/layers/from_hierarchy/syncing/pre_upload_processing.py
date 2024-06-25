@@ -5,13 +5,13 @@ from itertools import chain
 import shapely
 from jord.shapely_utilities import is_multi
 
-from integration_system.model import Area, Room
+from integration_system.model import Area, Room, Solution
 from mi_companion.configuration.options import read_bool_setting
 
 logger = logging.getLogger(__name__)
 
 
-def post_process_solution(solution):
+def post_process_solution(solution: Solution) -> None:
     floor_child_geoms = defaultdict(list)
     floor_child_geoms_extras = defaultdict(list)
     for floor in solution.floors:

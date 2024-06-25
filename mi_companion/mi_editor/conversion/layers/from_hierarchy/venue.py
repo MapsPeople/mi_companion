@@ -1,6 +1,6 @@
 import copy
 import logging
-from typing import Optional
+from typing import Any, Optional
 
 import shapely
 
@@ -17,7 +17,9 @@ from integration_system.mi import SolutionDepth
 from integration_system.model import PostalAddress, Solution, VenueType
 from mi_companion.configuration.constants import (
     DEFAULT_CUSTOM_PROPERTIES,
+    GRAPH_DESCRIPTOR,
     HALF_SIZE,
+    VENUE_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
 )
 from .building import add_venue_buildings
@@ -26,6 +28,7 @@ from .custom_props import extract_custom_props
 __all__ = ["convert_solution_venues"]
 
 from .extraction import extract_layer_data
+from .graph import add_venue_graph
 from .syncing import sync_build_venue_solution
 from ...projection import prepare_geom_for_mi_db
 
@@ -41,7 +44,7 @@ from qgis.PyQt.QtWidgets import (
 
 
 def convert_solution_venues(
-    qgis_instance_handle,
+    qgis_instance_handle: Any,
     *,
     mi_group_child: QgsLayerTreeGroup,
     existing_solution: Solution,
@@ -52,11 +55,11 @@ def convert_solution_venues(
     solution_occupants_enabled: bool,
     ith_solution: int,
     num_solution_elements: int,
-    solution_depth=SolutionDepth.LOCATIONS,
-    include_route_elements=False,
-    include_occupants=False,
-    include_media=False,
-    include_graph=False,
+    solution_depth: SolutionDepth = SolutionDepth.LOCATIONS,
+    include_route_elements: bool = False,
+    include_occupants: bool = False,
+    include_media: bool = False,
+    include_graph: bool = False,
 ) -> None:
     solution_group_children = mi_group_child.children()
     num_solution_group_elements = len(solution_group_children)
@@ -89,37 +92,43 @@ def convert_solution_venues(
         else:
             solution = copy.deepcopy(existing_solution)
 
-        venue_key = get_venue_key(solution, solution_group_item)
+        if VENUE_DESCRIPTOR in solution_group_item.name():
+            venue_key = get_venue_key(solution, solution_group_item)
 
-        if venue_key is None:
-            logger.warning(f"Did not find venue for {solution_group_item=}, skipping")
-            continue
+            if venue_key is None:
+                logger.warning(
+                    f"Did not find venue for {solution_group_item=}, skipping"
+                )
+                continue
 
-        add_venue_buildings(
-            ith_solution=ith_solution,
-            ith_venue=ith_solution_child,
-            num_solution_elements=num_solution_elements,
-            num_venue_elements=num_solution_group_elements,
-            progress_bar=progress_bar,
-            solution=solution,
-            solution_group_item=solution_group_item,
-            venue_key=venue_key,
-        )
+            add_venue_buildings(
+                ith_solution=ith_solution,
+                ith_venue=ith_solution_child,
+                num_solution_elements=num_solution_elements,
+                num_venue_elements=num_solution_group_elements,
+                progress_bar=progress_bar,
+                solution=solution,
+                solution_group_item=solution_group_item,
+                venue_key=venue_key,
+            )
+
+        if GRAPH_DESCRIPTOR in solution_group_item.name():
+            add_venue_graph(solution=solution)
 
         sync_build_venue_solution(
-            qgis_instance_handle,
-            include_graph,
-            include_media,
-            include_occupants,
-            include_route_elements,
-            solution,
-            solution_depth,
-            solution_name,
-            progress_bar,
+            qgis_instance_handle=qgis_instance_handle,
+            include_graph=include_graph,
+            include_media=include_media,
+            include_occupants=include_occupants,
+            include_route_elements=include_route_elements,
+            solution=solution,
+            solution_depth=solution_depth,
+            solution_name=solution_name,
+            progress_bar=progress_bar,
         )
 
 
-def get_venue_key(solution, venue_group_items) -> Optional[str]:
+def get_venue_key(solution: Solution, venue_group_items: Any) -> Optional[str]:
     for venue_level_item in venue_group_items.children():
         layer_type_test = isinstance(venue_level_item, QgsLayerTreeLayer)
         layer_name = str(venue_level_item.name()).lower().strip()
@@ -173,7 +182,7 @@ def get_venue_key(solution, venue_group_items) -> Optional[str]:
     logger.error(f"Did not find venue in {venue_group_items.children()=}")
 
 
-def feature_to_shapely(layer_feature):
+def feature_to_shapely(layer_feature: Any) -> None:
     feature_geom = layer_feature.geometry()
     if feature_geom is not None:
         geom_wkt = feature_geom.asWkt()

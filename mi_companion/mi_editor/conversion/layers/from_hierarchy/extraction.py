@@ -20,6 +20,8 @@ from mi_companion.configuration.options import read_bool_setting
 
 logger = logging.getLogger(__name__)
 
+__all__ = ["extract_layer_data"]
+
 
 def extract_layer_data(layer_tree_layer: Any) -> Tuple:
     geometry_layer = layer_tree_layer.layer()
