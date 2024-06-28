@@ -54,7 +54,7 @@ def add_floor_locations(
                 else:
                     location_type_name = location_type_name.value()
 
-            location_type_key = LocationType.compute_key(location_type_name)
+            location_type_key = LocationType.compute_key(name=location_type_name)
             if solution.location_types.get(location_type_key) is None:
                 if read_bool_setting(
                     "ALLOW_LOCATION_TYPE_CREATION"

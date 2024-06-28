@@ -66,7 +66,7 @@ class Dialog(QDialog, FORM_CLASS):
             h_box.addWidget(QLabel(label_text))
             if isinstance(v.annotation, type(Path)):
                 file_browser = qgis.gui.QgsFileWidget()
-                file_browser.setStorageMode(file_browser.GetDirectory)
+                file_browser.setStorageMode(file_browser.GetFile)
                 file_browser.setFilter("*.sol")
                 self.parameter_lines[k] = file_browser
             else:
@@ -112,6 +112,7 @@ class Dialog(QDialog, FORM_CLASS):
                 ]  # ONLY one supported for now
                 if file_path_str:
                     file_path = Path(file_path_str)
+
                     if file_path.exists() and file_path.is_file():
                         call_kwarg[k] = file_path
                     else:
