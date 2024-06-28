@@ -1,5 +1,7 @@
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
+
+from integration_system.model import Solution
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -39,13 +41,16 @@ def convert_solution_layers_to_solution(
     include_occupants: bool = False,
     include_media: bool = False,
     include_graph: bool = False,
-) -> None:
+    upload_venues: bool = True,
+) -> Optional[List[Solution]]:
     mi_group_children = mi_group.children()
     num_mi_group_elements = len(mi_group_children)
 
     if num_mi_group_elements == 0:
         logger.warning("No solutions to upload")
         return
+
+    solutions = []
 
     for ith_child, mi_group_child in enumerate(mi_group_children):
         if SOLUTION_DESCRIPTOR not in str(mi_group_child.name()):
@@ -119,23 +124,28 @@ def convert_solution_layers_to_solution(
 
         logger.info(f"Converting {str(mi_group_child.name())}")
 
-        convert_solution_venues(
-            qgis_instance_handle,
-            mi_group_child=mi_group_child,
-            existing_solution=existing_solution,
-            progress_bar=progress_bar,
-            solution_external_id=solution_external_id,
-            solution_name=solution_name,
-            solution_customer_id=solution_customer_id,
-            solution_occupants_enabled=solution_occupants_enabled,
-            ith_solution=ith_child,
-            num_solution_elements=num_mi_group_elements,
-            solution_depth=solution_depth,
-            include_route_elements=include_route_elements,
-            include_occupants=include_occupants,
-            include_media=include_media,
-            include_graph=include_graph,
+        solutions.extend(
+            convert_solution_venues(
+                qgis_instance_handle,
+                mi_group_child=mi_group_child,
+                existing_solution=existing_solution,
+                progress_bar=progress_bar,
+                solution_external_id=solution_external_id,
+                solution_name=solution_name,
+                solution_customer_id=solution_customer_id,
+                solution_occupants_enabled=solution_occupants_enabled,
+                ith_solution=ith_child,
+                num_solution_elements=num_mi_group_elements,
+                solution_depth=solution_depth,
+                include_route_elements=include_route_elements,
+                include_occupants=include_occupants,
+                include_media=include_media,
+                include_graph=include_graph,
+                upload_venues=upload_venues,
+            )
         )
+
+    return solutions
 
 
 def layer_hierarchy_to_solution(

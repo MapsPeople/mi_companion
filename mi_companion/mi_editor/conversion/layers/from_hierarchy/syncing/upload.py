@@ -64,8 +64,6 @@ def sync_build_venue_solution(
     if VERBOSE:
         logger.info("Synchronising")
 
-    post_process_solution(solution)
-
     venue_name = next(iter(solution.venues)).name
     window_title = f"Sync {solution_name}:{venue_name} venue"
 

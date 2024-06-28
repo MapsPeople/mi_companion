@@ -9,6 +9,8 @@ from jord.qgis_utilities.helpers import InjectedProgressBar, signals
 from jord.qlive_utilities import add_shapely_layer
 from jord.qt_utilities import DockWidgetAreaFlag
 
+from .make_solution_right_click import add_augmented_actions
+
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets, uic
 
@@ -150,6 +152,12 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             self.solution_combo_box.currentTextChanged, self.solution_combo_changed
         )
 
+        self.import_dialog = None
+        signals.reconnect_signal(self.import_button.clicked, self.import_button_clicked)
+
+        self.export_dialog = None
+        signals.reconnect_signal(self.export_button.clicked, self.export_button_clicked)
+
         self.solution_depth_combo_box = None
         if read_bool_setting("ADVANCED_MODE"):
             if False:
@@ -174,6 +182,22 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             ), f"{len(self.entry_point_definitions)=} {len(entry_point_modules)=} are not the same length, probably there are duplicate ENTRY_POINT_DIALOG"
 
         self.repopulate_grid_layout()
+
+        signals.reconnect_signal(iface_.mapCanvas().mapToolSet, add_augmented_actions)
+
+    def export_button_clicked(self):
+        from .dialogs.solution_export import ENTRY_POINT_DIALOG as export_dialog
+
+        if self.export_dialog is None:
+            self.export_dialog = export_dialog()
+        self.export_dialog.show()
+
+    def import_button_clicked(self):
+        from .dialogs.solution_import import ENTRY_POINT_DIALOG as import_dialog
+
+        if self.import_dialog is None:
+            self.import_dialog = import_dialog()
+        self.import_dialog.show()
 
     def set_update_sync_settings(self):
         self.sync_module_settings = Settings(

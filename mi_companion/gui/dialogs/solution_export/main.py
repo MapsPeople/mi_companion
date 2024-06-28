@@ -1,0 +1,45 @@
+#!/usr/bin/python
+
+
+def run(*, path: str) -> None:
+    import logging
+
+    logger = logging.getLogger(__name__)
+
+    # noinspection PyUnresolvedReferences
+    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+    from pathlib import Path
+    from qgis.utils import iface
+    from warg import system_open_path
+    from jord.qgis_utilities.helpers import InjectedProgressBar, signals
+
+    from integration_system.json_serde import to_json
+    from mi_companion.mi_editor.conversion.layers.from_hierarchy.solution import (
+        convert_solution_layers_to_solution,
+    )
+    from integration_system.json_serde import from_json
+    from mi_companion.configuration.constants import MI_HIERARCHY_GROUP_NAME
+    from mi_companion.mi_editor.conversion import add_solution_layers
+
+    qgis_instance_handle = QgsProject.instance()
+
+    layer_tree_root = QgsProject.instance().layerTreeRoot()
+
+    mi_group = layer_tree_root.findGroup(MI_HIERARCHY_GROUP_NAME)
+
+    if not mi_group:  # did not find the group
+        logger.error("No Mi Hierarchy Group found")
+        return
+
+    path = Path(path)
+
+    with InjectedProgressBar(parent=iface.mainWindow().statusBar()) as progress_bar:
+        solutions = convert_solution_layers_to_solution(
+            qgis_instance_handle,
+            progress_bar=progress_bar,
+            mi_group=mi_group,
+            upload_venues=False,
+        )
+        for sol in solutions:
+            with open(path / f"{id(sol)}.sol", "w") as f:
+                f.write(to_json(sol))

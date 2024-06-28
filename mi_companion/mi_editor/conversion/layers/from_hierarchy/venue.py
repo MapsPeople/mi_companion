@@ -1,6 +1,6 @@
 import copy
 import logging
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import shapely
 
@@ -29,7 +29,7 @@ __all__ = ["convert_solution_venues"]
 
 from .extraction import extract_layer_data
 from .graph import add_venue_graph
-from .syncing import sync_build_venue_solution
+from .syncing import post_process_solution, sync_build_venue_solution
 from ...projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
@@ -60,9 +60,11 @@ def convert_solution_venues(
     include_occupants: bool = False,
     include_media: bool = False,
     include_graph: bool = False,
-) -> None:
+    upload_venues: bool = True,
+) -> List[Solution]:
     solution_group_children = mi_group_child.children()
     num_solution_group_elements = len(solution_group_children)
+    solutions = []
     for ith_solution_child, solution_group_item in enumerate(solution_group_children):
         if progress_bar:
             progress_bar.setValue(
@@ -115,17 +117,24 @@ def convert_solution_venues(
         if GRAPH_DESCRIPTOR in solution_group_item.name():
             add_venue_graph(solution=solution)
 
-        sync_build_venue_solution(
-            qgis_instance_handle=qgis_instance_handle,
-            include_graph=include_graph,
-            include_media=include_media,
-            include_occupants=include_occupants,
-            include_route_elements=include_route_elements,
-            solution=solution,
-            solution_depth=solution_depth,
-            solution_name=solution_name,
-            progress_bar=progress_bar,
-        )
+        post_process_solution(solution)
+
+        if upload_venues:
+            sync_build_venue_solution(
+                qgis_instance_handle=qgis_instance_handle,
+                include_graph=include_graph,
+                include_media=include_media,
+                include_occupants=include_occupants,
+                include_route_elements=include_route_elements,
+                solution=solution,
+                solution_depth=solution_depth,
+                solution_name=solution_name,
+                progress_bar=progress_bar,
+            )
+
+        solutions.append(solution)
+
+    return solutions
 
 
 def get_venue_key(solution: Solution, venue_group_items: Any) -> Optional[str]:
