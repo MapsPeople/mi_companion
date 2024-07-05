@@ -9,8 +9,6 @@ from jord.qgis_utilities.helpers import InjectedProgressBar, signals
 from jord.qlive_utilities import add_shapely_layer
 from jord.qt_utilities import DockWidgetAreaFlag
 
-from .make_solution_right_click import add_augmented_actions
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets, uic
 
@@ -41,6 +39,7 @@ from mi_companion.mi_editor import (
     solution_venue_to_layer_hierarchy,
 )
 from .gui_utilities import clean_str
+from .make_solution_right_click import add_augmented_actions
 from .. import DEFAULT_PLUGIN_SETTINGS
 from ..configuration.options import read_bool_setting
 from ..constants import PROJECT_NAME, VERSION

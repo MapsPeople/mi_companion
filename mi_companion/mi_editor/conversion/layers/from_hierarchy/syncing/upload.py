@@ -22,7 +22,6 @@ from mi_companion.gui.message_box import ResizableMessageBox
 from mi_companion.mi_editor.conversion.projection import (
     MI_EPSG_NUMBER,
 )
-from .pre_upload_processing import post_process_solution
 
 logger = logging.getLogger(__name__)
 

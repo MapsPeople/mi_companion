@@ -8,10 +8,8 @@ def run(*, path: str) -> None:
 
     # noinspection PyUnresolvedReferences
     from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-    from pathlib import Path
     from qgis.utils import iface
-    from warg import system_open_path
-    from jord.qgis_utilities.helpers import InjectedProgressBar, signals
+    from jord.qgis_utilities.helpers import InjectedProgressBar
 
     from integration_system.json_serde import from_json
     from mi_companion.configuration.constants import MI_HIERARCHY_GROUP_NAME

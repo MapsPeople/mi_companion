@@ -1,13 +1,9 @@
 from typing import Any
 
-# noinspection PyUnresolvedReferences
-from qgis.utils import iface
+from jord.qgis_utilities.helpers import reconnect_signal
 
 # noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject, QgsMapLayerType
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtWidgets, QtCore
+from qgis.PyQt import QtCore, QtWidgets
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import (
@@ -15,11 +11,13 @@ from qgis.PyQt.QtWidgets import (
 )
 
 # noinspection PyUnresolvedReferences
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsMapLayerType, QgsProject
+
+# noinspection PyUnresolvedReferences
 from qgis.gui import QgsMapLayerAction, QgsMapToolIdentify
 
-
-from jord.qgis_utilities.helpers import reconnect_signal
-
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
 
 IDENTIFY_ACTIONS_AUGMENTED = SELECT_ACTIONS_AUGMENTED = False
 

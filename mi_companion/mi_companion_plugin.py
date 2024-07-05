@@ -142,7 +142,7 @@ class MapsIndoorsCompanionPlugin:
         return QCoreApplication.translate(PROJECT_NAME, message)
 
     # noinspection PyPep8Naming
-    def initGui(self):
+    def initGui(self) -> None:
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
         self.options_factory.setTitle(self.tr(PROJECT_NAME))
         self.iface.registerOptionsWidgetFactory(self.options_factory)
@@ -168,7 +168,7 @@ class MapsIndoorsCompanionPlugin:
 
         self.first_start = True  # will be set False in run()
 
-    def open_dock_widget(self):
+    def open_dock_widget(self) -> None:
         """
         Opens the dock
         """
@@ -194,14 +194,14 @@ class MapsIndoorsCompanionPlugin:
                 self.mi_companion_dock_widget,
             )
 
-    def on_dock_widget_closed(self):  # used when Dock dialogue is closed
+    def on_dock_widget_closed(self) -> None:  # used when Dock dialogue is closed
         """
         Gets called when the dock is closed
         All the clean-up of the dock has to be done here
         """
         self.mi_companion_dock_widget = None
 
-    def unload(self):
+    def unload(self) -> None:
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
             self.iface.removePluginMenu(self.tr(PROJECT_NAME), action)

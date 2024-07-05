@@ -1,8 +1,6 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-from integration_system.model import Solution
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
@@ -18,6 +16,7 @@ from integration_system.mi import (
     get_remote_solution,
     get_solution_name_external_id_map,
 )
+from integration_system.model import Solution
 from mi_companion.configuration.constants import (
     MI_HIERARCHY_GROUP_NAME,
     SOLUTION_DATA_DESCRIPTOR,
