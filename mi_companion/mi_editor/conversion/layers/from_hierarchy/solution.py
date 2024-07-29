@@ -24,7 +24,7 @@ from mi_companion.configuration.constants import (
 )
 from .venue import convert_solution_venues
 
-__all__ = ["layer_hierarchy_to_solution"]
+__all__ = ["layer_hierarchy_to_solution", "convert_solution_layers_to_solution"]
 
 
 logger = logging.getLogger(__name__)

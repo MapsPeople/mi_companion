@@ -1,9 +1,10 @@
-from typing import Any, Optional
+import logging
+from typing import Any, Optional, Sequence
 
 import geopandas
 from jord.qlive_utilities import add_dataframe_layer
 
-from integration_system.model import DoorCollection, Graph, Solution
+from integration_system.model import CollectionMixin, DoorCollection, Graph, Solution
 from mi_companion.configuration.constants import (
     CONNECTORS_DESCRIPTOR,
     DOORS_DESCRIPTOR,
@@ -22,13 +23,20 @@ from mi_companion.mi_editor.conversion.projection import (
     should_reproject,
 )
 
+logger = logging.getLogger(__name__)
+
 
 def add_connection_layers(
-    dropdown_widget, graph, graph_group, qgis_instance_handle, connections
-):
+    dropdown_widget: Any,
+    graph: Graph,
+    graph_group: Any,
+    qgis_instance_handle: Any,
+    connections: CollectionMixin,
+) -> None:
     connections_name = f"{graph.graph_id} {CONNECTORS_DESCRIPTOR}"
     connections_group = graph_group.insertGroup(INSERT_INDEX, connections_name)
     df = to_df(connections)
+
     if not df.empty:
         floor_indices = df["floor_index"].unique()
         for floor_index in floor_indices:
@@ -58,7 +66,7 @@ def add_connection_layers(
             if dropdown_widget:
                 add_dropdown_widget(door_layer, "door_type", dropdown_widget)
 
-            make_field_unique(door_layer)
+            make_field_unique(door_layer, field_name="external_id")
 
 
 def add_route_element_layers(
@@ -89,6 +97,11 @@ def add_door_layers(
 ) -> None:
     doors_name = f"{DOORS_DESCRIPTOR}"
     df = to_df(doors)
+
+    if "floor_index" not in df:
+        logger.warning(f"No floor index found for {doors_name}")
+        return
+
     df["floor_index"] = df["floor_index"].astype(str)
 
     if MAKE_FLOOR_WISE_LAYERS:
@@ -123,7 +136,7 @@ def add_door_layers(
                 if dropdown_widget:
                     add_dropdown_widget(door_layer, "door_type", dropdown_widget)
 
-                make_field_unique(door_layer)
+                make_field_unique(door_layer, field_name="external_id")
     else:
         door_df = geopandas.GeoDataFrame(
             df[[c for c in df.columns if ("." not in c)]],
@@ -147,4 +160,4 @@ def add_door_layers(
         if dropdown_widget:
             add_dropdown_widget(door_layer, "door_type", dropdown_widget)
 
-        make_field_unique(door_layer)
+        make_field_unique(door_layer, field_name="external_id")

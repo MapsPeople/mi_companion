@@ -1,11 +1,10 @@
 #!/usr/bin/python
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def run(*, path: str) -> None:
-    import logging
-
-    logger = logging.getLogger(__name__)
-
     # noinspection PyUnresolvedReferences
     from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
     from qgis.utils import iface

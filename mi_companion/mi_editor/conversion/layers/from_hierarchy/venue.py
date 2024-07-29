@@ -144,9 +144,13 @@ def get_venue_key(solution: Solution, venue_group_items: Any) -> Optional[str]:
         layer_descriptor_test = VENUE_POLYGON_DESCRIPTOR.lower().strip() in layer_name
 
         if layer_type_test and layer_descriptor_test:
-            external_id, layer_attributes, layer_feature, name = extract_layer_data(
-                venue_level_item
-            )
+            (
+                admin_id,
+                external_id,
+                layer_attributes,
+                layer_feature,
+                name,
+            ) = extract_layer_data(venue_level_item)
 
             venue_type_str = layer_attributes["venue_type"]
             if isinstance(venue_type_str, str):
@@ -178,6 +182,7 @@ def get_venue_key(solution: Solution, venue_group_items: Any) -> Optional[str]:
             if geom_shapely:
                 custom_props = extract_custom_props(layer_attributes)
                 return solution.add_venue(
+                    admin_id=admin_id,
                     external_id=external_id,
                     name=name,
                     polygon=prepare_geom_for_mi_db(geom_shapely),

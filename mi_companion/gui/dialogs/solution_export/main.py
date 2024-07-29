@@ -1,11 +1,12 @@
 #!/usr/bin/python
 
+import logging
+
+logger = logging.getLogger(__name__)
+SERIALISED_SOLUTION_EXTENSION = ".json"
+
 
 def run(*, path: str) -> None:
-    import logging
-
-    logger = logging.getLogger(__name__)
-
     # noinspection PyUnresolvedReferences
     from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
     from pathlib import Path
@@ -38,5 +39,7 @@ def run(*, path: str) -> None:
             upload_venues=False,
         )
         for sol in solutions:
-            with open(path / f"{id(sol)}.sol", "w") as f:
+            with open(
+                (path / f"{id(sol)}").with_suffix(SERIALISED_SOLUTION_EXTENSION), "w"
+            ) as f:
                 f.write(to_json(sol))

@@ -94,6 +94,7 @@ def get_building_key(
             in str(floor_group_items.name()).lower().strip()
         ):
             (
+                admin_id,
                 external_id,
                 layer_attributes,
                 layer_feature,
@@ -107,6 +108,7 @@ def get_building_key(
                     custom_props = extract_custom_props(layer_attributes)
                     geom_shapely = shapely.from_wkt(geom_wkt)  # from wkb instead
                     return solution.add_building(
+                        admin_id=admin_id,
                         external_id=external_id,
                         name=name,
                         polygon=prepare_geom_for_mi_db(geom_shapely),

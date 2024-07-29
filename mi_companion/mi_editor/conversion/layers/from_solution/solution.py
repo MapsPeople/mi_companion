@@ -120,6 +120,9 @@ def add_solution_layers(
         if SOLUTION_DATA_DESCRIPTOR in c.name():
             found_solution_data = True
 
+    if True:
+        assert len(solution.venues) > 0, "No venues found"
+
     for venue in solution.venues:
         if not found_solution_data:
             if venue:

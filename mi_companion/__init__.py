@@ -53,13 +53,12 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :param iface: A QGIS interface instance.
     :type iface: QgsInterface
     """
+    logger = None
     #
     from .mi_companion_plugin import MapsIndoorsCompanionPlugin
 
     from jord.qgis_utilities import read_plugin_setting
     from jord.qgis_utilities.helpers.logging import add_logging_handler_once
-
-    logger = None
 
     try:
         from jord.qgis_utilities.helpers.logging import setup_logger

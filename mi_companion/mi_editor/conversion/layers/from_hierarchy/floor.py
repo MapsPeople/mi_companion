@@ -99,9 +99,13 @@ def get_floor_data(
             and FLOOR_POLYGON_DESCRIPTOR.lower().strip()
             in str(floor_level_item.name()).lower().strip()
         ):
-            external_id, floor_attributes, floor_feature, name = extract_layer_data(
-                floor_level_item
-            )
+            (
+                admin_id,
+                external_id,
+                floor_attributes,
+                floor_feature,
+                name,
+            ) = extract_layer_data(floor_level_item)
 
             feature_geom = floor_feature.geometry()
             if feature_geom is not None:

@@ -52,7 +52,6 @@ FORM_CLASS, _ = uic.loadUiType(resolve_path("main_dock.ui", __file__))
 signals.IS_DEBUGGING = True
 logger = logging.getLogger(__name__)
 VERBOSE = False
-LOGGER = logger
 
 from pathlib import Path
 
@@ -314,8 +313,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             bar.setValue(90)
 
             self.venue_name_id_map = {
-                next(iter(v.venueInfo))["name"]: v.externalId
-                for v in self.venues.values()
+                next(iter(v.venueInfo))["name"]: k for k, v in self.venues.items()
             }
 
             self.venue_combo_box.clear()
@@ -335,7 +333,9 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())
 
-        include_route_elements = read_bool_setting("ADD_DOORS")
+        include_route_elements = (
+            False  # TODO: Enable  this  again   read_bool_setting("ADD_DOORS")
+        )
         include_occupants = False
         include_media = False
         include_graph = read_bool_setting("ADD_GRAPH")
@@ -381,7 +381,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                     )
                     self.changes_label.setText(f"Downloaded {venue_name}")
                 else:
-                    LOGGER.warning(f"Venue {venue_name} not found")
+                    logger.warning(f"Venue {venue_name} not found")
 
     def upload_button_clicked(self) -> None:
         self.set_update_sync_settings()

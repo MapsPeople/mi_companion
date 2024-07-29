@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>dialog_base</class>
- <widget class="QDialog" name="dialog_base">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>259</width>
-    <height>157</height>
-   </rect>
-  </property>
-  <property name="windowTitle">
-   <string>Solution Exporter</string>
-  </property>
-  <layout class="QVBoxLayout" name="parameter_layout">
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
-     <item>
-      <widget class="QPushButton" name="compute_button">
-       <property name="text">
-        <string>Export</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-  </layout>
- </widget>
- <resources/>
- <connections/>
+    <class>dialog_base</class>
+    <widget class="QDialog" name="dialog_base">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>259</width>
+                <height>157</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>Solution Exporter</string>
+        </property>
+        <layout class="QVBoxLayout" name="parameter_layout">
+            <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                    <item>
+                        <widget class="QPushButton" name="compute_button">
+                            <property name="text">
+                                <string>Export</string>
+                            </property>
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+        </layout>
+    </widget>
+    <resources/>
+    <connections/>
 </ui>

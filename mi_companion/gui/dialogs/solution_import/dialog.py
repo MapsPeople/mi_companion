@@ -17,6 +17,9 @@ FORM_CLASS, _ = uic.loadUiType(str(Path(__file__).parent / "dialog.ui"))
 __all__ = ["Dialog"]
 
 
+SERIALISED_SOLUTION_EXTENSION = ".json"
+
+
 try:  # Python >= 3.8
     from typing import Literal, get_args, get_origin
 
@@ -67,7 +70,7 @@ class Dialog(QDialog, FORM_CLASS):
             if isinstance(v.annotation, type(Path)):
                 file_browser = qgis.gui.QgsFileWidget()
                 file_browser.setStorageMode(file_browser.GetFile)
-                file_browser.setFilter("*.sol")
+                file_browser.setFilter(f"*{SERIALISED_SOLUTION_EXTENSION}")
                 self.parameter_lines[k] = file_browser
             else:
                 self.parameter_lines[k] = QLineEdit(str(default))

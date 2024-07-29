@@ -40,7 +40,6 @@ FORM_CLASS, _ = uic.loadUiType(resolve_path("level_selector.ui", __file__))
 signals.IS_DEBUGGING = True
 logger = logging.getLogger(__name__)
 VERBOSE = False
-LOGGER = logger
 
 
 ensure_in_sys_path(Path(__file__).parent.parent)

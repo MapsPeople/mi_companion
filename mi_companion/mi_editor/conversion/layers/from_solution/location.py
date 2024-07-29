@@ -17,7 +17,7 @@ __all__ = ["add_floor_content_layers"]
 
 from .custom_props import process_custom_props_df, to_df
 
-from mi_companion.mi_editor.conversion.layers.type_enums import LocationTypeEnum
+from ..type_enums import LocationTypeEnum
 from .fields import add_dropdown_widget, make_field_unique
 from ...projection import (
     reproject_geometry_df,

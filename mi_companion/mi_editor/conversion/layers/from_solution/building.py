@@ -3,6 +3,7 @@ from typing import Any, Optional
 
 from jord.qlive_utilities import add_shapely_layer
 
+from integration_system.mi import get_outside_building_admin_id
 from integration_system.model import Building, Solution, Venue
 from mi_companion.configuration.constants import (
     BUILDING_DESCRIPTOR,
@@ -39,10 +40,20 @@ def add_building_layers(
         sorted(solution.buildings, key=lambda building_: building_.name)
     ):
         building: Building
+
         if progress_bar:
             progress_bar.setValue(int(20 + (float(ith) / num_buildings) * 80))
 
-        if building.venue.external_id == venue.external_id:
+        if get_outside_building_admin_id(venue.admin_id) == building.admin_id:
+            add_floor_layers(
+                available_location_type_map_widget=available_location_type_map_widget,
+                building=building,
+                building_group=venue_group,
+                qgis_instance_handle=qgis_instance_handle,
+                solution=solution,
+            )
+
+        elif building.venue.key == venue.key:
             building_group = venue_group.insertGroup(
                 INSERT_INDEX,
                 f"{building.name} {BUILDING_DESCRIPTOR}",
@@ -57,6 +68,7 @@ def add_building_layers(
                 name=BUILDING_POLYGON_DESCRIPTOR,
                 columns=[
                     {
+                        "admin_id": building.admin_id,
                         "external_id": building.external_id,
                         "name": building.name,
                         **(
@@ -84,3 +96,6 @@ def add_building_layers(
                 qgis_instance_handle=qgis_instance_handle,
                 solution=solution,
             )
+        else:
+            ...
+            # logger.error("SKIP!")

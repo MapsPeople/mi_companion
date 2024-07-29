@@ -67,6 +67,7 @@ def add_floor_locations(
 
             custom_props = extract_custom_props(feature_attributes)
 
+            admin_id = feature_attributes["admin_id"]
             external_id = feature_attributes["external_id"]
             if external_id is None:
                 if read_bool_setting("GENERATE_MISSING_EXTERNAL_IDS"):
@@ -86,6 +87,7 @@ def add_floor_locations(
                     geom_shapely = shapely.from_wkt(geom_wkt)
                     if geom_shapely is not None:
                         common_kvs = dict(
+                            admin_id=admin_id,
                             external_id=external_id,
                             name=name,
                             floor_key=floor_key,

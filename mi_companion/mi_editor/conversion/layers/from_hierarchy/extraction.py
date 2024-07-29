@@ -41,6 +41,7 @@ def extract_layer_data(layer_tree_layer: Any) -> Tuple:
     else:
         logger.info(f"found {layer_attributes=} for {layer_tree_layer.name()=}")
 
+    admin_id = layer_attributes["admin_id"] if "admin_id" in layer_attributes else None
     external_id = layer_attributes["external_id"]
     if external_id is None:
         if read_bool_setting("GENERATE_MISSING_EXTERNAL_IDS"):
@@ -63,4 +64,4 @@ def extract_layer_data(layer_tree_layer: Any) -> Tuple:
         ):
             layer_attributes[k] = None
 
-    return external_id, layer_attributes, layer_feature, name
+    return admin_id, external_id, layer_attributes, layer_feature, name

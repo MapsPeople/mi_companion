@@ -46,7 +46,7 @@ def add_dropdown_widget(layer, field_name: str, widget) -> None:
 HIDDEN_WIDGET = QgsEditorWidgetSetup("Hidden", {})
 
 
-def make_field_unique(layer: Any, field_name: str = "external_id") -> None:
+def make_field_unique(layer: Any, field_name: str = "admin_id") -> None:
     unique_widget = QgsEditorWidgetSetup(
         "UuidGenerator",
         {},
