@@ -6,24 +6,30 @@ import shapely
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
+from integration_system.mi import (
+    MI_OUTSIDE_BUILDING_NAME,
+    get_outside_building_floor_name,
+)
 from integration_system.model import Solution
 from mi_companion.configuration.constants import (
     BUILDING_POLYGON_DESCRIPTOR,
     DEFAULT_CUSTOM_PROPERTIES,
+    FLOOR_DESCRIPTOR,
     GRAPH_DESCRIPTOR,
     HALF_SIZE,
 )
 from .custom_props import extract_custom_props
 from .extraction import extract_layer_data
-from .floor import add_building_floor
+from .floor import add_building_floors
+from .location import add_floor_contents
 from ...projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["add_venue_buildings"]
+__all__ = ["add_venue_level_hierarchy"]
 
 
-def add_venue_buildings(
+def add_venue_level_hierarchy(
     *,
     ith_solution: int,
     ith_venue: int,
@@ -61,6 +67,40 @@ def add_venue_buildings(
                 f"Not handling graphs yet, {venue_group_item.name()}, skipping"
             )
             continue
+            # add_venue_graph(solution=solution)  # TODO: IMPLEMENT!
+
+        if (
+            FLOOR_DESCRIPTOR in venue_group_item.name()
+            and "Outside" in venue_group_item.name()
+        ):  # HANDLE OUTSIDE FLOORS, TODO: right now only support a single floor
+            logger.error("Adding outside floor")
+            outside_building_admin_id = f"_{venue_key}"
+            outside_building = solution.buildings.get(outside_building_admin_id)
+            venue = solution.venues.get(venue_key)
+
+            if outside_building is None:
+                outside_building_key = solution.add_building(
+                    outside_building_admin_id,
+                    MI_OUTSIDE_BUILDING_NAME,
+                    polygon=venue.polygon,
+                    venue_key=venue_key,
+                )
+            else:
+                outside_building_key = outside_building.key
+
+            outside_floor_key = solution.add_floor(
+                0,
+                name=get_outside_building_floor_name(0),
+                building_key=outside_building_key,
+                polygon=venue.polygon,
+            )
+
+            add_floor_contents(
+                floor_key=outside_floor_key,
+                floor_group_items=venue_group_item,
+                solution=solution,
+            )
+            continue
 
         building_key = get_building_key(venue_group_item, solution, venue_key)
 
@@ -70,7 +110,7 @@ def add_venue_buildings(
             )
             continue
 
-        add_building_floor(
+        add_building_floors(
             building_key=building_key,
             venue_group_item=venue_group_item,
             solution=solution,

@@ -15,7 +15,8 @@
             <env name="PI_EDITOR_SERVICE_USERNAME" value="mapsindoors"/>
         </envs>
         <option name="SDK_HOME" value=""/>
-        <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/mi_companion/submodules/integration_system/tests"/>
+        <option name="WORKING_DIRECTORY"
+                value="$PROJECT_DIR$/mi_companion/submodules/integration_system/tests"/>
         <option name="IS_MODULE_SDK" value="true"/>
         <option name="ADD_CONTENT_ROOTS" value="true"/>
         <option name="ADD_SOURCE_ROOTS" value="true"/>
@@ -28,7 +29,8 @@
             <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false"/>
             <ENTRIES>
                 <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false"/>
-                <ENTRY IS_ENABLED="true" PARSER="env" IS_EXECUTABLE="false" PATH="cms_edit/integration_system/.env"/>
+                <ENTRY IS_ENABLED="true" PARSER="env" IS_EXECUTABLE="false"
+                       PATH="cms_edit/integration_system/.env"/>
             </ENTRIES>
         </EXTENSION>
         <option name="_new_additionalArguments" value="&quot;&quot;"/>

@@ -25,10 +25,10 @@ from ...projection import prepare_geom_for_mi_db
 logger = logging.getLogger(__name__)
 
 
-__all__ = ["add_building_floor"]
+__all__ = ["add_building_floors"]
 
 
-def add_building_floor(
+def add_building_floors(
     *,
     building_key: str,
     venue_group_item: Any,
@@ -43,25 +43,36 @@ def add_building_floor(
 ) -> None:
     building_group_elements = venue_group_item.children()
     num_building_group_elements = len(building_group_elements)
+
     for ith_building_group_item, building_group_item in enumerate(
         building_group_elements
     ):
         if progress_bar:
-            progress_bar.setValue(
-                int(
-                    10
-                    + (
-                        90
-                        * ((ith_solution + HALF_SIZE) / num_solution_elements)
-                        * ((ith_venue + HALF_SIZE) / num_venue_elements)
-                        * ((ith_building + HALF_SIZE) / num_building_elements)
-                        * (
-                            (ith_building_group_item + HALF_SIZE)
-                            / num_building_group_elements
+            if (
+                num_building_elements < 1
+                or num_venue_elements < 1
+                or num_solution_elements < 1
+            ):
+                ...
+                logger.error(
+                    "Come on man... you can not divide by zero... the progress bar was not updated because of you"
+                )
+            else:
+                progress_bar.setValue(
+                    int(
+                        10
+                        + (
+                            90
+                            * ((ith_solution + HALF_SIZE) / num_solution_elements)
+                            * ((ith_venue + HALF_SIZE) / num_venue_elements)
+                            * ((ith_building + HALF_SIZE) / num_building_elements)
+                            * (
+                                (ith_building_group_item + HALF_SIZE)
+                                / num_building_group_elements
+                            )
                         )
                     )
                 )
-            )
 
         if not isinstance(building_group_item, QgsLayerTreeGroup):
             continue

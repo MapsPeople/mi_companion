@@ -58,7 +58,19 @@ def sync_build_venue_solution(
                 address=occupant.address,
                 contact=occupant.contact,
                 media_key=(occupant.logo.key if occupant.logo else None),
-            )"""
+            )
+
+    :param qgis_instance_handle:
+    :param include_graph:
+    :param include_media:
+    :param include_occupants:
+    :param include_route_elements:
+    :param solution:
+    :param solution_depth:
+    :param solution_name:
+    :param progress_bar:
+    :return:
+    """
 
     if VERBOSE:
         logger.info("Synchronising")
@@ -92,7 +104,7 @@ def sync_build_venue_solution(
         ) -> str:
             desc = ""
             for o in operation:
-                desc += f"{o.operation_type.name}: {len(o.object_keys)} {o.object_type.__name__}(s)\n"
+                desc += f"{o.operation_type.name}: {len(o.item_keys)} {o.item_type.__name__}(s)\n"
 
             return desc
 
@@ -245,7 +257,7 @@ def show_differences(
                 qgis_instance_handle=qgis_instance_handle,
                 dataframe=df,
                 geometry_column="geometry",
-                name=f"{o.object_type.__name__} differences",
+                name=f"{o.item_type.__name__} differences",
                 group=venue_difference_group,
                 crs=f"EPSG:{MI_EPSG_NUMBER}",
             )

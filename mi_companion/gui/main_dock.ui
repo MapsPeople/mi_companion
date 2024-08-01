@@ -317,7 +317,8 @@
                                     <height>0</height>
                                 </size>
                             </property>
-                            <layout class="QGridLayout" name="entry_point_grid" rowstretch="0" columnstretch="0">
+                            <layout class="QGridLayout" name="entry_point_grid" rowstretch="0"
+                                    columnstretch="0">
                                 <property name="sizeConstraint">
                                     <enum>QLayout::SetNoConstraint</enum>
                                 </property>

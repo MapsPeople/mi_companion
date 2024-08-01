@@ -30,11 +30,12 @@ def add_floor_layers(
     building_group: Any,
     qgis_instance_handle: Any,
     solution: Solution,
-):
+    # add_floor_polygon_geometry: bool = True,
+) -> None:
     building_bottom_floor_tracker = {}
     for floor in sorted(solution.floors, key=lambda floor: floor.floor_index):
         floor: Floor
-        if floor.building.external_id == building.external_id:
+        if floor.building.key == building.key:
             floor_name = f"{floor.name} {FLOOR_DESCRIPTOR}:{floor.floor_index}"
             floor_group = building_group.insertGroup(
                 INSERT_INDEX, floor_name

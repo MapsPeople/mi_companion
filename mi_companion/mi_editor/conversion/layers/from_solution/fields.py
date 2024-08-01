@@ -25,7 +25,7 @@ Calendar – a calendar widget to input dates
 """
 
 
-def add_dropdown_widget(layer, field_name: str, widget) -> None:
+def add_dropdown_widget(layer: Any, field_name: str, widget) -> None:
     # https://gis.stackexchange.com/questions/470963/setting-dropdown-on-feature-attribute-form-using-plugin
     for layers_inner in layer:
         if layers_inner:

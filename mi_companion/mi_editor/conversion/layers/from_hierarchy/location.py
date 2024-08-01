@@ -1,6 +1,6 @@
 import logging
 import uuid
-from typing import Any
+from typing import Any, Optional
 
 import shapely
 
@@ -123,9 +123,9 @@ def add_floor_contents(
     *,
     floor_group_items: QgsLayerTreeGroup,
     floor_key: str,
-    graph_key: str,
     solution: Solution,
-    floor_index: int,
+    graph_key: Optional[str] = None,
+    floor_index: Optional[int] = None,
 ) -> None:
     for location_group_items in floor_group_items.children():
         if (

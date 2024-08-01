@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional, Sequence
+from typing import Any, Optional
 
 import geopandas
 from jord.qlive_utilities import add_dataframe_layer

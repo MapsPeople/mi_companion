@@ -55,7 +55,7 @@ def add_location_layer(
         floor_selection = shape_df["floor.external_id"] == floor.external_id
     else:
         floor_selection = (shape_df["floor.floor_index"] == floor.floor_index) & (
-            shape_df["floor.building.external_id"] == floor.building.external_id
+            shape_df["floor.building.admin_id"] == floor.building.admin_id
         )  # TODO: USE Floor.compute_key instead
 
     shape_df = shape_df[floor_selection]

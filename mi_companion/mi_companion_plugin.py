@@ -10,7 +10,9 @@
 """
 
 import logging
+import sys
 from pathlib import Path
+from typing import Optional, Union
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QCoreApplication, QLocale, QTranslator
@@ -25,6 +27,69 @@ from qgis.PyQt.QtWidgets import QAction
 from qgis.core import QgsSettings
 
 logger = logging.getLogger(__name__)
+
+if False:
+
+    def ensure_in_sys_path(
+        path: Optional[Union[str, Path]],
+        position: Optional[int] = None,
+        resolve: bool = False,
+        absolute: bool = True,
+    ) -> None:
+        """
+
+        Ensures that a path is in sys.path, but avoids duplicates.
+        Can also resolve and absolute paths for duplication.
+        Does not clean the existing paths in sys.path
+
+        :param verbose: Whether to print verbose info
+        :type verbose: bool
+        :param path: The path to be inserted
+        :type path: Optional[Union[str, Path]]
+        :param position: If not supplied, the path will be appended at the end of the existing sys.path
+        :type position: Optional[int]
+        :param resolve: Whether to resolve the absolute path
+        :type resolve: bool
+        :param absolute: Insert the absolute path
+        :type absolute: bool
+        :return: None
+        :rtype: None
+        """
+        if (
+            path is None
+        ):  # may be the case if the supplied path is being solved programmatically
+            logger.warning("No path was supplied")
+            return
+
+        path = Path(path)
+
+        if absolute:
+            path = path.absolute()
+
+        str_path = str(path)
+        sys_path_snapshot = sys.path
+
+        if resolve:
+            sys_path_snapshot = [Path(p).resolve() for p in sys_path_snapshot]
+            inclusion_test = path.resolve() in sys_path_snapshot
+        else:
+            inclusion_test = str_path in sys_path_snapshot
+
+        if not inclusion_test:
+            if position:
+                sys.path.insert(position, str_path)
+            else:
+                sys.path.append(str_path)
+        else:
+            logger.warning(f"{path} is already in sys path")
+
+    ensure_in_sys_path(__file__.parent / "packages", 0)
+else:
+    if False:
+        import site  # https://docs.python.org/3/library/site.html#module-site
+
+        site.addsitedir(__file__.parent / "packages")
+
 
 try:
     from jord.qt_utilities import DockWidgetAreaFlag

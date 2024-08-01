@@ -12,28 +12,29 @@ from qgis.PyQt import QtGui, QtWidgets, uic
 from qgis.PyQt.QtCore import pyqtSignal
 
 # noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsApplication,
     QgsFeature,
     QgsGeometry,
     QgsLayerTree,
+    QgsLayerTreeGroup,
+    QgsLayerTreeLayer,
     QgsLayerTreeModel,
+    QgsProject,
     QgsProject,
     QgsRasterLayer,
     QgsVectorLayer,
 )
 
 # noinspection PyUnresolvedReferences
-from qgis.utils import iface
+from qgis.gui import QgsDockWidget
 
 # noinspection PyUnresolvedReferences
-from qgis.gui import QgsDockWidget
+from qgis.utils import iface
 from warg import ensure_in_sys_path
 
 from mi_companion.utilities.paths import resolve_path
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 FORM_CLASS, _ = uic.loadUiType(resolve_path("level_selector.ui", __file__))
 

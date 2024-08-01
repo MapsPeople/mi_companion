@@ -1,9 +1,10 @@
 import logging
-from typing import Iterable
+from typing import Any, Iterable
 from xml.etree.ElementTree import ParseError
 
 from jord.qlive_utilities import add_shapely_layer
 
+from integration_system.model import Graph, Solution
 from mi_companion.configuration.constants import (
     GRAPH_DESCRIPTOR,
     NAVIGATION_LINES_DESCRIPTOR,
@@ -26,13 +27,13 @@ logger = logging.getLogger(__name__)
 
 def add_graph_layers(
     *,
-    graph,
-    venue_group,
-    qgis_instance_handle,
-    highway_type_dropdown_widget,
-    door_type_dropdown_widget,
-    solution,
-):
+    graph: Graph,
+    venue_group: Any,
+    qgis_instance_handle: Any,
+    highway_type_dropdown_widget: Any,
+    door_type_dropdown_widget: Any,
+    solution: Solution,
+) -> None:
     try:
         if graph.osm_xml:
             (lines, lines_meta_data), (

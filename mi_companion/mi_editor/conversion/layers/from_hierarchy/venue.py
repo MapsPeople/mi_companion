@@ -17,18 +17,18 @@ from integration_system.mi import SolutionDepth
 from integration_system.model import PostalAddress, Solution, VenueType
 from mi_companion.configuration.constants import (
     DEFAULT_CUSTOM_PROPERTIES,
-    GRAPH_DESCRIPTOR,
     HALF_SIZE,
     VENUE_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
 )
-from .building import add_venue_buildings
+from .building import add_venue_level_hierarchy
 from .custom_props import extract_custom_props
 
 __all__ = ["convert_solution_venues"]
 
 from .extraction import extract_layer_data
-from .graph import add_venue_graph
+
+# from .graph import add_venue_graph
 from .syncing import post_process_solution, sync_build_venue_solution
 from ...projection import prepare_geom_for_mi_db
 
@@ -65,6 +65,8 @@ def convert_solution_venues(
     solution_group_children = mi_group_child.children()
     num_solution_group_elements = len(solution_group_children)
     solutions = []
+    venue_key = None
+
     for ith_solution_child, solution_group_item in enumerate(solution_group_children):
         if progress_bar:
             progress_bar.setValue(
@@ -103,7 +105,7 @@ def convert_solution_venues(
                 )
                 continue
 
-            add_venue_buildings(
+            add_venue_level_hierarchy(
                 ith_solution=ith_solution,
                 ith_venue=ith_solution_child,
                 num_solution_elements=num_solution_elements,
@@ -113,9 +115,6 @@ def convert_solution_venues(
                 solution_group_item=solution_group_item,
                 venue_key=venue_key,
             )
-
-        if GRAPH_DESCRIPTOR in solution_group_item.name():
-            add_venue_graph(solution=solution)
 
         post_process_solution(solution)
 

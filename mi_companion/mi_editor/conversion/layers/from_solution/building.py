@@ -33,7 +33,7 @@ def add_building_layers(
     qgis_instance_handle: Any,
     available_location_type_map_widget: Optional[Any] = None,
     progress_bar: Optional[callable] = None,
-):
+) -> None:
     num_buildings = float(len(solution.buildings))
 
     for ith, building in enumerate(
