@@ -197,23 +197,17 @@ repos:
         entry: fix-byte-order-marker
         language: python
         types: [text]
-      - id: mixed-line-ending
-        name: mixed line ending
-        description: replaces or checks mixed line ending.
-        entry: mixed-line-ending
-        language: python
-        types: [text]
       - id: no-commit-to-branch
         name: "don't commit to branch"
         entry: no-commit-to-branch
         language: python
         pass_filenames: false
         always_run: true
-      - id: requirements-txt-fixer
-        name: fix requirements.txt
-        description: sorts entries in requirements.txt.
-        entry: requirements-txt-fixer
-        language: python
+        #- id: requirements-txt-fixer
+        #  name: fix requirements.txt
+        #  description: sorts entries in requirements.txt.
+        #  entry: requirements-txt-fixer
+        #  language: python
         files: requirements.*\.txt$
       - id: sort-simple-yaml
         name: sort simple yaml files
@@ -221,6 +215,12 @@ repos:
         language: python
         entry: sort-simple-yaml
         files: "^$"
+      - id: mixed-line-ending
+        name: mixed line ending
+        description: replaces or checks mixed line ending.
+        entry: mixed-line-ending
+        language: python
+        types: [text]
       - id: trailing-whitespace
         name: trim trailing whitespace
         description: trims trailing whitespace.

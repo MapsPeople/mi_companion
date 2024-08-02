@@ -310,4 +310,4 @@ cython_debug/
 
 .run/
 
-packages/*
+mi_companion/packages

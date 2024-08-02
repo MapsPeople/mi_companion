@@ -48,3 +48,7 @@ MANUAL_REQUIREMENTS = [
     "osgeo",
     # 'qgis' # not visible to pip?
 ]
+
+
+IMPORT_SHIPPED_PYTHON_PACKAGES = True
+SHIPPED_PACKAGES_DIR = "packages"
