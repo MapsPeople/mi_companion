@@ -309,3 +309,5 @@ cython_debug/
 *.zip
 
 .run/
+
+packages/*
