@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 from enum import Enum
+from multiprocessing import Pipe
 from pathlib import Path
 from subprocess import PIPE, Popen, STDOUT
 
@@ -41,19 +42,19 @@ macosx_10_7_x86_64
 """
 
 
-def get_site_packages(platform_):
+def get_site_packages(platform_: PlatformEnum) -> Path:
     if not isinstance(platform_, PlatformEnum):
         platform_ = PlatformEnum(platform_)
 
     return a / platform_.value.lower()
 
 
-def log_subprocess_output(pipe):
+def log_subprocess_output(pipe: Pipe) -> None:
     for line in iter(pipe.readline, b""):  # b'\n'-separated lines
         logger.info("got line from subprocess: %r", line)
 
 
-def catching_callable(*args, **kwargs):
+def catching_callable(*args, **kwargs) -> None:
     try:
         logger.info(f"{list(args)}, {list(kwargs.items())}")
 
@@ -70,9 +71,9 @@ def catching_callable(*args, **kwargs):
 
 
 def package_packages(
-    clean=True,
+    clean: bool = True,
     # python_version ='3.9.0'
-):
+) -> None:
     if a.exists():
         if clean:
             shutil.rmtree(a)
@@ -90,16 +91,22 @@ def package_packages(
             requirements_file_parent_directory
         )
 
+        os.environ["ZMQ_PREFIX"] = "bundled"
+        os.environ["ZMQ_BUILD_DRAFT"] = "1"
+
         catching_callable(
             [
-                f"pip",
+                "pip",
                 "install",
                 "-U",
-                f"-t",
+                "-t",
                 f"{target_site_packages_dir}",
-                f"-r",
+                "-r",
                 f"{REQUIREMENTS_FILE}",
-                f"--break-system-packages",
+                "--break-system-packages",
+                "--verbose",
+                # "--no-binary", "pyzmq",
+                # "--no-build-isolation"
             ]
         )
 

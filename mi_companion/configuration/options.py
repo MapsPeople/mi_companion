@@ -15,6 +15,7 @@ __all__ = [
 
 
 import logging
+from typing import Any, Self
 
 from jord.qgis_utilities import read_plugin_setting, store_plugin_setting
 from jord.qgis_utilities.helpers import reconnect_signal
@@ -51,11 +52,11 @@ class DeploymentOptionsPageFactory(QgsOptionsWidgetFactory):
         super().__init__()
 
     # noinspection PyMethodMayBeStatic
-    def icon(self):
+    def icon(self) -> None:
         return load_icon("mp_notext.png")
 
     # noinspection PyPep8Naming,PyMethodMayBeStatic
-    def createWidget(self, parent):
+    def createWidget(self, parent: Any) -> Self:
         return DeploymentCompanionOptionsPage(parent)
 
 
@@ -83,7 +84,7 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         reload_settings()
         self.populate_settings()
 
-    def populate_settings(self):
+    def populate_settings(self) -> None:
         # from qgis.core import QgsSettings
         # noinspection PyUnresolvedReferences
 
@@ -142,7 +143,7 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         # self.import_settings_button
         # self.settings_file_widget
 
-    def setting_item_changed(self, item):  #: PyQt5.QtGui.QStandardItem
+    def setting_item_changed(self, item: Any) -> None:  #: PyQt5.QtGui.QStandardItem
         try:
             key = self.settings_list_model.item(item.row(), 0).text()
             item_value = item.text()
@@ -195,5 +196,5 @@ class DeploymentCompanionOptionsPage(QgsOptionsPageWidget):
 
         self.setLayout(root_layout)
 
-    def apply(self):
+    def apply(self) -> None:
         pass

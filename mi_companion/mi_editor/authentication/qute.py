@@ -35,7 +35,7 @@ class MyAuthenticationHandler(BaseHTTPRequestHandler):
     Listens to localhost:8085 to get the authentication code
     """
 
-    def do_GET(self):
+    def do_GET(self) -> None:
         parsed = urllib.parse.urlparse(self.path)
         MyAuthenticationHandler.auth_code = urllib.parse.parse_qs(parsed.query)["code"][
             0

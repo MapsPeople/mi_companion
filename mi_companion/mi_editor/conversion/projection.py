@@ -13,6 +13,7 @@ __all__ = [
 import shapely
 
 from jord.shapely_utilities.base import clean_shape
+from pandas import DataFrame
 
 from mi_companion.configuration.options import read_bool_setting
 
@@ -52,7 +53,7 @@ def prepare_geom_for_qgis(
     return clean_shape(geom_shapely)
 
 
-def reproject_geometry_df(df):
+def reproject_geometry_df(df: DataFrame) -> DataFrame:
     if should_reproject():
         df.set_crs(epsg=MI_EPSG_NUMBER, inplace=True, allow_override=True)
         return df.to_crs(epsg=GDS_EPSG_NUMBER, inplace=True)

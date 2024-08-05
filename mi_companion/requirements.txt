@@ -1,24 +1,9 @@
-#-e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/integration_system"
-#-e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/svaguely"
-#-e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/caddy"
-
-#integration_system @ "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/integration_system"
-#svaguely @ "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/svaguely"
-#caddy @ "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/caddy"
-
-#git@git.rtx.mapspeople.com:MapsIndoors/automation/tooling/svaguely.git
-#gym-tictactoe @ git+https://github.com/haje01/gym-tictactoe.git@84e22fc28fe192ba0040bdd56a697f63d3d4a3d5
-#git+https://${GITHUB_TOKEN}@github.com/owner/repo.git@main
-
-
--f "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/integration_system"
--f "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/svaguely"
--f "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/caddy"
-
+-r requirements_submodules.txt
 
 apppath>=1.0.6
 authlib >=1.2.1
 certifi>=14.05.14
+cython
 ezdxf>=1.3.0
 geojson>=3.1.0
 geopandas>=0.14.0
@@ -47,3 +32,4 @@ typeguard>=4.1.5
 urllib3>=2.1.0
 validators>=0.22.0
 warg>=1.4.7
+PySide2

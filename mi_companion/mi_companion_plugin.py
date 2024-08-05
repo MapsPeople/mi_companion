@@ -9,6 +9,8 @@
 
 """
 
+from .constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
+
 import logging
 from pathlib import Path
 
@@ -26,29 +28,6 @@ from qgis.PyQt.QtWidgets import QAction
 from qgis.core import QgsSettings
 
 logger = logging.getLogger(__name__)
-
-from . import (
-    IMPORT_SHIPPED_PYTHON_PACKAGES,
-    PROJECT_NAME,
-    DEFAULT_PLUGIN_SETTINGS,
-    SHIPPED_PACKAGES_DIR,
-)
-
-
-if IMPORT_SHIPPED_PYTHON_PACKAGES:
-    import site  # https://docs.python.org/3/library/site.html#module-site
-    import platform
-    import site
-
-    platform_postfix = "windows"
-    if platform.system() == "Darwin":
-        platform_postfix = "darwin"
-    elif platform.system() == "Linux":
-        platform_postfix = "linux"
-
-    p = Path(__file__).parent / SHIPPED_PACKAGES_DIR / platform_postfix
-    assert p.exists(), f"{p} not found"
-    site.addsitedir(str(p))
 
 try:
     from jord.qt_utilities import DockWidgetAreaFlag
@@ -74,7 +53,6 @@ except ModuleNotFoundError as e1:
         from jord.qgis_utilities.helpers import signals
         from jord.qgis_utilities import read_plugin_setting
 
-        from . import PROJECT_NAME, DEFAULT_PLUGIN_SETTINGS
         from .configuration.options import DeploymentOptionsPageFactory
         from .gui.main_dock import MapsIndoorsCompanionDockWidget
 
