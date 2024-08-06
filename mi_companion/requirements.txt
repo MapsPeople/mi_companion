@@ -1,4 +1,4 @@
--r requirements_submodules.txt
+-r ../requirements_submodules.txt
 
 apppath>=1.0.6
 authlib >=1.2.1
