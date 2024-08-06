@@ -1,6 +1,6 @@
-#-e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/integration_system"
-#-e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/svaguely"
-#-e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/caddy"
+#-e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/../integration_system"
+#-e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/../svaguely"
+#-e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/../caddy"
 
 #integration_system @ "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/integration_system"
 #svaguely @ "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/svaguely"
@@ -10,7 +10,10 @@
 #gym-tictactoe @ git+https://github.com/haje01/gym-tictactoe.git@84e22fc28fe192ba0040bdd56a697f63d3d4a3d5
 #git+https://${GITHUB_TOKEN}@github.com/owner/repo.git@main
 
+#file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/integration_system
+#file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/svaguely
+#file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/caddy
 
-file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/integration_system
-file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/svaguely
-file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/caddy
+file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/../integration_system
+file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/../svaguely
+file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/../caddy
