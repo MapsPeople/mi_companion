@@ -1,22 +1,11 @@
 import logging
 from pathlib import Path
 
-from jord.qt_utilities import DockWidgetAreaFlag
+import site  # https://docs.python.org/3/library/site.html#module-site
 
 SHIPPED_PACKAGES_DIR = "packages"
 
-
-import site  # https://docs.python.org/3/library/site.html#module-site
-import platform
-
-
-platform_postfix = "windows"
-if platform.system() == "Darwin":
-    platform_postfix = "darwin"
-elif platform.system() == "Linux":
-    platform_postfix = "linux"
-
-p = Path(__file__).parent / SHIPPED_PACKAGES_DIR / platform_postfix
+p = Path(__file__).parent / SHIPPED_PACKAGES_DIR
 logger = logging.getLogger(__name__)
 
 if p.exists():
@@ -54,6 +43,8 @@ METADATA_FILE = PLUGIN_DIR / "metadata.txt"
 PROJECT_NAME = read_project_name_from_metadata(METADATA_FILE)
 VERSION = read_version_from_metadata(METADATA_FILE)
 PLUGIN_AUTHOR = read_author_from_metadata(METADATA_FILE)
+
+from jord.qt_utilities import DockWidgetAreaFlag
 
 try:
     from apppath import AppPath

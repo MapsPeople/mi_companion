@@ -2,51 +2,16 @@ import logging
 import os
 import shutil
 import subprocess
-from enum import Enum
 from multiprocessing import Pipe
 from pathlib import Path
 from subprocess import PIPE, Popen, STDOUT
 
 from mi_companion.constants import SHIPPED_PACKAGES_DIR
 
-PLUGIN_DIR = Path("mi_companion")
+PLUGIN_DIR = Path(__file__).parent / "mi_companion"
 REQUIREMENTS_FILE = PLUGIN_DIR / "requirements.txt"
 
-a = PLUGIN_DIR / SHIPPED_PACKAGES_DIR
 logger = logging.getLogger(__name__)
-
-
-class PlatformEnum(Enum):
-    windows = "Windows"
-    # linux = 'Linux'
-    # darwin = 'Darwin'
-
-
-IGNORE_THIS = """
-
-win_amd64
-
-manylinux_2_28_x86_64
-manylinux_2_28_aarch64
-manylinux_2_17_x86_64
-manylinux2014_x86_64
-manylinux_2_17_armv7l
-manylinux2014_armv7l
-manylinux_2_17_aarch64
-manylinux2014_aarch64
-
-macosx_10_9_x86_64
-macosx_11_0_arm64
-macosx_10_9_universal2
-macosx_10_7_x86_64
-"""
-
-
-def get_site_packages(platform_: PlatformEnum) -> Path:
-    if not isinstance(platform_, PlatformEnum):
-        platform_ = PlatformEnum(platform_)
-
-    return a / platform_.value.lower()
 
 
 def log_subprocess_output(pipe: Pipe) -> None:
@@ -70,16 +35,13 @@ def catching_callable(*args, **kwargs) -> None:
         logger.warning(output)
 
 
-def package_packages(
+def package_dependencies(
+    target_site_packages_dir: Path,
     clean: bool = True,
-    # python_version ='3.9.0'
 ) -> None:
-    if a.exists():
+    if target_site_packages_dir.exists():
         if clean:
-            shutil.rmtree(a)
-
-    for p in PlatformEnum:
-        target_site_packages_dir = a / p.value.lower()
+            shutil.rmtree(target_site_packages_dir)
 
         target_site_packages_dir.mkdir(parents=True, exist_ok=True)
 
@@ -105,8 +67,9 @@ def package_packages(
                 f"{REQUIREMENTS_FILE}",
                 "--break-system-packages",
                 "--verbose",
-                # "--no-binary", "pyzmq",
-                # "--no-build-isolation"
+                # "--no-binary",
+                # "pyzmq",
+                # "--no-build-isolation",
             ]
         )
 
@@ -114,4 +77,4 @@ def package_packages(
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     logger.setLevel(logging.INFO)
-    package_packages()
+    package_dependencies(PLUGIN_DIR / SHIPPED_PACKAGES_DIR)

@@ -17,6 +17,7 @@ from mi_companion.configuration.constants import (
     FLOOR_DESCRIPTOR,
     GRAPH_DESCRIPTOR,
     HALF_SIZE,
+    HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS,
 )
 from .custom_props import extract_custom_props
 from .extraction import extract_layer_data
@@ -70,7 +71,8 @@ def add_venue_level_hierarchy(
             # add_venue_graph(solution=solution)  # TODO: IMPLEMENT!
 
         if (
-            FLOOR_DESCRIPTOR in venue_group_item.name()
+            HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS
+            and FLOOR_DESCRIPTOR in venue_group_item.name()
             and "Outside" in venue_group_item.name()
         ):  # HANDLE OUTSIDE FLOORS, TODO: right now only support a single floor
             logger.error("Adding outside floor")

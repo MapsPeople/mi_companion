@@ -8,6 +8,7 @@ from integration_system.model import Building, Solution, Venue
 from mi_companion.configuration.constants import (
     BUILDING_DESCRIPTOR,
     BUILDING_POLYGON_DESCRIPTOR,
+    HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS,
 )
 from .fields import make_field_unique
 from .floor import add_floor_layers
@@ -44,7 +45,10 @@ def add_building_layers(
         if progress_bar:
             progress_bar.setValue(int(20 + (float(ith) / num_buildings) * 80))
 
-        if get_outside_building_admin_id(venue.admin_id) == building.admin_id:
+        if (
+            HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS
+            and get_outside_building_admin_id(venue.admin_id) == building.admin_id
+        ):
             add_floor_layers(
                 available_location_type_map_widget=available_location_type_map_widget,
                 building=building,

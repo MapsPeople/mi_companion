@@ -15,7 +15,7 @@ __all__ = [
 
 
 import logging
-from typing import Any, Self
+from typing import Any
 
 from jord.qgis_utilities import read_plugin_setting, store_plugin_setting
 from jord.qgis_utilities.helpers import reconnect_signal
@@ -56,7 +56,7 @@ class DeploymentOptionsPageFactory(QgsOptionsWidgetFactory):
         return load_icon("mp_notext.png")
 
     # noinspection PyPep8Naming,PyMethodMayBeStatic
-    def createWidget(self, parent: Any) -> Self:
+    def createWidget(self, parent: Any):
         return DeploymentCompanionOptionsPage(parent)
 
 
