@@ -3,14 +3,14 @@ from pathlib import Path
 
 import site  # https://docs.python.org/3/library/site.html#module-site
 
-SHIPPED_PACKAGES_DIR = "packages"
+BUNDLED_PACKAGES_DIR = "mi_companion_bundle"
 
-p = Path(__file__).parent / SHIPPED_PACKAGES_DIR
+relative_bundled_packages_dir = Path(__file__).parent.parent / BUNDLED_PACKAGES_DIR
 logger = logging.getLogger(__name__)
 
-if p.exists():
-    logger.info(f"Loading {p}")
-    site.addsitedir(str(p))
+if relative_bundled_packages_dir.exists():
+    logger.info(f"Loading {relative_bundled_packages_dir}")
+    site.addsitedir(str(relative_bundled_packages_dir))
 
 
 def read_author_from_metadata(metadata_file: Path) -> str:

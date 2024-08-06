@@ -310,5 +310,4 @@ cython_debug/
 
 .run/
 
-mi_companion/packages
-packages
+mi_companion_bundle

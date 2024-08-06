@@ -6,10 +6,10 @@ from multiprocessing import Pipe
 from pathlib import Path
 from subprocess import PIPE, Popen, STDOUT
 
-from mi_companion.constants import SHIPPED_PACKAGES_DIR
+from mi_companion.constants import BUNDLED_PACKAGES_DIR
 
 THIS_DIR = Path(__file__).parent
-TARGET_DIR = THIS_DIR / SHIPPED_PACKAGES_DIR
+TARGET_DIR = THIS_DIR / BUNDLED_PACKAGES_DIR
 PLUGIN_DIR = THIS_DIR / "mi_companion"
 REQUIREMENTS_FILE = PLUGIN_DIR / "requirements.txt"
 
