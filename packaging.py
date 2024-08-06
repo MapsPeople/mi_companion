@@ -8,7 +8,9 @@ from subprocess import PIPE, Popen, STDOUT
 
 from mi_companion.constants import SHIPPED_PACKAGES_DIR
 
-PLUGIN_DIR = Path(__file__).parent / "mi_companion"
+THIS_DIR = Path(__file__).parent
+TARGET_DIR = THIS_DIR / SHIPPED_PACKAGES_DIR
+PLUGIN_DIR = THIS_DIR / "mi_companion"
 REQUIREMENTS_FILE = PLUGIN_DIR / "requirements.txt"
 
 logger = logging.getLogger(__name__)
@@ -43,38 +45,38 @@ def package_dependencies(
         if clean:
             shutil.rmtree(target_site_packages_dir)
 
-        target_site_packages_dir.mkdir(parents=True, exist_ok=True)
+    target_site_packages_dir.mkdir(parents=True, exist_ok=True)
 
-        requirements_file_parent_directory = str(
-            REQUIREMENTS_FILE.parent.absolute().as_posix()
-        )
+    requirements_file_parent_directory = str(
+        REQUIREMENTS_FILE.parent.absolute().as_posix()
+    )
 
-        os.environ["REQUIREMENTS_FILE_PARENT_DIRECTORY"] = (
-            requirements_file_parent_directory
-        )
+    os.environ["REQUIREMENTS_FILE_PARENT_DIRECTORY"] = (
+        requirements_file_parent_directory
+    )
 
-        os.environ["ZMQ_PREFIX"] = "bundled"
-        os.environ["ZMQ_BUILD_DRAFT"] = "1"
+    os.environ["ZMQ_PREFIX"] = "bundled"
+    os.environ["ZMQ_BUILD_DRAFT"] = "1"
 
-        catching_callable(
-            [
-                "pip",
-                "install",
-                "-U",
-                "-t",
-                f"{target_site_packages_dir}",
-                "-r",
-                f"{REQUIREMENTS_FILE}",
-                "--break-system-packages",
-                "--verbose",
-                # "--no-binary",
-                # "pyzmq",
-                # "--no-build-isolation",
-            ]
-        )
+    catching_callable(
+        [
+            "pip",
+            "install",
+            "-U",
+            "-t",
+            f"{target_site_packages_dir}",
+            "-r",
+            f"{REQUIREMENTS_FILE}",
+            "--break-system-packages",
+            "--verbose",
+            # "--no-binary",
+            # "pyzmq",
+            # "--no-build-isolation",
+        ]
+    )
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     logger.setLevel(logging.INFO)
-    package_dependencies(PLUGIN_DIR / SHIPPED_PACKAGES_DIR)
+    package_dependencies(TARGET_DIR)
