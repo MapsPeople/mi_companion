@@ -1,34 +1,31 @@
 -r ../requirements_submodules.txt
 
 apppath>=1.0.6
-authlib >=1.2.1
+authlib>=1.2.1
 certifi>=14.05.14
 ezdxf>=1.3.0
 geojson>=3.1.0
 geopandas>=0.14.0
-jord[qt, shapely]>=0.6.7
+jord[qt,shapely]>=0.6.7
 matplotlib>=3.7.1
-#numpy==1.20.0 # PIN BECAUSE APPLE M1
 numpy~=1.26.0
 osmnx>=1.8.0
 pandas>=1.4.4
-#pip>=23.3.2
 poetry>=1.5.1
-pydantic >=2.1.1
-pydantic-settings >=2.0.2
-pyperclip
+pydantic>=2.1.1
+pydantic-settings>=2.0.2
 pyperclip>=0.0.1
 pyproj
 pytest-xdist>=3.3.1
-python_dateutil >= 2.5.3
-#scipy==1.10.1 # PIN BECAUSE APPLE M1
+python_dateutil>=2.5.3
 scipy
 sentry-sdk>=2.0.1 # PRETTY BAD INTERFACE!
-setuptools >= 21.0.0
-shapely >= 2.0.0
-six >= 1.10
+setuptools>=21.0.0
+shapely>=2.0.0
+six>=1.10
 typeguard>=4.1.5
 urllib3>=2.1.0
 validators>=0.22.0
 warg>=1.4.7
-PySide2
+importlib-metadata
+importlib-resources
