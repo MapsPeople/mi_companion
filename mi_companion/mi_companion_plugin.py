@@ -14,13 +14,10 @@ from pathlib import Path
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QCoreApplication, QLocale, QTranslator
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QIcon
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QAction
-
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsSettings
 
@@ -44,9 +41,10 @@ try:
 except ModuleNotFoundError as e1:
   try:  # TODO MAYbe fetch eqips implementation, # otherwise assume warg was installed during bootstrap
     # from warg import get_requirements_from_file
-    from warg.packages import install_requirements_from_file
+    if False:
+      from warg.packages import install_requirements_from_file
 
-    install_requirements_from_file(Path(__file__).parent / "requirements.txt")
+      install_requirements_from_file(Path(__file__).parent / "requirements.txt")
 
     from jord.qt_utilities import DockWidgetAreaFlag
     from jord.qgis_utilities.helpers import signals
