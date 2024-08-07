@@ -29,3 +29,4 @@ validators>=0.22.0
 warg>=1.4.7
 importlib-metadata
 importlib-resources
+pydantic-core>=2.20.1
