@@ -311,3 +311,5 @@ cython_debug/
 .run/
 
 mi_companion_bundle
+oda_installers
+.DS_STORE
