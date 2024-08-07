@@ -1,6 +1,6 @@
 [submodule "integration_system"]
 	path = integration_system
-	url = git@github.com:automaps/mi-sync.git
+	url = git@git.rtx.mapspeople.com:MapsIndoors/automation/integrations/integration-system.git
 [submodule "svaguely"]
 	path = svaguely
 	url = git@github.com:automaps/svaguely.git
