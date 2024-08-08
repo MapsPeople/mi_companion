@@ -51,27 +51,33 @@ def run(
         Qgis,
     )
 
-    from caddy.exporting import export_to
+    from caddy import export_to
 
     # noinspection PyUnresolvedReferences
     from qgis.PyQt.QtGui import QColor, QFont
 
     """
-    alternative
-    by importing the DXF/DWG through the library libdxfrw into a geopackage (the method when you do Project > Import/Export > Import Layers from DXF/DWG)
-    """
+  alternative
+  by importing the DXF/DWG through the library libdxfrw into a geopackage (the method when you do Project >
+  Import/Export > Import Layers from DXF/DWG)
+  """
 
     auto_add_layers: bool = True
     oda_converter_path: str = (
         r"C:\Program Files\ODA\ODAFileConverter 25.4.0\ODAFileConverter.exe"
     )
 
+    oda_converter_path_ = Path(oda_converter_path)
+
+    if not oda_converter_path_.exists():
+        logger.info("Oda converter was not found...")
+        # TODO: Maybe run bundled installer?
+
+    assert oda_converter_path_.exists(), f"{oda_converter_path} is not a valid path"
+
     svg_file_path = Path(path)
 
     if svg_file_path.suffix == ".dwg":
-        oda_converter_path_ = Path(oda_converter_path)
-        assert oda_converter_path_.exists(), f"{oda_converter_path} is not a valid path"
-
         new_dxf_path: Path = convert_to_dxf(svg_file_path, oda_converter_path_)
     else:
         new_dxf_path = svg_file_path

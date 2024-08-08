@@ -1,9 +1,9 @@
 [submodule "integration_system"]
 	path = integration_system
-	url = git@git.rtx.mapspeople.com:MapsIndoors/automation/integrations/integration-system.git
+	url = git@github.com:MapsPeople/mi_sync.git
 [submodule "svaguely"]
 	path = svaguely
-	url = git@github.com:automaps/svaguely.git
+	url = git@github.com:MapsPeople/svaguely.git
 [submodule "caddy"]
 	path = caddy
-	url = git@git.rtx.mapspeople.com:MapsIndoors/automation/caddy.git
+	url = git@github.com:MapsPeople/caddy.git
