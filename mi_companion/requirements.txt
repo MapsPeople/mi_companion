@@ -14,7 +14,7 @@ pandas>=1.4.4
 poetry>=1.5.1
 pydantic>=2.1.1
 pydantic-settings>=2.0.2
-pyperclip>=0.0.1
+#pyperclip>=0.0.1
 pyproj
 pytest-xdist>=3.3.1
 python_dateutil>=2.5.3

@@ -65,12 +65,25 @@ def package_dependencies(
             f"{REQUIREMENTS_FILE}",
             "--break-system-packages",
             "--verbose",
-            "--no-binary",
-            "pyzmq",
+            # --platform manylinux2014_x86_64
+            # "--no-binary",
+            # "pyzmq",
             # "--no-build-isolation",
+            "--only-binary",
+            ":all:",
+            "--implementation",
+            "cp",
+            "--python-version",
+            "3.12",
         ]
     )
 
+
+# from importlib.metadata import files
+# [file for file in files('pydantic-core') if file.name.startswith('_pydantic_core')]
+
+# import sysconfig
+# sysconfig.get_config_var("EXT_SUFFIX")
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
