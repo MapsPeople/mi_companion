@@ -14,8 +14,9 @@ __copyright__ = "Copyright 2018, North Road"
 __revision__ = "$Format:%H$"
 
 import unittest
-from ..gui.gui_utils import GuiUtils
+
 from .utilities import get_qgis_app
+from ..gui.gui_utils import GuiUtils
 
 QGIS_APP = get_qgis_app()
 

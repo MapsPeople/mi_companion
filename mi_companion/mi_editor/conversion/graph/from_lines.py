@@ -22,7 +22,12 @@ def lines_to_network(
 ) -> MultiDiGraph:
     """
         This function is the inverse of graph_to_gdfs and is designed to work in conjunction with it.
-    However, you can convert arbitrary node and edge GeoDataFrames as long as 1) gdf_nodes is uniquely indexed by osmid, 2) gdf_nodes contains x and y coordinate columns representing node geometries, 3) gdf_edges is uniquely multi-indexed by u, v, key (following normal MultiDiGraph structure). This allows you to load any node/edge shapefiles or GeoPackage layers as GeoDataFrames then convert them to a MultiDiGraph for graph analysis. Note that any geometry attribute on gdf_nodes is discarded since x and y provide the necessary node geometry information instead
+    However, you can convert arbitrary node and edge GeoDataFrames as long as 1) gdf_nodes is uniquely indexed
+    by osmid, 2) gdf_nodes contains x and y coordinate columns representing node geometries, 3) gdf_edges is
+    uniquely multi-indexed by u, v, key (following normal MultiDiGraph structure). This allows you to load any
+    node/edge shapefiles or GeoPackage layers as GeoDataFrames then convert them to a MultiDiGraph for graph
+    analysis. Note that any geometry attribute on gdf_nodes is discarded since x and y provide the necessary
+    node geometry information instead
 
         :param edges:
         :param vertices:

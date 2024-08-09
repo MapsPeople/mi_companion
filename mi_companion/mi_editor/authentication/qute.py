@@ -14,7 +14,6 @@ from mi_companion.mi_editor.authentication import oauth
 # https://github.com/googleapis/google-api-python-client/issues/299
 logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 
-
 logger = logging.getLogger(__name__)
 
 SCOPES = [
@@ -22,7 +21,6 @@ SCOPES = [
     "https://www.googleapis.com/auth/devstorage.full_control",
     "https://www.googleapis.com/auth/accounts.reauth",
 ]
-
 
 AUTH_HOSTNAME = "localhost"
 AUTH_SERVER_PORT = 8085
@@ -45,7 +43,8 @@ class MyAuthenticationHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(
             bytes(
-                f"Authentication for the QGIS {Path(__file__).parent.stem} plugin has been successfully completed. "
+                f"Authentication for the QGIS {Path(__file__).parent.stem} plugin has been successfully "
+                f"completed. "
                 "You may now close this page.",
                 "utf-8",
             )

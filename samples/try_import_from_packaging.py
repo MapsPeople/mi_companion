@@ -3,10 +3,8 @@ from pathlib import Path
 
 SHIPPED_PACKAGES_DIR = "packages"
 
-
 import site  # https://docs.python.org/3/library/site.html#module-site
 import platform
-
 
 platform_postfix = "windows"
 if platform.system() == "Darwin":
@@ -25,7 +23,6 @@ logger = logging.getLogger(__name__)
 if p.exists():
     logger.info(f"Loading {p}")
     site.addsitedir(str(p))
-
 
 if __name__ == "__main__":
     import zmq

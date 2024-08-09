@@ -107,7 +107,7 @@ def add_location_layer(
         name=name,
         group=floor_group,
         categorise_by_attribute="location_type.name",
-        crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
+        crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
     )
 
     layer = None

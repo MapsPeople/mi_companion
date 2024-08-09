@@ -57,10 +57,10 @@ def run(
     from qgis.PyQt.QtGui import QColor, QFont
 
     """
-  alternative
-  by importing the DXF/DWG through the library libdxfrw into a geopackage (the method when you do Project >
-  Import/Export > Import Layers from DXF/DWG)
-  """
+alternative
+by importing the DXF/DWG through the library libdxfrw into a geopackage (the method when you do Project >
+Import/Export > Import Layers from DXF/DWG)
+"""
 
     auto_add_layers: bool = True
     oda_converter_path: str = (

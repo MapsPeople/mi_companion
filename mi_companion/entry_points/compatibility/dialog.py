@@ -12,13 +12,13 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.u
 
 __all__ = ["Dialog"]
 
-
 try:  # Python >= 3.8
     from typing import Literal, get_args, get_origin
 
 except ImportError:  # Compatibility
     get_args = lambda t: getattr(t, "__args__", ()) if t is not Generic else Generic
     get_origin = lambda t: getattr(t, "__origin__", None)
+
 # assert get_origin(Union[int, str]) is Union
 # assert get_args(Union[int, str]) == (int, str)
 
@@ -32,6 +32,7 @@ def is_optional(field) -> bool:
 
 
 class Dialog(QDialog, FORM_CLASS):
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)

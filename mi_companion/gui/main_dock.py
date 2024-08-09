@@ -175,9 +175,10 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         }
 
         if False:
-            assert len(self.entry_point_definitions) == len(
-                entry_point_modules
-            ), f"{len(self.entry_point_definitions)=} {len(entry_point_modules)=} are not the same length, probably there are duplicate ENTRY_POINT_DIALOG"
+            assert len(self.entry_point_definitions) == len(entry_point_modules), (
+                f"{len(self.entry_point_definitions)=} {len(entry_point_modules)=} are not the same length, "
+                f"probably there are duplicate ENTRY_POINT_DIALOG"
+            )
 
         self.repopulate_grid_layout()
 
@@ -446,7 +447,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                     elements,
                     name="exceptions",
                     columns=[{"contexts": c} for c in contexts],
-                    crs=f"EPSG:{ MI_EPSG_NUMBER }",
+                    crs=f"EPSG:{MI_EPSG_NUMBER}",
                 )
         except Exception:
             ...

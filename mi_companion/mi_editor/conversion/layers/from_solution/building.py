@@ -88,7 +88,7 @@ def add_building_layers(
                 ],
                 group=building_group,
                 visible=False,
-                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
+                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
             )
 
             make_field_unique(building_layer)

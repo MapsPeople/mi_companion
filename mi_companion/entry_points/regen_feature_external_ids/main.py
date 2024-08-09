@@ -9,11 +9,14 @@ logger = logging.getLogger(__name__)
 def randomize_fields_selected_features(feature, field_name: str) -> Any:  # QgsFeature
     """https://qgis.org/pyqgis/3.2/core/Feature/QgsFeature.html#qgis.core.QgsFeature.setAttribute
         Regarding layer.updateFeature()
-    Always try to avoid the QgsVectorLayer.updateFeature() method. It's less efficient than changeAttributeValue().
+    Always try to avoid the QgsVectorLayer.updateFeature() method. It's less efficient than
+    changeAttributeValue().
 
     From the docs:
 
-    This method needs to query the underlying data provider to fetch the feature with matching QgsFeature::id() on every call. Depending on the underlying data source this can be slow to execute. Consider using the more efficient changeAttributeValue() or changeGeometry() methods instead.
+    This method needs to query the underlying data provider to fetch the feature with matching QgsFeature::id(
+    ) on every call. Depending on the underlying data source this can be slow to execute. Consider using the
+    more efficient changeAttributeValue() or changeGeometry() methods instead.
     """
     if feature is None:
         logger.error(f"feature was None")

@@ -146,7 +146,7 @@ def add_solution_layers(
                     }
                 ],
                 visible=False,
-                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
+                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
             )
 
             if False:  # CLEAR GEOMETRY AS IT IS NOT NEEDED, TODO: DOES NOT WORK

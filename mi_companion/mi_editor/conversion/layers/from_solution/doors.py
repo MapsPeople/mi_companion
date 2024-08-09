@@ -84,7 +84,9 @@ def add_route_element_layers(
         qgis_instance_handle=qgis_instance_handle,
         doors=solution.doors,
     )
-    # add_connection_layers(        dropdown_widget=dropdown_widget,        graph=graph,        graph_group=graph_group,        qgis_instance_handle=qgis_instance_handle,        connections=solution.connections,    )
+    # add_connection_layers(        dropdown_widget=dropdown_widget,        graph=graph,
+    # graph_group=graph_group,        qgis_instance_handle=qgis_instance_handle,
+    # connections=solution.connections,    )
 
 
 def add_door_layers(

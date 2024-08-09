@@ -64,7 +64,6 @@ AUTH_URL_TEMPLATE = (
     + "?scopes={scopes}&request_id={request_id}&tc={token_challenge}&cc={client_challenge}"
 )
 
-
 DEFAULT_LOCAL_PORT = 8085
 WAITING_CODA = "Waiting for successful authorization from web browser ..."
 PASTE_CODA = (
@@ -297,10 +296,10 @@ def _display_auth_instructions_with_html(
         IPython.display.display(
             IPython.display.HTML(
                 """<p>To authorize access needed by Earth Engine, open the following
-        URL in a web browser and follow the instructions:</p>
-        <p><a href={0}>{0}</a></p>
-        <p>{1}</p>
-        """.format(
+    URL in a web browser and follow the instructions:</p>
+    <p><a href={0}>{0}</a></p>
+    <p>{1}</p>
+    """.format(
                     auth_url, coda or PASTE_CODA
                 )
             )

@@ -6,7 +6,6 @@ import shapely.wkt
 
 __all__ = ["extract_wkt_elements"]
 
-
 logger = logging.getLogger(__name__)
 
 

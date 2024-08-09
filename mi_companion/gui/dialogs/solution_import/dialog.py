@@ -16,9 +16,7 @@ FORM_CLASS, _ = uic.loadUiType(str(Path(__file__).parent / "dialog.ui"))
 
 __all__ = ["Dialog"]
 
-
 SERIALISED_SOLUTION_EXTENSION = ".json"
-
 
 try:  # Python >= 3.8
     from typing import Literal, get_args, get_origin
@@ -41,6 +39,7 @@ def is_optional(field) -> bool:
 
 
 class Dialog(QDialog, FORM_CLASS):
+
     def __init__(self, parent=None):  #: QWidget
         from jord.qgis_utilities.helpers import signals
 

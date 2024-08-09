@@ -15,7 +15,8 @@ def run(
 ) -> None:
     """
 
-    E.g. If duplicating a floor group to be picked as a Floor solution component make to include the describing tag (Floor)
+    E.g. If duplicating a floor group to be picked as a Floor solution component make to include the
+    describing tag (Floor)
 
 
     :param path:
@@ -44,9 +45,10 @@ def run(
     )
 
     """
-    alternative
-    by importing the DXF/DWG through the library libdxfrw into a geopackage (the method when you do Project > Import/Export > Import Layers from DXF/DWG)
-    """
+  alternative
+  by importing the DXF/DWG through the library libdxfrw into a geopackage (the method when you do Project >
+  Import/Export > Import Layers from DXF/DWG)
+  """
 
     svg_file_path = Path(path)
     oda_converter_path_ = Path(oda_converter_path)

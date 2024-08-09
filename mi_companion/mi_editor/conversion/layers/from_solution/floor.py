@@ -79,7 +79,7 @@ def add_floor_layers(
                     ],
                     group=floor_group,
                     visible=False,
-                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
+                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
                 )
 
             add_floor_content_layers(
@@ -113,7 +113,7 @@ def add_floor_layers(
                     ],
                     group=floor_group,
                     visible=False,
-                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
+                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
                 )
 
             assert floor_layer is not None
