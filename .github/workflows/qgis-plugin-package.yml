@@ -23,7 +23,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip qgis-plugin-ci
+          python -m pip install --upgrade pip qgis-plugin-ci jord
 
       - name: Package QGIS Plugin
         run: |
