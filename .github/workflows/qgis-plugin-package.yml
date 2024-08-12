@@ -28,7 +28,7 @@ jobs:
       - name: Package QGIS Plugin
         run: |
           python packaging.py
-          qgis-plugin-ci package 0.0.1
+          qgis-plugin-ci package 0.0.1 -a mi_companion_bundle
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3

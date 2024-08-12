@@ -53,6 +53,7 @@ jobs:
         run: >-
           qgis-plugin-ci
           release ${{ env.RELEASE_VERSION }}
+          -a mi_companion_bundle
           --github-token ${{ secrets.GITHUB_TOKEN }}
           --create-plugin-repo
         #          --osgeo-username ${{ secrets.OSGEO_USER }}
@@ -73,6 +74,6 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.CI_BOT_PAT }}
-          repository: automaps/quiver
+          repository: MapsPeople/quiver
           event-type: merge-plugins
-          client-payload: '{"name": "MI Companion", "version": "${{ env.RELEASE_VERSION }}", "url": "https://github.com/automaps/mi_companion/releases/latest/download/plugins.xml"}'
+          client-payload: '{"name": "MI Companion", "version": "${{ env.RELEASE_VERSION }}", "url": "https://github.com/MapsPeople/mi_companion/releases/latest/download/plugins.xml"}'
