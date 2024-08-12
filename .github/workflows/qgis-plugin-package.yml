@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: mi_companion-${{ matrix.os }}.zip
-          path: mi_companion-0.0.1.zip
+          path: mi_companion.0.0.1.zip
   package:
     needs: build
     runs-on: ubuntu-latest
