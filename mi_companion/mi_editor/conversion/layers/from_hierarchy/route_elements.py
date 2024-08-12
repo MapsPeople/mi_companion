@@ -2,12 +2,20 @@ import logging
 from typing import Any
 
 import shapely
+from integration_system.model import DoorType, Solution
+
+# noinspection PyUnresolvedReferences
+from qgis.PyQt import QtWidgets
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
 
-from integration_system.model import DoorType, Solution
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
 from mi_companion.configuration.constants import VERBOSE
+from mi_companion.configuration.options import read_bool_setting
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.graph import logger
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
@@ -49,3 +57,20 @@ def add_doors(
         )
         if VERBOSE:
             logger.info("added door", door_key)
+
+
+def add_route_elements(floor_index, graph_key, location_group_items, solution):
+    if (
+        isinstance(location_group_items, QgsLayerTreeLayer)
+        and "doors" in location_group_items.name()
+        and graph_key is not None
+        and read_bool_setting("ADD_ROUTE_ELEMENTS")
+    ):
+        add_doors(
+            floor_index=floor_index,
+            graph_key=graph_key,
+            location_group_items=location_group_items,
+            solution=solution,
+        )
+    else:
+        logger.debug(f"Skipped adding doors")

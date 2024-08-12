@@ -2,16 +2,15 @@ import logging
 from typing import Any, Iterable, List, Optional
 
 import geopandas
-from jord.qlive_utilities import add_dataframe_layer
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsEditorWidgetSetup
-
 from integration_system.model import (
     CollectionMixin,
     Floor,
     Solution,
 )
+from jord.qlive_utilities import add_dataframe_layer
+
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsEditorWidgetSetup
 
 __all__ = ["add_floor_content_layers"]
 
@@ -180,13 +179,3 @@ def add_floor_content_layers(
         floor=floor,
         dropdown_widget=available_location_type_map_widget,
     )
-
-    # TODO: Maybe one day.
-    # if read_bool_setting("ADD_DOORS"):
-    #    add_door_layers(
-    #        graph=graph,
-    #        qgis_instance_handle=qgis_instance_handle,
-    #        graph_group=graph_group,
-    #        dropdown_widget=door_type_dropdown_widget,
-    #        solution=solution,
-    #    )

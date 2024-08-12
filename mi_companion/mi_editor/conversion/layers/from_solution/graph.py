@@ -96,7 +96,7 @@ def add_graph_layers(
                     crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
                 )
 
-            if read_bool_setting("ADD_DOORS"):
+            if read_bool_setting("ADD_ROUTE_ELEMENTS"):
                 add_route_element_layers(
                     graph=graph,
                     qgis_instance_handle=qgis_instance_handle,

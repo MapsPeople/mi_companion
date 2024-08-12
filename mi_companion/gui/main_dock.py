@@ -4,6 +4,8 @@ import os
 from collections import defaultdict
 from typing import Any, Optional
 
+from integration_system.config import MapsIndoors, Settings, set_settings
+from integration_system.mi import SolutionDepth, get_venue_key_mi_venue_map
 from jord.qgis_utilities import read_plugin_setting
 from jord.qgis_utilities.helpers import InjectedProgressBar, signals
 from jord.qlive_utilities import add_shapely_layer
@@ -31,8 +33,6 @@ from qgis.core import (
 from qgis.gui import QgsDockWidget
 from warg import get_submodules_by_path, reload_module
 
-from integration_system.config import MapsIndoors, Settings, set_settings
-from integration_system.mi import SolutionDepth, get_venue_key_mi_venue_map
 from mi_companion.mi_editor import (
     layer_hierarchy_to_solution,
     revert_venues,
@@ -334,12 +334,12 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())
 
-        include_route_elements = (
-            False  # TODO: Enable  this  again   read_bool_setting("ADD_DOORS")
-        )
+        include_route_elements = read_bool_setting("ADD_ROUTE_ELEMENTS")
+        include_graph = read_bool_setting("ADD_GRAPH")
+
         include_occupants = False
         include_media = False
-        include_graph = read_bool_setting("ADD_GRAPH")
+
         with InjectedProgressBar(parent=self.iface_.mainWindow().statusBar()) as bar:
             if venue_name.strip() == "":  # TODO: Not supported ATM
                 venues = list(self.venue_name_id_map.values())
