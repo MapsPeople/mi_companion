@@ -48,9 +48,11 @@ def package_dependencies(
 
     target_site_packages_dir.mkdir(parents=True, exist_ok=True)
 
-    submodule_directory = str(REQUIREMENTS_FILE.parent.parent.absolute().as_posix())
+    submodule_directory = Path(__file__).parent.absolute()
 
-    os.environ["SUBMODULE_DIRECTORY"] = submodule_directory
+    assert submodule_directory.exists()
+
+    os.environ["SUBMODULE_DIRECTORY"] = submodule_directory.as_posix()
 
     os.environ["ZMQ_PREFIX"] = "bundled"
     os.environ["ZMQ_BUILD_DRAFT"] = "1"
