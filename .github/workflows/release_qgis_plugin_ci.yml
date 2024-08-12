@@ -1,3 +1,5 @@
+name: release-package-plugin
+
 on:
   push:
     tags:
