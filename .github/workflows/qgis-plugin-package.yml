@@ -4,10 +4,7 @@
 name: package-plugin
 
 on:
-  push:
-    branches: [master]
   pull_request:
-    branches: [master]
 
 jobs:
   build:
@@ -15,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9"]
+        python-version: ["3.12"]
         os: [macos-latest, windows-latest, ubuntu-latest]
 
     steps:
@@ -26,7 +23,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip qgis-ci-plugin
+          python -m pip install --upgrade pip qgis-plugin-ci
+
       - name: Package QGIS Plugin
         run: |
           python packaging.py

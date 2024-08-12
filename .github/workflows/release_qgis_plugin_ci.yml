@@ -36,6 +36,10 @@ jobs:
       - name: Install qgis-plugin-ci
         run: pip3 install qgis-plugin-ci
 
+      - name: Package QGIS Plugin
+        run: |
+          python packaging.py
+
       - name: Fetch current changelog
         run: qgis-plugin-ci changelog ${{ env.RELEASE_VERSION }} >> release.md
 

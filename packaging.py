@@ -40,6 +40,7 @@ def catching_callable(*args, **kwargs) -> None:
 def package_dependencies(
     target_site_packages_dir: Path,
     clean: bool = True,
+    python_version: str = "3.12",
 ) -> None:
     if target_site_packages_dir.exists():
         if clean:
@@ -74,7 +75,7 @@ def package_dependencies(
             "--implementation",
             "cp",
             "--python-version",
-            "3.12",
+            python_version,
         ]
     )
 
