@@ -2,9 +2,9 @@ import logging
 from typing import Any, Iterable
 from xml.etree.ElementTree import ParseError
 
+from integration_system.model import Graph, Solution
 from jord.qlive_utilities import add_shapely_layer
 
-from integration_system.model import Graph, Solution
 from mi_companion.configuration.constants import (
     GRAPH_DESCRIPTOR,
     NAVIGATION_LINES_DESCRIPTOR,
@@ -12,7 +12,7 @@ from mi_companion.configuration.constants import (
 )
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.graph.to_lines import osm_xml_to_lines
-from mi_companion.mi_editor.conversion.layers.from_solution.doors import (
+from mi_companion.mi_editor.conversion.layers.from_solution.route_elements import (
     add_route_element_layers,
 )
 from mi_companion.mi_editor.conversion.projection import (

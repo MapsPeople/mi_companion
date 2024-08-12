@@ -1,14 +1,17 @@
 import logging
 
+from integration_system.model import Solution
+
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.model import Solution
 from mi_companion.configuration.options import read_bool_setting
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.doors import add_doors
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.route_elements import (
+    add_doors,
+)
 
 __all__ = ["add_venue_graph"]
 
