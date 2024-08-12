@@ -1,4 +1,6 @@
--r ../../requirements_submodules.txt
+file://${SUBMODULE_DIRECTORY}/mi_sync
+file://${SUBMODULE_DIRECTORY}/svaguely
+file://${SUBMODULE_DIRECTORY}/caddy
 
 apppath>=1.0.6
 authlib>=1.2.1

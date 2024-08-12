@@ -1,3 +1,0 @@
-file://${SUBMODULE_DIRECTORY}/mi_sync
-file://${SUBMODULE_DIRECTORY}/svaguely
-file://${SUBMODULE_DIRECTORY}/caddy
