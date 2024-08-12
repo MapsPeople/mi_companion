@@ -1,5 +1,5 @@
-[submodule "integration_system"]
-	path = integration_system
+[submodule "mi_sync"]
+	path = mi_sync
 	url = git@github.com:MapsPeople/mi_sync.git
 [submodule "svaguely"]
 	path = svaguely
