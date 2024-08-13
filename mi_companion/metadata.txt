@@ -26,7 +26,8 @@ server=False
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
 
-plugin_dependencies=Eqip,Memory Layer Saver,First Aid
+plugin_dependencies=Memory Layer Saver,First Aid
+#Eqip is not necessary for bundled installations
 
 # Tags are comma separated with spaces allowed
 tags=python, mapsindoors, shapely

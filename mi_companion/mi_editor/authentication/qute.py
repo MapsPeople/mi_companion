@@ -17,7 +17,6 @@ logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
 
 SCOPES = [
-    "https://www.googleapis.com/auth/earthengine",
     "https://www.googleapis.com/auth/devstorage.full_control",
     "https://www.googleapis.com/auth/accounts.reauth",
 ]
@@ -61,7 +60,7 @@ def authenticate():
         "or click Cancel to stop the authentication process."
     )
     reply = QMessageBox.question(
-        None, "Google Earth Engine plugin", msg, QMessageBox.Ok, QMessageBox.Cancel
+        None, "QGIS plugin", msg, QMessageBox.Ok, QMessageBox.Cancel
     )
 
     if reply == QMessageBox.Cancel:
@@ -80,14 +79,14 @@ def authenticate():
         + urllib.parse.urlencode(request_args)
     )
     webbrowser.open_new(auth_url)
-    logger.info("Starting Google Earth Engine Authorization ...")
+    logger.info("Starting Authorization ...")
 
     server = HTTPServer((AUTH_HOSTNAME, AUTH_SERVER_PORT), MyAuthenticationHandler)
     server.handle_request()
 
     if not MyAuthenticationHandler.auth_code:
         logger.error(
-            "QGIS EE Plugin authentication failed, can not get authentication code"
+            "QGIS Plugin authentication failed, can not get authentication code"
         )
         return False
 
@@ -109,37 +108,6 @@ def authenticate():
         oauth.get_credentials_path(),
         {"refresh_token": refresh_token, "scopes": SCOPES},
     )
-    logger.info("QGIS EE Plugin authenticated successfully")
+    logger.info("QGIS Plugin authenticated successfully")
 
     return True
-
-
-IGNORE_THIS = '''
-def import_ee():
-    """This is a wrapper of the Google Earth engine library for the
-    purpose of initializing or starting ee authentication when the
-    user or the plugin import ee library.
-    """
-
-    # we can now import the libraries
-    # Work around bug https://github.com/google/earthengine-api/issues/181
-    import httplib2
-
-    def __wrapping_ee_import__(name, *args, **kwargs):
-        _module_ = __builtin_import__(name, *args, **kwargs)
-        if name == "ee":
-            if not _module_.data._credentials:
-                try:
-                    _module_.Initialize(http_transport=httplib2.Http())
-                except _module_.ee_exception.EEException:
-                    if authenticate(ee=_module_):
-                        # retry initialization once the user logs in
-                        _module_.Initialize(http_transport=httplib2.Http())
-                    else:
-                        logger.error("\nGoogle Earth Engine authorization failed!\n")
-
-        return _module_
-
-    __builtin_import__ = builtins.__import__
-    builtins.__import__ = __wrapping_ee_import__
-'''

@@ -20,7 +20,7 @@ def is_json(my_json):
 def extract_wkt_elements(
     exception_str: str,
 ) -> List[Tuple[str, shapely.geometry.base.BaseGeometry]]:
-    from jord.geopandas_utilities.serialisation.well_known_text import WktTypeEnum
+    from jord.geopandas_utilities import WktTypeEnum
 
     wkt_elements = []
 

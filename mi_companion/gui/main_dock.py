@@ -435,22 +435,23 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         # string_exception = "\n".join(e.args)
 
         string_exception = str(e)
-        try:
-            wkt_elements = list(zip(*extract_wkt_elements(string_exception)))
-            if wkt_elements and len(wkt_elements) == 2:
-                contexts, elements = wkt_elements
+        if False:
+            try:
+                wkt_elements = list(zip(*extract_wkt_elements(string_exception)))
+                if wkt_elements and len(wkt_elements) == 2:
+                    contexts, elements = wkt_elements
 
-                contexts = [clean_str(c) for c in contexts]
+                    contexts = [clean_str(c) for c in contexts]
 
-                add_shapely_layer(
-                    self,
-                    elements,
-                    name="exceptions",
-                    columns=[{"contexts": c} for c in contexts],
-                    crs=f"EPSG:{MI_EPSG_NUMBER}",
-                )
-        except Exception:
-            ...
+                    add_shapely_layer(
+                        self,
+                        elements,
+                        name="exceptions",
+                        columns=[{"contexts": c} for c in contexts],
+                        crs=f"EPSG:{MI_EPSG_NUMBER}",
+                    )
+            except Exception:
+                ...
 
         logger.error(string_exception)
 
