@@ -4,7 +4,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def run(*, field_name: str = "external_id") -> None:
+def run(*, field_name: str = "admin_id") -> None:
+    """
+    Recompute field_name for all features in group
+
+    :param field_name:
+    """
     # noinspection PyUnresolvedReferences
     from qgis.utils import iface
     from jord.qgis_utilities.helpers import randomize_sub_tree_field

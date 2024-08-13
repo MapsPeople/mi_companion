@@ -34,7 +34,7 @@ def randomize_fields_selected_features(feature, field_name: str) -> Any:  # QgsF
         logger.error(f"Did not find {field_name} in {feature.fields()}")
 
 
-def run(*, field_name: str = "external_id", only_active_layer: bool = False) -> None:
+def run(*, field_name: str = "admin_id", only_active_layer: bool = False) -> None:
     # noinspection PyUnresolvedReferences
     from qgis.utils import iface
 

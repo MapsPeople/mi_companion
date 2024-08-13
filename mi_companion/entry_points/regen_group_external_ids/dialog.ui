@@ -11,7 +11,7 @@
             </rect>
         </property>
         <property name="windowTitle">
-            <string>Regen External Ids (Group)</string>
+            <string>Regen Admin Ids (Group)</string>
         </property>
         <layout class="QVBoxLayout" name="parameter_layout">
             <item>
