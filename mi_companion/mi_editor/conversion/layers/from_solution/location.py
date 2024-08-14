@@ -2,22 +2,23 @@ import logging
 from typing import Any, Iterable, List, Optional
 
 import geopandas
+from jord.qlive_utilities import add_dataframe_layer
+
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsEditorWidgetSetup
+
 from integration_system.model import (
     CollectionMixin,
     Floor,
     Solution,
 )
-from jord.qlive_utilities import add_dataframe_layer
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsEditorWidgetSetup
 
 __all__ = ["add_floor_content_layers"]
 
 from .custom_props import process_custom_props_df, to_df
 
 from ..type_enums import LocationTypeEnum
-from .fields import add_dropdown_widget, make_field_unique
+from .fields import add_dropdown_widget, make_field_not_null, make_field_unique
 from ...projection import (
     reproject_geometry_df,
     MI_EPSG_NUMBER,
@@ -137,7 +138,10 @@ def add_location_layer(
             dropdown_widget,
         )
 
-    make_field_unique(added_layers)
+    make_field_unique(added_layers, field_name="admin_id")
+
+    for field_name in ("name", "location_type.name", "is_searchable", "is_active"):
+        make_field_not_null(added_layers, field_name=field_name)
 
     return added_layers
 
@@ -150,7 +154,7 @@ def add_floor_content_layers(
     floor_group: Any,
     available_location_type_map_widget: Optional[Any] = None,
 ) -> None:
-    add_location_layer(
+    poi_layer = add_location_layer(
         solution.points_of_interest,
         LocationTypeEnum.POI.value,
         "point",
@@ -160,9 +164,9 @@ def add_floor_content_layers(
         dropdown_widget=available_location_type_map_widget,
     )
 
-    add_location_layer(
-        solution.rooms,
-        LocationTypeEnum.ROOM.value,
+    area_layer = add_location_layer(
+        solution.areas,
+        LocationTypeEnum.AREA.value,
         "polygon",
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
@@ -170,9 +174,9 @@ def add_floor_content_layers(
         dropdown_widget=available_location_type_map_widget,
     )
 
-    add_location_layer(
-        solution.areas,
-        LocationTypeEnum.AREA.value,
+    room_layer = add_location_layer(
+        solution.rooms,
+        LocationTypeEnum.ROOM.value,
         "polygon",
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,

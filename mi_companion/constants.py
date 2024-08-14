@@ -60,8 +60,11 @@ MANUAL_REQUIREMENTS = [
     "osgeo",
     # 'qgis' # not visible to pip?
 ]
+
+RESOURCE_BASE_PATH = "mi_companion"  # PROJECT_NAME.lower().replace(' ', '_')
+
 DEFAULT_PLUGIN_SETTINGS = {
-    "RESOURCES_BASE_PATH": f":/{PROJECT_NAME.lower().replace(' ', '_')}",
+    "RESOURCES_BASE_PATH": f":/{RESOURCE_BASE_PATH}",
     "DEFAULT_WIDGET_AREA": DockWidgetAreaFlag.right,
     "NUM_COLUMNS": 3,
     "MAPS_INDOORS_PASSWORD": "REPLACE_ME",  # TODO: LOOK INTO GOOGLE AUTHENTICATION

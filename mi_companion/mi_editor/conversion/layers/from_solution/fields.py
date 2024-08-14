@@ -1,9 +1,14 @@
-from typing import Any, Iterable
+from typing import Any, Iterable, Sequence
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup, QgsFieldConstraints
 
-__all__ = ["add_dropdown_widget", "make_field_unique", "HIDDEN_WIDGET"]
+__all__ = [
+    "add_dropdown_widget",
+    "make_field_unique",
+    "HIDDEN_WIDGET",
+    "make_field_not_null",
+]
 
 IGNORE_THIS_STRING = """
 
@@ -46,26 +51,26 @@ def add_dropdown_widget(layer: Any, field_name: str, widget) -> None:
 HIDDEN_WIDGET = QgsEditorWidgetSetup("Hidden", {})
 
 
-def make_field_unique(layer: Any, field_name: str = "admin_id") -> None:
+def make_field_unique(layers: Sequence[Any], field_name: str = "admin_id") -> None:
     unique_widget = QgsEditorWidgetSetup(
         "UuidGenerator",
         {},
     )
 
-    for layers_inner in layer:
+    for layers_inner in layers:
         if layers_inner:
             if isinstance(layers_inner, Iterable):
-                for layer in layers_inner:
-                    if layer:
-                        idx = layer.fields().indexFromName(field_name)
-                        layer.setEditorWidgetSetup(
+                for layers in layers_inner:
+                    if layers:
+                        idx = layers.fields().indexFromName(field_name)
+                        layers.setEditorWidgetSetup(
                             idx,
                             unique_widget,
                         )
-                        layer.setFieldConstraint(
+                        layers.setFieldConstraint(
                             idx, QgsFieldConstraints.ConstraintNotNull
                         )
-                        layer.setFieldConstraint(
+                        layers.setFieldConstraint(
                             idx, QgsFieldConstraints.ConstraintUnique
                         )
             else:
@@ -79,4 +84,23 @@ def make_field_unique(layer: Any, field_name: str = "admin_id") -> None:
                 )
                 layers_inner.setFieldConstraint(
                     idx, QgsFieldConstraints.ConstraintUnique
+                )
+
+
+def make_field_not_null(layers: Sequence[Any], field_name: str = "name") -> None:
+    for layers_inner in layers:
+        if layers_inner:
+            if isinstance(layers_inner, Iterable):
+                for layers in layers_inner:
+                    if layers:
+                        idx = layers.fields().indexFromName(field_name)
+
+                        layers.setFieldConstraint(
+                            idx, QgsFieldConstraints.ConstraintNotNull
+                        )
+            else:
+                idx = layers_inner.fields().indexFromName(field_name)
+
+                layers_inner.setFieldConstraint(
+                    idx, QgsFieldConstraints.ConstraintNotNull
                 )

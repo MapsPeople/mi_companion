@@ -282,3 +282,5 @@ repos:
   #      language: system
   #      pass_filenames: false
   #      always_run: true
+  # POST replace in the compiled resources.py
+  # from PySide2 import QtCore -> from qgis.PyQt import QtCore
