@@ -1,33 +1,32 @@
 [general]
-name=MI Companion
-qgisMinimumVersion=3.26
+name=MapsIndoors Beta
 description=GDS tooling
+
+qgisMinimumVersion=3.38
+#qgisMaximumVersion=3.38
 version=0.5.0
+
 author=heider
 email=chen@mapspeople.com
 
-about=The MapsIndoors Companion plugin comprises various tools for the GDS workflows as well as the MapsIndoors Editor
-
-tracker=https://git.rtx.mapspeople.com/MapsIndoors/
-repository=https://git.rtx.mapspeople.com/MapsIndoors/
-
-hasProcessingProvider=no
-
-homepage=https://git.rtx.mapspeople.com/MapsIndoors/
-category=Plugins
-#icon=icon.png
+category=Web
+about=The MapsIndoors plugin comprises various tools for the GIS workflows as well as the MapsIndoors Editor
 icon=icon.png
 
-experimental=False
+tracker=https://github.com/MapsPeople
+repository=https://github.com/MapsPeople
+homepage=https://github.com/MapsPeople
 
 # If the plugin can run on QGIS Server.
 server=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
+experimental=False
+hasProcessingProvider=no
 
 plugin_dependencies=Memory Layer Saver,First Aid
 #Eqip is not necessary for bundled installations
 
 # Tags are comma separated with spaces allowed
-tags=python, mapsindoors, shapely
+tags=python, mapsindoors, companion, shapely
