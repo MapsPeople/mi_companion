@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12"]
+        python-version: ["3.9", "3.12"]
         os: [macos-latest, windows-latest, ubuntu-latest]
 
     steps:
@@ -18,23 +18,25 @@ jobs:
           submodules: recursive
           ssh-key: ${{ secrets.CI_BOT_SSH_KEY }}
           #token: ${{ secrets.PAT_TOKEN }}
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip qgis-plugin-ci jord
 
       - name: Package QGIS Plugin
         run: |
-          python packaging.py
+          python packaging.py --python_version ${{ matrix.python-version }} --plugin_version 0.0.1
           qgis-plugin-ci package 0.0.1 -a mi_companion_bundle
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: mi_companion-${{ matrix.os }}.zip
+          name: mi_companion-${{ matrix.python-version }}-${{ matrix.os }}.zip
           path: mi_companion.0.0.1.zip
   package:
     needs: build

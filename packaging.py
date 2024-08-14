@@ -13,9 +13,7 @@ TARGET_DIR = THIS_DIR / BUNDLED_PACKAGES_DIR
 PLUGIN_DIR = THIS_DIR / "mi_companion"
 REQUIREMENTS_FILE = PLUGIN_DIR / "requirements.txt"
 
-BUNDLE_VERSION = "0.0.1"
 MIN_QGIS_VERSION = "3.38"
-BUNDLE_PROJECT_NAME = "MapsIndoors"
 
 logger = logging.getLogger(__name__)
 
@@ -42,9 +40,12 @@ def catching_callable(*args, **kwargs) -> None:
 
 
 def package_dependencies(
+    *,
     target_site_packages_dir: Path,
     clean: bool = True,
-    python_version: str = "3.12",
+    python_version: str = "3.9",
+    BUNDLE_VERSION="0.0.1",
+    BUNDLE_PROJECT_NAME="MapsIndoors",
 ) -> None:
     if True:
         if target_site_packages_dir.exists():
@@ -87,10 +88,21 @@ def package_dependencies(
             ]
         )
 
-    emit_additional_bundle_files(python_version, target_site_packages_dir)
+    emit_additional_bundle_files(
+        python_version=python_version,
+        target_site_packages_dir=target_site_packages_dir,
+        BUNDLE_VERSION=BUNDLE_VERSION,
+        BUNDLE_PROJECT_NAME=BUNDLE_PROJECT_NAME,
+    )
 
 
-def emit_additional_bundle_files(python_version, target_site_packages_dir):
+def emit_additional_bundle_files(
+    *,
+    python_version: str,
+    target_site_packages_dir: Path,
+    BUNDLE_VERSION: str = "0.0.1",
+    BUNDLE_PROJECT_NAME: str = "MapsIndoors",
+) -> None:
     with open(target_site_packages_dir / "metadata.txt", "w") as f:
         f.write(
             f"""[general]
@@ -144,4 +156,28 @@ tags=python, mapsindoors, companion
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     logger.setLevel(logging.INFO)
-    package_dependencies(TARGET_DIR)
+    import argparse
+
+    parser = argparse.ArgumentParser("simple_example")
+    parser.add_argument(
+        "--python_version",
+        help="Which python version",
+        type=str,
+        default="3.9",
+        required=False,
+    )
+    # parser.add_argument("plugin_name", help="Which plugin to bundle dependencies", type=str)
+    parser.add_argument(
+        "--plugin_version",
+        help="Which plugin version",
+        type=str,
+        default="0.0.1",
+        required=False,
+    )
+
+    args = parser.parse_args()
+    package_dependencies(
+        target_site_packages_dir=TARGET_DIR,
+        python_version=args.python_version,
+        BUNDLE_VERSION=args.plugin_version,  # BUNDLE_PROJECT_NAME=args.plugin_name
+    )
