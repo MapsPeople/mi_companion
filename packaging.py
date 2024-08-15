@@ -2,6 +2,7 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 from multiprocessing import Pipe
 from pathlib import Path
 from subprocess import PIPE, Popen, STDOUT
@@ -163,7 +164,7 @@ if __name__ == "__main__":
         "--python_version",
         help="Which python version",
         type=str,
-        default="3.9",
+        default=sys.winver,
         required=False,
     )
     # parser.add_argument("plugin_name", help="Which plugin to bundle dependencies", type=str)
