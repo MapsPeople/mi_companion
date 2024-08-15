@@ -2,6 +2,7 @@ import json
 import logging
 from typing import List, Tuple
 
+import shapely
 import shapely.wkt
 
 __all__ = ["extract_wkt_elements"]
@@ -70,3 +71,7 @@ def extract_wkt_elements(
             logger.error("Error parsing")
 
     return wkt_elements
+
+
+if __name__ == "__main__":
+    extract_wkt_elements()

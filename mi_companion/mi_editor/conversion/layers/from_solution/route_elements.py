@@ -3,6 +3,8 @@ from typing import Any, Optional
 
 import geopandas
 from geopandas import GeoDataFrame
+from jord.qlive_utilities import add_dataframe_layer
+
 from integration_system.model import (
     CollectionMixin,
     ConnectionCollection,
@@ -10,8 +12,6 @@ from integration_system.model import (
     Graph,
     Solution,
 )
-from jord.qlive_utilities import add_dataframe_layer
-
 from mi_companion.configuration.constants import (
     AVOIDS_DESCRIPTOR,
     BARRIERS_DESCRIPTOR,
@@ -56,6 +56,9 @@ def add_connection_layers(
                 "connection_id": c.connection_id,
                 "connection_type": c.connection_type.value,
             }
+
+    if len(connectors) == 0:
+        return
 
     df = (
         GeoDataFrame.from_dict(connectors, orient="index")

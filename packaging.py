@@ -164,7 +164,7 @@ if __name__ == "__main__":
         "--python_version",
         help="Which python version",
         type=str,
-        default=sys.winver,
+        default=f"{sys.version_info.major}.{sys.version_info.minor}",
         required=False,
     )
     # parser.add_argument("plugin_name", help="Which plugin to bundle dependencies", type=str)
