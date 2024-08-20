@@ -10,7 +10,11 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'automaps' && contains(github.ref, 'refs/tags/')
+    if: github.repository_owner == 'MapsPeople' && contains(github.ref, 'refs/tags/')
+
+    permissions:
+      contents: "read"
+      id-token: "write"
 
     steps:
       - name: Set env
@@ -42,7 +46,7 @@ jobs:
 
       - name: Package QGIS Plugin
         run: |
-          python packaging.py
+          python bundle_packaging.py
 
       - name: Fetch current changelog
         run: qgis-plugin-ci changelog ${{ env.RELEASE_VERSION }} >> release.md
@@ -56,10 +60,26 @@ jobs:
       - name: Deploy plugin
         run: >-
           qgis-plugin-ci
-          release ${{ env.RELEASE_VERSION }}
+          package ${{ env.RELEASE_VERSION }}
           -a mi_companion_bundle
           --github-token ${{ secrets.GITHUB_TOKEN }}
           --create-plugin-repo
+
+      - id: "auth"
+        name: auth
+
+        uses: "google-github-actions/auth@v2"
+        with:
+          project_id: "deployment-composer-test"
+          workload_identity_provider: "projects/476136238084/locations/global/workloadIdentityPools/github/providers/mi-companion"
+
+      - id: "upload-file-to-bucket"
+        name: upload-file-to-bucket
+        uses: "google-github-actions/upload-cloud-storage@v2"
+        with:
+          path: "/"
+          destination: "qgisplugins"
+
         #          --osgeo-username ${{ secrets.OSGEO_USER }}
         #          --osgeo-password ${{ secrets.OSGEO_PASSWORD }}
 
@@ -73,11 +93,10 @@ jobs:
       #          access_token_key: ${{ secrets.TWITTER_ACCESS_TOKEN_KEY }}
       #          access_token_secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
       #          tweet_body: "New version of plugin ${{ env.RELEASE_VERSION }}"
-
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.CI_BOT_PAT }}
-          repository: MapsPeople/quiver
-          event-type: merge-plugins
-          client-payload: '{"name": "MI Companion", "version": "${{ env.RELEASE_VERSION }}", "url": "https://github.com/MapsPeople/mi_companion/releases/latest/download/plugins.xml"}'
+#      - name: Repository Dispatch
+#        uses: peter-evans/repository-dispatch@v3
+#        with:
+#          token: ${{ secrets.CI_BOT_PAT }}
+#          repository: MapsPeople/quiver
+#          event-type: merge-plugins
+#          client-payload: '{"name": "MI Companion", "version": "${{ env.RELEASE_VERSION }}", "url": "https://github.com/MapsPeople/mi_companion/releases/latest/download/plugins.xml"}'

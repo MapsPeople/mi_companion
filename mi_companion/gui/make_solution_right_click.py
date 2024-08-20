@@ -3,6 +3,7 @@ from typing import Any
 
 import shapely
 from jord.qgis_utilities.helpers import reconnect_signal
+from jord.shapely_utilities import clean_shape
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtWidgets
@@ -65,7 +66,10 @@ def show_make_solution_dialog_action_callable(layer: Any, feature: Any) -> None:
 
     s = Solution(uuid.uuid4().hex.lower(), name, customer_id=customer_id)
 
-    venue_polygon = shapely.from_wkt(a)
+    venue_polygon = clean_shape(shapely.unary_union(shapely.from_wkt(a)))
+    assert isinstance(
+        venue_polygon, shapely.Polygon
+    ), f"{venue_polygon=} must be shapely.Polygon"
     venue_key = s.add_venue(venue_name, venue_name, polygon=venue_polygon)
     building_key = s.add_building(
         venue_name, venue_name, polygon=venue_polygon, venue_key=venue_key

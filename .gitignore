@@ -313,3 +313,5 @@ cython_debug/
 mi_companion_bundle
 oda_installers
 .DS_STORE
+app.yaml
+secure_files/

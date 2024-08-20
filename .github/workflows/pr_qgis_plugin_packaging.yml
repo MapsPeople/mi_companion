@@ -30,14 +30,30 @@ jobs:
 
       - name: Package QGIS Plugin
         run: |
-          python packaging.py --python_version ${{ matrix.python-version }} --plugin_version 0.0.1
+          python bundle_packaging.py --python_version ${{ matrix.python-version }} --plugin_version 0.0.1
           qgis-plugin-ci package 0.0.1 -a mi_companion_bundle
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mi_companion-${{ matrix.python-version }}-${{ matrix.os }}.zip
+          name: mi_companion-${{ matrix.os }}-${{ matrix.python-version }}.zip
           path: mi_companion.0.0.1.zip
+
+      - id: "auth"
+        name: auth
+
+        uses: "google-github-actions/auth@v2"
+        with:
+          project_id: "deployment-composer-test"
+          workload_identity_provider: "projects/476136238084/locations/global/workloadIdentityPools/github/providers/mi-companion"
+
+      - id: "upload-file-to-bucket"
+        name: upload-file-to-bucket
+        uses: "google-github-actions/upload-cloud-storage@v2"
+        with:
+          path: mi_companion.0.0.1.zip
+          destination: qgisplugins/dev/${{ matrix.os }}/${{ matrix.python-version }}
+
   package:
     needs: build
     runs-on: ubuntu-latest
