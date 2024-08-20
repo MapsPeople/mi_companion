@@ -12,6 +12,12 @@ jobs:
         python-version: ["3.9", "3.12"]
         os: [macos-latest, windows-latest, ubuntu-latest]
 
+    if: github.repository_owner == 'MapsPeople'
+
+    permissions:
+      contents: "read"
+      id-token: "write"
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,12 +39,6 @@ jobs:
           python bundle_packaging.py --python_version ${{ matrix.python-version }} --plugin_version 0.0.1
           qgis-plugin-ci package 0.0.1 -a mi_companion_bundle
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: mi_companion-${{ matrix.os }}-${{ matrix.python-version }}.zip
-          path: mi_companion.0.0.1.zip
-
       - id: "auth"
         name: auth
 
@@ -53,6 +53,12 @@ jobs:
         with:
           path: mi_companion.0.0.1.zip
           destination: qgisplugins/dev/${{ matrix.os }}/${{ matrix.python-version }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mi_companion-${{ matrix.os }}-${{ matrix.python-version }}.zip
+          path: mi_companion.0.0.1.zip
 
   package:
     needs: build
