@@ -10,9 +10,6 @@ google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repositor
 --attribute-condition="assertion.repository_owner == 'MapsPeople'"
 --issuer-uri="https://token.actions.githubusercontent.com"
 
-gcloud iam workload-identity-pools providers describe "mi-companion"   --project="deployment-composer-test"
---location="global"   --workload-identity-pool="github"   --format="value(name)"
+gcloud iam workload-identity-pools providers describe "mi-companion"   --project="deployment-composer-test" --location="global"   --workload-identity-pool="github"   --format="value(name)"
 
-gcloud secrets add-iam-policy-binding "my-secret" --project="deployment-composer-test" --role="
-roles/secretmanager.secretAccessor" --member="principalSet:
-//iam.googleapis.com/github/attribute.repository/mi_companion"
+gcloud secrets add-iam-policy-binding "my-secret" --project="deployment-composer-test" --role="roles/secretmanager.secretAccessor" --member="principalSet://iam.googleapis.com/projects/476136238084/locations/global/workloadIdentityPools/github/attribute.repository/MapsPeople/mi_companion"

@@ -52,7 +52,7 @@ jobs:
         with:
           project_id: "deployment-composer-test"
           workload_identity_provider: "projects/476136238084/locations/global/workloadIdentityPools/github/providers/mi-companion"
-          #service_account: point-inside-migration@deployment-composer-test.iam.gserviceaccount.com
+          service_account: point-inside-migration@deployment-composer-test.iam.gserviceaccount.com
 
       - id: "upload-file-to-bucket"
         name: upload-file-to-bucket
