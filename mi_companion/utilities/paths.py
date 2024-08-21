@@ -6,7 +6,7 @@ from typing import Mapping, Optional
 from qgis.PyQt.QtGui import QIcon
 from warg import passes_kws_to
 
-from .. import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
+from ..constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 
 __all__ = ["resolve_path", "load_icon", "get_icon_path"]
 

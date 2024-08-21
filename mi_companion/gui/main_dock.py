@@ -4,8 +4,6 @@ import os
 from collections import defaultdict
 from typing import Any, Optional
 
-from integration_system.config import MapsIndoors, Settings, set_settings
-from integration_system.mi import SolutionDepth, get_venue_key_mi_venue_map
 from jord.qgis_utilities import read_plugin_setting
 from jord.qgis_utilities.helpers import InjectedProgressBar, signals
 from jord.qlive_utilities import add_shapely_layer
@@ -33,6 +31,8 @@ from qgis.core import (
 from qgis.gui import QgsDockWidget
 from warg import get_submodules_by_path, reload_module
 
+from integration_system.config import MapsIndoors, Settings, set_settings
+from integration_system.mi import SolutionDepth, get_venue_key_mi_venue_map
 from mi_companion.mi_editor import (
     layer_hierarchy_to_solution,
     revert_venues,
@@ -40,9 +40,8 @@ from mi_companion.mi_editor import (
 )
 from .gui_utilities import clean_str
 from .make_solution_right_click import add_augmented_actions
-from .. import DEFAULT_PLUGIN_SETTINGS
 from ..configuration.options import read_bool_setting
-from ..constants import PROJECT_NAME, VERSION
+from ..constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, VERSION
 from ..mi_editor.conversion.projection import MI_EPSG_NUMBER
 from ..utilities.paths import get_icon_path, resolve_path
 from ..utilities.string_parsing import extract_wkt_elements

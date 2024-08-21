@@ -1,4 +1,5 @@
 import logging
+from enum import StrEnum
 from typing import Any, Iterable, List, Optional
 
 import geopandas
@@ -31,10 +32,16 @@ logger = logging.getLogger(__name__)
 USE_EXTERNAL_ID_FLOOR_SELECTION = False
 
 
+class LocationGeometryType(StrEnum):
+    point = "point"
+    # linestring = "linestring"
+    polygon = "polygon"
+
+
 def add_location_layer(
     collection_: CollectionMixin,
     name: str,
-    geom_type: str,
+    geometry_column_name: LocationGeometryType,
     *,
     qgis_instance_handle: Any,
     floor_group: Any,
@@ -81,7 +88,7 @@ def add_location_layer(
     else:
         selected = shape_df
 
-    locations_df = geopandas.GeoDataFrame(selected, geometry=geom_type)
+    locations_df = geopandas.GeoDataFrame(selected, geometry=geometry_column_name.value)
     assert len(shape_df) == len(
         locations_df
     ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
@@ -103,7 +110,7 @@ def add_location_layer(
     added_layers = add_dataframe_layer(
         qgis_instance_handle=qgis_instance_handle,
         dataframe=locations_df,
-        geometry_column=geom_type,
+        geometry_column=geometry_column_name.value,
         name=name,
         group=floor_group,
         categorise_by_attribute="location_type.name",
@@ -157,7 +164,7 @@ def add_floor_content_layers(
     poi_layer = add_location_layer(
         solution.points_of_interest,
         LocationTypeEnum.POI.value,
-        "point",
+        LocationGeometryType.point,
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
         floor=floor,
@@ -167,7 +174,7 @@ def add_floor_content_layers(
     area_layer = add_location_layer(
         solution.areas,
         LocationTypeEnum.AREA.value,
-        "polygon",
+        LocationGeometryType.polygon,
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
         floor=floor,
@@ -177,9 +184,13 @@ def add_floor_content_layers(
     room_layer = add_location_layer(
         solution.rooms,
         LocationTypeEnum.ROOM.value,
-        "polygon",
+        LocationGeometryType.polygon,
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
         floor=floor,
         dropdown_widget=available_location_type_map_widget,
     )
+
+
+if __name__ == "__main__":
+    print(str(LocationGeometryType.polygon))

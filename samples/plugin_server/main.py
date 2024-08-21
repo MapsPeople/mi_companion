@@ -1,3 +1,4 @@
+import logging
 import os
 import tempfile
 from pathlib import Path
@@ -5,7 +6,9 @@ from typing import Callable
 
 from flask import Flask, send_from_directory
 from google.cloud import storage
+from warg import ensure_existence
 
+logger = logging.getLogger(__name__)
 app = Flask("MapsPeople QGIS Plugin Server")
 
 from functools import wraps
@@ -44,22 +47,30 @@ def requires_auth(f) -> Callable:
     return decorated
 
 
-@app.route("/<string:filename>")
+@app.route("/plugins/<path:path>")
 @requires_auth
-def get_file(filename: str) -> Response:
+def get_file(path: str) -> Response:
     qgis_version = request.args.get("qgis", default="", type=str)  # ?qgis=3.38
     if qgis_version == "3.38" or True:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            storage.Client.from_service_account_json(
-                os.environ.get("SERVICE_ACCOUNT_JSON")
-            ).get_bucket("qgisplugins").blob(filename).download_to_filename(
-                Path(tmp_dir) / filename
-            )
-            return send_from_directory(
-                directory=tmp_dir, path=filename, as_attachment=False
-            )
+        client = storage.Client.from_service_account_json(
+            os.environ.get("SERVICE_ACCOUNT_JSON")
+        )
+        blob_path = str(path)
+        blob = client.get_bucket("qgisplugins").blob(blob_path)
+        if blob.exists():
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                target_tmp_path = Path(tmp_dir) / path
+                ensure_existence(target_tmp_path.parent)
 
-    return Response("File not found", status=404)
+                blob.download_to_filename(target_tmp_path)
+                return send_from_directory(
+                    directory=tmp_dir, path=path, as_attachment=False
+                )
+        else:
+            logger.warning(f"Did not find {blob.path=}")
+            return Response(f"Blob {blob_path} not found", status=404)
+
+    return Response(f"File {path} not found", status=404)
 
 
 @app.route("/")
