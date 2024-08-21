@@ -1,12 +1,12 @@
 import logging
 import os
 import tempfile
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Callable
 
-from flask import Flask, send_from_directory
+from flask import Flask, redirect, send_from_directory
 from google.cloud import storage
-from warg import ensure_existence
 
 logger = logging.getLogger(__name__)
 app = Flask("MapsPeople QGIS Plugin Server")
@@ -55,20 +55,25 @@ def get_file(path: str) -> Response:
         client = storage.Client.from_service_account_json(
             os.environ.get("SERVICE_ACCOUNT_JSON")
         )
-        blob_path = str(path)
-        blob = client.get_bucket("qgisplugins").blob(blob_path)
+        blob = client.get_bucket("qgisplugins").blob(str(path).replace("%2F", "/"))
         if blob.exists():
-            with tempfile.TemporaryDirectory() as tmp_dir:
-                target_tmp_path = Path(tmp_dir) / path
-                ensure_existence(target_tmp_path.parent)
+            if False:
+                with tempfile.TemporaryDirectory() as tmp_dir:
+                    last_path_component = Path(blob.path).name
+                    target_tmp_path = Path(tmp_dir) / last_path_component
 
-                blob.download_to_filename(target_tmp_path)
-                return send_from_directory(
-                    directory=tmp_dir, path=path, as_attachment=False
+                    blob.download_to_filename(target_tmp_path, raw_download=True)
+
+                    return send_from_directory(
+                        directory=tmp_dir, path=last_path_component, as_attachment=False
+                    )
+            else:
+                return redirect(
+                    blob.generate_signed_url(datetime.now() + timedelta(hours=1))
                 )
         else:
             logger.warning(f"Did not find {blob.path=}")
-            return Response(f"Blob {blob_path} not found", status=404)
+            return Response(f"Blob {blob.path} not found", status=404)
 
     return Response(f"File {path} not found", status=404)
 
