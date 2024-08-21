@@ -33,3 +33,4 @@ warg>=1.4.0
 importlib-metadata
 importlib-resources
 pydantic-core>=2.20.1
+strenum>=0.4.5

@@ -1,5 +1,10 @@
 import logging
-from enum import StrEnum
+
+try:
+    from enum import StrEnum
+except ImportError:
+    from strenum import StrEnum
+
 from typing import Any, Iterable, List, Optional
 
 import geopandas
