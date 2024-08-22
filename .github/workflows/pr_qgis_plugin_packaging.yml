@@ -12,14 +12,15 @@ jobs:
         python-version: ["3.9", "3.12"]
         os: [macos-latest, windows-latest, ubuntu-latest]
         include:
-          - platform: manylinux2014_x86_64
-            os: ubuntu-latest
-          - platform: macosx_11_0_arm64
-            os: macos-latest
-          - platform: macosx_10_9_x86_64
-            os: macos-latest
-          - platform: win_amd64
-            os: windows-latest
+          - os: ubuntu-latest
+            platform: manylinux2014_x86_64
+          - os: macos-latest
+            python-version: "3.9"
+            platform: macosx_11_0_arm64
+          - os: macos-latest
+            platform: macosx_10_9_x86_64
+          - os: windows-latest
+            platform: win_amd64
 
     if: github.repository_owner == 'MapsPeople'
 
@@ -68,7 +69,7 @@ jobs:
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
           path: mi_companion.0.0.1.zip
-          destination: qgisplugins/dev/${{ matrix.os }}/${{ matrix.python-version }}/${{ matrix.platform }}
+          destination: qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
 
   package:
     needs: build
