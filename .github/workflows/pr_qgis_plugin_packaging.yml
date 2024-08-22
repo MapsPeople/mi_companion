@@ -9,18 +9,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.12"]
+        python-version: ["3.12"]
         os: [macos-latest, windows-latest, ubuntu-latest]
         include:
           - os: ubuntu-latest
             platform: manylinux2014_x86_64
           - os: macos-latest
-            python-version: "3.9"
-            platform: macosx_11_0_arm64
-          - os: macos-latest
             platform: macosx_10_9_x86_64
           - os: windows-latest
             platform: win_amd64
+          - os: macos-latest
+            python-version: "3.9"
+            platform: macosx_11_0_arm64
 
     if: github.repository_owner == 'MapsPeople'
 
