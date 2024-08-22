@@ -12,7 +12,6 @@ __all__ = ["BaseDialog"]
 
 
 class BaseDialog(QtWidgets.QDialog, FORM_CLASS):
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)

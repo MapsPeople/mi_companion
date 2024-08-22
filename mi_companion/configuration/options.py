@@ -46,7 +46,6 @@ OptionWidget, OptionWidgetBase = uic.loadUiType(resolve_path("options.ui", __fil
 
 
 class DeploymentOptionsPageFactory(QgsOptionsWidgetFactory):
-
     def __init__(self):
         super().__init__()
 
@@ -71,7 +70,6 @@ def reload_settings(load_attempts: int = 2) -> None:
 
 
 class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
@@ -187,7 +185,6 @@ def read_bool_setting(key: str) -> bool:
 
 
 class DeploymentCompanionOptionsPage(QgsOptionsPageWidget):
-
     def __init__(self, parent):
         super().__init__(parent)
         root_layout = QHBoxLayout()

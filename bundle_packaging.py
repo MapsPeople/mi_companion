@@ -45,9 +45,10 @@ def package_dependencies(
     *,
     target_site_packages_dir: Path,
     clean: bool = True,
-    python_version: str = "3.9",
-    BUNDLE_VERSION="0.0.1",
-    BUNDLE_PROJECT_NAME="MapsIndoors",
+    python_version: str = "3.11",
+    version="0.0.1",
+    project_name="MapsIndoors",
+    platform: str = sysconfig.get_platform(),
 ) -> None:
     if True:
         if target_site_packages_dir.exists():
@@ -60,10 +61,33 @@ def package_dependencies(
 
     assert submodule_directory.exists()
 
+    platform = platform.replace("-", "_")
+    cp_version = python_version.replace(".", "")
+    implementation = "cp"  # + cp_version
+
     os.environ["SUBMODULE_DIRECTORY"] = submodule_directory.as_posix()
 
     os.environ["ZMQ_PREFIX"] = "bundled"
     os.environ["ZMQ_BUILD_DRAFT"] = "1"
+
+    abis = [
+        "--abi",
+        f"{implementation}{cp_version}m",
+        "--abi",
+        f"{implementation}{cp_version}",
+        "--abi",
+        "abi3",
+        "--abi",
+        "none",
+    ]
+
+    platforms = [
+        "--platform",
+        f"{platform}",
+        "--platform",
+        "any",
+        # "manylinux2014_x86_64",
+    ]
 
     if True:
         catching_callable(
@@ -77,24 +101,23 @@ def package_dependencies(
                 f"{REQUIREMENTS_FILE}",
                 "--break-system-packages",
                 "--verbose",
-                "--platform",
-                f"{sysconfig.get_platform()}",
-                # "manylinux2014_x86_64",
                 # "--no-build-isolation",
                 "--only-binary",
                 ":all:",
                 "--implementation",
-                "cp",
+                implementation,
                 "--python-version",
                 python_version,
+                *abis,
+                *platforms,
             ]
         )
 
     emit_additional_bundle_files(
         python_version=python_version,
         target_site_packages_dir=target_site_packages_dir,
-        BUNDLE_VERSION=BUNDLE_VERSION,
-        BUNDLE_PROJECT_NAME=BUNDLE_PROJECT_NAME,
+        BUNDLE_VERSION=version,
+        BUNDLE_PROJECT_NAME=project_name,
     )
 
 
@@ -194,10 +217,18 @@ if __name__ == "__main__":
         default="0.0.1",
         required=False,
     )
+    parser.add_argument(
+        "--platform",
+        help="Which platform to build bundle for",
+        type=str,
+        default=sysconfig.get_platform(),
+        required=False,
+    )
 
     args = parser.parse_args()
     package_dependencies(
         target_site_packages_dir=TARGET_DIR,
         python_version=args.python_version,
-        BUNDLE_VERSION=args.plugin_version,  # BUNDLE_PROJECT_NAME=args.plugin_name
+        version=args.plugin_version,  # BUNDLE_PROJECT_NAME=args.plugin_name
+        platform=args.platform,
     )

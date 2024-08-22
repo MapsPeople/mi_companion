@@ -39,7 +39,6 @@ def is_optional(field) -> bool:
 
 
 class Dialog(QDialog, FORM_CLASS):
-
     def __init__(self, parent=None):  #: QWidget
         from jord.qgis_utilities.helpers import signals
 
