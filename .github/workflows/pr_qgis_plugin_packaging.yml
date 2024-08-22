@@ -39,11 +39,11 @@ jobs:
           python bundle_packaging.py --python_version ${{ matrix.python-version }} --plugin_version 0.0.1
           qgis-plugin-ci package 0.0.1 -a mi_companion_bundle
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: mi_companion-${{ matrix.os }}-${{ matrix.python-version }}.zip
-          path: mi_companion.0.0.1.zip
+      #- name: Upload artifact
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: mi_companion-${{ matrix.os }}-${{ matrix.python-version }}.zip
+      #    path: mi_companion.0.0.1.zip
 
       - id: "auth"
         name: auth

@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 import sys
+import sysconfig
 from multiprocessing import Pipe
 from pathlib import Path
 from subprocess import PIPE, Popen, STDOUT
@@ -76,9 +77,9 @@ def package_dependencies(
                 f"{REQUIREMENTS_FILE}",
                 "--break-system-packages",
                 "--verbose",
-                # --platform manylinux2014_x86_64
-                # "--no-binary",
-                # "pyzmq",
+                "--platform",
+                f"{sysconfig.get_platform()}",
+                # "manylinux2014_x86_64",
                 # "--no-build-isolation",
                 "--only-binary",
                 ":all:",
@@ -133,7 +134,25 @@ tags=python, mapsindoors, companion
       """
         )
 
-    (target_site_packages_dir / "__init__.py").touch()
+    with open(target_site_packages_dir / "__init__.py", "w") as f:
+        f.write(
+            f"""
+
+class BundlePlugin:
+  def tr(self, message):
+    return QCoreApplication.translate('MI bundle', message)
+
+  def initGui(self):
+    ...
+
+  def unload(self):
+    ...
+
+def classFactory(iface):
+  return BundlePlugin()
+
+          """
+        )
 
     if (target_site_packages_dir / "LICENSE").exists():
         shutil.rmtree(target_site_packages_dir / "LICENSE")
