@@ -100,6 +100,7 @@ def add_venue_layer(
                     highway_type_dropdown_widget=highway_type_dropdown_widget,
                     door_type_dropdown_widget=door_type_dropdown_widget,
                     solution=solution,
+                    venue=venue,
                 )
 
         if INSERT_INDEX > 0:

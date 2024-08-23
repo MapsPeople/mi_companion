@@ -7,6 +7,7 @@ import sysconfig
 from multiprocessing import Pipe
 from pathlib import Path
 from subprocess import PIPE, Popen, STDOUT
+from typing import Union
 
 from mi_companion.constants import BUNDLED_PACKAGES_DIR
 
@@ -43,13 +44,15 @@ def catching_callable(*args, **kwargs) -> None:
 
 def package_dependencies(
     *,
-    target_site_packages_dir: Path,
+    target_site_packages_dir: Union[str, Path],
     clean: bool = True,
     python_version: str = "3.11",
-    version="0.0.1",
-    project_name="MapsIndoors",
+    version: str = "0.0.1",
+    project_name: str = "MapsIndoors",
     platform: str = sysconfig.get_platform(),
 ) -> None:
+    if isinstance(target_site_packages_dir, str):
+        target_site_packages_dir = Path(target_site_packages_dir)
     if True:
         if target_site_packages_dir.exists():
             if clean:
@@ -81,13 +84,7 @@ def package_dependencies(
         "none",
     ]
 
-    platforms = [
-        "--platform",
-        f"{platform}",
-        "--platform",
-        "any",
-        # "manylinux2014_x86_64",
-    ]
+    platforms = ["--platform", f"{platform}", "--platform", "any"]
 
     if True:
         catching_callable(
@@ -108,7 +105,7 @@ def package_dependencies(
                 implementation,
                 "--python-version",
                 python_version,
-                *abis,
+                # *abis,
                 *platforms,
             ]
         )
@@ -224,10 +221,17 @@ if __name__ == "__main__":
         default=sysconfig.get_platform(),
         required=False,
     )
+    parser.add_argument(
+        "--target_dir",
+        help="Where to install the packages",
+        type=str,
+        default=str(TARGET_DIR),
+        required=False,
+    )
 
     args = parser.parse_args()
     package_dependencies(
-        target_site_packages_dir=TARGET_DIR,
+        target_site_packages_dir=args.target_dir,
         python_version=args.python_version,
         version=args.plugin_version,  # BUNDLE_PROJECT_NAME=args.plugin_name
         platform=args.platform,

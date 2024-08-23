@@ -117,7 +117,7 @@ def add_route_element_layers(
             graph_group=graph_group,
             qgis_instance_handle=qgis_instance_handle,
             route_element_collection=solution.obstacles,
-            layer_descriptor="obstacles",
+            layer_descriptor=OBSTACLES_DESCRIPTOR,
         )
 
     add_connection_layers(

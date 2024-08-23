@@ -22,6 +22,7 @@ from mi_companion.configuration.constants import (
 from .custom_props import extract_custom_props
 from .extraction import extract_layer_data
 from .floor import add_building_floors
+from .graph import add_venue_graph
 from .location import add_floor_contents
 from ...projection import prepare_geom_for_mi_db
 
@@ -61,69 +62,70 @@ def add_venue_level_hierarchy(
             )
 
         if not isinstance(venue_group_item, QgsLayerTreeGroup):
-            continue
-
-        if GRAPH_DESCRIPTOR in venue_group_item.name():
-            logger.warning(
-                f"Not handling graphs yet, {venue_group_item.name()}, skipping"
-            )
-            continue
-            # add_venue_graph(solution=solution)  # TODO: IMPLEMENT!
-
-        if (
-            HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS
-            and FLOOR_DESCRIPTOR in venue_group_item.name()
-            and "Outside" in venue_group_item.name()
-        ):  # HANDLE OUTSIDE FLOORS, TODO: right now only support a single floor
-            logger.error("Adding outside floor")
-            outside_building_admin_id = f"_{venue_key}"
-            outside_building = solution.buildings.get(outside_building_admin_id)
-            venue = solution.venues.get(venue_key)
-
-            if outside_building is None:
-                outside_building_key = solution.add_building(
-                    outside_building_admin_id,
-                    MI_OUTSIDE_BUILDING_NAME,
-                    polygon=venue.polygon,
+            ...
+        else:
+            if GRAPH_DESCRIPTOR in venue_group_item.name():
+                logger.warning(
+                    f"Not handling graphs yet, {venue_group_item.name()}, skipping"
+                )
+                add_venue_graph(
+                    solution=solution,
                     venue_key=venue_key,
+                    venue_group_item=venue_group_item,
+                )
+
+            if (
+                HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS
+                and FLOOR_DESCRIPTOR in venue_group_item.name()
+                and "Outside" in venue_group_item.name()
+            ):  # HANDLE OUTSIDE FLOORS, TODO: right now only support a single floor
+                logger.error("Adding outside floor")
+                outside_building_admin_id = f"_{venue_key}"
+                outside_building = solution.buildings.get(outside_building_admin_id)
+                venue = solution.venues.get(venue_key)
+
+                if outside_building is None:
+                    outside_building_key = solution.add_building(
+                        outside_building_admin_id,
+                        MI_OUTSIDE_BUILDING_NAME,
+                        polygon=venue.polygon,
+                        venue_key=venue_key,
+                    )
+                else:
+                    outside_building_key = outside_building.key
+
+                outside_floor_key = solution.add_floor(
+                    0,
+                    name=get_outside_building_floor_name(0),
+                    building_key=outside_building_key,
+                    polygon=venue.polygon,
+                )
+
+                add_floor_contents(
+                    floor_key=outside_floor_key,
+                    floor_group_items=venue_group_item,
+                    solution=solution,
                 )
             else:
-                outside_building_key = outside_building.key
+                building_key = get_building_key(venue_group_item, solution, venue_key)
 
-            outside_floor_key = solution.add_floor(
-                0,
-                name=get_outside_building_floor_name(0),
-                building_key=outside_building_key,
-                polygon=venue.polygon,
-            )
-
-            add_floor_contents(
-                floor_key=outside_floor_key,
-                floor_group_items=venue_group_item,
-                solution=solution,
-            )
-            continue
-
-        building_key = get_building_key(venue_group_item, solution, venue_key)
-
-        if building_key is None:
-            logger.error(
-                f"did not find building in {venue_group_item.name()}, skipping"
-            )
-            continue
-
-        add_building_floors(
-            building_key=building_key,
-            venue_group_item=venue_group_item,
-            solution=solution,
-            progress_bar=progress_bar,
-            ith_solution=ith_solution,
-            ith_venue=ith_venue,
-            ith_building=ith_venue_group_item,
-            num_solution_elements=num_solution_elements,
-            num_venue_elements=num_venue_elements,
-            num_building_elements=num_venue_group_elements,
-        )
+                if building_key is None:
+                    logger.error(
+                        f"did not find building in {venue_group_item.name()}, skipping"
+                    )
+                else:
+                    add_building_floors(
+                        building_key=building_key,
+                        venue_group_item=venue_group_item,
+                        solution=solution,
+                        progress_bar=progress_bar,
+                        ith_solution=ith_solution,
+                        ith_venue=ith_venue,
+                        ith_building=ith_venue_group_item,
+                        num_solution_elements=num_solution_elements,
+                        num_venue_elements=num_venue_elements,
+                        num_building_elements=num_venue_group_elements,
+                    )
 
 
 def get_building_key(

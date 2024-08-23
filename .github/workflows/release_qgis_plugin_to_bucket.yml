@@ -1,7 +1,9 @@
 name: pr-package-plugin
 
 on:
-  pull_request:
+  push:
+    tags:
+      - "*"
 
 jobs:
   build:
@@ -12,15 +14,19 @@ jobs:
         python-version: ["3.12"]
         os: [macos-latest, windows-latest, ubuntu-latest]
         include:
-          - os: ubuntu-latest
-            platform: manylinux2014_x86_64
-          - os: macos-latest
-            platform: macosx_10_9_x86_64
           - os: windows-latest
             platform: win_amd64
           - os: macos-latest
+            platform: macosx_10_9_x86_64
+          - os: macos-latest
             python-version: "3.9"
             platform: macosx_11_0_arm64
+          - os: ubuntu-latest
+            platform: manylinux2014_x86_64
+            python-version: "3.10"
+          - os: ubuntu-latest
+            platform: manylinux2014_x86_64
+            python-version: "3.11"
 
     if: github.repository_owner == 'MapsPeople'
 
@@ -44,10 +50,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip qgis-plugin-ci jord
 
+      - name: Fetch current changelog
+        run: qgis-plugin-ci changelog ${{ env.RELEASE_VERSION }} >> release.md
+
       - name: Package QGIS Plugin
         run: |
           python bundle_packaging.py --python_version ${{ matrix.python-version }} --plugin_version 0.0.1 --platform ${{ matrix.platform }}
           qgis-plugin-ci package 0.0.1 -a mi_companion_bundle
+
+        #qgis-plugin-ci package ${{ env.RELEASE_VERSION }} -a mi_companion_bundle
 
       #- name: Upload artifact
       #  uses: actions/upload-artifact@v4
@@ -71,9 +82,9 @@ jobs:
           path: mi_companion.0.0.1.zip
           destination: qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
 
-  package:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v3
+  #package:
+  #  needs: build
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - uses: actions/checkout@v2
+  #    - uses: actions/download-artifact@v3

@@ -2,10 +2,11 @@ import logging
 from typing import Any, Iterable
 from xml.etree.ElementTree import ParseError
 
-from integration_system.model import Graph, Solution
 from jord.qlive_utilities import add_shapely_layer
 
+from integration_system.model import Graph, Solution, Venue
 from mi_companion.configuration.constants import (
+    GRAPH_DATA_DESCRIPTOR,
     GRAPH_DESCRIPTOR,
     NAVIGATION_LINES_DESCRIPTOR,
     NAVIGATION_POINT_DESCRIPTOR,
@@ -33,6 +34,7 @@ def add_graph_layers(
     highway_type_dropdown_widget: Any,
     door_type_dropdown_widget: Any,
     solution: Solution,
+    venue: Venue,
 ) -> None:
     try:
         if graph.osm_xml:
@@ -53,6 +55,16 @@ def add_graph_layers(
                 graph_group.setExpanded(True)
                 graph_group.setExpanded(False)
                 graph_group.setItemVisibilityChecked(False)
+
+            graph_meta_point_layer = add_shapely_layer(
+                qgis_instance_handle=qgis_instance_handle,
+                geoms=[venue.polygon.representative_point()],
+                name=GRAPH_DATA_DESCRIPTOR,
+                group=graph_group,
+                columns={"graph_id": graph.graph_id},
+                visible=False,
+                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+            )
 
             graph_lines_layer = add_shapely_layer(
                 qgis_instance_handle=qgis_instance_handle,
