@@ -20,7 +20,7 @@ from mi_companion.configuration.constants import (
     HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS,
 )
 from .custom_props import extract_custom_props
-from .extraction import extract_layer_data
+from .extraction import special_extract_layer_data
 from .floor import add_building_floors
 from .graph import add_venue_graph
 from .location import add_floor_contents
@@ -68,11 +68,13 @@ def add_venue_level_hierarchy(
                 logger.warning(
                     f"Not handling graphs yet, {venue_group_item.name()}, skipping"
                 )
-                add_venue_graph(
+                graph_key = add_venue_graph(
                     solution=solution,
-                    venue_key=venue_key,
-                    venue_group_item=venue_group_item,
+                    graph_group=venue_group_item,
                 )
+                if graph_key:
+                    venue = solution.venues.get(venue_key)
+                    venue.graph = solution.graphs.get(graph_key)
 
             if (
                 HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS
@@ -143,7 +145,7 @@ def get_building_key(
                 layer_attributes,
                 layer_feature,
                 name,
-            ) = extract_layer_data(floor_group_items)
+            ) = special_extract_layer_data(floor_group_items)
 
             feature_geom = layer_feature.geometry()
             if feature_geom is not None:

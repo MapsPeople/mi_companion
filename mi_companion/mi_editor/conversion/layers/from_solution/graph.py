@@ -61,7 +61,7 @@ def add_graph_layers(
                 geoms=[venue.polygon.representative_point()],
                 name=GRAPH_DATA_DESCRIPTOR,
                 group=graph_group,
-                columns={"graph_id": graph.graph_id},
+                columns=[{"graph_id": graph.graph_id}],
                 visible=False,
                 crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
             )

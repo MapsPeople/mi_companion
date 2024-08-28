@@ -18,7 +18,7 @@ from mi_companion.configuration.constants import (
     HALF_SIZE,
 )
 from .custom_props import extract_custom_props
-from .extraction import extract_layer_data
+from .extraction import special_extract_layer_data
 from .location import add_floor_contents
 from ...projection import prepare_geom_for_mi_db
 
@@ -115,7 +115,7 @@ def get_floor_data(
                 floor_attributes,
                 floor_feature,
                 name,
-            ) = extract_layer_data(floor_level_item)
+            ) = special_extract_layer_data(floor_level_item)
 
             feature_geom = floor_feature.geometry()
             if feature_geom is not None:

@@ -10,9 +10,18 @@ from qgis.PyQt import QtCore, QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
-from integration_system.mi import MIOperation, SolutionDepth, SyncLevel, synchronize
+from integration_system.mi import (
+    MIOperation,
+    SolutionDepth,
+    SyncLevel,
+    default_matcher,
+    default_strategy,
+    strategy_solver,
+    synchronize,
+)
 from integration_system.model import (
     DIFFERENCE_GROUP_NAME,
+    Graph,
     SHAPELY_DIFFERENCE_DESCRIPTION,
     Solution,
 )
@@ -143,9 +152,12 @@ def sync_build_venue_solution(
 
         return False
 
+    sync_level = SyncLevel.VENUE
+    strategy = dict(default_strategy())
+    strategy[Graph] = default_matcher, None  # Do not update graph
     success = synchronize(
         solution,
-        sync_level=SyncLevel.VENUE,
+        sync_level=sync_level,
         operation_progress_callback=(
             operation_progress_bar_callable
             if read_bool_setting("OPERATION_PROGRESS_BAR_ENABLED")
@@ -163,13 +175,14 @@ def sync_build_venue_solution(
         ),
         depth=solution_depth,
         include_route_elements=read_bool_setting(
-            "SYNC_GRAPH_AND_ROUTE_ELEMENTS"
+            "ADD_ROUTE_ELEMENTS"
         ),  # include_route_elements,
         include_occupants=include_occupants,
         include_media=include_media,
-        include_graph=read_bool_setting(
-            "SYNC_GRAPH_AND_ROUTE_ELEMENTS"
-        ),  # include_graph,
+        include_graph=read_bool_setting("ADD_GRAPH"),  # include_graph,
+        operation_solver=strategy_solver(
+            sync_level=sync_level, depth=solution_depth, strategy=strategy
+        ),
     )
 
     if VERBOSE:

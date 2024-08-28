@@ -11,16 +11,16 @@ pydantic>=2.1.1
 strenum>=0.4.5
 pytest-xdist>=3.3.1
 python_dateutil>=2.5.3
-sentry-sdk>=2.0.1 # PRETTY BAD INTERFACE!
+sentry-sdk>=2.0.1 # PRETTY BAD INTERFACE! REPLACE
 setuptools>=21.0.0
 six>=1.10
 typeguard>=4.1.5
 urllib3>=2.1.0
 validators>=0.22.0
 warg>=1.4.0
-importlib-metadata>=0.0.1 #MACOS is weird?
-importlib-resources>=0.0.1 #MACOS is weird?
-#pyperclip>=0.0.1
+importlib-metadata>=0.0.1
+importlib-resources>=0.0.1
+#pyperclip>=0.0.1 # DISABLED FOR NOW
 
 file://${SUBMODULE_DIRECTORY}/mi_sync
 file://${SUBMODULE_DIRECTORY}/svaguely

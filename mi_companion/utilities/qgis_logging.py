@@ -15,19 +15,19 @@ __doc__ = "Logging"
 __all__ = ["setup_logging"]
 
 
-def log(msg, level=Qgis.Info):
+def log(msg: str, level=Qgis.Info) -> None:
     QgsMessageLog.logMessage(msg, "MI Companion", level)
 
 
-def logger_info(msg):
+def logger_info(msg: str) -> None:
     log(msg)
 
 
-def logger_warning(msg):
+def logger_warning(msg: str) -> None:
     log(msg, Qgis.Warning)
 
 
-def logger_error(msg):
+def logger_error(msg: str) -> None:
     log(msg, Qgis.Critical)
 
 

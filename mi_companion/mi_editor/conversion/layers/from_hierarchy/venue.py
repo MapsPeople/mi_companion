@@ -26,7 +26,7 @@ from .custom_props import extract_custom_props
 
 __all__ = ["convert_solution_venues"]
 
-from .extraction import extract_layer_data
+from .extraction import special_extract_layer_data
 
 # from .graph import add_venue_graph
 from .syncing import post_process_solution, sync_build_venue_solution
@@ -149,7 +149,7 @@ def get_venue_key(solution: Solution, venue_group_items: Any) -> Optional[str]:
                 layer_attributes,
                 layer_feature,
                 name,
-            ) = extract_layer_data(venue_level_item)
+            ) = special_extract_layer_data(venue_level_item)
 
             venue_type_str = layer_attributes["venue_type"]
             if isinstance(venue_type_str, str):

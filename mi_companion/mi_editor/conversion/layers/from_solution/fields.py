@@ -29,8 +29,10 @@ Text edit – an edit box that allow multiple input lines
 Calendar – a calendar widget to input dates
 """
 
+HIDDEN_WIDGET = QgsEditorWidgetSetup("Hidden", {})
 
-def add_dropdown_widget(layer: Any, field_name: str, widget) -> None:
+
+def add_dropdown_widget(layer: Any, field_name: str, widget: Any) -> None:
     # https://gis.stackexchange.com/questions/470963/setting-dropdown-on-feature-attribute-form-using-plugin
     for layers_inner in layer:
         if layers_inner:
@@ -46,9 +48,6 @@ def add_dropdown_widget(layer: Any, field_name: str, widget) -> None:
                     layers_inner.fields().indexFromName(field_name),
                     widget,
                 )
-
-
-HIDDEN_WIDGET = QgsEditorWidgetSetup("Hidden", {})
 
 
 def make_field_unique(layers: Sequence[Any], field_name: str = "admin_id") -> None:

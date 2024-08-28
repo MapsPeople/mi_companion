@@ -10,7 +10,7 @@ __all__ = ["extract_wkt_elements"]
 logger = logging.getLogger(__name__)
 
 
-def is_json(my_json):
+def is_json(my_json: str) -> bool:
     try:
         json_object = json.loads(my_json)
     except ValueError as e:
