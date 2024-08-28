@@ -55,7 +55,7 @@ jobs:
 
       - name: Package QGIS Plugin
         run: |
-          python bundle_packaging.py --python_version ${{ matrix.python-version }} --plugin_version 0.0.1 --platform ${{ matrix.platform }}
+          python bundle_packaging.py --python-version ${{ matrix.python-version }} --plugin-version 0.0.1 --platform ${{ matrix.platform }}
           qgis-plugin-ci package 0.0.1 -a mi_companion_bundle
 
         #qgis-plugin-ci package ${{ env.RELEASE_VERSION }} -a mi_companion_bundle
