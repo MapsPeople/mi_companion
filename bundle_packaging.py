@@ -84,7 +84,10 @@ def package_dependencies(
         "none",
     ]
 
-    platforms = ["--platform", f"{platform}", ]#"--platform", "any"]
+    platforms = [
+        "--platform",
+        f"{platform}",
+    ]  # "--platform", "any"]
 
     if True:
         catching_callable(

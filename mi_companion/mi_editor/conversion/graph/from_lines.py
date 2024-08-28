@@ -1,6 +1,5 @@
 from typing import Optional
 
-import osmnx
 import shapely
 from networkx import MultiDiGraph
 from warg import ensure_existence
@@ -11,6 +10,8 @@ __all__ = ["lines_to_osm_lines"]
 
 
 def network_to_osm_xml(osm_xml: MultiDiGraph) -> bytes:
+    import osmnx
+
     osm_cache_path = ensure_existence(PROJECT_APP_PATH.site_cache) / "to_upload.xml"
     osmnx.save_graph_xml(osm_xml, osm_cache_path)
     with open(osm_cache_path, "rb") as f:
@@ -33,6 +34,8 @@ def lines_to_network(
         :param vertices:
         :return:
     """
+
+    import osmnx
 
     g = MultiDiGraph()
     if vertices is not None:
