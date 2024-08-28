@@ -2,7 +2,7 @@
 name=MapsIndoors Beta
 description=GDS tooling
 
-qgisMinimumVersion=3.38
+qgisMinimumVersion=3.36
 #qgisMaximumVersion=3.38
 version=0.5.0
 
