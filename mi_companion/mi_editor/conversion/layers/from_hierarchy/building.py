@@ -152,7 +152,7 @@ def get_building_key(
                 geom_wkt = feature_geom.asWkt()  # TODO: Try asWkb instead
                 if geom_wkt is not None:
                     custom_props = extract_custom_props(layer_attributes)
-                    geom_shapely = shapely.from_wkt(geom_wkt)  # from wkb instead
+                    geom_shapely = shapely.wkt.loads(geom_wkt)  # from wkb instead
                     return solution.add_building(
                         admin_id=admin_id,
                         external_id=external_id,

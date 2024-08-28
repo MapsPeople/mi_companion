@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12"]
+        python-version: ["3.9", "3.12"]
         os: [macos-latest, windows-latest, ubuntu-latest]
         include:
           - os: windows-latest
@@ -50,9 +50,8 @@ jobs:
         run: |
           python -m pip install --upgrade pip qgis-plugin-ci jord
 
-      - name: Fetch current changelog
-        run: qgis-plugin-ci changelog ${{ env.RELEASE_VERSION }} >> release.md
-
+      #- name: Fetch current changelog
+      #  run: qgis-plugin-ci changelog ${{ env.RELEASE_VERSION }} >> release.md
       - name: Package QGIS Plugin
         run: |
           python bundle_packaging.py --python-version ${{ matrix.python-version }} --plugin-version 0.0.1 --platform ${{ matrix.platform }}

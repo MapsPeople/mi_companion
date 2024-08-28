@@ -66,7 +66,7 @@ def show_make_solution_dialog_action_callable(layer: Any, feature: Any) -> None:
 
     s = Solution(uuid.uuid4().hex.lower(), name, customer_id=customer_id)
 
-    venue_polygon = clean_shape(shapely.unary_union(shapely.from_wkt(a)))
+    venue_polygon = clean_shape(shapely.unary_union(shapely.wkt.loads(a)))
     assert isinstance(
         venue_polygon, shapely.Polygon
     ), f"{venue_polygon=} must be shapely.Polygon"

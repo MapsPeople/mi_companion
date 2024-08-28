@@ -84,7 +84,7 @@ def add_floor_locations(
             if feature_geom is not None:
                 geom_wkt = feature_geom.asWkt()
                 if geom_wkt is not None:
-                    geom_shapely = shapely.from_wkt(geom_wkt)
+                    geom_shapely = shapely.wkt.loads(geom_wkt)
                     if geom_shapely is not None:
                         common_kvs = dict(
                             admin_id=admin_id,

@@ -122,7 +122,7 @@ def get_floor_data(
                 geom_wkt = feature_geom.asWkt()
                 if geom_wkt is not None:
                     custom_props = extract_custom_props(floor_attributes)
-                    geom_shapely = shapely.from_wkt(geom_wkt)
+                    geom_shapely = shapely.wkt.loads(geom_wkt)
                     floor_key = solution.add_floor(
                         external_id=external_id,
                         name=name,

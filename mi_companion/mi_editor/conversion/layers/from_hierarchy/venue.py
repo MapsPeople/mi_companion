@@ -200,4 +200,4 @@ def feature_to_shapely(layer_feature: Any) -> None:
     if feature_geom is not None:
         geom_wkt = feature_geom.asWkt()
         if geom_wkt is not None:
-            return shapely.from_wkt(geom_wkt)
+            return shapely.wkt.loads(geom_wkt)
