@@ -1,6 +1,9 @@
 import logging
 import site  # https://docs.python.org/3/library/site.html#module-site
+import sys
 from pathlib import Path
+
+logging.basicConfig(level=logging.INFO)
 
 BUNDLED_PACKAGES_DIR = "mi_companion_bundle"
 
@@ -10,6 +13,9 @@ logger = logging.getLogger(__name__)
 if relative_bundled_packages_dir.exists():
     logger.info(f"Loading {relative_bundled_packages_dir}")
     site.addsitedir(str(relative_bundled_packages_dir))
+    sys.path = [str(relative_bundled_packages_dir), *sys.path]
+else:
+    logger.warning(f"Could not find bundled packages dir at {relative_bundled_packages_dir}")
 
 
 def read_author_from_metadata(metadata_file: Path) -> str:

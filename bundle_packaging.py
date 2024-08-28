@@ -64,7 +64,7 @@ def package_dependencies(
 
     assert submodule_directory.exists()
 
-    platform = platform.replace("-", "_")
+    platform = platform.replace("-", "_").replace(".", "_")
     cp_version = python_version.replace(".", "")
     implementation = "cp"  # + cp_version
 
@@ -84,7 +84,7 @@ def package_dependencies(
         "none",
     ]
 
-    platforms = ["--platform", f"{platform}", "--platform", "any"]
+    platforms = ["--platform", f"{platform}", ]#"--platform", "any"]
 
     if True:
         catching_callable(
@@ -200,7 +200,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser("simple_example")
     parser.add_argument(
-        "--python_version",
+        "--python-version",
         help="Which python version",
         type=str,
         default=f"{sys.version_info.major}.{sys.version_info.minor}",
@@ -208,7 +208,7 @@ if __name__ == "__main__":
     )
     # parser.add_argument("plugin_name", help="Which plugin to bundle dependencies", type=str)
     parser.add_argument(
-        "--plugin_version",
+        "--plugin-version",
         help="Which plugin version",
         type=str,
         default="0.0.1",
@@ -222,7 +222,7 @@ if __name__ == "__main__":
         required=False,
     )
     parser.add_argument(
-        "--target_dir",
+        "--target-dir",
         help="Where to install the packages",
         type=str,
         default=str(TARGET_DIR),
