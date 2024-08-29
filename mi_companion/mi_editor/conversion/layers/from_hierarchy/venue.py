@@ -198,6 +198,6 @@ def get_venue_key(solution: Solution, venue_group_items: Any) -> Optional[str]:
 def feature_to_shapely(layer_feature: Any) -> None:
     feature_geom = layer_feature.geometry()
     if feature_geom is not None:
-        geom_wkt = feature_geom.asWkt()
-        if geom_wkt is not None:
-            return shapely.wkt.loads(geom_wkt)
+        geom_wkb = feature_geom.asWkb()
+        if geom_wkb is not None:
+            return shapely.from_wkb(geom_wkb)

@@ -43,9 +43,9 @@ def run(*, buffer_distance: float = 0.01, only_active_layer: bool = True) -> Non
 
                     feature_geom = feature.geometry()
                     if feature_geom is not None:
-                        geom_wkt = feature_geom.asWkt()
-                        if geom_wkt is not None:
-                            geom_shapely = shapely.wkt.loads(geom_wkt)
+                        geom_wkb = feature_geom.asWkb()
+                        if geom_wkb is not None:
+                            geom_shapely = shapely.from_wkb(geom_wkb)
                             if geom_shapely is not None:
                                 door_geom[feature.id()] = geom_shapely
 

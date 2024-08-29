@@ -63,7 +63,7 @@ def add_doors(*, graph_key: str, door_layer_tree_node: Any, solution: Solution) 
         door_key = solution.add_door(
             door_attributes["external_id"],
             linestring=prepare_geom_for_mi_db(
-                shapely.wkt.loads(door_feature.geometry().asWkt())
+                shapely.from_wkb(door_feature.geometry().asWkb())
             ),
             door_type=DoorType(door_type),
             floor_index=int(door_attributes["floor_index"]),
@@ -89,7 +89,7 @@ def add_barriers(
         barrier_key = solution.add_barrier(
             barrier_attributes["external_id"],
             point=prepare_geom_for_mi_db(
-                shapely.wkt.loads(barrier_feature.geometry().asWkt())
+                shapely.from_wkb(barrier_feature.geometry().asWkb())
             ),
             floor_index=int(barrier_attributes["floor_index"]),
             graph_key=graph_key,
@@ -112,7 +112,7 @@ def add_avoids(graph_key: str, avoid_layer_tree_node: Any, solution: Solution) -
         avoid_key = solution.add_avoid(
             avoid_attributes["external_id"],
             point=prepare_geom_for_mi_db(
-                shapely.wkt.loads(avoid_feature.geometry().asWkt())
+                shapely.from_wkb(avoid_feature.geometry().asWkb())
             ),
             floor_index=int(avoid_attributes["floor_index"]),
             graph_key=graph_key,
@@ -137,7 +137,7 @@ def add_prefers(
         prefer_key = solution.add_prefer(
             prefer_attributes["external_id"],
             point=prepare_geom_for_mi_db(
-                shapely.wkt.loads(prefer_feature.geometry().asWkt())
+                shapely.from_wkb(prefer_feature.geometry().asWkb())
             ),
             floor_index=int(prefer_attributes["floor_index"]),
             graph_key=graph_key,
@@ -162,7 +162,7 @@ def add_obstacles(
         obstacle_key = solution.add_obstacle(
             obstacle_attributes["external_id"],
             polygon=prepare_geom_for_mi_db(
-                shapely.wkt.loads(obstacle_feature.geometry().asWkt())
+                shapely.from_wkb(obstacle_feature.geometry().asWkb())
             ),
             floor_index=int(obstacle_attributes["floor_index"]),
             graph_key=graph_key,
@@ -198,7 +198,7 @@ def add_entry_points(
         entry_point_key = solution.add_entry_point(
             entry_point_attributes["external_id"],
             point=prepare_geom_for_mi_db(
-                shapely.wkt.loads(entry_point_feature.geometry().asWkt())
+                shapely.from_wkb(entry_point_feature.geometry().asWkb())
             ),
             entry_point_type=EntryPointType(entry_point_type),
             floor_index=int(entry_point_attributes["floor_index"]),
@@ -237,7 +237,7 @@ def add_connections(
                 connection_type = connection_type.value()
 
         connector_geom = prepare_geom_for_mi_db(
-            shapely.wkt.loads(connector_feature.geometry().asWkt())
+            shapely.from_wkb(connector_feature.geometry().asWkb())
         )
         connections[connection_id].append(
             (

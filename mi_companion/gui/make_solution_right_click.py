@@ -45,10 +45,10 @@ def show_copy_action_callable(layer: Any, feature: Any) -> None:
 def show_make_solution_dialog_action_callable(layer: Any, feature: Any) -> None:
     """What our new action will do?"""
 
-    a = feature.geometry().asWkt()
-
     QMessageBox.information(
-        iface.mainWindow(), f"Feature's WKT ({layer.name()}:{feature.id()})", a
+        iface.mainWindow(),
+        f"Feature's WKT ({layer.name()}:{feature.id()})",
+        feature.geometry().asWkt(),
     )
 
     # noinspection PyUnresolvedReferences
@@ -66,7 +66,9 @@ def show_make_solution_dialog_action_callable(layer: Any, feature: Any) -> None:
 
     s = Solution(uuid.uuid4().hex.lower(), name, customer_id=customer_id)
 
-    venue_polygon = clean_shape(shapely.unary_union(shapely.wkt.loads(a)))
+    venue_polygon = clean_shape(
+        shapely.unary_union(shapely.from_wkb(feature.geometry().asWkb()))
+    )
     assert isinstance(
         venue_polygon, shapely.Polygon
     ), f"{venue_polygon=} must be shapely.Polygon"
