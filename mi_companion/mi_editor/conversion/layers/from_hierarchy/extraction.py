@@ -1,6 +1,8 @@
 import logging
 import uuid
-from typing import Any, Tuple
+from typing import Any, Optional, Tuple
+
+import shapely
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets, uic
@@ -20,7 +22,7 @@ from mi_companion.configuration.options import read_bool_setting
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["special_extract_layer_data", "extract_layer_data"]
+__all__ = ["special_extract_layer_data", "extract_layer_data", "feature_to_shapely"]
 
 
 def special_extract_layer_data(layer_tree_layer: Any) -> Tuple:  # TODO: REWRITE
@@ -77,3 +79,15 @@ def extract_layer_data(layer_tree_layer):
     else:
         logger.info(f"found {layer_attributes=} for {layer_tree_layer.name()=}")
     return layer_attributes, layer_feature
+
+
+def feature_to_shapely(
+    layer_feature: Any,
+) -> Optional[shapely.geometry.base.BaseGeometry]:
+    feature_geom = layer_feature.geometry()
+    if feature_geom is not None:
+        geom_wkb = feature_geom.asWkb()
+        if geom_wkb is not None:
+            if not isinstance(geom_wkb, bytes):
+                geom_wkb = bytes(geom_wkb)
+            return shapely.from_wkb(geom_wkb)

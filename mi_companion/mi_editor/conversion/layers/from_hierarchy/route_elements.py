@@ -2,8 +2,6 @@ import logging
 from collections import defaultdict
 from typing import Any
 
-import shapely
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
@@ -31,11 +29,23 @@ from mi_companion.configuration.constants import (
     VERBOSE,
 )
 from mi_companion.configuration.options import read_bool_setting
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
+    feature_to_shapely,
+)
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["add_doors"]
+__all__ = [
+    "add_doors",
+    "add_barriers",
+    "add_avoids",
+    "add_obstacles",
+    "add_prefers",
+    "add_connections",
+    "add_entry_points",
+    "add_route_elements",
+]
 
 
 def add_doors(*, graph_key: str, door_layer_tree_node: Any, solution: Solution) -> None:
@@ -60,11 +70,14 @@ def add_doors(*, graph_key: str, door_layer_tree_node: Any, solution: Solution) 
             else:
                 door_type = door_type.value()
 
+        door_linestring = feature_to_shapely(door_feature)
+
+        if door_linestring is None:
+            logger.error(f"{door_linestring=}")
+
         door_key = solution.add_door(
             door_attributes["external_id"],
-            linestring=prepare_geom_for_mi_db(
-                shapely.from_wkb(door_feature.geometry().asWkb())
-            ),
+            linestring=prepare_geom_for_mi_db(door_linestring),
             door_type=DoorType(door_type),
             floor_index=int(door_attributes["floor_index"]),
             graph_key=graph_key,
@@ -86,16 +99,20 @@ def add_barriers(
             )
         }
 
-        barrier_key = solution.add_barrier(
-            barrier_attributes["external_id"],
-            point=prepare_geom_for_mi_db(
-                shapely.from_wkb(barrier_feature.geometry().asWkb())
-            ),
-            floor_index=int(barrier_attributes["floor_index"]),
-            graph_key=graph_key,
-        )
-        if VERBOSE:
-            logger.info("added barrier", barrier_key)
+        door_linestring = feature_to_shapely(barrier_feature)
+
+        if door_linestring is not None:
+            barrier_key = solution.add_barrier(
+                barrier_attributes["external_id"],
+                point=prepare_geom_for_mi_db(door_linestring),
+                floor_index=int(barrier_attributes["floor_index"]),
+                graph_key=graph_key,
+            )
+            if VERBOSE:
+                logger.info("added barrier", barrier_key)
+
+        else:
+            logger.error(f"{door_linestring=}")
 
 
 def add_avoids(graph_key: str, avoid_layer_tree_node: Any, solution: Solution) -> None:
@@ -109,16 +126,21 @@ def add_avoids(graph_key: str, avoid_layer_tree_node: Any, solution: Solution) -
             )
         }
 
-        avoid_key = solution.add_avoid(
-            avoid_attributes["external_id"],
-            point=prepare_geom_for_mi_db(
-                shapely.from_wkb(avoid_feature.geometry().asWkb())
-            ),
-            floor_index=int(avoid_attributes["floor_index"]),
-            graph_key=graph_key,
-        )
-        if VERBOSE:
-            logger.info("added avoid", avoid_key)
+        door_linestring = feature_to_shapely(avoid_feature)
+
+        if door_linestring is not None:
+            avoid_key = solution.add_avoid(
+                avoid_attributes["external_id"],
+                point=prepare_geom_for_mi_db(door_linestring),
+                floor_index=int(avoid_attributes["floor_index"]),
+                graph_key=graph_key,
+            )
+            if VERBOSE:
+                logger.info("added avoid", avoid_key)
+            else:
+                logger.error(
+                    f'Error while adding {avoid_attributes["external_id"]} {door_linestring=}'
+                )
 
 
 def add_prefers(
@@ -134,16 +156,21 @@ def add_prefers(
             )
         }
 
-        prefer_key = solution.add_prefer(
-            prefer_attributes["external_id"],
-            point=prepare_geom_for_mi_db(
-                shapely.from_wkb(prefer_feature.geometry().asWkb())
-            ),
-            floor_index=int(prefer_attributes["floor_index"]),
-            graph_key=graph_key,
-        )
-        if VERBOSE:
-            logger.info("added prefer", prefer_key)
+        door_linestring = feature_to_shapely(prefer_feature)
+
+        if door_linestring is not None:
+            prefer_key = solution.add_prefer(
+                prefer_attributes["external_id"],
+                point=prepare_geom_for_mi_db(door_linestring),
+                floor_index=int(prefer_attributes["floor_index"]),
+                graph_key=graph_key,
+            )
+            if VERBOSE:
+                logger.info("added prefer", prefer_key)
+        else:
+            logger.error(
+                f'Error while adding {prefer_attributes["external_id"]} {door_linestring=}'
+            )
 
 
 def add_obstacles(
@@ -159,16 +186,21 @@ def add_obstacles(
             )
         }
 
-        obstacle_key = solution.add_obstacle(
-            obstacle_attributes["external_id"],
-            polygon=prepare_geom_for_mi_db(
-                shapely.from_wkb(obstacle_feature.geometry().asWkb())
-            ),
-            floor_index=int(obstacle_attributes["floor_index"]),
-            graph_key=graph_key,
-        )
-        if VERBOSE:
-            logger.info("added obstacle", obstacle_key)
+        door_linestring = feature_to_shapely(obstacle_feature)
+
+        if door_linestring is not None:
+            obstacle_key = solution.add_obstacle(
+                obstacle_attributes["external_id"],
+                polygon=prepare_geom_for_mi_db(door_linestring),
+                floor_index=int(obstacle_attributes["floor_index"]),
+                graph_key=graph_key,
+            )
+            if VERBOSE:
+                logger.info("added obstacle", obstacle_key)
+        else:
+            logger.error(
+                f'Error while adding {obstacle_attributes["external_id"]} {door_linestring=}'
+            )
 
 
 def add_entry_points(
@@ -195,17 +227,22 @@ def add_entry_points(
             else:
                 entry_point_type = entry_point_type.value()
 
-        entry_point_key = solution.add_entry_point(
-            entry_point_attributes["external_id"],
-            point=prepare_geom_for_mi_db(
-                shapely.from_wkb(entry_point_feature.geometry().asWkb())
-            ),
-            entry_point_type=EntryPointType(entry_point_type),
-            floor_index=int(entry_point_attributes["floor_index"]),
-            graph_key=graph_key,
-        )
-        if VERBOSE:
-            logger.info("added entry_point", entry_point_key)
+        door_linestring = feature_to_shapely(entry_point_feature)
+
+        if door_linestring is not None:
+            entry_point_key = solution.add_entry_point(
+                entry_point_attributes["external_id"],
+                point=prepare_geom_for_mi_db(door_linestring),
+                entry_point_type=EntryPointType(entry_point_type),
+                floor_index=int(entry_point_attributes["floor_index"]),
+                graph_key=graph_key,
+            )
+            if VERBOSE:
+                logger.info("added entry_point", entry_point_key)
+        else:
+            logger.error(
+                f'Error while adding {entry_point_attributes["external_id"]} {door_linestring=}'
+            )
 
 
 def add_connections(
@@ -236,15 +273,19 @@ def add_connections(
             else:
                 connection_type = connection_type.value()
 
-        connector_geom = prepare_geom_for_mi_db(
-            shapely.from_wkb(connector_feature.geometry().asWkb())
-        )
-        connections[connection_id].append(
-            (
-                (connector_geom, connector_floor_index, connector_external_id),
-                connection_type,
+        door_linestring = feature_to_shapely(connector_feature)
+
+        if door_linestring is not None:
+            connections[connection_id].append(
+                (
+                    (door_linestring, connector_floor_index, connector_external_id),
+                    connection_type,
+                )
             )
-        )
+        else:
+            logger.error(
+                f"Error while adding {connector_external_id} {door_linestring=}"
+            )
 
     for connection_id, connector_tuples in connections.items():
         inner_connector_tuples, connection_types = zip(*connector_tuples)
@@ -259,7 +300,11 @@ def add_connections(
         connectors = []
         for geom, floor_index, external_id in inner_connector_tuples:
             connectors.append(
-                Connector(external_id=external_id, floor_index=floor_index, point=geom)
+                Connector(
+                    external_id=external_id,
+                    floor_index=floor_index,
+                    point=prepare_geom_for_mi_db(geom),
+                )
             )
 
         connector_key = solution.add_connection(

@@ -22,6 +22,10 @@ from qgis.gui import QgsMapLayerAction, QgsMapToolIdentify
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
 
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
+    feature_to_shapely,
+)
+
 IDENTIFY_ACTIONS_AUGMENTED = SELECT_ACTIONS_AUGMENTED = False
 
 __all__ = ["add_augmented_actions"]
@@ -66,9 +70,7 @@ def show_make_solution_dialog_action_callable(layer: Any, feature: Any) -> None:
 
     s = Solution(uuid.uuid4().hex.lower(), name, customer_id=customer_id)
 
-    venue_polygon = clean_shape(
-        shapely.unary_union(shapely.from_wkb(feature.geometry().asWkb()))
-    )
+    venue_polygon = clean_shape(shapely.unary_union(feature_to_shapely(feature)))
     assert isinstance(
         venue_polygon, shapely.Polygon
     ), f"{venue_polygon=} must be shapely.Polygon"

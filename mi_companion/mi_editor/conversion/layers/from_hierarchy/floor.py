@@ -1,8 +1,6 @@
 import logging
 from typing import Any, Optional, Tuple
 
-import shapely
-
 # noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsFeatureRequest,
@@ -18,7 +16,7 @@ from mi_companion.configuration.constants import (
     HALF_SIZE,
 )
 from .custom_props import extract_custom_props
-from .extraction import special_extract_layer_data
+from .extraction import feature_to_shapely, special_extract_layer_data
 from .location import add_floor_contents
 from ...projection import prepare_geom_for_mi_db
 
@@ -117,21 +115,23 @@ def get_floor_data(
                 name,
             ) = special_extract_layer_data(floor_level_item)
 
-            feature_geom = floor_feature.geometry()
-            if feature_geom is not None:
-                geom_wkb = feature_geom.asWkb()
-                if geom_wkb is not None:
-                    custom_props = extract_custom_props(floor_attributes)
-                    geom_shapely = shapely.from_wkb(geom_wkb)
-                    floor_key = solution.add_floor(
-                        external_id=external_id,
-                        name=name,
-                        floor_index=floor_attributes["floor_index"],
-                        polygon=prepare_geom_for_mi_db(geom_shapely),
-                        building_key=building_key,
-                        custom_properties=(
-                            custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
-                        ),
-                    )
-                    return floor_attributes, floor_key
+            door_linestring = feature_to_shapely(floor_feature)
+
+            if door_linestring is None:
+                logger.error(f"{door_linestring=}")
+
+            if door_linestring is not None:
+                custom_props = extract_custom_props(floor_attributes)
+
+                floor_key = solution.add_floor(
+                    external_id=external_id,
+                    name=name,
+                    floor_index=floor_attributes["floor_index"],
+                    polygon=prepare_geom_for_mi_db(door_linestring),
+                    building_key=building_key,
+                    custom_properties=(
+                        custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
+                    ),
+                )
+                return floor_attributes, floor_key
     return None, None

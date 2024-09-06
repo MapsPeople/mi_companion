@@ -2,8 +2,6 @@ import logging
 import uuid
 from typing import Any, Optional
 
-import shapely
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
@@ -15,6 +13,9 @@ from mi_companion.configuration.constants import DEFAULT_CUSTOM_PROPERTIES, VERB
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (
     extract_custom_props,
+)
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
+    feature_to_shapely,
 )
 from mi_companion.mi_editor.conversion.layers.type_enums import LocationTypeEnum
 
@@ -80,43 +81,43 @@ def add_floor_locations(
             if name is None:
                 name = external_id
 
-            feature_geom = layer_feature.geometry()
-            if feature_geom is not None:
-                geom_wkb = feature_geom.asWkb()
-                if geom_wkb is not None:
-                    geom_shapely = shapely.from_wkb(geom_wkb)
-                    if geom_shapely is not None:
-                        common_kvs = dict(
-                            admin_id=admin_id,
-                            external_id=external_id,
-                            name=name,
-                            floor_key=floor_key,
-                            location_type_key=location_type_key,
-                            custom_properties=(
-                                custom_props
-                                if custom_props
-                                else DEFAULT_CUSTOM_PROPERTIES
-                            ),
-                        )
+            door_linestring = feature_to_shapely(layer_feature)
 
-                        if location_type == LocationTypeEnum.ROOM:
-                            room_key = solution.add_room(
-                                polygon=prepare_geom_for_mi_db(geom_shapely),
-                                **common_kvs,
-                            )
-                        elif location_type == LocationTypeEnum.AREA:
-                            room_key = solution.add_area(
-                                polygon=prepare_geom_for_mi_db(geom_shapely),
-                                **common_kvs,
-                            )
-                        elif location_type == LocationTypeEnum.POI:
-                            room_key = solution.add_point_of_interest(
-                                point=prepare_geom_for_mi_db(geom_shapely), **common_kvs
-                            )
-                        else:
-                            raise Exception(f"{location_type=} is unknown")
-                        if VERBOSE:
-                            logger.info(f"added {location_type} {room_key}")
+            if door_linestring is None:
+                logger.error(f"{door_linestring=}")
+
+            if door_linestring is not None:
+                common_kvs = dict(
+                    admin_id=admin_id,
+                    external_id=external_id,
+                    name=name,
+                    floor_key=floor_key,
+                    location_type_key=location_type_key,
+                    custom_properties=(
+                        custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
+                    ),
+                )
+
+                shapely_geom = prepare_geom_for_mi_db(door_linestring)
+
+                if location_type == LocationTypeEnum.ROOM:
+                    room_key = solution.add_room(
+                        polygon=shapely_geom,
+                        **common_kvs,
+                    )
+                elif location_type == LocationTypeEnum.AREA:
+                    room_key = solution.add_area(
+                        polygon=shapely_geom,
+                        **common_kvs,
+                    )
+                elif location_type == LocationTypeEnum.POI:
+                    room_key = solution.add_point_of_interest(
+                        point=shapely_geom, **common_kvs
+                    )
+                else:
+                    raise Exception(f"{location_type=} is unknown")
+                if VERBOSE:
+                    logger.info(f"added {location_type} {room_key}")
 
 
 def add_floor_contents(
