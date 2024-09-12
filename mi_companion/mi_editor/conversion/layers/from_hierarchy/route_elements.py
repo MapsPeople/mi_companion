@@ -77,7 +77,7 @@ def add_doors(*, graph_key: str, door_layer_tree_node: Any, solution: Solution) 
 
         door_key = solution.add_door(
             door_attributes["external_id"],
-            linestring=prepare_geom_for_mi_db(door_linestring),
+            linestring=prepare_geom_for_mi_db(door_linestring, clean=False),
             door_type=DoorType(door_type),
             floor_index=int(door_attributes["floor_index"]),
             graph_key=graph_key,
@@ -126,12 +126,12 @@ def add_avoids(graph_key: str, avoid_layer_tree_node: Any, solution: Solution) -
             )
         }
 
-        door_linestring = feature_to_shapely(avoid_feature)
+        avoid_point = feature_to_shapely(avoid_feature)
 
-        if door_linestring is not None:
+        if avoid_point is not None:
             avoid_key = solution.add_avoid(
                 avoid_attributes["external_id"],
-                point=prepare_geom_for_mi_db(door_linestring),
+                point=prepare_geom_for_mi_db(avoid_point),
                 floor_index=int(avoid_attributes["floor_index"]),
                 graph_key=graph_key,
             )
@@ -139,7 +139,7 @@ def add_avoids(graph_key: str, avoid_layer_tree_node: Any, solution: Solution) -
                 logger.info("added avoid", avoid_key)
             else:
                 logger.error(
-                    f'Error while adding {avoid_attributes["external_id"]} {door_linestring=}'
+                    f'Error while adding {avoid_attributes["external_id"]} {avoid_point=}'
                 )
 
 
@@ -156,12 +156,12 @@ def add_prefers(
             )
         }
 
-        door_linestring = feature_to_shapely(prefer_feature)
+        prefer_point = feature_to_shapely(prefer_feature)
 
-        if door_linestring is not None:
+        if prefer_point is not None:
             prefer_key = solution.add_prefer(
                 prefer_attributes["external_id"],
-                point=prepare_geom_for_mi_db(door_linestring),
+                point=prepare_geom_for_mi_db(prefer_point),
                 floor_index=int(prefer_attributes["floor_index"]),
                 graph_key=graph_key,
             )
@@ -169,7 +169,7 @@ def add_prefers(
                 logger.info("added prefer", prefer_key)
         else:
             logger.error(
-                f'Error while adding {prefer_attributes["external_id"]} {door_linestring=}'
+                f'Error while adding {prefer_attributes["external_id"]} {prefer_point=}'
             )
 
 
@@ -186,12 +186,12 @@ def add_obstacles(
             )
         }
 
-        door_linestring = feature_to_shapely(obstacle_feature)
+        obstacle_poly = feature_to_shapely(obstacle_feature)
 
-        if door_linestring is not None:
+        if obstacle_poly is not None:
             obstacle_key = solution.add_obstacle(
                 obstacle_attributes["external_id"],
-                polygon=prepare_geom_for_mi_db(door_linestring),
+                polygon=prepare_geom_for_mi_db(obstacle_poly),
                 floor_index=int(obstacle_attributes["floor_index"]),
                 graph_key=graph_key,
             )
@@ -199,7 +199,7 @@ def add_obstacles(
                 logger.info("added obstacle", obstacle_key)
         else:
             logger.error(
-                f'Error while adding {obstacle_attributes["external_id"]} {door_linestring=}'
+                f'Error while adding {obstacle_attributes["external_id"]} {obstacle_poly=}'
             )
 
 
@@ -227,12 +227,12 @@ def add_entry_points(
             else:
                 entry_point_type = entry_point_type.value()
 
-        door_linestring = feature_to_shapely(entry_point_feature)
+        entry_point_geom = feature_to_shapely(entry_point_feature)
 
-        if door_linestring is not None:
+        if entry_point_geom is not None:
             entry_point_key = solution.add_entry_point(
                 entry_point_attributes["external_id"],
-                point=prepare_geom_for_mi_db(door_linestring),
+                point=prepare_geom_for_mi_db(entry_point_geom),
                 entry_point_type=EntryPointType(entry_point_type),
                 floor_index=int(entry_point_attributes["floor_index"]),
                 graph_key=graph_key,
@@ -241,7 +241,7 @@ def add_entry_points(
                 logger.info("added entry_point", entry_point_key)
         else:
             logger.error(
-                f'Error while adding {entry_point_attributes["external_id"]} {door_linestring=}'
+                f'Error while adding {entry_point_attributes["external_id"]} {entry_point_geom=}'
             )
 
 
@@ -273,18 +273,18 @@ def add_connections(
             else:
                 connection_type = connection_type.value()
 
-        door_linestring = feature_to_shapely(connector_feature)
+        connector_point = feature_to_shapely(connector_feature)
 
-        if door_linestring is not None:
+        if connector_point is not None:
             connections[connection_id].append(
                 (
-                    (door_linestring, connector_floor_index, connector_external_id),
+                    (connector_point, connector_floor_index, connector_external_id),
                     connection_type,
                 )
             )
         else:
             logger.error(
-                f"Error while adding {connector_external_id} {door_linestring=}"
+                f"Error while adding {connector_external_id} {connector_point=}"
             )
 
     for connection_id, connector_tuples in connections.items():

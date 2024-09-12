@@ -66,7 +66,7 @@ class Dialog(QDialog, FORM_CLASS):
             h_box.addWidget(QLabel(label_text))
             if isinstance(v.annotation, type(Path)):
                 file_browser = qgis.gui.QgsFileWidget()
-                file_browser.setFilter("*.wld")
+                file_browser.setFilter("*.points")
                 self.parameter_lines[k] = file_browser
             else:
                 self.parameter_lines[k] = QLineEdit(str(default))
