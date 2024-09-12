@@ -65,6 +65,7 @@ def add_connection_layers(
                 "point": connector.point,
                 "connection_id": c.connection_id,
                 "connection_type": c.connection_type.value,
+                "graph.graph_id": c.graph.graph_id,
             }
 
     if len(connectors) == 0:
@@ -90,7 +91,7 @@ def add_connection_layers(
                 ]
                 door_df = geopandas.GeoDataFrame(
                     sub_df[[c for c in sub_df.columns if ("." not in c)]],
-                    geometry="linestring",
+                    geometry="point",
                 )
 
                 # door_df["door_type"] = door_df["door_type"].apply(lambda x: x.name, axis=1)
