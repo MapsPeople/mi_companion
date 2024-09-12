@@ -84,7 +84,10 @@ def package_dependencies(
         "none",
     ]
 
-    platforms = ["--platform", f"{platform}", ]#"--platform", "any"]
+    platforms = [
+        "--platform",
+        f"{platform}",
+    ]  # "--platform", "any"]
 
     if True:
         catching_callable(
@@ -235,4 +238,5 @@ if __name__ == "__main__":
         python_version=args.python_version,
         version=args.plugin_version,  # BUNDLE_PROJECT_NAME=args.plugin_name
         platform=args.platform,
+        clean=False,
     )

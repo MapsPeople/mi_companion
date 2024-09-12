@@ -245,7 +245,7 @@ def show_differences(
                     operation_counter
                 )  # TODO: ALL OF THIS CAN BE IMPROVED! WITH SOME proper IDs
 
-                differences[diff_op_ith] = shapely.from_wkt(
+                differences[diff_op_ith] = shapely.wkt.loads(
                     i.split("\n")[0].strip("\n").strip()
                 )  # Also one parses a single geom per operation
                 if is_multi(differences[diff_op_ith]):

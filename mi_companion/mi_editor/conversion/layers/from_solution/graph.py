@@ -43,8 +43,8 @@ def add_graph_layers(
                 points_meta_data,
             ) = osm_xml_to_lines(graph.osm_xml)
 
-            lines = [prepare_geom_for_qgis(l) for l in lines]
-            points = [prepare_geom_for_qgis(p) for p in points]
+            lines = [prepare_geom_for_qgis(l, clean=False) for l in lines]
+            points = [prepare_geom_for_qgis(p, clean=False) for p in points]
 
             logger.info(f"{len(lines)=} loaded!")
 

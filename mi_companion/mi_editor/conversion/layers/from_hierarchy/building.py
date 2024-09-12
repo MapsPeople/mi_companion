@@ -1,8 +1,6 @@
 import logging
 from typing import Any, Optional
 
-import shapely
-
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
@@ -20,7 +18,7 @@ from mi_companion.configuration.constants import (
     HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS,
 )
 from .custom_props import extract_custom_props
-from .extraction import special_extract_layer_data
+from .extraction import feature_to_shapely, special_extract_layer_data
 from .floor import add_building_floors
 from .graph import add_venue_graph
 from .location import add_floor_contents
@@ -147,19 +145,17 @@ def get_building_key(
                 name,
             ) = special_extract_layer_data(floor_group_items)
 
-            feature_geom = layer_feature.geometry()
-            if feature_geom is not None:
-                geom_wkt = feature_geom.asWkt()  # TODO: Try asWkb instead
-                if geom_wkt is not None:
-                    custom_props = extract_custom_props(layer_attributes)
-                    geom_shapely = shapely.from_wkt(geom_wkt)  # from wkb instead
-                    return solution.add_building(
-                        admin_id=admin_id,
-                        external_id=external_id,
-                        name=name,
-                        polygon=prepare_geom_for_mi_db(geom_shapely),
-                        venue_key=venue_key,
-                        custom_properties=(
-                            custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
-                        ),
-                    )
+            door_linestring = feature_to_shapely(layer_feature)
+
+            if door_linestring is not None:
+                custom_props = extract_custom_props(layer_attributes)
+                return solution.add_building(
+                    admin_id=admin_id,
+                    external_id=external_id,
+                    name=name,
+                    polygon=prepare_geom_for_mi_db(door_linestring),
+                    venue_key=venue_key,
+                    custom_properties=(
+                        custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
+                    ),
+                )

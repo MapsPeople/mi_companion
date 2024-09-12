@@ -6,6 +6,10 @@ from jord.geometric_analysis import buffer_principal_axis
 from jord.qlive_utilities import add_shapely_layer
 from jord.shapely_utilities import dilate, is_multi
 
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
+    feature_to_shapely,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,13 +45,10 @@ def run(*, buffer_distance: float = 0.01, only_active_layer: bool = True) -> Non
                 for feature in iter(selected_features):
                     logger.info(f"Randomizing {feature.id()}")
 
-                    feature_geom = feature.geometry()
+                    feature_geom = feature_to_shapely(feature)
+
                     if feature_geom is not None:
-                        geom_wkt = feature_geom.asWkt()
-                        if geom_wkt is not None:
-                            geom_shapely = shapely.from_wkt(geom_wkt)
-                            if geom_shapely is not None:
-                                door_geom[feature.id()] = geom_shapely
+                        door_geom[feature.id()] = feature_geom
 
                 door_geoms = dilate(
                     shapely.unary_union(list(door_geom.values())),

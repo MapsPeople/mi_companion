@@ -15,7 +15,9 @@ if relative_bundled_packages_dir.exists():
     site.addsitedir(str(relative_bundled_packages_dir))
     sys.path = [str(relative_bundled_packages_dir), *sys.path]
 else:
-    logger.warning(f"Could not find bundled packages dir at {relative_bundled_packages_dir}")
+    logger.warning(
+        f"Could not find bundled packages dir at {relative_bundled_packages_dir}"
+    )
 
 
 def read_author_from_metadata(metadata_file: Path) -> str:

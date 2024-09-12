@@ -2,8 +2,6 @@ import copy
 import logging
 from typing import Any, List, Optional
 
-import shapely
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
@@ -26,7 +24,7 @@ from .custom_props import extract_custom_props
 
 __all__ = ["convert_solution_venues"]
 
-from .extraction import special_extract_layer_data
+from .extraction import feature_to_shapely, special_extract_layer_data
 
 # from .graph import add_venue_graph
 from .syncing import post_process_solution, sync_build_venue_solution
@@ -193,11 +191,3 @@ def get_venue_key(solution: Solution, venue_group_items: Any) -> Optional[str]:
                     address=address,
                 )
     logger.error(f"Did not find venue in {venue_group_items.children()=}")
-
-
-def feature_to_shapely(layer_feature: Any) -> None:
-    feature_geom = layer_feature.geometry()
-    if feature_geom is not None:
-        geom_wkt = feature_geom.asWkt()
-        if geom_wkt is not None:
-            return shapely.from_wkt(geom_wkt)

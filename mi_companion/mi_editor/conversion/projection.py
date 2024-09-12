@@ -36,21 +36,24 @@ BACK_PROJECTION = pyproj.Transformer.from_crs(
 
 
 def prepare_geom_for_mi_db(
-    geom_shapely: shapely.geometry.base.BaseGeometry,
+    geom_shapely: shapely.geometry.base.BaseGeometry, clean: bool = True
 ) -> shapely.geometry.base.BaseGeometry:
     if should_reproject():
         geom_shapely = shapely.ops.transform(BACK_PROJECTION, geom_shapely)
 
-    return clean_shape(geom_shapely)
+    if clean:
+        return clean_shape(geom_shapely)
+    return geom_shapely
 
 
 def prepare_geom_for_qgis(
-    geom_shapely: shapely.geometry.base.BaseGeometry,
+    geom_shapely: shapely.geometry.base.BaseGeometry, clean: bool = True
 ) -> shapely.geometry.base.BaseGeometry:
     if should_reproject():
         geom_shapely = shapely.ops.transform(FORWARD_PROJECTION, geom_shapely)
-
-    return clean_shape(geom_shapely)
+    if clean:
+        return clean_shape(geom_shapely)
+    return geom_shapely
 
 
 def reproject_geometry_df(df: DataFrame) -> DataFrame:
