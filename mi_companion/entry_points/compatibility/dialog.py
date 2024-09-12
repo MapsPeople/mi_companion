@@ -1,6 +1,5 @@
 import os
-import typing
-from typing import Generic, Union
+from typing import Any, Generic, ParamSpecArgs, ParamSpecKwargs, Union
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
@@ -23,16 +22,17 @@ except ImportError:  # Compatibility
 # assert get_args(Union[int, str]) == (int, str)
 
 
-def is_union(field) -> bool:
-    return typing.get_origin(field) is Union
+def is_union(field: Union[ParamSpecArgs, ParamSpecKwargs]) -> bool:
+    return get_origin(field) is Union
 
 
-def is_optional(field) -> bool:
-    return is_union(field) and type(None) in typing.get_args(field)
+def is_optional(field: Union[ParamSpecArgs, ParamSpecKwargs]) -> bool:
+    return is_union(field) and type(None) in get_args(field)
 
 
 class Dialog(QDialog, FORM_CLASS):
-    def __init__(self, parent=None):
+
+    def __init__(self, parent: Any = None):
         super().__init__(parent)
         self.setupUi(self)
 

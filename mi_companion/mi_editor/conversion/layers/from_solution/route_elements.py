@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 from typing import Any, Optional
 
 import geopandas
@@ -6,10 +7,18 @@ from geopandas import GeoDataFrame
 from jord.qlive_utilities import add_dataframe_layer
 
 from integration_system.model import (
+    Avoid,
+    Barrier,
     CollectionMixin,
+    Connection,
     ConnectionCollection,
+    Door,
     DoorCollection,
+    EntryPoint,
     Graph,
+    Obstacle,
+    Prefer,
+    RouteElementItem,
     Solution,
 )
 from mi_companion.configuration.constants import (
@@ -88,44 +97,74 @@ def add_route_element_layers(
     graph: Graph,
     dropdown_widget: Optional[Any] = None,
     solution: Solution,
+    split_levels_into_individual_groups: bool = False,
 ) -> None:
-    add_linestring_route_element_layers(
-        dropdown_widget=dropdown_widget,
-        graph=graph,
-        graph_group=graph_group,
-        qgis_instance_handle=qgis_instance_handle,
-        doors=solution.doors,
-    )
+    if split_levels_into_individual_groups:
+        route_element_collections = {
+            Door: solution.doors,
+            Avoid: solution.avoids,
+            Prefer: solution.prefers,
+            Barrier: solution.barriers,
+            EntryPoint: solution.entry_points,
+            Obstacle: solution.obstacles,
+            Connection: solution.connections,
+        }
+        unique_levels = defaultdict(dict)
+        for type_, res in route_element_collections:
+            for re in res:
+                re: RouteElementItem
+                if isinstance(re, RouteElementItem):
+                    unique_levels[re.floor_index][type_] = re
+                elif isinstance(re, Connection):
+                    for key, connector in re.connectors.items():
+                        unique_levels[connector.floor_index][type_][re.connection_id][
+                            re.connection_type
+                        ] = re
+                else:
+                    raise NotImplementedError(f"{re} is not supported")
 
-    for desc, col in {
-        AVOIDS_DESCRIPTOR: solution.avoids,
-        PREFERS_DESCRIPTOR: solution.prefers,
-        BARRIERS_DESCRIPTOR: solution.barriers,
-        ENTRY_POINTS_DESCRIPTOR: solution.entry_points,
-    }.items():
-        add_point_route_element_layers(
+        unique_levels = sorted(list(unique_levels))
+        for level in unique_levels:
+            ...  # TODO: NOT IMPLEMENTED YET
+
+    else:
+        add_linestring_route_element_layers(
+            dropdown_widget=dropdown_widget,
             graph=graph,
             graph_group=graph_group,
             qgis_instance_handle=qgis_instance_handle,
-            route_element_collection=col,
-            layer_descriptor=desc,
+            doors=solution.doors,
         )
 
-    if False:
-        add_polygon_route_element_layers(
-            graph=graph,
+        for desc, col in {
+            AVOIDS_DESCRIPTOR: solution.avoids,
+            PREFERS_DESCRIPTOR: solution.prefers,
+            BARRIERS_DESCRIPTOR: solution.barriers,
+            ENTRY_POINTS_DESCRIPTOR: solution.entry_points,
+        }.items():
+            add_point_route_element_layers(
+                graph=graph,
+                graph_group=graph_group,
+                qgis_instance_handle=qgis_instance_handle,
+                route_element_collection=col,
+                layer_descriptor=desc,
+            )
+
+        if False:
+            add_polygon_route_element_layers(
+                graph=graph,
+                graph_group=graph_group,
+                qgis_instance_handle=qgis_instance_handle,
+                route_element_collection=solution.obstacles,
+                layer_descriptor=OBSTACLES_DESCRIPTOR,
+            )
+
+        add_connection_layers(
+            dropdown_widget=dropdown_widget,
             graph_group=graph_group,
             qgis_instance_handle=qgis_instance_handle,
-            route_element_collection=solution.obstacles,
-            layer_descriptor=OBSTACLES_DESCRIPTOR,
+            connections=solution.connections,
         )
-
-    add_connection_layers(
-        dropdown_widget=dropdown_widget,
-        graph_group=graph_group,
-        qgis_instance_handle=qgis_instance_handle,
-        connections=solution.connections,
-    )
 
 
 def add_linestring_route_element_layers(

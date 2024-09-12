@@ -1,51 +1,105 @@
 #!/usr/bin/python
 import logging
+from operator import xor
+from pathlib import Path
+
+from PyQt5.QtGui import QTransform
 
 logger = logging.getLogger(__name__)
 
-import uuid
+__all__ = ["transform_features", "transform_sub_tree_features"]
 
-__all__ = ["randomize_field", "randomize_sub_tree_field"]
-
-from typing import Collection, Union, Any
+from typing import Collection, Optional, Union, Any
 
 
-def run(*, only_active_layer: bool = False) -> None:
+def run(
+    *, wld_file_path: Optional[Path] = None, gcp_points_file_path: Optional[Path] = None
+) -> None:
     """
-    Recompute field_name for all features in group
 
-    :param field_name:
+
+    Transform geometry for all features in the selected group
+
+
+
+    :param wld_file_path:
+    :param gcp_points_file_path:
+    :return:
     """
+
     # noinspection PyUnresolvedReferences
     from qgis.utils import iface
-    from jord.qgis_utilities.helpers import randomize_sub_tree_field
+
+    assert xor(wld_file_path is not None, gcp_points_file_path is not None)
+
+    if gcp_points_file_path is not None:
+        assert gcp_points_file_path.exists()
+        with open(gcp_points_file_path) as gcp_points_file:
+            # gcp_points = json.load(gcp_points_file)
+            ...
+            transform = None
+    else:
+        """
+
+            WLD -- ESRI World File
+        A world file file is a plain ASCII text file consisting of six values separated by newlines. The format is:
+
+        pixel X size
+        rotation about the Y axis (usually 0.0)
+        rotation about the X axis (usually 0.0)
+        negative pixel Y size
+        X coordinate of upper left pixel center
+        Y coordinate of upper left pixel center
+
+        For example:
+
+        60.0000000000
+        0.0000000000
+        0.0000000000
+        -60.0000000000
+        440750.0000000000
+        3751290.0000000000
+
+        """
+
+        assert wld_file_path is not None
+        assert wld_file_path.exists()
+        with open(wld_file_path) as wld_file:
+            # from PyQt5.QtGui import QMatrix4x4, QTransform
+            m32 = (float(c) for c in wld_file.readlines())
+
+            # 	QTransform(qreal m11, qreal m12, qreal m21, qreal m22, qreal dx, qreal dy)
+            transform = QTransform(*m32)
+
+            # def setMatrix(m11, m12, m21, m22, dx, dy)
+            # gcp_points = json.load(wld_file)
 
     selected_nodes = iface.layerTreeView().selectedNodes()
 
     if len(selected_nodes) > 0:
         for n in iter(selected_nodes):
-            randomize_sub_tree_field(n, "")
+            transform_sub_tree_features(n, transform=transform)
     else:
         logger.error(f"Number of selected nodes was {len(selected_nodes)}")
         logger.error(f"Please select node in the layer tree")
 
 
-def randomize_sub_tree_field(
-    selected_nodes: Union[Any, Collection[Any]], field_name: str
+def transform_sub_tree_features(
+    selected_nodes: Union[Any, Collection[Any]], transform: QTransform
 ) -> None:
     # noinspection PyUnresolvedReferences
     from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsLayerTreeNode
 
     if isinstance(selected_nodes, QgsLayerTreeLayer):
-        randomize_field(selected_nodes, field_name=field_name)
+        transform_features(selected_nodes, transform=transform)
     elif isinstance(selected_nodes, QgsLayerTreeGroup):
-        randomize_sub_tree_field(selected_nodes.children(), field_name=field_name)
+        transform_sub_tree_features(selected_nodes.children(), transform=transform)
     elif isinstance(selected_nodes, QgsLayerTreeNode):
         if selected_nodes.nodeType() == QgsLayerTreeNode.NodeGroup:
-            randomize_sub_tree_field(selected_nodes.children(), field_name=field_name)
+            transform_sub_tree_features(selected_nodes.children(), transform=transform)
         else:
             logger.error(
-                f"Node {selected_nodes} was not supported in randomize_sub_tree_field, skipping"
+                f"Node {selected_nodes} was not supported in transform_sub_tree_features, skipping"
             )
     else:
         if len(selected_nodes) == 0:
@@ -56,33 +110,34 @@ def randomize_sub_tree_field(
 
         for group in iter(selected_nodes):
             if isinstance(group, QgsLayerTreeLayer):
-                randomize_field(group, field_name=field_name)
+                transform_features(group, transform=transform)
             elif isinstance(group, QgsLayerTreeGroup):
-                randomize_sub_tree_field(group.children(), field_name=field_name)
+                transform_sub_tree_features(group.children(), transform=transform)
             elif isinstance(group, QgsLayerTreeNode):
                 if group.nodeType() == QgsLayerTreeNode.NodeGroup:
-                    randomize_sub_tree_field(group.children(), field_name=field_name)
+                    transform_sub_tree_features(group.children(), transform=transform)
                 else:
                     logger.error(
-                        f"Node {group} was not supported in randomize_sub_tree_field, skipping"
+                        f"Node {group} was not supported in transform_sub_tree_features, skipping"
                     )
             else:
                 logger.error(
-                    f"Node {group} was not supported in randomize_sub_tree_field, skipping"
+                    f"Node {group} was not supported in transform_sub_tree_features, skipping"
                 )
 
 
-def randomize_field(tree_layer: Any, field_name: str) -> None:  #: QgsLayerTreeLayer
+def transform_features(
+    tree_layer: Any, transform: QTransform
+) -> None:  #: QgsLayerTreeLayer
     """
-        https://qgis.org/pyqgis/3.28/core/QgsVectorLayer.html#qgis.core.QgsVectorLayer.changeAttributeValues
 
-    changeAttributeValues
-    fid: int, newValues: Dict[int, Any], oldValues: Dict[int, Any] = {}, skipDefaultValues: bool = False
-
-        :param field_name:
-        :param tree_layer:
-        :return:
+    :param transform:
+    :param tree_layer:
+    :return:
     """
+
+    from qgis.core import QgsFeature
+
     if tree_layer is None:
         logger.error(f"Tree layer was None")
         return
@@ -90,20 +145,31 @@ def randomize_field(tree_layer: Any, field_name: str) -> None:  #: QgsLayerTreeL
 
     layer = tree_layer.layer()
 
-    field_idx = layer.fields().indexFromName(field_name)
+    if not layer.isValid():
+        logger.error(f"{tree_layer.layer().name()} is not valid!")
+        return
 
-    if field_idx >= 0:
-        layer.startEditing()
-        # layer.beginEditCommand(f"Regenerate {field_name}")
-        logger.info(
-            f"Randomizing {field_name}:{field_idx} in {tree_layer.layer().name()}"
-        )
+    layer.startEditing()
+    # layer.beginEditCommand(f"Regenerate {field_name}")
+    logger.warning(
+        f"Transforming geometry of layer with name: {tree_layer.layer().name()}"
+    )
 
-        for i in range(layer.featureCount() + 1):
-            layer.changeAttributeValue(i, field_idx, uuid.uuid4().hex)
+    for idx, feat in enumerate(layer.getFeatures()):
+        feat: QgsFeature
 
-        # layer.rollBack()
-        # layer.endEditCommand()
-        layer.commitChanges()
-    else:
-        logger.error(f"Did not find {field_name} in {layer.name()}")
+        assert feat.hasGeometry()
+        geom = feat.geometry()
+        transformation_res = geom.transform(transform)
+        # print(transformation_res)
+        # logger.warning(f'{transformation_res}')
+
+        feat.setGeometry(geom)
+        layer.updateFeature(feat)
+
+        # layer.changeGeometry(idx, geom)
+
+    # layer.rollBack()
+    layer.endEditCommand()
+    layer.commitChanges()
+    layer.triggerRepaint()

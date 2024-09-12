@@ -13,17 +13,17 @@ __copyright__ = "Copyright 2012, Australia Indonesia Facility for " "Disaster Re
 
 import unittest
 
-from qgis.core import QgsProviderRegistry
-
-from .utilities import get_qgis_app
-
-QGIS_APP = get_qgis_app()
-
 
 class QGISTest(unittest.TestCase):
     """Test the QGIS Environment"""
 
     def test_qgis_environment(self):
+        from .utilities import get_qgis_app
+
+        QGIS_APP = get_qgis_app()
+
+        from qgis.core import QgsProviderRegistry
+
         """QGIS environment has the expected providers"""
 
         r = QgsProviderRegistry.instance()
