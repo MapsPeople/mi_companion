@@ -27,6 +27,7 @@ def should_reproject() -> bool:
 
 SOURCE_CRS = pyproj.CRS(MI_EPSG_NUMBER)
 DESTINATION_CRS = pyproj.CRS(GDS_EPSG_NUMBER)
+
 FORWARD_PROJECTION = pyproj.Transformer.from_crs(
     SOURCE_CRS, DESTINATION_CRS, always_xy=True
 ).transform
@@ -43,6 +44,7 @@ def prepare_geom_for_mi_db(
 
     if clean:
         return clean_shape(geom_shapely)
+
     return geom_shapely
 
 
@@ -51,8 +53,10 @@ def prepare_geom_for_qgis(
 ) -> shapely.geometry.base.BaseGeometry:
     if should_reproject():
         geom_shapely = shapely.ops.transform(FORWARD_PROJECTION, geom_shapely)
+
     if clean:
         return clean_shape(geom_shapely)
+
     return geom_shapely
 
 
