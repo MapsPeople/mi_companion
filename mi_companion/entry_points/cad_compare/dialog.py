@@ -1,5 +1,6 @@
 import logging
 import typing
+from inspect import isclass
 from pathlib import Path
 from typing import Generic, Union
 
@@ -37,6 +38,7 @@ def is_optional(field) -> bool:
 
 
 class Dialog(QDialog, FORM_CLASS):
+
     def __init__(self, parent=None):  #: QWidget
         from jord.qgis_utilities.helpers import signals
 
@@ -51,7 +53,7 @@ class Dialog(QDialog, FORM_CLASS):
 
         self.parameter_lines = {}
         self.parameter_signature = inspect.signature(run).parameters
-        for k, v in self.parameter_signature.items():
+        for k, v in reversed(self.parameter_signature.items()):
             h_box = QHBoxLayout()
             label_text = f"{k}"
             default = None
@@ -63,12 +65,17 @@ class Dialog(QDialog, FORM_CLASS):
                 label_text += f" = ({default})"
 
             h_box.addWidget(QLabel(label_text))
-            if isinstance(v.annotation, type(Path)):
+            if isclass(v.annotation) and issubclass(v.annotation, Path):
                 file_browser = qgis.gui.QgsFileWidget()
-                file_browser.setFilter("*.dxf")
+                if default is not None:
+                    file_browser.setFilePath(str(default))
+                else:
+                    file_browser.setFilter("*.dxf")
                 self.parameter_lines[k] = file_browser
             else:
-                self.parameter_lines[k] = QLineEdit(str(default))
+                self.parameter_lines[k] = QLineEdit(
+                    str(default) if default is not None else None
+                )
 
             h_box.addWidget(self.parameter_lines[k])
             h_box_w = QWidget(self)

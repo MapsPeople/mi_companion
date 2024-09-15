@@ -12,6 +12,7 @@ __all__ = ["Dialog"]
 
 
 class Dialog(QtWidgets.QDialog, FORM_CLASS):
+
     def __init__(self, parent=None):
         from jord.qgis_utilities.helpers import signals
 

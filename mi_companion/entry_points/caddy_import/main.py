@@ -15,10 +15,14 @@ def run(
     layer_column: Optional[str] = "layer",
     crs_id: Optional[int] = 3857,
     font_size: Optional[int] = 6,
+    oda_converter_path: Path = Path(
+        r"C:\Program Files\ODA\ODAFileConverter 25.4.0\ODAFileConverter.exe"
+    ),  # TODO: Use a bundled ODA converter?
 ) -> None:
     """
     Import an DXF file into the QGIS using the CADDY importer.
 
+    :param oda_converter_path:
     :param path: Path to the directory containing the caddy files.
     :param text_column: Name of the column containing the text column.
     :param layer_column: Name of the column containing the layer column.
@@ -51,7 +55,7 @@ def run(
         Qgis,
     )
 
-    from caddy import export_to
+    from caddy.exporting import export_to
 
     # noinspection PyUnresolvedReferences
     from qgis.PyQt.QtGui import QColor, QFont
@@ -63,9 +67,6 @@ Import/Export > Import Layers from DXF/DWG)
 """
 
     auto_add_layers: bool = True
-    oda_converter_path: str = (
-        r"C:\Program Files\ODA\ODAFileConverter 25.4.0\ODAFileConverter.exe"
-    )
 
     oda_converter_path_ = Path(oda_converter_path)
 

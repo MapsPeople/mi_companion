@@ -1,5 +1,6 @@
 import logging
 import typing
+from inspect import isclass
 from pathlib import Path
 from typing import Generic, Union
 
@@ -37,6 +38,7 @@ def is_optional(field) -> bool:
 
 
 class Dialog(QDialog, FORM_CLASS):
+
     def __init__(self, parent=None):  #: QWidget
         from jord.qgis_utilities.helpers import signals
 
@@ -51,7 +53,7 @@ class Dialog(QDialog, FORM_CLASS):
 
         self.parameter_lines = {}
         self.parameter_signature = inspect.signature(run).parameters
-        for k, v in self.parameter_signature.items():
+        for k, v in reversed(self.parameter_signature.items()):
             h_box = QHBoxLayout()
             label_text = f"{k}"
             default = None
@@ -63,12 +65,21 @@ class Dialog(QDialog, FORM_CLASS):
                 label_text += f" = ({default})"
 
             h_box.addWidget(QLabel(label_text))
-            if isinstance(v.annotation, type(Path)):
+            if isclass(v.annotation) and issubclass(v.annotation, Path):
                 file_browser = qgis.gui.QgsFileWidget()
-                file_browser.setFilter("*.dxf")
+
+                if default is not None:
+                    file_browser.setFilePath(str(default))
+                # file_browser.setStorageMode(qgis.gui.QgsFileWidget.StorageMode.GetDirectory)
+                # file_browser.fileChanged.connect(self.picked_directory)
+                else:
+                    file_browser.setFilter("*.dxf")
+
                 self.parameter_lines[k] = file_browser
             else:
-                self.parameter_lines[k] = QLineEdit(str(default))
+                self.parameter_lines[k] = QLineEdit(
+                    str(default) if default is not None else None
+                )
 
             h_box.addWidget(self.parameter_lines[k])
             h_box_w = QWidget(self)
@@ -77,48 +88,49 @@ class Dialog(QDialog, FORM_CLASS):
 
         self.parameter_layout.insertWidget(0, QLabel(run.__doc__))
 
-    def on_compute_clicked(self) -> None:
-        from .main import run
 
-        call_kwarg = {}
-        for k, v in self.parameter_lines.items():
-            if isinstance(v, QLineEdit):
-                value = v.text()
-                if value and value != "None":
-                    ano = self.parameter_signature[k].annotation
-                    if ano != self.parameter_signature[k].empty:
-                        if is_optional(ano) or is_union(ano):
-                            param_type = get_args(ano)
-                            if not isinstance(value, param_type):
-                                for pt in param_type:
-                                    try:
-                                        parsed_t = pt(value)
-                                        value = parsed_t
-                                    except Exception as e:
-                                        print(e)
-                        else:
-                            value = ano(value)
-                    elif (
-                        self.parameter_signature[k].default
-                        != self.parameter_signature[k].empty
-                    ):
-                        value = type(self.parameter_signature[k].default)(value)
-                    call_kwarg[k] = value
-            elif isinstance(v, qgis.gui.QgsFileWidget):
-                file_path_str = v.splitFilePaths(v.filePath())[
-                    0
-                ]  # ONLY one supported for now
-                if file_path_str:
-                    file_path = Path(file_path_str)
-                    if file_path.exists() and file_path.is_file():
-                        call_kwarg[k] = file_path
+def on_compute_clicked(self) -> None:
+    from .main import run
+
+    call_kwarg = {}
+    for k, v in self.parameter_lines.items():
+        if isinstance(v, QLineEdit):
+            value = v.text()
+            if value and value != "None":
+                ano = self.parameter_signature[k].annotation
+                if ano != self.parameter_signature[k].empty:
+                    if is_optional(ano) or is_union(ano):
+                        param_type = get_args(ano)
+                        if not isinstance(value, param_type):
+                            for pt in param_type:
+                                try:
+                                    parsed_t = pt(value)
+                                    value = parsed_t
+                                except Exception as e:
+                                    print(e)
                     else:
-                        logger.error(f"{file_path=}")
+                        value = ano(value)
+                elif (
+                    self.parameter_signature[k].default
+                    != self.parameter_signature[k].empty
+                ):
+                    value = type(self.parameter_signature[k].default)(value)
+                call_kwarg[k] = value
+        elif isinstance(v, qgis.gui.QgsFileWidget):
+            file_path_str = v.splitFilePaths(v.filePath())[
+                0
+            ]  # ONLY one supported for now
+            if file_path_str:
+                file_path = Path(file_path_str)
+                if file_path.exists() and file_path.is_file():
+                    call_kwarg[k] = file_path
                 else:
-                    logger.error(f"{file_path_str=}")
+                    logger.error(f"{file_path=}")
             else:
-                logger.error(f"{v=}")
+                logger.error(f"{file_path_str=}")
+        else:
+            logger.error(f"{v=}")
 
-        run(**call_kwarg)
+    run(**call_kwarg)
 
-        self.close()
+    self.close()

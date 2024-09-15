@@ -7,7 +7,7 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
-def run(*, path: str) -> None:
+def run(*, svg_file_path: Path) -> None:
     from svaguely import parse_svg
     from warg import flatten_mapping
 
@@ -18,7 +18,9 @@ def run(*, path: str) -> None:
     from jord.qlive_utilities import add_dataframe_layer
     import geopandas
 
-    svg_file_path = Path(path)
+    if isinstance(svg_file_path, str):
+        svg_file_path = Path(svg_file_path)
+
     svg_elements, _ = parse_svg(svg_file_path, output_space=1)
 
     svg_elements = flatten_mapping(svg_elements)
@@ -35,7 +37,7 @@ def run(*, path: str) -> None:
         qgis_instance_handle=QgsProject.instance(),
         dataframe=df,
         geometry_column="geometry",
-        name=str(path),
+        name=str(svg_file_path),
         crs="EPSG:3857",
         # crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
     )

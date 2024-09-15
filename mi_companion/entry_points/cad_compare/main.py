@@ -7,7 +7,7 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
-def run(*, original_dxf_path: str, new_dxf_path: str) -> None:
+def run(*, original_dxf_path: Path, new_dxf_path: Path) -> None:
     """
     Compares a new DXF files against a reference DXF file.
     :param original_dxf_path: Path to the original DXF file.
@@ -18,12 +18,16 @@ def run(*, original_dxf_path: str, new_dxf_path: str) -> None:
 
     from caddy.difference import get_entity_difference
 
-    original_file_path = Path(original_dxf_path)
-    new_file_path = Path(new_dxf_path)
+    if isinstance(original_dxf_path, str):
+        original_dxf_path = Path(original_dxf_path)
 
-    diff = get_entity_difference(original_file_path, new_file_path)
+    if isinstance(new_dxf_path, str):
+        new_dxf_path = Path(new_dxf_path)
+
+    diff = get_entity_difference(original_dxf_path, new_dxf_path)
 
     if True:
+        # noinspection PyUnresolvedReferences
         from qgis.core import QgsProject
         from jord.qlive_utilities import add_dataframe_layer
 
@@ -47,6 +51,7 @@ def run(*, original_dxf_path: str, new_dxf_path: str) -> None:
             )
 
     if True:
+        # noinspection PyUnresolvedReferences
         from qgis.core import QgsProject
         from jord.qlive_utilities import add_dataframe_layer
 
@@ -70,6 +75,7 @@ def run(*, original_dxf_path: str, new_dxf_path: str) -> None:
             )
 
     if True:
+        # noinspection PyUnresolvedReferences
         from qgis.core import QgsProject
         from jord.qlive_utilities import add_dataframe_layer
 
@@ -93,6 +99,7 @@ def run(*, original_dxf_path: str, new_dxf_path: str) -> None:
             )
 
     if True:
+        # noinspection PyUnresolvedReferences
         from qgis.core import QgsProject
         from jord.qlive_utilities import add_dataframe_layer
 

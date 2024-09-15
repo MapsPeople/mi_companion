@@ -32,6 +32,7 @@ def is_optional(field) -> bool:
 
 
 class Dialog(QDialog, FORM_CLASS):
+
     def __init__(self, parent=None):
         from jord.qgis_utilities.helpers import signals
 
@@ -46,7 +47,7 @@ class Dialog(QDialog, FORM_CLASS):
 
         self.parameter_lines = {}
         self.parameter_signature = inspect.signature(run).parameters
-        for k, v in self.parameter_signature.items():
+        for k, v in reversed(self.parameter_signature.items()):
             h_box = QHBoxLayout()
             label_text = f"{k}"
             default = None
@@ -58,7 +59,7 @@ class Dialog(QDialog, FORM_CLASS):
                 label_text += f" = ({default})"
 
             h_box.addWidget(QLabel(label_text))
-            line_edit = QLineEdit(str(default))
+            line_edit = QLineEdit(str(default) if default is not None else None)
             h_box.addWidget(line_edit)
             h_box_w = QWidget(self)
             h_box_w.setLayout(h_box)

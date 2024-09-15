@@ -9,9 +9,11 @@ logger = logging.getLogger(__name__)
 
 def run(
     *,
-    path: str,
+    dwg_path: Path,
     auto_add_layers: bool = True,
-    oda_converter_path: str = r"C:\Program Files\ODA\ODAFileConverter 25.4.0\ODAFileConverter.exe",
+    oda_converter_path: Path = Path(
+        r"C:\Program Files\ODA\ODAFileConverter 25.4.0\ODAFileConverter.exe"
+    ),
 ) -> None:
     """
 
@@ -19,7 +21,7 @@ def run(
     describing tag (Floor)
 
 
-    :param path:
+    :param dwg_path:
     :param auto_add_layers:
     :param oda_converter_path:
     :return:
@@ -45,16 +47,20 @@ def run(
     )
 
     """
-  alternative
-  by importing the DXF/DWG through the library libdxfrw into a geopackage (the method when you do Project >
-  Import/Export > Import Layers from DXF/DWG)
-  """
+alternative
+by importing the DXF/DWG through the library libdxfrw into a geopackage (the method when you do Project >
+Import/Export > Import Layers from DXF/DWG)
+"""
 
-    svg_file_path = Path(path)
-    oda_converter_path_ = Path(oda_converter_path)
-    assert oda_converter_path_.exists(), f"{oda_converter_path} is not a valid path"
+    if isinstance(dwg_path, str):
+        dwg_path = Path(dwg_path)
 
-    new_dxf_path: Path = convert_to_dxf(svg_file_path, oda_converter_path_)
+    if isinstance(oda_converter_path, str):
+        oda_converter_path = Path(oda_converter_path)
+
+    assert oda_converter_path.exists(), f"{oda_converter_path} is not a valid path"
+
+    new_dxf_path: Path = convert_to_dxf(dwg_path, oda_converter_path)
 
     logger.info(f"Emitted {new_dxf_path}")
 
