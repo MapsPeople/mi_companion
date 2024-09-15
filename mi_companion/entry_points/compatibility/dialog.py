@@ -47,7 +47,7 @@ class Dialog(QDialog, FORM_CLASS):
         self.parameter_lines = {}
         self.parameter_signature = inspect.signature(run).parameters
 
-        for k, v in self.parameter_signature.items():
+        for k, v in reversed(self.parameter_signature.items()):
             label_text = f"{k}"
             default = None
             if v.annotation != v.empty:
@@ -57,7 +57,7 @@ class Dialog(QDialog, FORM_CLASS):
                 default = v.default
                 label_text += f" = ({default})"
 
-            line_edit = QLineEdit(str(default))
+            line_edit = QLineEdit(str(default) if default is not None else None)
 
             h_box = QHBoxLayout()
             h_box.addWidget(QLabel(label_text))

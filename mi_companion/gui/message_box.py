@@ -3,6 +3,7 @@ from qgis.PyQt.QtWidgets import QMessageBox, QTextEdit
 
 
 class ResizableMessageBox(QMessageBox):  # TODO: MOVE THIS TO JORD!
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setSizeGripEnabled(True)

@@ -1,5 +1,6 @@
 import logging
 import typing
+from inspect import isclass
 from pathlib import Path
 from typing import Generic, Union
 
@@ -52,24 +53,29 @@ class Dialog(QDialog, FORM_CLASS):
 
         self.parameter_lines = {}
         self.parameter_signature = inspect.signature(run).parameters
-        for k, v in self.parameter_signature.items():
+        for k, v in reversed(self.parameter_signature.items()):
             h_box = QHBoxLayout()
             label_text = f"{k}"
             default = None
+
             if v.annotation != v.empty:
                 annotation = v.annotation
                 label_text += f": {annotation}"
+
             if v.default != v.empty:
                 default = v.default
                 label_text += f" = ({default})"
 
             h_box.addWidget(QLabel(label_text))
-            if isinstance(v.annotation, type(Path)):
+
+            if isclass(v.annotation) and issubclass(v.annotation, Path):
                 file_browser = qgis.gui.QgsFileWidget()
                 file_browser.setFilter("*.points")
                 self.parameter_lines[k] = file_browser
             else:
-                self.parameter_lines[k] = QLineEdit(str(default))
+                self.parameter_lines[k] = QLineEdit(
+                    str(default) if default is not None else None
+                )
 
             h_box.addWidget(self.parameter_lines[k])
             h_box_w = QWidget(self)
