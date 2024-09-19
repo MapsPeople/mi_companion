@@ -6,8 +6,8 @@ from typing import Mapping
 from geopandas import GeoDataFrame
 from pandas import DataFrame, json_normalize
 
-from integration_system.model import CollectionMixin
-from mi_companion.configuration.constants import NULL_VALUE, REAL_NONE_JSON_VALUE
+from integration_system.model import Category, CollectionMixin
+from mi_companion import NULL_VALUE, REAL_NONE_JSON_VALUE
 
 logger = logging.getLogger(__name__)
 __all__ = ["process_custom_props_df", "to_df"]
@@ -64,8 +64,10 @@ def process_custom_props_df(df: GeoDataFrame) -> None:
                     df[column_name] = [None] * len(series)
                 else:  # Drop custom properties
                     df.drop(columns=column_name, inplace=True)
+
             elif True:
                 df[column_name] = series.astype(str)
+
             elif False:
                 df[column_name] = df[column_name].fillna(NULL_VALUE)
 
@@ -117,10 +119,14 @@ def to_df_2(coll_mix: CollectionMixin) -> DataFrame:
                         for cp, cpv in translations.items():
                             if cpv is None:
                                 cps[language][cp] = REAL_NONE_JSON_VALUE
+
                     setattr(c, "custom_properties", cps)
+
                 else:
                     setattr(c, "custom_properties", None)
+
         cs.append(dataclasses.asdict(c))
+
     return json_normalize(cs)
 
 
@@ -128,6 +134,7 @@ def to_df(coll_mix: CollectionMixin) -> DataFrame:
     # noinspection PyTypeChecker
     cs = []
     for c in coll_mix:
+
         if hasattr(c, "custom_properties"):
             cps = getattr(c, "custom_properties")
             if cps is not None:
@@ -135,6 +142,21 @@ def to_df(coll_mix: CollectionMixin) -> DataFrame:
                     for cp, cpv in translations.items():
                         if cpv is None:
                             cps[language][cp] = REAL_NONE_JSON_VALUE
+
                 setattr(c, "custom_properties", cps)
-        cs.append(dataclasses.asdict(c))
+
+        c_d = dataclasses.asdict(c)
+
+        if "categories" in c_d:
+            list_of_category_dicts = c_d.pop("categories")
+
+            keys = []
+            if list_of_category_dicts:
+                for cat in list_of_category_dicts:
+                    keys.append(cat["name"])
+
+            c_d["category_keys"] = keys
+
+        cs.append(c_d)
+
     return json_normalize(cs)

@@ -19,7 +19,7 @@ from integration_system.model import (
     EntryPointType,
     Solution,
 )
-from mi_companion.configuration.constants import (
+from mi_companion import (
     AVOIDS_DESCRIPTOR,
     BARRIERS_DESCRIPTOR,
     CONNECTORS_DESCRIPTOR,
@@ -499,7 +499,7 @@ def assemble_connections(connections, solution, graph_key):
         for geom, floor_index, external_id in connector_list:
             connectors.append(
                 Connector(
-                    external_id=external_id,
+                    admin_id=external_id,
                     floor_index=floor_index,
                     point=prepare_geom_for_mi_db(geom),
                 )

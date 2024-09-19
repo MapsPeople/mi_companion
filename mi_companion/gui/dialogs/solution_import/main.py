@@ -7,11 +7,13 @@ logger = logging.getLogger(__name__)
 def run(*, path: str) -> None:
     # noinspection PyUnresolvedReferences
     from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
+    # noinspection PyUnresolvedReferences
     from qgis.utils import iface
     from jord.qgis_utilities.helpers import InjectedProgressBar
 
     from integration_system.json_serde import from_json
-    from mi_companion.configuration.constants import MI_HIERARCHY_GROUP_NAME
+    from mi_companion import MI_HIERARCHY_GROUP_NAME
     from mi_companion.mi_editor.conversion import add_solution_layers
 
     qgis_instance_handle = QgsProject.instance()

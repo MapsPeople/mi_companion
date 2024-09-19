@@ -6,6 +6,7 @@ import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
+# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QMessageBox
 
 from mi_companion.mi_editor.authentication import oauth

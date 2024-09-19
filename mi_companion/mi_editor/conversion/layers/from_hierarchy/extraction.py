@@ -25,7 +25,9 @@ logger = logging.getLogger(__name__)
 __all__ = ["special_extract_layer_data", "extract_layer_data", "feature_to_shapely"]
 
 
-def special_extract_layer_data(layer_tree_layer: Any) -> Tuple:  # TODO: REWRITE
+def special_extract_layer_data(
+    layer_tree_layer: Any, require_external_id: bool = False
+) -> Tuple:  # TODO: REWRITE
     layer_attributes, layer_feature = extract_layer_data(layer_tree_layer)
 
     admin_id = layer_attributes["admin_id"] if "admin_id" in layer_attributes else None
@@ -34,6 +36,11 @@ def special_extract_layer_data(layer_tree_layer: Any) -> Tuple:  # TODO: REWRITE
             admin_id = uuid.uuid4().hex
         else:
             raise ValueError(f"{layer_feature} is missing a valid admin id")
+    elif isinstance(admin_id, QVariant):
+        if admin_id.isNull():
+            raise ValueError(f"{layer_feature} is missing a valid admin id")
+        else:
+            admin_id = str(admin_id.value())
 
     external_id = (
         layer_attributes["external_id"] if "external_id" in layer_attributes else None
@@ -42,15 +49,27 @@ def special_extract_layer_data(layer_tree_layer: Any) -> Tuple:  # TODO: REWRITE
         if read_bool_setting("GENERATE_MISSING_EXTERNAL_IDS"):
             external_id = uuid.uuid4().hex
         else:
-            raise ValueError(f"{layer_feature} is missing a valid external id")
+            if require_external_id:
+                raise ValueError(f"{layer_feature} is missing a valid external id")
+    elif isinstance(external_id, QVariant):
+        if external_id.isNull():
+            external_id = None
+        else:
+            external_id = str(external_id.value())
 
     name = layer_attributes["name"] if "name" in layer_attributes else None
 
     if isinstance(name, QVariant):
-        name = name.value()
+        if external_id.isNull():
+            name = None
+        else:
+            name = str(name.value())
 
     if name is None:
         name = external_id
+
+    if name is None:
+        raise ValueError(f"{layer_feature} is missing a valid name")
 
     for k in layer_attributes.keys():
         if (
@@ -58,11 +77,16 @@ def special_extract_layer_data(layer_tree_layer: Any) -> Tuple:  # TODO: REWRITE
             and layer_attributes[k].lower().strip() == "none"
         ):
             layer_attributes[k] = None
+        elif isinstance(layer_attributes[k], QVariant):
+            if layer_attributes[k].isNull():
+                layer_attributes[k] = None
+            else:
+                layer_attributes[k] = str(layer_attributes[k].value())
 
     return admin_id, external_id, layer_attributes, layer_feature, name
 
 
-def extract_layer_data(layer_tree_layer):
+def extract_layer_data(layer_tree_layer: Any) -> Tuple:
     geometry_layer = layer_tree_layer.layer()
     layer_feature = next(iter(geometry_layer.getFeatures()))
     layer_attributes = {

@@ -5,10 +5,19 @@ import logging
 import os
 import sys
 
+# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QSize
+
+# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QWidget
+
+# noinspection PyUnresolvedReferences
 from qgis.core import QgsApplication
+
+# noinspection PyUnresolvedReferences
 from qgis.gui import QgsMapCanvas
+
+# noinspection PyUnresolvedReferences
 from qgis.utils import iface
 
 from .qgis_interface import QgisInterface

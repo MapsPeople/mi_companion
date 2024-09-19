@@ -17,7 +17,8 @@ from integration_system.mi import (
     get_remote_solution,
 )
 from integration_system.model import Solution, VenueType
-from mi_companion.configuration.constants import (
+from mi_companion import (
+    DESCRIPTOR_BEFORE,
     MI_HIERARCHY_GROUP_NAME,
     OSM_HIGHWAY_TYPES,
     SOLUTION_DATA_DESCRIPTOR,
@@ -54,7 +55,11 @@ def add_solution_layers(
     mi_group.setExpanded(True)
     # mi_group.setExpanded(False)
 
-    solution_name = f"{solution.name} {SOLUTION_DESCRIPTOR}"
+    if DESCRIPTOR_BEFORE:
+        solution_name = f"{SOLUTION_DESCRIPTOR} {solution.name}"
+    else:
+        solution_name = f"{solution.name} {SOLUTION_DESCRIPTOR}"
+
     solution_group = layer_tree_root.findGroup(solution_name)
     if not solution_group:
         solution_group = mi_group.insertGroup(0, solution_name)

@@ -10,11 +10,7 @@ from qgis.core import (
 )
 
 from integration_system.model import Solution
-from mi_companion.configuration.constants import (
-    DEFAULT_CUSTOM_PROPERTIES,
-    FLOOR_POLYGON_DESCRIPTOR,
-    HALF_SIZE,
-)
+from mi_companion import DEFAULT_CUSTOM_PROPERTIES, FLOOR_POLYGON_DESCRIPTOR, HALF_SIZE
 from .custom_props import extract_custom_props
 from .extraction import feature_to_shapely, special_extract_layer_data
 from .location import add_floor_contents
@@ -82,6 +78,10 @@ def add_building_floors(
             logger.error(f"Did not find floor in {building_group_item=}, skipping")
             continue
 
+        assert "floor_index" in floor_attributes
+
+        floor_index = floor_attributes["floor_index"]
+
         add_floor_contents(
             floor_group_items=building_group_item,
             floor_key=floor_key,
@@ -91,7 +91,7 @@ def add_building_floors(
                 if solution.floors.get(floor_key).building.venue.graph
                 else None
             ),
-            floor_index=floor_attributes["floor_index"],
+            floor_index=floor_index,
         )
 
 

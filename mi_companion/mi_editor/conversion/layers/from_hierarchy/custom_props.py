@@ -10,15 +10,13 @@ import numpy
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
 
-from mi_companion.configuration.constants import (
+from mi_companion import (
     ADD_FLOAT_NAN_CUSTOM_PROPERTY_VALUES,
     ADD_REAL_NONE_CUSTOM_PROPERTY_VALUES,
     ADD_STRING_NAN_CUSTOM_PROPERTY_VALUES,
-    NAN_VALUE,
-    NULL_VALUE,
     REAL_NONE_JSON_VALUE,
-    STR_NA_VALUE,
 )
+from mi_companion.utilities.string_parsing import is_str_value_null_like
 
 logger = logging.getLogger(__name__)
 
@@ -43,12 +41,7 @@ def extract_custom_props(
 
                 if isinstance(v, str):
                     v_str = v.lower().strip()
-                    if (
-                        (v_str == NAN_VALUE.lower())
-                        or (v_str == NULL_VALUE.lower())
-                        or (v_str == STR_NA_VALUE.lower())
-                        # or len(v.strip()) == 0
-                    ):
+                    if is_str_value_null_like(v_str):
                         # logger.warning("Was PANDAS NULL STRING VALUE")
                         if ADD_STRING_NAN_CUSTOM_PROPERTY_VALUES:
                             custom_props[lang][cname] = None
@@ -70,7 +63,7 @@ def extract_custom_props(
                         custom_props[lang][cname] = v
                 elif v is None:
                     logger.warning(f"{lang}.{cname} Was None Value")
-                    custom_props[lang][cname] = "None"
+                    custom_props[lang][cname] = None
                 elif isinstance(v, QVariant):  # Handle this (qgis.core.NULL) aswell? #
                     # logger.warning(f"{typeToDisplayString(type(v))}")
                     if v.isNull():  # isNull(v):
@@ -78,7 +71,24 @@ def extract_custom_props(
                         custom_props[lang][cname] = None
                     else:
                         logger.warning("Was QVariant Value")
-                        custom_props[lang][cname] = v.value()
+                        vs = v.value()
+                        if isinstance(vs, str):
+                            v_str_ = vs.lower().strip()
+                            if is_str_value_null_like(v_str_):
+                                # logger.warning("Was PANDAS NULL STRING VALUE")
+                                if ADD_STRING_NAN_CUSTOM_PROPERTY_VALUES:
+                                    custom_props[lang][cname] = None
+                            else:
+                                if v_str_ == REAL_NONE_JSON_VALUE.lower():
+                                    # logger.warning("Was REAL_NULL Value")
+                                    if ADD_REAL_NONE_CUSTOM_PROPERTY_VALUES:
+                                        custom_props[lang][cname] = None
+                                else:
+                                    # logger.warning(f"Was str Value")
+                                    custom_props[lang][cname] = vs
+                        else:
+                            logger.warning(f"Was ({type(vs)}) Value")
+                            custom_props[lang][cname] = vs
                 else:
                     logger.warning(f"Was ({type(v)}) Value")
                     custom_props[lang][cname] = v

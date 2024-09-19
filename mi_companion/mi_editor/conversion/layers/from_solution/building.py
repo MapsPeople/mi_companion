@@ -1,26 +1,29 @@
 import logging
 from typing import Any, Optional
 
+from jord.qgis_utilities.fields import make_field_unique
 from jord.qlive_utilities import add_shapely_layer
 
 from integration_system.mi import get_outside_building_admin_id
 from integration_system.model import Building, Solution, Venue
-from mi_companion.configuration.constants import (
+from mi_companion import (
     BUILDING_DESCRIPTOR,
     BUILDING_POLYGON_DESCRIPTOR,
+    DESCRIPTOR_BEFORE,
     HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS,
 )
-from .fields import make_field_unique
 from .floor import add_floor_layers
 
 __all__ = ["add_building_layers"]
 
 from ...projection import (
     prepare_geom_for_qgis,
-    GDS_EPSG_NUMBER,
     should_reproject,
-    MI_EPSG_NUMBER,
+)
+from mi_companion.constants import (
+    GDS_EPSG_NUMBER,
     INSERT_INDEX,
+    MI_EPSG_NUMBER,
 )
 
 logger = logging.getLogger(__name__)
@@ -58,9 +61,14 @@ def add_building_layers(
             )
 
         elif building.venue.key == venue.key:
+            if DESCRIPTOR_BEFORE:
+                building_name = f"{BUILDING_DESCRIPTOR} {building.name}"
+            else:
+                building_name = f"{building.name} {BUILDING_DESCRIPTOR}"
+
             building_group = venue_group.insertGroup(
                 INSERT_INDEX,
-                f"{building.name} {BUILDING_DESCRIPTOR}",
+                building_name,
             )
 
             building_group.setExpanded(True)

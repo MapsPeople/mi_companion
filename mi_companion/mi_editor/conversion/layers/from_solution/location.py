@@ -1,5 +1,26 @@
 import logging
 
+from jord.qgis_utilities.fields import (
+    add_dropdown_widget,
+    make_field_boolean,
+    make_field_default,
+    make_field_not_null,
+    make_field_reuse_last_entered_value,
+    make_field_unique,
+)
+
+from mi_companion.constants import (
+    GDS_EPSG_NUMBER,
+    MI_EPSG_NUMBER,
+    USE_EXTERNAL_ID_FLOOR_SELECTION,
+)
+from .custom_props import process_custom_props_df, to_df
+from ..type_enums import LocationTypeEnum
+from ...projection import (
+    reproject_geometry_df,
+    should_reproject,
+)
+
 try:
     from enum import StrEnum
 except ImportError:
@@ -21,20 +42,9 @@ from integration_system.model import (
 
 __all__ = ["add_floor_content_layers"]
 
-from .custom_props import process_custom_props_df, to_df
-
-from ..type_enums import LocationTypeEnum
-from .fields import add_dropdown_widget, make_field_not_null, make_field_unique
-from ...projection import (
-    reproject_geometry_df,
-    MI_EPSG_NUMBER,
-    should_reproject,
-    GDS_EPSG_NUMBER,
-)
-
 logger = logging.getLogger(__name__)
 
-USE_EXTERNAL_ID_FLOOR_SELECTION = False
+BOOLEAN_LOCATION_ATTRS = ("is_searchable", "is_active")
 
 
 class LocationGeometryType(StrEnum):
@@ -53,6 +63,7 @@ def add_location_layer(
     floor: Floor,
     dropdown_widget: Optional[Any] = None,
 ) -> Optional[List[Any]]:  # QgsVectorLayer
+
     shape_df = to_df(collection_)
 
     assert len(collection_) == len(shape_df)
@@ -103,6 +114,12 @@ def add_location_layer(
         locations_df
     ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
 
+    empty_lines = locations_df[locations_df.is_empty]
+    if not empty_lines.empty:
+        logger.warning(f"Dropping {empty_lines}")
+
+    locations_df = locations_df[~locations_df.is_empty]
+
     reproject_geometry_df(locations_df)
     assert len(shape_df) == len(
         locations_df
@@ -111,6 +128,9 @@ def add_location_layer(
     if not len(shape_df):
         # logger.warning(f"Nothing to be added, skipping {name}")
         return
+
+    for attr_name in BOOLEAN_LOCATION_ATTRS:
+        locations_df[attr_name] = shape_df[attr_name].astype(bool)
 
     added_layers = add_dataframe_layer(
         qgis_instance_handle=qgis_instance_handle,
@@ -155,6 +175,18 @@ def add_location_layer(
     for field_name in ("name", "location_type.name", "is_searchable", "is_active"):
         make_field_not_null(added_layers, field_name=field_name)
 
+    for field_name, field_default in {"is_searchable": True, "is_active": True}.items():
+        make_field_default(
+            added_layers, field_name=field_name, default_expression=f"'{field_default}'"
+        )
+
+    if False:
+        for field_name in BOOLEAN_LOCATION_ATTRS:
+            make_field_boolean(added_layers, field_name=field_name)
+
+    for field_name in ("name", "location_type.name", "is_searchable", "is_active"):
+        make_field_reuse_last_entered_value(added_layers, field_name=field_name)
+
     return added_layers
 
 
@@ -167,9 +199,9 @@ def add_floor_content_layers(
     available_location_type_map_widget: Optional[Any] = None,
 ) -> None:
     room_layer = add_location_layer(
-        solution.rooms,
-        LocationTypeEnum.ROOM.value,
-        LocationGeometryType.polygon,
+        collection_=solution.rooms,
+        name=LocationTypeEnum.ROOM.value,
+        geometry_column_name=LocationGeometryType.polygon,
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
         floor=floor,
@@ -177,9 +209,9 @@ def add_floor_content_layers(
     )
 
     area_layer = add_location_layer(
-        solution.areas,
-        LocationTypeEnum.AREA.value,
-        LocationGeometryType.polygon,
+        collection_=solution.areas,
+        name=LocationTypeEnum.AREA.value,
+        geometry_column_name=LocationGeometryType.polygon,
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
         floor=floor,
@@ -187,9 +219,9 @@ def add_floor_content_layers(
     )
 
     poi_layer = add_location_layer(
-        solution.points_of_interest,
-        LocationTypeEnum.POI.value,
-        LocationGeometryType.point,
+        collection_=solution.points_of_interest,
+        name=LocationTypeEnum.POI.value,
+        geometry_column_name=LocationGeometryType.point,
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
         floor=floor,

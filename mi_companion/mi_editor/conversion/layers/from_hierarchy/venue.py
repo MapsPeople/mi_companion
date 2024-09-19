@@ -13,7 +13,7 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.mi import SolutionDepth
 from integration_system.model import PostalAddress, Solution, VenueType
-from mi_companion.configuration.constants import (
+from mi_companion import (
     DEFAULT_CUSTOM_PROPERTIES,
     HALF_SIZE,
     VENUE_DESCRIPTOR,
@@ -149,21 +149,29 @@ def get_venue_key(solution: Solution, venue_group_items: Any) -> Optional[str]:
                 name,
             ) = special_extract_layer_data(venue_level_item)
 
-            venue_type_str = layer_attributes["venue_type"]
-            if isinstance(venue_type_str, str):
-                ...
-            elif isinstance(venue_type_str, QVariant):
-                # logger.warning(f"{typeToDisplayString(type(v))}")
-                if venue_type_str.isNull():  # isNull(v):
-                    venue_type_str = None
-                else:
-                    venue_type_str = venue_type_str.value()
+            if "venue_type" in layer_attributes and layer_attributes["venue_type"]:
+                venue_type_str = layer_attributes["venue_type"]
 
-            venue_type = VenueType.__getitem__(venue_type_str)
-            last_verified = layer_attributes["last_verified"]
+                if isinstance(venue_type_str, str):
+                    ...
+                elif isinstance(venue_type_str, QVariant):
+                    # logger.warning(f"{typeToDisplayString(type(v))}")
+                    if venue_type_str.isNull():  # isNull(v):
+                        venue_type_str = None
+                    else:
+                        venue_type_str = venue_type_str.value()
 
-            address = (
-                PostalAddress(
+                venue_type = VenueType.__getitem__(venue_type_str)
+            else:
+                venue_type = VenueType.not_specified
+
+            if "address.city" in layer_attributes and layer_attributes["last_verified"]:
+                last_verified = layer_attributes["last_verified"]
+            else:
+                last_verified = None
+
+            if "address.city" in layer_attributes and layer_attributes["address.city"]:
+                address = PostalAddress(
                     city=layer_attributes["address.city"],
                     region=layer_attributes["address.region"],
                     street1=layer_attributes["address.street1"],
@@ -171,9 +179,9 @@ def get_venue_key(solution: Solution, venue_group_items: Any) -> Optional[str]:
                     street2=layer_attributes["address.street2"],
                     postal_code=layer_attributes["address.postal_code"],
                 )
-                if "address.city" in layer_attributes
-                else None
-            )
+
+            else:
+                address = None
 
             geom_shapely = feature_to_shapely(layer_feature)
             if geom_shapely:
@@ -190,4 +198,5 @@ def get_venue_key(solution: Solution, venue_group_items: Any) -> Optional[str]:
                     ),
                     address=address,
                 )
+
     logger.error(f"Did not find venue in {venue_group_items.children()=}")

@@ -7,6 +7,8 @@ import shapely.wkt
 
 __all__ = ["extract_wkt_elements"]
 
+from mi_companion import NAN_VALUE, NULL_VALUE, STR_NA_VALUE, STR_NONE_VALUE
+
 logger = logging.getLogger(__name__)
 
 
@@ -71,6 +73,16 @@ def extract_wkt_elements(
             logger.error("Error parsing")
 
     return wkt_elements
+
+
+def is_str_value_null_like(v_str_):
+    return (
+        (v_str_ == NAN_VALUE.lower())
+        or (v_str_ == NULL_VALUE.lower())
+        or (v_str_ == STR_NA_VALUE.lower())
+        or (v_str_ == STR_NONE_VALUE.lower())
+        or len(v_str_.strip()) == 0
+    )
 
 
 if __name__ == "__main__":

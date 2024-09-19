@@ -8,16 +8,15 @@ from qgis.PyQt import QtWidgets
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.model import Solution
-from mi_companion.configuration.constants import GRAPH_DATA_DESCRIPTOR
+from mi_companion import GRAPH_DATA_DESCRIPTOR
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
     extract_layer_data,
 )
-
-__all__ = ["add_venue_graph"]
-
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.route_elements import (
     add_route_elements,
 )
+
+__all__ = ["add_venue_graph"]
 
 logger = logging.getLogger(__name__)
 # noinspection PyUnresolvedReferences

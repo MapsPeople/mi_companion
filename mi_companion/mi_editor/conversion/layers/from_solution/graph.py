@@ -5,7 +5,8 @@ from xml.etree.ElementTree import ParseError
 from jord.qlive_utilities import add_shapely_layer
 
 from integration_system.model import Graph, Solution, Venue
-from mi_companion.configuration.constants import (
+from mi_companion import (
+    DESCRIPTOR_BEFORE,
     GRAPH_DATA_DESCRIPTOR,
     GRAPH_DESCRIPTOR,
     NAVIGATION_LINES_DESCRIPTOR,
@@ -48,7 +49,10 @@ def add_graph_layers(
 
             logger.info(f"{len(lines)=} loaded!")
 
-            graph_name = f"{graph.graph_id} {GRAPH_DESCRIPTOR}"
+            if DESCRIPTOR_BEFORE:
+                graph_name = f"{GRAPH_DESCRIPTOR} {graph.graph_id}"
+            else:
+                graph_name = f"{graph.graph_id} {GRAPH_DESCRIPTOR}"
 
             graph_group = venue_group.insertGroup(0, graph_name)
             if not read_bool_setting("SHOW_GRAPH_ON_LOAD"):
@@ -56,26 +60,28 @@ def add_graph_layers(
                 graph_group.setExpanded(False)
                 graph_group.setItemVisibilityChecked(False)
 
-            graph_meta_point_layer = add_shapely_layer(
-                qgis_instance_handle=qgis_instance_handle,
-                geoms=[venue.polygon.representative_point()],
-                name=GRAPH_DATA_DESCRIPTOR,
-                group=graph_group,
-                columns=[{"graph_id": graph.graph_id}],
-                visible=False,
-                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
-            )
+            if points:
+                graph_meta_point_layer = add_shapely_layer(
+                    qgis_instance_handle=qgis_instance_handle,
+                    geoms=[venue.polygon.representative_point()],
+                    name=GRAPH_DATA_DESCRIPTOR,
+                    group=graph_group,
+                    columns=[{"graph_id": graph.graph_id}],
+                    visible=False,
+                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+                )
 
-            graph_lines_layer = add_shapely_layer(
-                qgis_instance_handle=qgis_instance_handle,
-                geoms=lines,
-                name=NAVIGATION_LINES_DESCRIPTOR,
-                group=graph_group,
-                columns=lines_meta_data,
-                categorise_by_attribute="level",
-                visible=True,
-                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
-            )
+            if lines:
+                graph_lines_layer = add_shapely_layer(
+                    qgis_instance_handle=qgis_instance_handle,
+                    geoms=lines,
+                    name=NAVIGATION_LINES_DESCRIPTOR,
+                    group=graph_group,
+                    columns=lines_meta_data,
+                    categorise_by_attribute="level",
+                    visible=True,
+                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+                )
 
             if highway_type_dropdown_widget:
                 for layers_inner in graph_lines_layer:

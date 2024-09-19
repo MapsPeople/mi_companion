@@ -17,7 +17,7 @@ def run(*, path: str) -> None:
     from mi_companion.mi_editor.conversion.layers.from_hierarchy.solution import (
         convert_solution_layers_to_solution,
     )
-    from mi_companion.configuration.constants import MI_HIERARCHY_GROUP_NAME
+    from mi_companion import MI_HIERARCHY_GROUP_NAME
 
     qgis_instance_handle = QgsProject.instance()
 

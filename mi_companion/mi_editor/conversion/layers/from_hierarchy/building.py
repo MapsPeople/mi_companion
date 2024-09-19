@@ -9,7 +9,7 @@ from integration_system.mi import (
     get_outside_building_floor_name,
 )
 from integration_system.model import Solution
-from mi_companion.configuration.constants import (
+from mi_companion import (
     BUILDING_POLYGON_DESCRIPTOR,
     DEFAULT_CUSTOM_PROPERTIES,
     FLOOR_DESCRIPTOR,

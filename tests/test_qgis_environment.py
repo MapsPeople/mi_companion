@@ -21,7 +21,7 @@ class QGISTest(unittest.TestCase):
         from .utilities import get_qgis_app
 
         QGIS_APP = get_qgis_app()
-
+        # noinspection PyUnresolvedReferences
         from qgis.core import QgsProviderRegistry
 
         """QGIS environment has the expected providers"""

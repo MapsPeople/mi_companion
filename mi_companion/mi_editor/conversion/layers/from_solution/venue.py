@@ -1,25 +1,28 @@
 import logging
 from typing import Any, Iterable, Optional
 
+from jord.qgis_utilities.fields import make_field_unique
 from jord.qlive_utilities import add_shapely_layer
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
 from integration_system.model import Solution
-from mi_companion.configuration.constants import (
+from mi_companion import (
     ALLOW_DUPLICATE_VENUES_IN_PROJECT,
+    DESCRIPTOR_BEFORE,
     VENUE_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
-from .building import add_building_layers
-from .fields import make_field_unique
-from .graph import add_graph_layers
-from ...projection import (
+from mi_companion.constants import (
     GDS_EPSG_NUMBER,
     INSERT_INDEX,
     MI_EPSG_NUMBER,
+)
+from .building import add_building_layers
+from .graph import add_graph_layers
+from ...projection import (
     prepare_geom_for_qgis,
     should_reproject,
 )
@@ -48,7 +51,10 @@ def add_venue_layer(
             logger.warning("Venue was None!")
             continue
 
-        venue_name = f"{venue.name} {VENUE_DESCRIPTOR}"
+        if DESCRIPTOR_BEFORE:
+            venue_name = f"{VENUE_DESCRIPTOR} {venue.name}"
+        else:
+            venue_name = f"{venue.name} {VENUE_DESCRIPTOR}"
 
         venue_group = solution_group.findGroup(venue_name)
         if (
@@ -119,7 +125,7 @@ def add_venue_polygon_layer(
         columns=[
             {
                 "admin_id": venue.admin_id,
-                "external_id": venue.external_id,
+                "external_id": venue.admin_id,
                 "name": venue.name,
                 "last_verified": venue.last_verified,
                 "venue_type": venue.venue_type.name,

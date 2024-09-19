@@ -25,7 +25,7 @@ from integration_system.model import (
     SHAPELY_DIFFERENCE_DESCRIPTION,
     Solution,
 )
-from mi_companion.configuration.constants import VERBOSE
+from mi_companion import VERBOSE
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.gui.message_box import ResizableMessageBox
 from mi_companion.mi_editor.conversion.projection import (

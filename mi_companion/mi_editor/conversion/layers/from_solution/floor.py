@@ -1,20 +1,19 @@
 import logging
 from typing import Any
 
+from jord.qgis_utilities.fields import make_field_unique
 from jord.qlive_utilities import add_shapely_layer
 
 from integration_system.model import Building, Floor, Solution
-from mi_companion.configuration.constants import (
-    FLOOR_DESCRIPTOR,
-    FLOOR_POLYGON_DESCRIPTOR,
-)
+from mi_companion import DESCRIPTOR_BEFORE, FLOOR_DESCRIPTOR, FLOOR_POLYGON_DESCRIPTOR
 from mi_companion.configuration.options import read_bool_setting
-from .fields import make_field_unique
-from .location import add_floor_content_layers
-from ...projection import (
+from mi_companion.constants import (
     GDS_EPSG_NUMBER,
     INSERT_INDEX,
     MI_EPSG_NUMBER,
+)
+from .location import add_floor_content_layers
+from ...projection import (
     prepare_geom_for_qgis,
     should_reproject,
 )
@@ -36,7 +35,12 @@ def add_floor_layers(
     for floor in sorted(solution.floors, key=lambda floor: floor.floor_index):
         floor: Floor
         if floor.building.key == building.key:
-            floor_name = f"{floor.name} {FLOOR_DESCRIPTOR}:{floor.floor_index}"
+            descriptor = f"{FLOOR_DESCRIPTOR}:{floor.floor_index}"
+            if DESCRIPTOR_BEFORE:
+                floor_name = f"{descriptor} {floor.name}"
+            else:
+                floor_name = f"{floor.name} {descriptor}"
+
             floor_group = building_group.insertGroup(
                 INSERT_INDEX, floor_name
             )  # MutuallyExclusive = True # TODO: Maybe only show on floor at a time?
@@ -118,3 +122,4 @@ def add_floor_layers(
 
             assert floor_layer is not None
             make_field_unique(floor_layer)
+            # TODO: Use SolutionItem Annotations for field constraints

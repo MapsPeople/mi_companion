@@ -9,7 +9,6 @@ from qgis.PyQt.QtCore import QVariant
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-from warg.arguments import str_to_bool
 
 from integration_system.mi import (
     SolutionDepth,
@@ -17,7 +16,7 @@ from integration_system.mi import (
     get_solution_name_external_id_map,
 )
 from integration_system.model import Solution
-from mi_companion.configuration.constants import (
+from mi_companion import (
     MI_HIERARCHY_GROUP_NAME,
     SOLUTION_DATA_DESCRIPTOR,
     SOLUTION_DESCRIPTOR,
@@ -100,7 +99,7 @@ def convert_solution_layers_to_solution(
 
         solution_external_id = solution_data["external_id"]
         solution_customer_id = solution_data["customer_id"]
-        solution_occupants_enabled = str_to_bool(solution_data["occupants_enabled"])
+        solution_occupants_enabled = solution_data["occupants_enabled"]
         solution_name = solution_data["name"]
         # cached_solution_object =solution_data['cached_solution_object'] # TODO: Store a string to cached
         #  Solution object pickle

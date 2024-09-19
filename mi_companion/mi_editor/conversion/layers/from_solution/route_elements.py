@@ -4,6 +4,10 @@ from typing import Any, Optional
 
 import geopandas
 from geopandas import GeoDataFrame
+from jord.qgis_utilities.fields import (
+    add_dropdown_widget,
+    make_field_unique,
+)
 from jord.qlive_utilities import add_dataframe_layer
 
 from integration_system.model import (
@@ -21,7 +25,7 @@ from integration_system.model import (
     RouteElementItem,
     Solution,
 )
-from mi_companion.configuration.constants import (
+from mi_companion import (
     AVOIDS_DESCRIPTOR,
     BARRIERS_DESCRIPTOR,
     CONNECTORS_DESCRIPTOR,
@@ -31,15 +35,13 @@ from mi_companion.configuration.constants import (
     OBSTACLES_DESCRIPTOR,
     PREFERS_DESCRIPTOR,
 )
-from mi_companion.mi_editor.conversion.layers.from_solution.custom_props import to_df
-from mi_companion.mi_editor.conversion.layers.from_solution.fields import (
-    add_dropdown_widget,
-    make_field_unique,
-)
-from mi_companion.mi_editor.conversion.projection import (
+from mi_companion.constants import (
     GDS_EPSG_NUMBER,
     INSERT_INDEX,
     MI_EPSG_NUMBER,
+)
+from mi_companion.mi_editor.conversion.layers.from_solution.custom_props import to_df
+from mi_companion.mi_editor.conversion.projection import (
     reproject_geometry_df,
     should_reproject,
 )
@@ -60,7 +62,7 @@ def add_connection_layers(
     connectors = {}
     for c in connections:
         for connector_key, connector in c.connectors.items():
-            connectors[connector.external_id] = {
+            connectors[connector.admin_id] = {
                 "floor_index": connector.floor_index,
                 "point": connector.point,
                 "connection_id": c.connection_id,
@@ -96,6 +98,12 @@ def add_connection_layers(
 
                 # door_df["door_type"] = door_df["door_type"].apply(lambda x: x.name, axis=1)
 
+                empty_lines = df[df.is_empty]
+                if not empty_lines.empty:
+                    logger.warning(f"Dropping {empty_lines}")
+
+                df = df[~df.is_empty]
+
                 reproject_geometry_df(door_df)
 
                 door_layer = add_dataframe_layer(
@@ -113,6 +121,12 @@ def add_connection_layers(
 
                 make_field_unique(door_layer, field_name="external_id")
     else:
+        empty_lines = df[df.is_empty]
+        if not empty_lines.empty:
+            logger.warning(f"Dropping {empty_lines}")
+
+        df = df[~df.is_empty]
+
         reproject_geometry_df(df)
 
         connectors_layer = add_dataframe_layer(
@@ -244,6 +258,12 @@ def add_linestring_route_element_layers(
                     geometry="linestring",
                 )
 
+                empty_lines = door_df[door_df.is_empty]
+                if not empty_lines.empty:
+                    logger.warning(f"Dropping {empty_lines}")
+
+                door_df = door_df[~door_df.is_empty]
+
                 # door_df["door_type"] = door_df["door_type"].apply(lambda x: x.name, axis=1)
 
                 reproject_geometry_df(door_df)
@@ -269,6 +289,12 @@ def add_linestring_route_element_layers(
         )
 
         # door_df["door_type"] = door_df["door_type"].apply(lambda x: x.name, axis=1)
+
+        empty_lines = door_df[door_df.is_empty]
+        if not empty_lines.empty:
+            logger.warning(f"Dropping {empty_lines}")
+
+        door_df = door_df[~door_df.is_empty]
 
         reproject_geometry_df(door_df)
 
@@ -329,6 +355,12 @@ def add_point_route_element_layers(
 
                 # door_df["door_type"] = door_df["door_type"].apply(lambda x: x.name, axis=1)
 
+                empty_lines = door_df[door_df.is_empty]
+                if not empty_lines.empty:
+                    logger.warning(f"Dropping {empty_lines}")
+
+                door_df = door_df[~door_df.is_empty]
+
                 reproject_geometry_df(door_df)
 
                 door_layer = add_dataframe_layer(
@@ -352,6 +384,12 @@ def add_point_route_element_layers(
         )
 
         # door_df["door_type"] = door_df["door_type"].apply(lambda x: x.name, axis=1)
+
+        empty_lines = door_df[door_df.is_empty]
+        if not empty_lines.empty:
+            logger.warning(f"Dropping {empty_lines}")
+
+        door_df = door_df[~door_df.is_empty]
 
         reproject_geometry_df(door_df)
 
@@ -405,6 +443,12 @@ def add_polygon_route_element_layers(
 
                 # door_df["door_type"] = door_df["door_type"].apply(lambda x: x.name, axis=1)
 
+                empty_lines = door_df[door_df.is_empty]
+                if not empty_lines.empty:
+                    logger.warning(f"Dropping {empty_lines}")
+
+                door_df = door_df[~door_df.is_empty]
+
                 reproject_geometry_df(door_df)
 
                 door_layer = add_dataframe_layer(
@@ -428,6 +472,12 @@ def add_polygon_route_element_layers(
         )
 
         # door_df["door_type"] = door_df["door_type"].apply(lambda x: x.name, axis=1)
+
+        empty_lines = door_df[door_df.is_empty]
+        if not empty_lines.empty:
+            logger.warning(f"Dropping {empty_lines}")
+
+        door_df = door_df[~door_df.is_empty]
 
         reproject_geometry_df(door_df)
 

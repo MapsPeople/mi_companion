@@ -33,22 +33,29 @@ if False:  # TODO: Transform if not the same as GCPs!
 # BACKWARD_TRANSFORM = QgsCoordinateTransform(DEST_CRS, SOURCE_CRS, QgsProject.instance())
 
 
-def run(*, gcp_points_file_path: Path, method: int = 1) -> None:
+def run(
+    *,
+    gcp_points_file_path: Path,
+    method: int = 1,
+    # TODO: MAKE Method into a dropdown based on enum
+) -> None:
     """
     Transform geometry for all features in the selected group
 
-    0: Linear: Linear transform
-    1: Helmert: Helmert transform
-    2: PolynomialOrder1: Polynomial order 1
-    3: PolynomialOrder2: Polyonmial order 2
-    4: PolynomialOrder3: Polynomial order 3
-    5: ThinPlateSpline: Thin plate splines
-    6: Projective: Projective
-    65535: InvalidTransform: Invalid transform
+    WARNING! Settings -> Options -> MapsIndoor Beta -> "REPROJECT_SHAPES" must be set to "True"
+
+    0: Linear:            Linear transform    ( min. 3 GCPs )
+    1: Helmert:           Helmert transform   ( min. 3 GCPs )
+    2: PolynomialOrder1:  Polynomial order 1  ( min. 3 GCPs )
+    3: PolynomialOrder2:  Polyonmial order 2  ( min. 6 GCPs )
+    4: PolynomialOrder3:  Polynomial order 3  ( min. 10 GCPs )
+    5: ThinPlateSpline:   Thin plate splines
+    6: Projective:        Projective
+    65535:                InvalidTransform: Invalid transform
 
 
-    :param gcp_points_file_path:
-    :param method:
+    :param gcp_points_file_path: The path to the file containing the GCPs
+    :param method: Which method to use for the transformation
     :return:
     """
 
