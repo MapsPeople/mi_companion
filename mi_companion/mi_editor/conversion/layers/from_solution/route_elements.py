@@ -75,7 +75,7 @@ def add_connection_layers(
 
     df = (
         GeoDataFrame.from_dict(connectors, orient="index")
-        .reset_index(names="external_id")
+        .reset_index(names="admin_id")
         .set_geometry("point")
     )  # Pandas pain....
 
@@ -119,7 +119,7 @@ def add_connection_layers(
                 # if dropdown_widget:
                 #  add_dropdown_widget(door_layer, "door_type", dropdown_widget)
 
-                make_field_unique(door_layer, field_name="external_id")
+                make_field_unique(door_layer, field_name="admin_id")
     else:
         empty_lines = df[df.is_empty]
         if not empty_lines.empty:
@@ -139,7 +139,7 @@ def add_connection_layers(
             crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
         )
 
-        make_field_unique(connectors_layer, field_name="external_id")
+        make_field_unique(connectors_layer, field_name="admin_id")
 
 
 def add_route_element_layers(
@@ -281,7 +281,7 @@ def add_linestring_route_element_layers(
                 if dropdown_widget:
                     add_dropdown_widget(door_layer, "door_type", dropdown_widget)
 
-                make_field_unique(door_layer, field_name="external_id")
+                make_field_unique(door_layer, field_name="admin_id")
     else:
         door_df = geopandas.GeoDataFrame(
             df[[c for c in df.columns if ("." not in c)]],
@@ -311,7 +311,7 @@ def add_linestring_route_element_layers(
         if dropdown_widget:
             add_dropdown_widget(door_layer, "door_type", dropdown_widget)
 
-        make_field_unique(door_layer, field_name="external_id")
+        make_field_unique(door_layer, field_name="admin_id")
 
 
 def add_point_route_element_layers(
@@ -376,7 +376,7 @@ def add_point_route_element_layers(
                 if dropdown_widget:
                     add_dropdown_widget(door_layer, "door_type", dropdown_widget)
 
-                make_field_unique(door_layer, field_name="external_id")
+                make_field_unique(door_layer, field_name="admin_id")
     else:
         door_df = geopandas.GeoDataFrame(
             df[[c for c in df.columns if ("." not in c)]],
@@ -406,7 +406,7 @@ def add_point_route_element_layers(
         if dropdown_widget:
             add_dropdown_widget(door_layer, "door_type", dropdown_widget)
 
-        make_field_unique(door_layer, field_name="external_id")
+        make_field_unique(door_layer, field_name="admin_id")
 
 
 def add_polygon_route_element_layers(
@@ -464,7 +464,7 @@ def add_polygon_route_element_layers(
                 if dropdown_widget:
                     add_dropdown_widget(door_layer, "door_type", dropdown_widget)
 
-                make_field_unique(door_layer, field_name="external_id")
+                make_field_unique(door_layer, field_name="admin_id")
     else:
         door_df = geopandas.GeoDataFrame(
             df[[c for c in df.columns if ("." not in c)]],
@@ -494,4 +494,4 @@ def add_polygon_route_element_layers(
         if dropdown_widget:
             add_dropdown_widget(door_layer, "door_type", dropdown_widget)
 
-        make_field_unique(door_layer, field_name="external_id")
+        make_field_unique(door_layer, field_name="admin_id")

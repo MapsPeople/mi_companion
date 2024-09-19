@@ -1,6 +1,6 @@
 import logging
 import uuid
-from typing import Any, Mapping, Optional
+from typing import Any, Collection, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -135,6 +135,24 @@ def add_floor_locations(
             if "name" in feature_attributes:
                 name = extract_field_value(feature_attributes, "name")
 
+            is_active = None
+            if "is_active" in feature_attributes:
+                is_active = extract_field_value(feature_attributes, "is_active")
+                if isinstance(is_active, str):
+                    if is_active.lower().strip() == "false":
+                        is_active = False
+                    else:
+                        is_active = True
+
+            is_searchable = None
+            if "is_searchable" in feature_attributes:
+                is_searchable = extract_field_value(feature_attributes, "is_searchable")
+                if isinstance(is_searchable, str):
+                    if is_searchable.lower().strip() == "false":
+                        is_searchable = False
+                    else:
+                        is_searchable = True
+
             if name is None:  # Fallback
                 name = external_id
 
@@ -152,6 +170,8 @@ def add_floor_locations(
                     external_id=external_id,
                     name=name,
                     floor_key=floor_key,
+                    is_active=is_active,
+                    is_searchable=is_searchable,
                     location_type_key=location_type_key,
                     custom_properties=(
                         custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
@@ -162,20 +182,28 @@ def add_floor_locations(
                     if k not in common_kvs:
                         if k == "category_keys":
                             cat_keys = []
-                            for category_name in feature_attributes["category_keys"]:
-                                category_key = Category.compute_key(name=category_name)
-                                if solution.categories.get(category_key) is None:
-                                    if read_bool_setting(
-                                        "ALLOW_CATEGORY_TYPE_CREATION"
-                                    ):  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
-                                        category_key = solution.add_category(
-                                            location_type_name
-                                        )
-                                    else:
-                                        raise ValueError(
-                                            f"{category_key} is not a valid category"
-                                        )
-                                cat_keys.append(category_key)
+                            a = feature_attributes["category_keys"]
+                            if not isinstance(a, Collection):
+                                logger.warning(f"Skipping {a} for {k}")
+                                continue
+
+                            for category_name in a:
+                                if isinstance(category_name, str):
+                                    category_key = Category.compute_key(
+                                        name=category_name
+                                    )
+                                    if solution.categories.get(category_key) is None:
+                                        if read_bool_setting(
+                                            "ALLOW_CATEGORY_TYPE_CREATION"
+                                        ):  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
+                                            category_key = solution.add_category(
+                                                category_name
+                                            )
+                                        else:
+                                            raise ValueError(
+                                                f"{category_key} is not a valid category"
+                                            )
+                                    cat_keys.append(category_key)
 
                             common_kvs["category_keys"] = cat_keys
                     else:

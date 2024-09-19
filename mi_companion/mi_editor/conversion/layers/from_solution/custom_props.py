@@ -1,12 +1,13 @@
 import copy
 import dataclasses
+import json
 import logging
-from typing import Mapping
+from typing import Collection, Mapping
 
 from geopandas import GeoDataFrame
 from pandas import DataFrame, json_normalize
 
-from integration_system.model import Category, CollectionMixin
+from integration_system.model import CollectionMixin
 from mi_companion import NULL_VALUE, REAL_NONE_JSON_VALUE
 
 logger = logging.getLogger(__name__)
@@ -134,7 +135,6 @@ def to_df(coll_mix: CollectionMixin) -> DataFrame:
     # noinspection PyTypeChecker
     cs = []
     for c in coll_mix:
-
         if hasattr(c, "custom_properties"):
             cps = getattr(c, "custom_properties")
             if cps is not None:
@@ -153,7 +153,16 @@ def to_df(coll_mix: CollectionMixin) -> DataFrame:
             keys = []
             if list_of_category_dicts:
                 for cat in list_of_category_dicts:
-                    keys.append(cat["name"])
+                    if False:
+                        a = json.loads(cat["name"])
+                        if isinstance(a, str):
+                            keys.append(a)
+                        elif isinstance(a, Collection):
+                            keys.extend(a)
+                        else:
+                            raise NotImplementedError(f"{type(a)} is not supported")
+                    else:
+                        keys.append(cat["name"])
 
             c_d["category_keys"] = keys
 

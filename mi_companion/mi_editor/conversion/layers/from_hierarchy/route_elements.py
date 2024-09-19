@@ -78,7 +78,7 @@ def add_doors(*, graph_key: str, door_layer_tree_node: Any, solution: Solution) 
             logger.error(f"{door_linestring=}")
 
         door_key = solution.add_door(
-            door_attributes["external_id"],
+            door_attributes["admin_id"],
             linestring=prepare_geom_for_mi_db(door_linestring, clean=False),
             door_type=DoorType(door_type),
             floor_index=int(door_attributes["floor_index"]),
@@ -105,7 +105,7 @@ def add_barriers(
 
         if door_linestring is not None:
             barrier_key = solution.add_barrier(
-                barrier_attributes["external_id"],
+                barrier_attributes["admin_id"],
                 point=prepare_geom_for_mi_db(door_linestring),
                 floor_index=int(barrier_attributes["floor_index"]),
                 graph_key=graph_key,
@@ -132,7 +132,7 @@ def add_avoids(graph_key: str, avoid_layer_tree_node: Any, solution: Solution) -
 
         if avoid_point is not None:
             avoid_key = solution.add_avoid(
-                avoid_attributes["external_id"],
+                avoid_attributes["admin_id"],
                 point=prepare_geom_for_mi_db(avoid_point),
                 floor_index=int(avoid_attributes["floor_index"]),
                 graph_key=graph_key,
@@ -141,7 +141,7 @@ def add_avoids(graph_key: str, avoid_layer_tree_node: Any, solution: Solution) -
                 logger.info("added avoid", avoid_key)
             else:
                 logger.error(
-                    f'Error while adding {avoid_attributes["external_id"]} {avoid_point=}'
+                    f'Error while adding {avoid_attributes["admin_id"]} {avoid_point=}'
                 )
 
 
@@ -162,7 +162,7 @@ def add_prefers(
 
         if prefer_point is not None:
             prefer_key = solution.add_prefer(
-                prefer_attributes["external_id"],
+                prefer_attributes["admin_id"],
                 point=prepare_geom_for_mi_db(prefer_point),
                 floor_index=int(prefer_attributes["floor_index"]),
                 graph_key=graph_key,
@@ -171,7 +171,7 @@ def add_prefers(
                 logger.info("added prefer", prefer_key)
         else:
             logger.error(
-                f'Error while adding {prefer_attributes["external_id"]} {prefer_point=}'
+                f'Error while adding {prefer_attributes["admin_id"]} {prefer_point=}'
             )
 
 
@@ -192,7 +192,7 @@ def add_obstacles(
 
         if obstacle_poly is not None:
             obstacle_key = solution.add_obstacle(
-                obstacle_attributes["external_id"],
+                obstacle_attributes["admin_id"],
                 polygon=prepare_geom_for_mi_db(obstacle_poly),
                 floor_index=int(obstacle_attributes["floor_index"]),
                 graph_key=graph_key,
@@ -201,7 +201,7 @@ def add_obstacles(
                 logger.info("added obstacle", obstacle_key)
         else:
             logger.error(
-                f'Error while adding {obstacle_attributes["external_id"]} {obstacle_poly=}'
+                f'Error while adding {obstacle_attributes["admin_id"]} {obstacle_poly=}'
             )
 
 
@@ -233,7 +233,7 @@ def add_entry_points(
 
         if entry_point_geom is not None:
             entry_point_key = solution.add_entry_point(
-                entry_point_attributes["external_id"],
+                entry_point_attributes["admin_id"],
                 point=prepare_geom_for_mi_db(entry_point_geom),
                 entry_point_type=EntryPointType(entry_point_type),
                 floor_index=int(entry_point_attributes["floor_index"]),
@@ -243,7 +243,7 @@ def add_entry_points(
                 logger.info("added entry_point", entry_point_key)
         else:
             logger.error(
-                f'Error while adding {entry_point_attributes["external_id"]} {entry_point_geom=}'
+                f'Error while adding {entry_point_attributes["admin_id"]} {entry_point_geom=}'
             )
 
 
@@ -264,7 +264,7 @@ def add_connections(
         connection_type = connector_attributes["connection_type"]
         connection_id = connector_attributes["connection_id"]
         connector_floor_index = connector_attributes["floor_index"]
-        connector_external_id = connector_attributes["external_id"]
+        connector_external_id = connector_attributes["admin_id"]
 
         if isinstance(connection_type, str):
             ...
