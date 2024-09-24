@@ -54,7 +54,7 @@ class LocationGeometryType(StrEnum):
 
 
 def add_location_layer(
-    collection_: CollectionMixin,
+    location_collection: CollectionMixin,
     name: str,
     geometry_column_name: LocationGeometryType,
     *,
@@ -64,9 +64,9 @@ def add_location_layer(
     dropdown_widget: Optional[Any] = None,
 ) -> Optional[List[Any]]:  # QgsVectorLayer
 
-    shape_df = to_df(collection_)
+    shape_df = to_df(location_collection)
 
-    assert len(collection_) == len(shape_df)
+    assert len(location_collection) == len(shape_df)
     if shape_df.empty:
         logger.warning(f"{name=} {shape_df=} was empty!")
 
@@ -87,6 +87,8 @@ def add_location_layer(
         # logger.warning(f"No location were found for {floor.__desc__}")
 
         return
+
+    # logger.warning(shape_df.columns)
 
     column_selection = [
         c
@@ -199,7 +201,7 @@ def add_floor_content_layers(
     available_location_type_map_widget: Optional[Any] = None,
 ) -> None:
     room_layer = add_location_layer(
-        collection_=solution.rooms,
+        location_collection=solution.rooms,
         name=LocationTypeEnum.ROOM.value,
         geometry_column_name=LocationGeometryType.polygon,
         qgis_instance_handle=qgis_instance_handle,
@@ -209,7 +211,7 @@ def add_floor_content_layers(
     )
 
     area_layer = add_location_layer(
-        collection_=solution.areas,
+        location_collection=solution.areas,
         name=LocationTypeEnum.AREA.value,
         geometry_column_name=LocationGeometryType.polygon,
         qgis_instance_handle=qgis_instance_handle,
@@ -219,7 +221,7 @@ def add_floor_content_layers(
     )
 
     poi_layer = add_location_layer(
-        collection_=solution.points_of_interest,
+        location_collection=solution.points_of_interest,
         name=LocationTypeEnum.POI.value,
         geometry_column_name=LocationGeometryType.point,
         qgis_instance_handle=qgis_instance_handle,

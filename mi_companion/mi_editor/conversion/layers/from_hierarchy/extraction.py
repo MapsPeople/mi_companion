@@ -32,7 +32,7 @@ def special_extract_layer_data(
 
     admin_id = layer_attributes["admin_id"] if "admin_id" in layer_attributes else None
     if admin_id is None:
-        if read_bool_setting("GENERATE_MISSING_EXTERNAL_IDS"):
+        if read_bool_setting("GENERATE_MISSING_ADMIN_IDS"):
             admin_id = uuid.uuid4().hex
         else:
             raise ValueError(f"{layer_feature} is missing a valid admin id")

@@ -18,6 +18,8 @@ jobs:
             platform: win_amd64
           - os: macos-latest
             platform: macosx_10_9_x86_64
+          - os: ubuntu-latest
+            platform: manylinux2014_x86_64
           - os: macos-latest
             python-version: "3.9"
             platform: macosx_11_0_arm64

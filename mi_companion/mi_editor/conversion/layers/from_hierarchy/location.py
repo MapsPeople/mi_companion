@@ -135,6 +135,10 @@ def add_floor_locations(
             if "name" in feature_attributes:
                 name = extract_field_value(feature_attributes, "name")
 
+            description = None
+            if "description" in feature_attributes:
+                description = extract_field_value(feature_attributes, "description")
+
             is_active = None
             if "is_active" in feature_attributes:
                 is_active = extract_field_value(feature_attributes, "is_active")
@@ -159,12 +163,12 @@ def add_floor_locations(
             if name is None:
                 raise ValueError(f"{layer_feature} is missing a valid name")
 
-            door_linestring = feature_to_shapely(layer_feature)
+            location_geometry = feature_to_shapely(layer_feature)
 
-            if door_linestring is None:
-                logger.error(f"{door_linestring=}")
+            if location_geometry is None:
+                logger.error(f"{location_geometry=}")
 
-            if door_linestring is not None:
+            if location_geometry is not None:
                 common_kvs = dict(
                     admin_id=admin_id,
                     external_id=external_id,
@@ -173,6 +177,7 @@ def add_floor_locations(
                     is_active=is_active,
                     is_searchable=is_searchable,
                     location_type_key=location_type_key,
+                    description=description,
                     custom_properties=(
                         custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
                     ),
@@ -209,7 +214,7 @@ def add_floor_locations(
                     else:
                         common_kvs[k] = extract_field_value(feature_attributes, k)
 
-                shapely_geom = prepare_geom_for_mi_db(door_linestring)
+                shapely_geom = prepare_geom_for_mi_db(location_geometry)
 
                 if location_type == LocationTypeEnum.ROOM:
                     room_key = solution.add_room(
