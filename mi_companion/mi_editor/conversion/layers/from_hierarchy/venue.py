@@ -86,10 +86,12 @@ def convert_solution_venues(
 
         if existing_solution is None:
             solution = Solution(
-                solution_external_id,
-                solution_name,
-                solution_customer_id,
+                external_id=solution_external_id,
+                name=solution_name,
+                customer_id=solution_customer_id,
                 occupants_enabled=solution_occupants_enabled,
+                # occupants_enabled =...
+                # default_language = ...
             )
         else:
             solution = copy.deepcopy(existing_solution)

@@ -7,7 +7,7 @@ from jord.qlive_utilities import add_shapely_layer
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
-from integration_system.model import Solution
+from integration_system.model import Solution, Venue
 from mi_companion import (
     ALLOW_DUPLICATE_VENUES_IN_PROJECT,
     DESCRIPTOR_BEFORE,
@@ -116,8 +116,11 @@ def add_venue_layer(
 
 
 def add_venue_polygon_layer(
-    qgis_instance_handle, venue, venue_group, venue_type_dropdown_widget
-):
+    qgis_instance_handle: Any,
+    venue: Venue,
+    venue_group: Any,
+    venue_type_dropdown_widget: Any,
+) -> None:
     venue_layer = add_shapely_layer(
         qgis_instance_handle=qgis_instance_handle,
         geoms=[prepare_geom_for_qgis(venue.polygon)],
@@ -125,7 +128,7 @@ def add_venue_polygon_layer(
         columns=[
             {
                 "admin_id": venue.admin_id,
-                "external_id": venue.admin_id,
+                "external_id": venue.external_id,
                 "name": venue.name,
                 "last_verified": venue.last_verified,
                 "venue_type": venue.venue_type.name,

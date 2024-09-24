@@ -131,24 +131,30 @@ def to_df_2(coll_mix: CollectionMixin) -> DataFrame:
     return json_normalize(cs)
 
 
-def to_df(coll_mix: CollectionMixin) -> DataFrame:
+def to_df(collection_: CollectionMixin) -> DataFrame:
     # noinspection PyTypeChecker
-    cs = []
-    for c in coll_mix:
-        if hasattr(c, "custom_properties"):
-            cps = getattr(c, "custom_properties")
-            if cps is not None:
-                for language, translations in copy.deepcopy(cps).items():
-                    for cp, cpv in translations.items():
-                        if cpv is None:
-                            cps[language][cp] = REAL_NONE_JSON_VALUE
+    converted_items = []
 
-                setattr(c, "custom_properties", cps)
+    for item in collection_:
+        if False:
+            if hasattr(item, "custom_properties"):
+                custom_properties = getattr(item, "custom_properties")
+                if custom_properties is not None:
+                    for language, translations in copy.deepcopy(
+                        custom_properties
+                    ).items():
+                        for custom_property, value in translations.items():
+                            if value is None:
+                                custom_properties[language][
+                                    custom_property
+                                ] = REAL_NONE_JSON_VALUE
 
-        c_d = dataclasses.asdict(c)
+                    setattr(item, "custom_properties", custom_properties)
 
-        if "categories" in c_d:
-            list_of_category_dicts = c_d.pop("categories")
+        item_as_dict = dataclasses.asdict(item)
+
+        if "categories" in item_as_dict:
+            list_of_category_dicts = item_as_dict.pop("categories")
 
             keys = []
             if list_of_category_dicts:
@@ -164,8 +170,8 @@ def to_df(coll_mix: CollectionMixin) -> DataFrame:
                     else:
                         keys.append(cat["name"])
 
-            c_d["category_keys"] = keys
+            item_as_dict["category_keys"] = keys
 
-        cs.append(c_d)
+        converted_items.append(item_as_dict)
 
-    return json_normalize(cs)
+    return json_normalize(converted_items)
