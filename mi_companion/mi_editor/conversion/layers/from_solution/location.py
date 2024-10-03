@@ -45,6 +45,9 @@ __all__ = ["add_floor_content_layers"]
 logger = logging.getLogger(__name__)
 
 BOOLEAN_LOCATION_ATTRS = ("is_searchable", "is_active")
+STR_LOCATION_ATTRS = ("description", "external_id", "name", "admin_id")
+FLOAT_LOCATION_ATTRS = ()
+INT_LOCATION_ATTRS = ()
 
 
 class LocationGeometryType(StrEnum):
@@ -133,6 +136,15 @@ def add_location_layer(
 
     for attr_name in BOOLEAN_LOCATION_ATTRS:
         locations_df[attr_name] = shape_df[attr_name].astype(bool)
+
+    for attr_name in STR_LOCATION_ATTRS:
+        locations_df[attr_name] = shape_df[attr_name].astype(str)
+
+    for attr_name in FLOAT_LOCATION_ATTRS:
+        locations_df[attr_name] = shape_df[attr_name].astype(float)
+
+    for attr_name in INT_LOCATION_ATTRS:
+        locations_df[attr_name] = shape_df[attr_name].astype(int)
 
     added_layers = add_dataframe_layer(
         qgis_instance_handle=qgis_instance_handle,
