@@ -44,11 +44,6 @@ def add_graph_layers(
                 points_meta_data,
             ) = osm_xml_to_lines(graph.osm_xml)
 
-            lines = [prepare_geom_for_qgis(l, clean=False) for l in lines]
-            points = [prepare_geom_for_qgis(p, clean=False) for p in points]
-
-            logger.info(f"{len(lines)=} loaded!")
-
             if DESCRIPTOR_BEFORE:
                 graph_name = f"{GRAPH_DESCRIPTOR} {graph.graph_id}"
             else:
@@ -60,28 +55,30 @@ def add_graph_layers(
                 graph_group.setExpanded(False)
                 graph_group.setItemVisibilityChecked(False)
 
-            if points:
-                graph_meta_point_layer = add_shapely_layer(
-                    qgis_instance_handle=qgis_instance_handle,
-                    geoms=[venue.polygon.representative_point()],
-                    name=GRAPH_DATA_DESCRIPTOR,
-                    group=graph_group,
-                    columns=[{"graph_id": graph.graph_id}],
-                    visible=False,
-                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
-                )
+            graph_meta_point_layer = add_shapely_layer(
+                qgis_instance_handle=qgis_instance_handle,
+                geoms=[venue.polygon.representative_point()],
+                name=GRAPH_DATA_DESCRIPTOR,
+                group=graph_group,
+                columns=[{"graph_id": graph.graph_id}],
+                visible=False,
+                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+            )
 
-            if lines:
-                graph_lines_layer = add_shapely_layer(
-                    qgis_instance_handle=qgis_instance_handle,
-                    geoms=lines,
-                    name=NAVIGATION_LINES_DESCRIPTOR,
-                    group=graph_group,
-                    columns=lines_meta_data,
-                    categorise_by_attribute="level",
-                    visible=True,
-                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
-                )
+            if True:
+                lines = [prepare_geom_for_qgis(l, clean=False) for l in lines]
+                logger.info(f"{len(lines)=} loaded!")
+                if lines:
+                    graph_lines_layer = add_shapely_layer(
+                        qgis_instance_handle=qgis_instance_handle,
+                        geoms=lines,
+                        name=NAVIGATION_LINES_DESCRIPTOR,
+                        group=graph_group,
+                        columns=lines_meta_data,
+                        categorise_by_attribute="level",
+                        visible=False,
+                        crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+                    )
 
             if highway_type_dropdown_widget:
                 for layers_inner in graph_lines_layer:
@@ -100,6 +97,7 @@ def add_graph_layers(
                             )
 
             if True:  # SHOW POINTs AS WELL
+                points = [prepare_geom_for_qgis(p, clean=False) for p in points]
                 logger.info(f"{len(points)=} loaded!")
                 graph_points_layer = add_shapely_layer(
                     qgis_instance_handle=qgis_instance_handle,

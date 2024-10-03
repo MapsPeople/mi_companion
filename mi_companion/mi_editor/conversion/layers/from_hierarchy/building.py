@@ -60,20 +60,8 @@ def add_venue_level_hierarchy(
             )
 
         if not isinstance(venue_group_item, QgsLayerTreeGroup):
-            ...
+            logger.debug(f"skipping {venue_group_item=}")
         else:
-            if GRAPH_DESCRIPTOR in venue_group_item.name():
-                logger.warning(
-                    f"Not handling graphs yet, {venue_group_item.name()}, skipping"
-                )
-                graph_key = add_venue_graph(
-                    solution=solution,
-                    graph_group=venue_group_item,
-                )
-                if graph_key:
-                    venue = solution.venues.get(venue_key)
-                    venue.graph = solution.graphs.get(graph_key)
-
             if (
                 HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS
                 and FLOOR_DESCRIPTOR in venue_group_item.name()
@@ -126,6 +114,38 @@ def add_venue_level_hierarchy(
                         num_venue_elements=num_venue_elements,
                         num_building_elements=num_venue_group_elements,
                     )
+
+    for ith_venue_group_item, venue_group_item in enumerate(venue_group_elements):
+        if progress_bar:
+            progress_bar.setValue(
+                int(
+                    10
+                    + (
+                        90
+                        * ((ith_solution + HALF_SIZE) / num_solution_elements)
+                        * ((ith_venue + HALF_SIZE) / num_venue_elements)
+                        * (
+                            (ith_venue_group_item + HALF_SIZE)
+                            / num_venue_group_elements
+                        )
+                    )
+                )
+            )
+
+        if not isinstance(venue_group_item, QgsLayerTreeGroup):
+            logger.debug(f"skipping {venue_group_item=}")
+        else:
+            if GRAPH_DESCRIPTOR in venue_group_item.name():
+                logger.warning(
+                    f"Not handling graphs yet, {venue_group_item.name()}, skipping"
+                )
+                graph_key = add_venue_graph(
+                    solution=solution,
+                    graph_group=venue_group_item,
+                )
+                if graph_key:
+                    venue = solution.venues.get(venue_key)
+                    venue.graph = solution.graphs.get(graph_key)
 
 
 def get_building_key(
