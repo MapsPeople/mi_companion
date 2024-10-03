@@ -1,6 +1,6 @@
 import pyproj
 import shapely
-from jord.shapely_utilities.base import clean_shape
+from jord.shapely_utilities import clean_shape
 from pandas import DataFrame
 
 from mi_companion.configuration.options import read_bool_setting

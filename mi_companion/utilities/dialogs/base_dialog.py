@@ -19,7 +19,7 @@ class BaseDialog(QtWidgets.QDialog, FORM_CLASS):
 
         self.message_bar = None
 
-    def on_compute_clicked(self):
+    def on_compute_clicked(self) -> None:
         file_name = self.profileNameInput.text()
         if file_name == "":
             QgsMessageLog.logMessage(
