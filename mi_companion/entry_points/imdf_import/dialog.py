@@ -67,14 +67,7 @@ class Dialog(QDialog, FORM_CLASS):
             h_box.addWidget(QLabel(label_text))
             if isclass(v.annotation) and issubclass(v.annotation, Path):
                 file_browser = qgis.gui.QgsFileWidget()
-
-                if default is not None:
-                    file_browser.setFilePath(str(default))
-                # file_browser.setStorageMode(qgis.gui.QgsFileWidget.StorageMode.GetDirectory)
-                # file_browser.fileChanged.connect(self.picked_directory)
-                else:
-                    file_browser.setFilter("*.dxf")
-
+                file_browser.setFilter("*.svg")
                 self.parameter_lines[k] = file_browser
             else:
                 self.parameter_lines[k] = QLineEdit(

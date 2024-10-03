@@ -16,7 +16,7 @@ def run(*, original_dxf_path: Path, new_dxf_path: Path) -> None:
     """
     import geopandas
 
-    from caddy.difference import get_entity_difference
+    from caddy.difference import get_entity_differences
 
     if isinstance(original_dxf_path, str):
         original_dxf_path = Path(original_dxf_path)
@@ -24,7 +24,7 @@ def run(*, original_dxf_path: Path, new_dxf_path: Path) -> None:
     if isinstance(new_dxf_path, str):
         new_dxf_path = Path(new_dxf_path)
 
-    diff = get_entity_difference(original_dxf_path, new_dxf_path)
+    diff = get_entity_differences(original_dxf_path, new_dxf_path)
 
     if True:
         # noinspection PyUnresolvedReferences

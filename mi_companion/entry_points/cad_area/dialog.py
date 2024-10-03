@@ -21,7 +21,7 @@ class Dialog(QtWidgets.QDialog, FORM_CLASS):
 
         signals.reconnect_signal(self.compute_button.clicked, self.on_compute_clicked)
 
-    def on_compute_clicked(self):
+    def on_compute_clicked(self) -> None:
         from .cad_area_impl import run
 
         out_path = Path(str(self.out_file_widget.filePath()))
