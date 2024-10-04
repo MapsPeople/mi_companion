@@ -34,14 +34,15 @@ __all__ = ["add_venue_layer"]
 
 def add_venue_layer(
     *,
-    available_location_type_dropdown_widget: Any,
-    door_type_dropdown_widget: Any,
-    highway_type_dropdown_widget: Any,
-    venue_type_dropdown_widget: Any,
-    progress_bar: Optional[Any],
     qgis_instance_handle: Any,
     solution: Solution,
     solution_group: Any,
+    available_location_type_dropdown_widget: Optional[Any] = None,
+    door_type_dropdown_widget: Optional[Any] = None,
+    highway_type_dropdown_widget: Optional[Any] = None,
+    venue_type_dropdown_widget: Optional[Any] = None,
+    connection_type_dropdown_widget: Optional[Any] = None,
+    progress_bar: Optional[Any] = None,
 ) -> None:
     if True:
         assert len(solution.venues) > 0, "No venues found"
@@ -103,10 +104,11 @@ def add_venue_layer(
                     graph=venue.graph,
                     venue_group=venue_group,
                     qgis_instance_handle=qgis_instance_handle,
-                    highway_type_dropdown_widget=highway_type_dropdown_widget,
-                    door_type_dropdown_widget=door_type_dropdown_widget,
                     solution=solution,
                     venue=venue,
+                    highway_type_dropdown_widget=highway_type_dropdown_widget,
+                    door_type_dropdown_widget=door_type_dropdown_widget,
+                    connection_type_dropdown_widget=connection_type_dropdown_widget,
                 )
 
         if INSERT_INDEX > 0:

@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Iterable
+from typing import Any, Iterable, Optional
 from xml.etree.ElementTree import ParseError
 
 from jord.qlive_utilities import add_shapely_layer
@@ -32,10 +32,11 @@ def add_graph_layers(
     graph: Graph,
     venue_group: Any,
     qgis_instance_handle: Any,
-    highway_type_dropdown_widget: Any,
-    door_type_dropdown_widget: Any,
     solution: Solution,
     venue: Venue,
+    highway_type_dropdown_widget: Optional[Any] = None,
+    door_type_dropdown_widget: Optional[Any] = None,
+    connection_type_dropdown_widget: Optional[Any] = None,
 ) -> None:
     try:
         if graph.osm_xml:
@@ -117,8 +118,9 @@ def add_graph_layers(
                     graph=graph,
                     qgis_instance_handle=qgis_instance_handle,
                     graph_group=graph_group,
-                    dropdown_widget=door_type_dropdown_widget,
                     solution=solution,
+                    door_type_dropdown_widget=door_type_dropdown_widget,
+                    connection_type_dropdown_widget=connection_type_dropdown_widget,
                 )
         else:
             logger.warning(f"Venue does not have a valid graph {graph}")

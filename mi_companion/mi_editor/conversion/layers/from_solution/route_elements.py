@@ -142,8 +142,9 @@ def add_route_element_layers(
     qgis_instance_handle: Any,
     graph_group: Any,
     graph: Graph,
-    dropdown_widget: Optional[Any] = None,
     solution: Solution,
+    door_type_dropdown_widget: Optional[Any] = None,
+    connection_type_dropdown_widget: Optional[Any] = None,
 ) -> None:
     split_levels_into_individual_groups: bool = False
     if split_levels_into_individual_groups:
@@ -177,7 +178,7 @@ def add_route_element_layers(
 
     else:
         add_linestring_route_element_layers(
-            dropdown_widget=dropdown_widget,
+            dropdown_widget=door_type_dropdown_widget,
             graph=graph,
             graph_group=graph_group,
             qgis_instance_handle=qgis_instance_handle,
@@ -207,7 +208,7 @@ def add_route_element_layers(
         )
 
         add_connection_layers(
-            # dropdown_widget=connection_type_dropdown_widget,
+            dropdown_widget=connection_type_dropdown_widget,
             graph_group=graph_group,
             qgis_instance_handle=qgis_instance_handle,
             connections=solution.connections,
