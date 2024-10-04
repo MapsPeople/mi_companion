@@ -247,9 +247,7 @@ def add_entry_points(
             )
 
 
-def add_connections(
-    graph_key: str, connections_layer_tree_node: Any, solution: Solution
-) -> dict:  # TODO: FINISH!
+def add_connections(connections_layer_tree_node: Any) -> dict:  # TODO: FINISH!
     connectors_linestring_layer = connections_layer_tree_node.layer()
     connections = defaultdict(list)
     for connector_feature in connectors_linestring_layer.getFeatures():

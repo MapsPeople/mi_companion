@@ -16,7 +16,7 @@ from integration_system.mi import (
     SolutionDepth,
     get_remote_solution,
 )
-from integration_system.model import Solution, VenueType
+from integration_system.model import ConnectionType, Solution, VenueType
 from mi_companion import (
     DESCRIPTOR_BEFORE,
     MI_HIERARCHY_GROUP_NAME,
@@ -116,6 +116,20 @@ def add_solution_layers(
             )
         )
 
+    connection_type_dropdown_widget = None
+    if read_plugin_setting("MAKE_CONNECTION_TYPE_DROPDOWN"):
+        connection_type_dropdown_widget = (
+            QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
+                "ValueMap",
+                {
+                    "map": {
+                        name: f"{ConnectionType.__getitem__(name)}"
+                        for name in sorted({l.name for l in ConnectionType})
+                    }
+                },
+            )
+        )
+
     # solution_layer_name = f"{solution.name}_solution_data"
     # solution_data_layers = QgsProject.instance().mapLayersByName(solution_layer_name)
     # logger.info(f"Found {solution_data_layers}")
@@ -172,14 +186,15 @@ def add_solution_layers(
             progress_bar.setValue(10)
 
     add_venue_layer(
-        available_location_type_dropdown_widget=available_location_type_dropdown_widget,
-        door_type_dropdown_widget=door_type_dropdown_widget,
-        highway_type_dropdown_widget=highway_type_dropdown_widget,
-        venue_type_dropdown_widget=venue_type_dropdown_widget,
         progress_bar=progress_bar,
         qgis_instance_handle=qgis_instance_handle,
         solution=solution,
         solution_group=solution_group,
+        available_location_type_dropdown_widget=available_location_type_dropdown_widget,
+        door_type_dropdown_widget=door_type_dropdown_widget,
+        highway_type_dropdown_widget=highway_type_dropdown_widget,
+        venue_type_dropdown_widget=venue_type_dropdown_widget,
+        connection_type_dropdown_widget=connection_type_dropdown_widget,
     )
 
 

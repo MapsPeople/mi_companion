@@ -34,6 +34,8 @@ from mi_companion.mi_editor.conversion.projection import (
 
 logger = logging.getLogger(__name__)
 
+USE_EXISTING_GRAPH = True
+
 
 def sync_build_venue_solution(
     *,
@@ -154,7 +156,8 @@ def sync_build_venue_solution(
 
     sync_level = SyncLevel.VENUE
     strategy = dict(default_strategy())
-    strategy[Graph] = default_matcher, None  # Do not update graph
+    if USE_EXISTING_GRAPH:
+        strategy[Graph] = default_matcher, None  # Do not update graph
     success = synchronize(
         solution,
         sync_level=sync_level,
