@@ -44,7 +44,7 @@ __all__ = [
     "add_avoids",
     "add_obstacles",
     "add_prefers",
-    "add_connections",
+    "get_connections",
     "add_entry_points",
     "add_route_elements",
 ]
@@ -247,7 +247,7 @@ def add_entry_points(
             )
 
 
-def add_connections(connections_layer_tree_node: Any) -> dict:  # TODO: FINISH!
+def get_connections(connections_layer_tree_node: Any) -> dict:  # TODO: FINISH!
     connectors_linestring_layer = connections_layer_tree_node.layer()
     connections = defaultdict(list)
     for connector_feature in connectors_linestring_layer.getFeatures():
@@ -381,10 +381,8 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                 ):
                     connections_agg = defaultdict(list)
                     for sub_graph_group_item in graph_group_item.children():
-                        connections = add_connections(
-                            graph_key=graph_key,
+                        connections = get_connections(
                             connections_layer_tree_node=sub_graph_group_item,
-                            solution=solution,
                         )
 
                         for k, v in connections.items():
@@ -470,10 +468,8 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                     isinstance(graph_group_item, QgsLayerTreeLayer)
                     and CONNECTORS_DESCRIPTOR in graph_group_item.name()
                 ):
-                    connections = add_connections(
-                        graph_key=graph_key,
+                    connections = get_connections(
                         connections_layer_tree_node=graph_group_item,
-                        solution=solution,
                     )
                     assemble_connections(connections, solution, graph_key)
                 else:
