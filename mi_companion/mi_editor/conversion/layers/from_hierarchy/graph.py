@@ -10,7 +10,7 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 from integration_system.model import Solution
 from mi_companion import GRAPH_DATA_DESCRIPTOR
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
-    extract_layer_data,
+    extract_layer_data_single,
 )
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.route_elements import (
     add_route_elements,
@@ -33,7 +33,7 @@ def get_graph_data(graph_group: Any, solution: Solution) -> Tuple:
             and GRAPH_DATA_DESCRIPTOR.lower().strip()
             in str(graph_level_item.name()).lower().strip()
         ):
-            layer_attributes, *_ = extract_layer_data(graph_level_item)
+            layer_attributes, *_ = extract_layer_data_single(graph_level_item)
             graph_id = (
                 layer_attributes["graph_id"] if "graph_id" in layer_attributes else None
             )

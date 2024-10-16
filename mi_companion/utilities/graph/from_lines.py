@@ -6,7 +6,7 @@ from warg import ensure_existence
 
 from mi_companion.constants import PROJECT_APP_PATH
 
-__all__ = ["lines_to_osm_lines"]
+__all__ = ["lines_to_osm_lines", "network_to_osm_xml", "lines_to_network"]
 
 
 def network_to_osm_xml(osm_xml: MultiDiGraph) -> bytes:

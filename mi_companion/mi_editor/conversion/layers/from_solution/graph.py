@@ -13,7 +13,6 @@ from mi_companion import (
     NAVIGATION_POINT_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
-from mi_companion.mi_editor.conversion.graph.to_lines import osm_xml_to_lines
 from mi_companion.mi_editor.conversion.layers.from_solution.route_elements import (
     add_route_element_layers,
 )
@@ -23,6 +22,7 @@ from mi_companion.mi_editor.conversion.projection import (
     prepare_geom_for_qgis,
     should_reproject,
 )
+from mi_companion.utilities.graph import osm_xml_to_lines
 
 logger = logging.getLogger(__name__)
 

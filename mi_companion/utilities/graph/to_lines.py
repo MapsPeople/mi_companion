@@ -1,13 +1,12 @@
 from typing import Collection, Dict, Tuple
 
-import geopandas
 import shapely
 from networkx import MultiDiGraph
 from warg import ensure_existence
 
 from mi_companion.constants import PROJECT_APP_PATH
 
-__all__ = ["osm_xml_to_lines"]
+__all__ = ["osm_xml_to_lines", "osm_xml_to_network", "network_to_lines"]
 
 
 def osm_xml_to_network(osm_xml: str) -> MultiDiGraph:
@@ -41,6 +40,7 @@ def network_to_lines(
 ) -> Tuple[Tuple[Collection, Dict], Tuple[Collection, Dict]]:
     if False:
         import osmnx
+        import geopandas
 
         gpkg_cache_path = (
             ensure_existence(PROJECT_APP_PATH.site_cache) / "to_shape_file.gpkg"
@@ -50,6 +50,7 @@ def network_to_lines(
         df = geopandas.read_file(str(gpkg_cache_path))
     elif False:
         import osmnx
+        import geopandas
 
         graphml_cache_path = (
             ensure_existence(PROJECT_APP_PATH.site_cache) / "to_shape_file.xml"

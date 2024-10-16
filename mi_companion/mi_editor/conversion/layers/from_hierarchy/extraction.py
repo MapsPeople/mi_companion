@@ -22,13 +22,19 @@ from mi_companion.configuration.options import read_bool_setting
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["special_extract_layer_data", "extract_layer_data", "feature_to_shapely"]
+__all__ = [
+    "special_extract_layer_data",
+    "extract_layer_data_single",
+    "feature_to_shapely",
+    "layer_data_generator",
+    "MissingFeatureError",
+]
 
 
 def special_extract_layer_data(
     layer_tree_layer: Any, require_external_id: bool = False
 ) -> Tuple:  # TODO: REWRITE
-    layer_attributes, layer_feature = extract_layer_data(layer_tree_layer)
+    layer_attributes, layer_feature = extract_layer_data_single(layer_tree_layer)
 
     admin_id = layer_attributes["admin_id"] if "admin_id" in layer_attributes else None
     if admin_id is None:
@@ -86,23 +92,69 @@ def special_extract_layer_data(
     return admin_id, external_id, layer_attributes, layer_feature, name
 
 
-def extract_layer_data(layer_tree_layer: Any) -> Tuple:
+def extract_layer_data_single(layer_tree_layer: Any) -> Tuple:
     geometry_layer = layer_tree_layer.layer()
-    layer_feature = next(iter(geometry_layer.getFeatures()))
-    layer_attributes = {
-        k.name(): v
-        for k, v in zip(
-            layer_feature.fields(),
-            layer_feature.attributes(),
-        )
-    }
-    if len(layer_attributes) == 0:
-        logger.error(
-            f"Did not find attributes, skipping {layer_tree_layer.name()} {list(geometry_layer.getFeatures())}"
-        )
+    if (
+        geometry_layer
+        and geometry_layer.hasFeatures()
+        and geometry_layer.featureCount() > 0
+    ):
+        if geometry_layer.featureCount() > 1:
+            raise ValueError(f"{layer_tree_layer.name()} has more than one feature")
+
+        for layer_feature in geometry_layer.getFeatures():
+            layer_feature_attributes = {
+                k.name(): v
+                for k, v in zip(
+                    layer_feature.fields(),
+                    layer_feature.attributes(),
+                )
+            }
+            if len(layer_feature_attributes) == 0:
+                logger.error(
+                    f"Did not find attributes, skipping {layer_tree_layer.name()} {list(geometry_layer.getFeatures())}"
+                )
+            else:
+                logger.info(
+                    f"found {layer_feature_attributes=} for {layer_tree_layer.name()=}"
+                )
+            return layer_feature_attributes, layer_feature
+
+    raise MissingFeatureError(f"no feature was not found for {layer_tree_layer.name()}")
+
+
+class MissingFeatureError(Exception):
+    pass
+
+
+def layer_data_generator(layer_tree_layer: Any) -> Tuple:
+    geometry_layer = layer_tree_layer.layer()
+    if (
+        geometry_layer
+        and geometry_layer.hasFeatures()
+        and geometry_layer.featureCount() > 0
+    ):
+        for layer_feature in geometry_layer.getFeatures():
+            layer_feature_attributes = {
+                k.name(): v
+                for k, v in zip(
+                    layer_feature.fields(),
+                    layer_feature.attributes(),
+                )
+            }
+            if len(layer_feature_attributes) == 0:
+                logger.error(
+                    f"Did not find attributes, skipping {layer_tree_layer.name()} {list(geometry_layer.getFeatures())}"
+                )
+            else:
+                logger.info(
+                    f"found {layer_feature_attributes=} for {layer_tree_layer.name()=}"
+                )
+            yield layer_feature_attributes, layer_feature
     else:
-        logger.info(f"found {layer_attributes=} for {layer_tree_layer.name()=}")
-    return layer_attributes, layer_feature
+        raise MissingFeatureError(
+            f"no feature was not found for {layer_tree_layer.name()}"
+        )
 
 
 def feature_to_shapely(

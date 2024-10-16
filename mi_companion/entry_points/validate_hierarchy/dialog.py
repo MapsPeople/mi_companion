@@ -17,8 +17,6 @@ FORM_CLASS, _ = uic.loadUiType(str(Path(__file__).parent / "dialog.ui"))
 
 __all__ = ["Dialog"]
 
-SERIALISED_SOLUTION_EXTENSION = ".json"
-
 try:  # Python >= 3.8
     from typing import Literal, get_args, get_origin
 
@@ -59,18 +57,20 @@ class Dialog(QDialog, FORM_CLASS):
             h_box = QHBoxLayout()
             label_text = f"{k}"
             default = None
+
             if v.annotation != v.empty:
                 annotation = v.annotation
                 label_text += f": {annotation}"
+
             if v.default != v.empty:
                 default = v.default
                 label_text += f" = ({default})"
 
             h_box.addWidget(QLabel(label_text))
+
             if isclass(v.annotation) and issubclass(v.annotation, Path):
                 file_browser = qgis.gui.QgsFileWidget()
-                file_browser.setStorageMode(file_browser.GetFile)
-                file_browser.setFilter(f"*{SERIALISED_SOLUTION_EXTENSION}")
+                file_browser.setFilter("*.points")
                 self.parameter_lines[k] = file_browser
             else:
                 self.parameter_lines[k] = QLineEdit(
@@ -85,7 +85,7 @@ class Dialog(QDialog, FORM_CLASS):
         self.parameter_layout.insertWidget(0, QLabel(run.__doc__))
 
     def on_compute_clicked(self) -> None:
-        from .main import run  # TODO: REFACTOR TO USE A FILE SELECTOR!
+        from .main import run
 
         call_kwarg = {}
         for k, v in self.parameter_lines.items():
@@ -117,7 +117,6 @@ class Dialog(QDialog, FORM_CLASS):
                 ]  # ONLY one supported for now
                 if file_path_str:
                     file_path = Path(file_path_str)
-
                     if file_path.exists() and file_path.is_file():
                         call_kwarg[k] = file_path
                     else:
