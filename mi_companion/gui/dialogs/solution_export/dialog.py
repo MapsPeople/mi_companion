@@ -17,6 +17,8 @@ FORM_CLASS, _ = uic.loadUiType(str(Path(__file__).parent / "dialog.ui"))
 
 __all__ = ["Dialog"]
 
+SERIALISED_SOLUTION_EXTENSION = ".json"
+
 try:  # Python >= 3.8
     from typing import Literal, get_args, get_origin
 
@@ -84,7 +86,7 @@ class Dialog(QDialog, FORM_CLASS):
         self.parameter_layout.insertWidget(0, QLabel(run.__doc__))
 
     def on_compute_clicked(self) -> None:
-        from .main import run
+        from .main import run  # TODO: REFACTOR TO USE A FILE SELECTOR!
 
         call_kwarg = {}
         for k, v in self.parameter_lines.items():

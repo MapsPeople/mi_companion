@@ -35,7 +35,7 @@ from qgis.core import QgsProject
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 
 from ..constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, VERSION
-from ..utilities.paths import get_icon_path, load_icon, resolve_path
+from ..qgis_utilities import get_icon_path, load_icon, resolve_path
 
 QGIS_PROJECT = QgsProject.instance()
 VERBOSE = False

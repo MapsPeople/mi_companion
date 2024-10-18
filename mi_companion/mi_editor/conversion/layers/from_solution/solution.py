@@ -30,10 +30,8 @@ from .venue import add_venue_layer
 __all__ = ["solution_venue_to_layer_hierarchy", "add_solution_layers"]
 
 from ...projection import (
-    GDS_EPSG_NUMBER,
-    should_reproject,
-    MI_EPSG_NUMBER,
     prepare_geom_for_qgis,
+    solve_target_crs_authid,
 )
 
 logger = logging.getLogger(__name__)
@@ -165,7 +163,7 @@ def add_solution_layers(
                     }
                 ],
                 visible=False,
-                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+                crs=solve_target_crs_authid(),
             )
 
             if False:  # CLEAR GEOMETRY AS IT IS NOT NEEDED, TODO: DOES NOT WORK

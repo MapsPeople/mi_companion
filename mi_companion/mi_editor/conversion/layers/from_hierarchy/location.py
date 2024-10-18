@@ -21,8 +21,8 @@ from mi_companion.mi_editor.conversion.layers.type_enums import LocationTypeEnum
 
 __all__ = ["add_floor_contents"]
 
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
-from mi_companion.utilities.string_parsing import is_str_value_null_like
+from ...projection import prepare_geom_for_mi_db
+from mi_companion.qgis_utilities import is_str_value_null_like
 
 logger = logging.getLogger(__name__)
 # noinspection PyUnresolvedReferences
@@ -147,6 +147,7 @@ def add_floor_locations(
                         is_active = False
                     else:
                         is_active = True
+                assert isinstance(is_active, bool), f"{type(is_active)}"
 
             is_searchable = None
             if "is_searchable" in feature_attributes:
@@ -156,6 +157,7 @@ def add_floor_locations(
                         is_searchable = False
                     else:
                         is_searchable = True
+                assert isinstance(is_searchable, bool), f"{type(is_searchable)}"
 
             if name is None:  # Fallback
                 name = external_id
@@ -187,13 +189,16 @@ def add_floor_locations(
                     if k not in common_kvs:
                         if k == "category_keys":
                             cat_keys = []
-                            a = feature_attributes["category_keys"]
+                            a = extract_field_value(feature_attributes, "category_keys")
                             if not isinstance(a, Collection):
                                 logger.warning(f"Skipping {a} for {k}")
                                 continue
 
                             for category_name in a:
                                 if isinstance(category_name, str):
+                                    if category_name.lower().strip() == "":
+                                        continue
+
                                     category_key = Category.compute_key(
                                         name=category_name
                                     )
@@ -209,6 +214,10 @@ def add_floor_locations(
                                                 f"{category_key} is not a valid category"
                                             )
                                     cat_keys.append(category_key)
+                                else:
+                                    logger.error(
+                                        f"Skipping invalid category {category_name} on {admin_id}"
+                                    )
 
                             common_kvs["category_keys"] = cat_keys
                     else:
@@ -217,23 +226,23 @@ def add_floor_locations(
                 shapely_geom = prepare_geom_for_mi_db(location_geometry)
 
                 if location_type == LocationTypeEnum.ROOM:
-                    room_key = solution.add_room(
+                    location_key = solution.add_room(
                         polygon=shapely_geom,
                         **common_kvs,
                     )
                 elif location_type == LocationTypeEnum.AREA:
-                    room_key = solution.add_area(
+                    location_key = solution.add_area(
                         polygon=shapely_geom,
                         **common_kvs,
                     )
                 elif location_type == LocationTypeEnum.POI:
-                    room_key = solution.add_point_of_interest(
+                    location_key = solution.add_point_of_interest(
                         point=shapely_geom, **common_kvs
                     )
                 else:
                     raise Exception(f"{location_type=} is unknown")
                 if VERBOSE:
-                    logger.info(f"added {location_type} {room_key}")
+                    logger.info(f"added {location_type} {location_key}")
 
 
 def extract_field_value(feature_attributes: Mapping[str, Any], field_name: str) -> Any:

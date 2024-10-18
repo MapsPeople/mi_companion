@@ -21,6 +21,7 @@ validators>=0.22.0
 warg>=1.4.0
 importlib-metadata>=0.0.1
 importlib-resources>=0.0.1
+google-cloud-logging>=3.1.2
 
 #rasterio>=0.0.1
 #skimage>=0.0.1
@@ -30,3 +31,4 @@ importlib-resources>=0.0.1
 file://${SUBMODULE_DIRECTORY}/mi_sync
 file://${SUBMODULE_DIRECTORY}/svaguely
 file://${SUBMODULE_DIRECTORY}/caddy
+file://${SUBMODULE_DIRECTORY}/midf

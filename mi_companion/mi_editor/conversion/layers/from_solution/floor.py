@@ -8,14 +8,12 @@ from integration_system.model import Building, Floor, Solution
 from mi_companion import DESCRIPTOR_BEFORE, FLOOR_DESCRIPTOR, FLOOR_POLYGON_DESCRIPTOR
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.constants import (
-    GDS_EPSG_NUMBER,
     INSERT_INDEX,
-    MI_EPSG_NUMBER,
 )
 from .location import add_floor_content_layers
 from ...projection import (
     prepare_geom_for_qgis,
-    should_reproject,
+    solve_target_crs_authid,
 )
 
 logger = logging.getLogger(__name__)
@@ -83,7 +81,7 @@ def add_floor_layers(
                     ],
                     group=floor_group,
                     visible=False,
-                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+                    crs=solve_target_crs_authid(),
                 )
 
             add_floor_content_layers(
@@ -117,7 +115,7 @@ def add_floor_layers(
                     ],
                     group=floor_group,
                     visible=False,
-                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+                    crs=solve_target_crs_authid(),
                 )
 
             assert floor_layer is not None

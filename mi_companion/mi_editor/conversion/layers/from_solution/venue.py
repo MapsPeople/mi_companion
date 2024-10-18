@@ -16,15 +16,13 @@ from mi_companion import (
 )
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.constants import (
-    GDS_EPSG_NUMBER,
     INSERT_INDEX,
-    MI_EPSG_NUMBER,
 )
 from .building import add_building_layers
 from .graph import add_graph_layers
 from ...projection import (
     prepare_geom_for_qgis,
-    should_reproject,
+    solve_target_crs_authid,
 )
 
 logger = logging.getLogger(__name__)
@@ -159,7 +157,7 @@ def add_venue_polygon_layer(
         ],
         group=venue_group,
         visible=False,
-        crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+        crs=solve_target_crs_authid(),
     )
     if venue_type_dropdown_widget:
         for layers_inner in venue_layer:

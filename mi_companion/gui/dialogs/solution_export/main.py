@@ -1,15 +1,16 @@
 #!/usr/bin/python
 
 import logging
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 SERIALISED_SOLUTION_EXTENSION = ".json"
 
 
-def run(*, path: str) -> None:
+def run(*, path: Path) -> None:
     # noinspection PyUnresolvedReferences
     from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-    from pathlib import Path
+
     from qgis.utils import iface
     from jord.qgis_utilities.helpers import InjectedProgressBar
 
@@ -29,7 +30,8 @@ def run(*, path: str) -> None:
         logger.error("No Mi Hierarchy Group found")
         return
 
-    path = Path(path)
+    if not isinstance(path, Path):
+        path = Path(path)
 
     with InjectedProgressBar(parent=iface.mainWindow().statusBar()) as progress_bar:
         solutions = convert_solution_layers_to_solution(

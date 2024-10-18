@@ -36,14 +36,12 @@ from mi_companion import (
     PREFERS_DESCRIPTOR,
 )
 from mi_companion.constants import (
-    GDS_EPSG_NUMBER,
     INSERT_INDEX,
-    MI_EPSG_NUMBER,
 )
 from mi_companion.mi_editor.conversion.layers.from_solution.custom_props import to_df
 from mi_companion.mi_editor.conversion.projection import (
     reproject_geometry_df,
-    should_reproject,
+    solve_target_crs_authid,
 )
 
 logger = logging.getLogger(__name__)
@@ -111,7 +109,7 @@ def add_connection_layers(
                     name=f"{floor_index}",
                     categorise_by_attribute="floor_index",
                     group=doors_group,
-                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+                    crs=solve_target_crs_authid(),
                 )
 
                 make_field_unique(door_layer, field_name="admin_id")
@@ -131,7 +129,7 @@ def add_connection_layers(
             name=CONNECTORS_DESCRIPTOR,
             categorise_by_attribute="floor_index",
             group=graph_group,
-            crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+            crs=solve_target_crs_authid(),
         )
 
         make_field_unique(connectors_layer, field_name="admin_id")
@@ -271,7 +269,7 @@ def add_linestring_route_element_layers(
                     name=f"{floor_index}",
                     categorise_by_attribute="floor_index",
                     group=doors_group,
-                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+                    crs=solve_target_crs_authid(),
                 )
 
                 if dropdown_widget:
@@ -301,7 +299,7 @@ def add_linestring_route_element_layers(
             name=f"{doors_name}",
             categorise_by_attribute="floor_index",
             group=graph_group,
-            crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+            crs=solve_target_crs_authid(),
         )
 
         if dropdown_widget:
@@ -366,7 +364,7 @@ def add_point_route_element_layers(
                     name=f"{floor_index}",
                     categorise_by_attribute="floor_index",
                     group=doors_group,
-                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+                    crs=solve_target_crs_authid(),
                 )
 
                 if dropdown_widget:
@@ -396,7 +394,7 @@ def add_point_route_element_layers(
             name=f"{doors_name}",
             categorise_by_attribute="floor_index",
             group=graph_group,
-            crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+            crs=solve_target_crs_authid(),
         )
 
         if dropdown_widget:
@@ -453,7 +451,7 @@ def add_polygon_route_element_layers(
                     name=f"{floor_index}",
                     categorise_by_attribute="floor_index",
                     group=doors_group,
-                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+                    crs=solve_target_crs_authid(),
                 )
 
                 make_field_unique(obstacle_layer, field_name="admin_id")
@@ -480,7 +478,7 @@ def add_polygon_route_element_layers(
             name=f"{layer_name}",
             categorise_by_attribute="floor_index",
             group=graph_group,
-            crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+            crs=solve_target_crs_authid(),
         )
 
         make_field_unique(obstacle_layer, field_name="admin_id")

@@ -4,30 +4,41 @@
 import logging
 from pathlib import Path
 
-from samples.loading import parse_imdf
+from midf.conversion import to_mi_solution
+from midf.linking import link_imdf
+from midf.loading import load_imdf
 
 logger = logging.getLogger(__name__)
 
 
 def run(*, imdf_zip_file_path: Path) -> None:
     # noinspection PyUnresolvedReferences
-    # from qgis.utils import iface
     from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-    from jord.qlive_utilities import add_dataframe_layer
+    # noinspection PyUnresolvedReferences
+    from qgis.utils import iface
+    from jord.qgis_utilities.helpers import InjectedProgressBar
+
+    from mi_companion import MI_HIERARCHY_GROUP_NAME
+    from mi_companion.mi_editor.conversion import add_solution_layers
+
+    qgis_instance_handle = QgsProject.instance()
+    layer_tree_root = QgsProject.instance().layerTreeRoot()
 
     if isinstance(imdf_zip_file_path, str):
         imdf_zip_file_path = Path(imdf_zip_file_path)
 
-    imdf_hierarchy = parse_imdf(imdf_zip_file_path)
+    imdf_dict = load_imdf(imdf_zip_file_path)
 
-    df = None
+    midf_solution = link_imdf(imdf_dict)
 
-    add_dataframe_layer(
-        qgis_instance_handle=QgsProject.instance(),
-        dataframe=df,
-        geometry_column="geometry",
-        name=str(imdf_zip_file_path),
-        crs="EPSG:3857",
-        # crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER }",
-    )
+    mi_solution = to_mi_solution(midf_solution)
+
+    with InjectedProgressBar(parent=iface.mainWindow().statusBar()) as progress_bar:
+        add_solution_layers(
+            qgis_instance_handle=qgis_instance_handle,
+            solution=mi_solution,
+            layer_tree_root=layer_tree_root,
+            mi_hierarchy_group_name=MI_HIERARCHY_GROUP_NAME,
+            progress_bar=progress_bar,
+        )
