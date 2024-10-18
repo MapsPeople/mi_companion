@@ -57,9 +57,11 @@ class Dialog(QDialog, FORM_CLASS):
             h_box = QHBoxLayout()
             label_text = f"{k}"
             default = None
+
             if v.annotation != v.empty:
                 annotation = v.annotation
                 label_text += f": {annotation}"
+
             if v.default != v.empty:
                 default = v.default
                 label_text += f" = ({default})"
@@ -67,8 +69,9 @@ class Dialog(QDialog, FORM_CLASS):
             h_box.addWidget(QLabel(label_text))
             if isclass(v.annotation) and issubclass(v.annotation, Path):
                 file_browser = qgis.gui.QgsFileWidget()
-                file_browser.setFilter("*.svg")
+                file_browser.setFilter("*.zip")
                 self.parameter_lines[k] = file_browser
+
             else:
                 self.parameter_lines[k] = QLineEdit(
                     str(default) if default is not None else None

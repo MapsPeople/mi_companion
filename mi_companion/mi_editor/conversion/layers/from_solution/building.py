@@ -18,12 +18,10 @@ __all__ = ["add_building_layers"]
 
 from ...projection import (
     prepare_geom_for_qgis,
-    should_reproject,
+    solve_target_crs_authid,
 )
 from mi_companion.constants import (
-    GDS_EPSG_NUMBER,
     INSERT_INDEX,
-    MI_EPSG_NUMBER,
 )
 
 logger = logging.getLogger(__name__)
@@ -96,7 +94,7 @@ def add_building_layers(
                 ],
                 group=building_group,
                 visible=False,
-                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+                crs=solve_target_crs_authid(),
             )
 
             make_field_unique(building_layer)

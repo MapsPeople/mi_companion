@@ -1,10 +1,11 @@
 #!/usr/bin/python
 import logging
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
 
-def run(*, path: str) -> None:
+def run(*, path: Path) -> None:
     # noinspection PyUnresolvedReferences
     from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
@@ -18,6 +19,9 @@ def run(*, path: str) -> None:
 
     qgis_instance_handle = QgsProject.instance()
     layer_tree_root = QgsProject.instance().layerTreeRoot()
+
+    if not isinstance(path, Path):
+        path = Path(path)
 
     with open(path) as f:
         solution = from_json(f.read())

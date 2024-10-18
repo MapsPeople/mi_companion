@@ -6,9 +6,9 @@ from jord.qgis_utilities import (
     get_gcp_transformer_from_file,
     transform_sub_tree_features,
 )
-from qgis.analysis import QgsGcpTransformerInterface
 
-from mi_companion.mi_editor.conversion.projection import GDS_EPSG_NUMBER, MI_EPSG_NUMBER
+from mi_companion.constants import MI_EPSG_NUMBER
+from mi_companion.mi_editor import get_target_crs_srsid
 
 logger = logging.getLogger(__name__)
 
@@ -21,13 +21,11 @@ from qgis.core import (
 )
 
 SOURCE_CRS = QgsCoordinateReferenceSystem(MI_EPSG_NUMBER)
-DEST_CRS = QgsCoordinateReferenceSystem(GDS_EPSG_NUMBER)
-FORWARD_TRANSFORM = None
+DEST_CRS = QgsCoordinateReferenceSystem(get_target_crs_srsid())
+PRE_TRANSFORM = None
 
 if False:  # TODO: Transform if not the same as GCPs!
-    FORWARD_TRANSFORM = QgsCoordinateTransform(
-        SOURCE_CRS, DEST_CRS, QgsProject.instance()
-    )
+    PRE_TRANSFORM = QgsCoordinateTransform(SOURCE_CRS, DEST_CRS, QgsProject.instance())
 
 # FORWARD_TRANSFORM = QgsCoordinateTransform(DEST_CRS, SOURCE_CRS, QgsProject.instance())
 # BACKWARD_TRANSFORM = QgsCoordinateTransform(DEST_CRS, SOURCE_CRS, QgsProject.instance())
@@ -62,6 +60,9 @@ def run(
     # noinspection PyUnresolvedReferences
     from qgis.utils import iface
 
+    # noinspection PyUnresolvedReferences
+    from qgis.analysis import QgsGcpTransformerInterface
+
     assert gcp_points_file_path is not None
 
     assert gcp_points_file_path.exists()
@@ -75,7 +76,7 @@ def run(
     if len(selected_nodes) > 0:
         for n in iter(selected_nodes):
             transform_sub_tree_features(
-                n, transformer=transformer, pre_transformer=FORWARD_TRANSFORM
+                n, transformer=transformer, pre_transformer=PRE_TRANSFORM
             )
     else:
         logger.error(f"Number of selected nodes was {len(selected_nodes)}")

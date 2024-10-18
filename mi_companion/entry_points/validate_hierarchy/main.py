@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import logging
 
-from mi_companion.utilities.validation import validate_venue
+from integration_system.validation import validate_venue
 
 logger = logging.getLogger(__name__)
 

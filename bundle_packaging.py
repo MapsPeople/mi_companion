@@ -178,13 +178,13 @@ def classFactory(iface):
         )
 
     if (target_site_packages_dir / "LICENSE").exists():
-        shutil.rmtree(target_site_packages_dir / "LICENSE")
+        shutil.rmtree(target_site_packages_dir / "LICENSE", ignore_errors=True)
     shutil.copy(
         REQUIREMENTS_FILE.parent / "LICENSE", target_site_packages_dir / "LICENSE"
     )
 
     if (target_site_packages_dir / "icon.png").exists():
-        shutil.rmtree(target_site_packages_dir / "icon.png")
+        shutil.rmtree(target_site_packages_dir / "icon.png", ignore_errors=True)
     shutil.copy(
         REQUIREMENTS_FILE.parent / "icon.png", target_site_packages_dir / "icon.png"
     )

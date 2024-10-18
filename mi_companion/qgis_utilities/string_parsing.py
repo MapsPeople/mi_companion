@@ -5,7 +5,7 @@ from typing import List, Tuple
 import shapely
 import shapely.wkt
 
-__all__ = ["extract_wkt_elements"]
+__all__ = ["extract_wkt_elements", "is_str_value_null_like", "is_json"]
 
 from mi_companion import NAN_VALUE, NULL_VALUE, STR_NA_VALUE, STR_NONE_VALUE
 

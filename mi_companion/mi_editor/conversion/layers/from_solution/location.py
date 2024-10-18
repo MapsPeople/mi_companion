@@ -10,15 +10,13 @@ from jord.qgis_utilities.fields import (
 )
 
 from mi_companion.constants import (
-    GDS_EPSG_NUMBER,
-    MI_EPSG_NUMBER,
     USE_EXTERNAL_ID_FLOOR_SELECTION,
 )
 from .custom_props import process_custom_props_df, to_df
 from ..type_enums import LocationTypeEnum
 from ...projection import (
     reproject_geometry_df,
-    should_reproject,
+    solve_target_crs_authid,
 )
 
 try:
@@ -153,7 +151,7 @@ def add_location_layer(
         name=name,
         group=floor_group,
         categorise_by_attribute="location_type.name",
-        crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+        crs=solve_target_crs_authid(),
     )
 
     layer = None

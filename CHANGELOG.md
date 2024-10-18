@@ -1,3 +1,5 @@
+0.5.1 Project shape to project crs and fix category bug on upload
+
 0.4.8 Address on Venue now supported
 
 0.4.0 Support Multi Polygon floors

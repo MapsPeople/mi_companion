@@ -4,6 +4,7 @@ from xml.etree.ElementTree import ParseError
 
 from jord.qlive_utilities import add_shapely_layer
 
+from integration_system.graph_utilities import osm_xml_to_lines
 from integration_system.model import Graph, Solution, Venue
 from mi_companion import (
     DESCRIPTOR_BEFORE,
@@ -17,12 +18,9 @@ from mi_companion.mi_editor.conversion.layers.from_solution.route_elements impor
     add_route_element_layers,
 )
 from mi_companion.mi_editor.conversion.projection import (
-    GDS_EPSG_NUMBER,
-    MI_EPSG_NUMBER,
     prepare_geom_for_qgis,
-    should_reproject,
+    solve_target_crs_authid,
 )
-from mi_companion.utilities.graph import osm_xml_to_lines
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +61,7 @@ def add_graph_layers(
                 group=graph_group,
                 columns=[{"graph_id": graph.graph_id}],
                 visible=False,
-                crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+                crs=solve_target_crs_authid(),
             )
 
             if True:
@@ -78,7 +76,7 @@ def add_graph_layers(
                         columns=lines_meta_data,
                         categorise_by_attribute="level",
                         visible=False,
-                        crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+                        crs=solve_target_crs_authid(),
                     )
 
             if highway_type_dropdown_widget:
@@ -110,7 +108,7 @@ def add_graph_layers(
                         "SHOW_GRAPH_ON_LOAD",
                     ),
                     categorise_by_attribute="level",
-                    crs=f"EPSG:{GDS_EPSG_NUMBER if should_reproject() else MI_EPSG_NUMBER}",
+                    crs=solve_target_crs_authid(),
                 )
 
             if read_bool_setting("ADD_ROUTE_ELEMENTS"):

@@ -16,7 +16,7 @@ from mi_companion import (
     ADD_STRING_NAN_CUSTOM_PROPERTY_VALUES,
     REAL_NONE_JSON_VALUE,
 )
-from mi_companion.utilities.string_parsing import is_str_value_null_like
+from mi_companion.qgis_utilities import is_str_value_null_like
 
 logger = logging.getLogger(__name__)
 

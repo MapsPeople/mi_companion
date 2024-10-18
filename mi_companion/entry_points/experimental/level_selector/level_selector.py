@@ -34,7 +34,7 @@ from qgis.gui import QgsDockWidget
 from qgis.utils import iface
 from warg import ensure_in_sys_path
 
-from mi_companion.utilities.paths import resolve_path
+from mi_companion.qgis_utilities import resolve_path
 
 FORM_CLASS, _ = uic.loadUiType(resolve_path("level_selector.ui", __file__))
 

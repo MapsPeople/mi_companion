@@ -21,8 +21,8 @@ from mi_companion.mi_editor.conversion.layers.type_enums import LocationTypeEnum
 
 __all__ = ["add_floor_contents"]
 
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
-from mi_companion.utilities.string_parsing import is_str_value_null_like
+from ...projection import prepare_geom_for_mi_db
+from mi_companion.qgis_utilities import is_str_value_null_like
 
 logger = logging.getLogger(__name__)
 # noinspection PyUnresolvedReferences
