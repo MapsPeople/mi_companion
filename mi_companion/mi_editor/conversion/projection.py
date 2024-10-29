@@ -23,6 +23,7 @@ __all__ = [
 ]
 
 # GOOD RESOURCE FOR THIS IMPLEMENTATION: https://qgis.org/pyqgis/3.34/core/QgsCoordinateReferenceSystem.html
+# ANOTHER: https://docs.qgis.org/3.34/en/docs/pyqgis_developer_cookbook/crs.html
 
 # TODO: HONESTLY THIS FILE IS MESS; SHOULD BE REWORKED!
 

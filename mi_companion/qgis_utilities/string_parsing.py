@@ -75,7 +75,7 @@ def extract_wkt_elements(
     return wkt_elements
 
 
-def is_str_value_null_like(v_str_):
+def is_str_value_null_like(v_str_) -> bool:
     return (
         (v_str_ == NAN_VALUE.lower())
         or (v_str_ == NULL_VALUE.lower())

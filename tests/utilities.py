@@ -1,35 +1,38 @@
 """Common functionality used by regression tests."""
 
-import atexit
 import logging
 import os
 import sys
+from typing import Tuple
 
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtCore import QSize
+logger = logging.getLogger("QGIS")
 
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import QWidget
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsApplication
-
-# noinspection PyUnresolvedReferences
-from qgis.gui import QgsMapCanvas
-
-# noinspection PyUnresolvedReferences
-from qgis.utils import iface
-
-from .qgis_interface import QgisInterface
-
-LOGGER = logging.getLogger("QGIS")
-QGIS_APP = None  # Static variable used to hold hand to running QGIS app
+QGIS_APP = None  # Static variable used to hold handle to running QGIS app
 CANVAS = None
 PARENT = None
 IFACE = None
 
 
-def get_qgis_app(cleanup=True):
+def get_qgis_app() -> None:
+    # noinspection PyUnresolvedReferences
+    from qgis.core import QgsApplication
+
+    # supply path to qgis install location
+    QgsApplication.setPrefixPath("/usr", True)
+
+    # create a reference to the QgsApplication, setting the
+    # second argument to False disables the GUI
+    qgs = QgsApplication([], False)
+
+    # load providers
+    qgs.initQgis()
+
+    print("I ran")
+
+    # qgs.exitQgis()
+
+
+def get_qgis_app_crashing(cleanup: bool = True) -> Tuple:
     """Start one QGIS application to test against.
 
     :returns: Handle to QGIS app, canvas, iface and parent. If there are any
@@ -38,6 +41,25 @@ def get_qgis_app(cleanup=True):
 
     If QGIS is already running the handle to that app will be returned.
     """
+
+    # noinspection PyUnresolvedReferences
+    from qgis.core import QgsApplication
+
+    # noinspection PyUnresolvedReferences
+    from qgis.PyQt.QtCore import QSize
+
+    # noinspection PyUnresolvedReferences
+    from qgis.PyQt.QtWidgets import QWidget
+
+    # noinspection PyUnresolvedReferences
+    from qgis.gui import QgsMapCanvas
+
+    # noinspection PyUnresolvedReferences
+    from qgis.utils import iface
+
+    from .qgis_interface import QgisInterface
+
+    import atexit
 
     global QGIS_APP, PARENT, IFACE, CANVAS  # pylint: disable=W0603
 
@@ -48,27 +70,27 @@ def get_qgis_app(cleanup=True):
         IFACE = iface
         return QGIS_APP, CANVAS, IFACE, PARENT
 
-    global QGISAPP  # pylint: disable=global-variable-undefined
-
     try:
-        QGISAPP  # pylint: disable=used-before-assignment
+        QGIS_APP  # pylint: disable=used-before-assignment
     except NameError:
-        myGuiFlag = True  # All test will run qgis in gui mode
+        my_gui_flag = True  # All test will run qgis in gui mode
 
         # In python3 we need to convert to a bytes object (or should
         # QgsApplication accept a QString instead of const char* ?)
         try:
-            argvb = list(map(os.fsencode, sys.argv))
+            argv_bytes = list(map(os.fsencode, sys.argv))
         except AttributeError:
-            argvb = sys.argv
+            argv_bytes = sys.argv
+
+        # supply path to qgis install location
+        QgsApplication.setPrefixPath("/usr", True)
 
         # Note: QGIS_PREFIX_PATH is evaluated in QgsApplication -
         # no need to mess with it here.
-        QGISAPP = QgsApplication(argvb, myGuiFlag)
+        QGIS_APP = QgsApplication(argv_bytes, my_gui_flag)
 
-        QGISAPP.initQgis()
-        s = QGISAPP.showSettings()
-        LOGGER.debug(s)
+        QGIS_APP.initQgis()
+        logger.debug(QGIS_APP.showSettings())
 
         def debug_log_message(message, tag, level):
             """
@@ -94,8 +116,8 @@ def get_qgis_app(cleanup=True):
                 try:
                     # pylint: disable=used-before-assignment
                     # pylint: disable=redefined-outer-name
-                    QGISAPP.exitQgis()  # noqa
-                    QGISAPP = None  # noqa
+                    QGIS_APP.exitQgis()  # noqa
+                    QGIS_APP = None  # noqa
                     # pylint: enable=used-before-assignment
                     # pylint: enable=redefined-outer-name
                 except NameError:
@@ -115,4 +137,4 @@ def get_qgis_app(cleanup=True):
         # noinspection PyPep8Naming
         IFACE = QgisInterface(CANVAS)
 
-    return QGISAPP, CANVAS, IFACE, PARENT
+    return QGIS_APP, CANVAS, IFACE, PARENT

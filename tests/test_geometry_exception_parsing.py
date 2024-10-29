@@ -3,7 +3,7 @@ import shapely.wkt
 from mi_companion.qgis_utilities import extract_wkt_elements
 
 
-def test_parsing_duplicate_point_str():
+def test_parsing_duplicate_point_str() -> None:
     source = (
         'HTTP response body: b\'{"message":"Object with id cbca6c782cd14b88bd76173d is invalid: '
         "Geometry is invalid: 'duplicate points at index 1: POINT (-122.202275 47.616914)'\\nObject with "
@@ -54,7 +54,7 @@ def test_parsing_duplicate_point_str():
     assert parsed == target, f"{parsed=} {target=}"
 
 
-def test_self_intersection_str():
+def test_self_intersection_str() -> None:
     source = (
         'HTTP response body: b\'{"message":"Object with id 67288225d29f4b998f47c4e8 is invalid: Geometry '
         "is invalid: 'Self-intersection occured at POINT (-122.20231413590133 47.61731151709477)'\"}"
@@ -66,7 +66,7 @@ def test_self_intersection_str():
     ]
 
 
-def testsuh_iajsd():
+def testsuh_iajsd() -> None:
     source = """'{"message":"Object with id 32d681921e224e8caab7e180 is invalid: Geometry is invalid:
   \\\'duplicate points at index 1: POINT (-122.204195 47.615519)\\\'\\\\nObject with id
   f7cfe3749d074dcf9fc21cbd is invalid: Geometry is invalid: \\\'duplicate points at index 3: POINT (
