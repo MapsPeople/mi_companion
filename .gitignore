@@ -317,3 +317,4 @@ app.yaml
 secure_files/
 
 linux/
+.gitlab-ci-local

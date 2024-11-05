@@ -17,10 +17,11 @@ import unittest
 class QGISTest(unittest.TestCase):
     """Test the QGIS Environment"""
 
-    def test_qgis_environment(self):
+    def test_qgis_environment(self) -> None:
         from .utilities import get_qgis_app
 
-        QGIS_APP = get_qgis_app()
+        get_qgis_app()
+
         # noinspection PyUnresolvedReferences
         from qgis.core import QgsProviderRegistry
 

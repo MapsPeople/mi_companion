@@ -1,6 +1,9 @@
 import copy
 import logging
-from typing import Any, List, Optional
+from datetime import datetime
+from typing import Any, List, Mapping, Optional
+
+from PyQt5.QtCore import QDateTime
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -151,39 +154,11 @@ def get_venue_key(solution: Solution, venue_group_items: Any) -> Optional[str]:
                 name,
             ) = special_extract_layer_data(venue_level_item)
 
-            if "venue_type" in layer_attributes and layer_attributes["venue_type"]:
-                venue_type_str = layer_attributes["venue_type"]
+            venue_type = get_venue_type(layer_attributes)
 
-                if isinstance(venue_type_str, str):
-                    ...
-                elif isinstance(venue_type_str, QVariant):
-                    # logger.warning(f"{typeToDisplayString(type(v))}")
-                    if venue_type_str.isNull():  # isNull(v):
-                        venue_type_str = None
-                    else:
-                        venue_type_str = venue_type_str.value()
+            last_verified = get_last_verified(layer_attributes)
 
-                venue_type = VenueType.__getitem__(venue_type_str)
-            else:
-                venue_type = VenueType.not_specified
-
-            if "address.city" in layer_attributes and layer_attributes["last_verified"]:
-                last_verified = layer_attributes["last_verified"]
-            else:
-                last_verified = None
-
-            if "address.city" in layer_attributes and layer_attributes["address.city"]:
-                address = PostalAddress(
-                    city=layer_attributes["address.city"],
-                    region=layer_attributes["address.region"],
-                    street1=layer_attributes["address.street1"],
-                    country=layer_attributes["address.country"],
-                    street2=layer_attributes["address.street2"],
-                    postal_code=layer_attributes["address.postal_code"],
-                )
-
-            else:
-                address = None
+            address = get_address(layer_attributes)
 
             geom_shapely = feature_to_shapely(layer_feature)
             if geom_shapely:
@@ -202,3 +177,63 @@ def get_venue_key(solution: Solution, venue_group_items: Any) -> Optional[str]:
                 )
 
     logger.error(f"Did not find venue in {venue_group_items.children()=}")
+
+
+def get_address(layer_attributes):
+    if "address.city" in layer_attributes and layer_attributes["address.city"]:
+        address = PostalAddress(
+            city=layer_attributes["address.city"],
+            region=layer_attributes["address.region"],
+            street1=layer_attributes["address.street1"],
+            country=layer_attributes["address.country"],
+            street2=layer_attributes["address.street2"],
+            postal_code=layer_attributes["address.postal_code"],
+        )
+
+    else:
+        address = None
+    return address
+
+
+def get_last_verified(layer_attributes: Mapping) -> datetime:
+    if "last_verified" in layer_attributes and layer_attributes["last_verified"]:
+        last_verified = layer_attributes["last_verified"]
+
+        if isinstance(last_verified, str):
+            ...
+        elif isinstance(last_verified, QDateTime):
+            last_verified = last_verified.toPyDate()
+        elif isinstance(last_verified, datetime):
+            last_verified = last_verified.timestamp()
+        # elif isinstance(last_verified, int):
+        #  last_verified = last_verified * 1000
+        elif isinstance(last_verified, QVariant):
+            # logger.warning(f"{typeToDisplayString(type(v))}")
+            if last_verified.isNull():  # isNull(v):
+                venue_type_str = None
+            else:
+                venue_type_str = last_verified.value()
+
+    else:
+        last_verified = None
+
+    return last_verified
+
+
+def get_venue_type(layer_attributes):
+    if "venue_type" in layer_attributes and layer_attributes["venue_type"]:
+        venue_type_str = layer_attributes["venue_type"]
+
+        if isinstance(venue_type_str, str):
+            ...
+        elif isinstance(venue_type_str, QVariant):
+            # logger.warning(f"{typeToDisplayString(type(v))}")
+            if venue_type_str.isNull():  # isNull(v):
+                venue_type_str = None
+            else:
+                venue_type_str = venue_type_str.value()
+
+        venue_type = VenueType.__getitem__(venue_type_str)
+    else:
+        venue_type = VenueType.not_specified
+    return venue_type
