@@ -11,6 +11,7 @@ def run(*, path: Path) -> None:
     # noinspection PyUnresolvedReferences
     from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
+    # noinspection PyUnresolvedReferences
     from qgis.utils import iface
     from jord.qgis_utilities.helpers import InjectedProgressBar
 
