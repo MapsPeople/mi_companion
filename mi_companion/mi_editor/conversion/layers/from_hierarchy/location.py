@@ -67,7 +67,7 @@ def add_floor_locations(
                 if read_bool_setting(
                     "ALLOW_LOCATION_TYPE_CREATION"
                 ):  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
-                    location_type_key = solution.add_locatæion_type(location_type_name)
+                    location_type_key = solution.add_location_type(location_type_name)
                 else:
                     raise ValueError(
                         f"{location_type_key} is not a valid location type"
