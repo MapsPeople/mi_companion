@@ -3,11 +3,13 @@
 import logging
 from pathlib import Path
 
+from warg import system_open_path
+
 logger = logging.getLogger(__name__)
 SERIALISED_SOLUTION_EXTENSION = ".json"
 
 
-def run(*, path: Path) -> None:
+def run(*, path: Path, open_folder_on_completion: bool = False) -> None:
     # noinspection PyUnresolvedReferences
     from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
@@ -46,3 +48,6 @@ def run(*, path: Path) -> None:
                 (path / f"{id(sol)}").with_suffix(SERIALISED_SOLUTION_EXTENSION), "w"
             ) as f:
                 f.write(to_json(sol))
+
+    if open_folder_on_completion:
+        system_open_path(path)

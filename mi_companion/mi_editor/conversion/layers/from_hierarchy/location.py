@@ -22,7 +22,7 @@ from mi_companion.mi_editor.conversion.layers.type_enums import LocationTypeEnum
 __all__ = ["add_floor_contents"]
 
 from ...projection import prepare_geom_for_mi_db
-from mi_companion.qgis_utilities import is_str_value_null_like
+from mi_companion.qgis_utilities import is_str_value_null_like, parse_q_value
 
 logger = logging.getLogger(__name__)
 # noinspection PyUnresolvedReferences
@@ -45,7 +45,7 @@ def add_floor_locations(
     if layer:
         for layer_feature in layer.getFeatures():
             feature_attributes = {
-                k.name(): v
+                k.name(): parse_q_value(v)
                 for k, v in zip(
                     layer_feature.fields(),
                     layer_feature.attributes(),

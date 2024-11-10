@@ -13,6 +13,8 @@ from mi_companion import HALF_SIZE, MI_HIERARCHY_GROUP_NAME
 
 __all__ = ["revert_venues"]
 
+from mi_companion.qgis_utilities import parse_q_value
+
 logger = logging.getLogger(__name__)
 
 
@@ -70,7 +72,7 @@ def revert_venues(
 
                     solution_feature = next(iter(c.layer().getFeatures()))
                     solution_data_layer = {
-                        k.name(): v
+                        k.name(): parse_q_value(v)
                         for k, v in zip(
                             solution_feature.fields(), solution_feature.attributes()
                         )
@@ -111,7 +113,7 @@ def revert_venues(
                         venue_feature = next(iter(venue_polygon_layer.getFeatures()))
 
                         venue_attributes = {
-                            k.name(): v
+                            k.name(): parse_q_value(v)
                             for k, v in zip(
                                 venue_feature.fields(), venue_feature.attributes()
                             )

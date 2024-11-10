@@ -21,6 +21,7 @@ from mi_companion import (
     SOLUTION_DATA_DESCRIPTOR,
     SOLUTION_DESCRIPTOR,
 )
+from mi_companion.qgis_utilities import parse_q_value
 from .venue import convert_solution_venues
 
 __all__ = ["layer_hierarchy_to_solution", "convert_solution_layers_to_solution"]
@@ -84,7 +85,7 @@ def convert_solution_layers_to_solution(
                     iter(child_solution_group.layer().getFeatures())
                 )
                 solution_data = {
-                    k.name(): v.value() if isinstance(v, QVariant) else v
+                    k.name(): parse_q_value(v)
                     for k, v in zip(
                         solution_point_feature_layer.fields(),
                         solution_point_feature_layer.attributes(),
