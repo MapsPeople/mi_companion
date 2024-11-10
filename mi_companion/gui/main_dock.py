@@ -103,15 +103,16 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             QMessageBox,
         )
 
+        msg = f"Upgrading plugin to the latest version"
         QMessageBox.information(
             self.iface_.mainWindow(),
-            f"OK",
-            "Ok",
+            msg,
+            msg,
         )
 
-        logger.error("OK")
+        logger.error(msg)
 
-        # shutil.rmtree(relative_bundled_packages_dir.absolute())
+        # shutil.rmtree(relative_bundled_packages_dir.absolute()) # TODO: IMPLEMENT!
         # shutil.rmtree(PLUGIN_DIR.absolute())
 
         # pyplugin_installer.instance().uninstallPlugin(PROJECT_NAME)
