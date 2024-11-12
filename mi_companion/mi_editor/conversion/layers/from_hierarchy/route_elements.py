@@ -32,9 +32,11 @@ from mi_companion import (
 )
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
+    GeometryIsEmptyError,
     feature_to_shapely,
 )
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from mi_companion.qgis_utilities import parse_q_value
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +56,7 @@ def add_doors(*, graph_key: str, door_layer_tree_node: Any, solution: Solution) 
     doors_linestring_layer = door_layer_tree_node.layer()
     for door_feature in doors_linestring_layer.getFeatures():
         door_attributes = {
-            k.name(): v
+            k.name(): parse_q_value(v)
             for k, v in zip(
                 door_feature.fields(),
                 door_feature.attributes(),
@@ -72,7 +74,11 @@ def add_doors(*, graph_key: str, door_layer_tree_node: Any, solution: Solution) 
             else:
                 door_type = door_type.value()
 
-        door_linestring = feature_to_shapely(door_feature)
+        try:
+            door_linestring = feature_to_shapely(door_feature)
+        except GeometryIsEmptyError as e:
+            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
+                raise e
 
         if door_linestring is None:
             logger.error(f"{door_linestring=}")
@@ -94,19 +100,22 @@ def add_barriers(
     barriers_linestring_layer = barrier_layer_tree_node.layer()
     for barrier_feature in barriers_linestring_layer.getFeatures():
         barrier_attributes = {
-            k.name(): v
+            k.name(): parse_q_value(v)
             for k, v in zip(
                 barrier_feature.fields(),
                 barrier_feature.attributes(),
             )
         }
+        try:
+            barrier_linestring = feature_to_shapely(barrier_feature)
+        except GeometryIsEmptyError as e:
+            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
+                raise e
 
-        door_linestring = feature_to_shapely(barrier_feature)
-
-        if door_linestring is not None:
+        if barrier_linestring is not None:
             barrier_key = solution.add_barrier(
                 barrier_attributes["admin_id"],
-                point=prepare_geom_for_mi_db(door_linestring),
+                point=prepare_geom_for_mi_db(barrier_linestring),
                 floor_index=int(barrier_attributes["floor_index"]),
                 graph_key=graph_key,
             )
@@ -114,21 +123,25 @@ def add_barriers(
                 logger.info("added barrier", barrier_key)
 
         else:
-            logger.error(f"{door_linestring=}")
+            logger.error(f"{barrier_linestring=}")
 
 
 def add_avoids(graph_key: str, avoid_layer_tree_node: Any, solution: Solution) -> None:
     avoids_linestring_layer = avoid_layer_tree_node.layer()
     for avoid_feature in avoids_linestring_layer.getFeatures():
         avoid_attributes = {
-            k.name(): v
+            k.name(): parse_q_value(v)
             for k, v in zip(
                 avoid_feature.fields(),
                 avoid_feature.attributes(),
             )
         }
 
-        avoid_point = feature_to_shapely(avoid_feature)
+        try:
+            avoid_point = feature_to_shapely(avoid_feature)
+        except GeometryIsEmptyError as e:
+            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
+                raise e
 
         if avoid_point is not None:
             avoid_key = solution.add_avoid(
@@ -151,14 +164,17 @@ def add_prefers(
     prefers_linestring_layer = prefer_layer_tree_node.layer()
     for prefer_feature in prefers_linestring_layer.getFeatures():
         prefer_attributes = {
-            k.name(): v
+            k.name(): parse_q_value(v)
             for k, v in zip(
                 prefer_feature.fields(),
                 prefer_feature.attributes(),
             )
         }
-
-        prefer_point = feature_to_shapely(prefer_feature)
+        try:
+            prefer_point = feature_to_shapely(prefer_feature)
+        except GeometryIsEmptyError as e:
+            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
+                raise e
 
         if prefer_point is not None:
             prefer_key = solution.add_prefer(
@@ -181,14 +197,17 @@ def add_obstacles(
     obstacles_linestring_layer = obstacle_layer_tree_node.layer()
     for obstacle_feature in obstacles_linestring_layer.getFeatures():
         obstacle_attributes = {
-            k.name(): v
+            k.name(): parse_q_value(v)
             for k, v in zip(
                 obstacle_feature.fields(),
                 obstacle_feature.attributes(),
             )
         }
-
-        obstacle_poly = feature_to_shapely(obstacle_feature)
+        try:
+            obstacle_poly = feature_to_shapely(obstacle_feature)
+        except GeometryIsEmptyError as e:
+            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
+                raise e
 
         if obstacle_poly is not None:
             obstacle_key = solution.add_obstacle(
@@ -211,14 +230,18 @@ def add_entry_points(
     entry_points_linestring_layer = entry_point_layer_tree_node.layer()
     for entry_point_feature in entry_points_linestring_layer.getFeatures():
         entry_point_attributes = {
-            k.name(): v
+            k.name(): parse_q_value(v)
             for k, v in zip(
                 entry_point_feature.fields(),
                 entry_point_feature.attributes(),
             )
         }
 
-        entry_point_type = entry_point_attributes["entry_point_type"]
+        try:
+            entry_point_type = entry_point_attributes["entry_point_type"]
+        except GeometryIsEmptyError as e:
+            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
+                raise e
 
         if isinstance(entry_point_type, str):
             ...
@@ -252,7 +275,7 @@ def get_connections(connections_layer_tree_node: Any) -> dict:  # TODO: FINISH!
     connections = defaultdict(list)
     for connector_feature in connectors_linestring_layer.getFeatures():
         connector_attributes = {
-            k.name(): v
+            k.name(): parse_q_value(v)
             for k, v in zip(
                 connector_feature.fields(),
                 connector_feature.attributes(),
@@ -273,7 +296,11 @@ def get_connections(connections_layer_tree_node: Any) -> dict:  # TODO: FINISH!
             else:
                 connection_type = connection_type.value()
 
-        connector_point = feature_to_shapely(connector_feature)
+        try:
+            connector_point = feature_to_shapely(connector_feature)
+        except GeometryIsEmptyError as e:
+            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
+                raise e
 
         if connector_point is not None:
             connections[connection_id].append(

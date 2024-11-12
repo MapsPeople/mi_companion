@@ -25,7 +25,17 @@ def read_author_from_metadata(metadata_file: Path) -> str:
         for l in f.readlines():
             if "author=" in l:
                 return l.split("=")[-1].strip()
-    raise Exception(f"Did not find version in {metadata_file=}")
+    raise Exception(f"Did not find author in {metadata_file=}")
+
+
+def read_repository_from_metadata(
+    metadata_file: Path,
+) -> str:  # TODO: GENERALISE TO A single function...
+    with open(metadata_file) as f:
+        for l in f.readlines():
+            if "repository=" in l:
+                return l.split("=")[-1].strip()
+    raise Exception(f"Did not find repository in {metadata_file=}")
 
 
 def read_project_name_from_metadata(metadata_file: Path) -> str:
@@ -50,6 +60,7 @@ METADATA_FILE = PLUGIN_DIR / "metadata.txt"
 PROJECT_NAME = read_project_name_from_metadata(METADATA_FILE)
 VERSION = read_version_from_metadata(METADATA_FILE)
 PLUGIN_AUTHOR = read_author_from_metadata(METADATA_FILE)
+PLUGIN_REPOSITORY = read_repository_from_metadata(METADATA_FILE)
 
 try:
     from apppath import AppPath
@@ -109,6 +120,7 @@ DEFAULT_PLUGIN_SETTINGS = {
     "ALLOW_SOLUTION_CREATION": False,
     "ALLOW_LOCATION_TYPE_CREATION": False,
     "ALLOW_CATEGORY_TYPE_CREATION": True,
+    "IGNORE_EMPTY_SHAPES": True,
 }
 
 MI_EPSG_NUMBER = 4326
