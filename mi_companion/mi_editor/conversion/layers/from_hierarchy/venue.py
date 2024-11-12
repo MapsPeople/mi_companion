@@ -56,7 +56,7 @@ def convert_solution_venues(
     solution_occupants_enabled: bool,
     ith_solution: int,
     num_solution_elements: int,
-    solution_depth: SolutionDepth = SolutionDepth.LOCATIONS,
+    solution_depth: SolutionDepth = SolutionDepth.OBSTACLES,
     include_route_elements: bool = False,
     include_occupants: bool = False,
     include_media: bool = False,
