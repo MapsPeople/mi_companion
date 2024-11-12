@@ -363,7 +363,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             logger.error(f"No venue was selected!")
             return
 
-        solution_depth = SolutionDepth.LOCATIONS
+        solution_depth = SolutionDepth.OBSTACLES
 
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())
@@ -421,7 +421,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
     def upload_button_clicked(self) -> None:
         self.set_update_sync_settings()
 
-        solution_depth = SolutionDepth.LOCATIONS
+        solution_depth = SolutionDepth.OBSTACLES
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())
 
