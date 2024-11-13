@@ -102,7 +102,7 @@ def add_connection_layers(
 
                 reproject_geometry_df(door_df)
 
-                door_layer = add_dataframe_layer(
+                connectors_layer = add_dataframe_layer(
                     qgis_instance_handle=qgis_instance_handle,
                     dataframe=door_df,
                     geometry_column="point",
@@ -112,7 +112,7 @@ def add_connection_layers(
                     crs=solve_target_crs_authid(),
                 )
 
-                make_field_unique(door_layer, field_name="admin_id")
+                make_field_unique(connectors_layer, field_name="admin_id")
     else:
         empty_lines = df[df.is_empty]
         if not empty_lines.empty:

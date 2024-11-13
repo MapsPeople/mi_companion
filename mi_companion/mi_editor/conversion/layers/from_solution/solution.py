@@ -11,12 +11,11 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup, QgsProject
 
-import integration_system
 from integration_system.mi import (
     SolutionDepth,
     get_remote_solution,
 )
-from integration_system.model import ConnectionType, Solution, VenueType
+from integration_system.model import ConnectionType, DoorType, Solution, VenueType
 from mi_companion import (
     DESCRIPTOR_BEFORE,
     MI_HIERARCHY_GROUP_NAME,
@@ -71,7 +70,9 @@ def add_solution_layers(
             "ValueMap",
             {
                 "map": {
-                    solution.location_types.get(k).name: k
+                    solution.location_types.get(k)
+                    .name: solution.location_types.get(k)
+                    .name
                     for k in sorted(solution.location_types.keys)
                 }
             },
@@ -83,10 +84,8 @@ def add_solution_layers(
             "ValueMap",
             {
                 "map": {
-                    name: f"{integration_system.model.DoorType.__getitem__(name)}"
-                    for name in sorted(
-                        {l.name for l in integration_system.model.DoorType}
-                    )
+                    name: DoorType.__getitem__(name)
+                    for name in sorted({l.name for l in DoorType})
                 }
             },
         )
@@ -107,7 +106,7 @@ def add_solution_layers(
                 "ValueMap",
                 {
                     "map": {
-                        name: f"{VenueType.__getitem__(name)}"
+                        name: VenueType.__getitem__(name)
                         for name in sorted({l.name for l in VenueType})
                     }
                 },
@@ -121,7 +120,7 @@ def add_solution_layers(
                 "ValueMap",
                 {
                     "map": {
-                        name: f"{ConnectionType.__getitem__(name)}"
+                        name: ConnectionType.__getitem__(name)
                         for name in sorted({l.name for l in ConnectionType})
                     }
                 },

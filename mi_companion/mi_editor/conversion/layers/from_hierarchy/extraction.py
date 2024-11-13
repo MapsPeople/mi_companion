@@ -1,8 +1,8 @@
 import logging
 import uuid
-from typing import Any, Optional, Tuple
+from typing import Any, Tuple
 
-import shapely
+from jord.qgis_utilities import MissingFeatureError, parse_q_value
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets, uic
@@ -19,28 +19,13 @@ from qgis.core import (
 )
 
 from mi_companion.configuration.options import read_bool_setting
-from mi_companion.qgis_utilities import parse_q_value
 
 logger = logging.getLogger(__name__)
 
 __all__ = [
     "special_extract_layer_data",
     "extract_layer_data_single",
-    "feature_to_shapely",
-    "layer_data_generator",
-    "MissingFeatureError",
-    "GeometryIsEmptyError",
-    "GeometryIsInvalidError",
 ]
-
-
-class MissingFeatureError(Exception): ...
-
-
-class GeometryIsEmptyError(Exception): ...
-
-
-class GeometryIsInvalidError(Exception): ...
 
 
 def special_extract_layer_data(
@@ -133,55 +118,3 @@ def extract_layer_data_single(layer_tree_layer: Any) -> Tuple:
             return layer_feature_attributes, layer_feature
 
     raise MissingFeatureError(f"no feature was not found for {layer_tree_layer.name()}")
-
-
-def layer_data_generator(layer_tree_layer: Any) -> Tuple:
-    geometry_layer = layer_tree_layer.layer()
-    if (
-        geometry_layer
-        and geometry_layer.hasFeatures()
-        and geometry_layer.featureCount() > 0
-    ):
-        for layer_feature in geometry_layer.getFeatures():
-            layer_feature_attributes = {
-                k.name(): parse_q_value(v)
-                for k, v in zip(
-                    layer_feature.fields(),
-                    layer_feature.attributes(),
-                )
-            }
-            if len(layer_feature_attributes) == 0:
-                logger.error(
-                    f"Did not find attributes, skipping {layer_tree_layer.name()} {list(geometry_layer.getFeatures())}"
-                )
-            else:
-                logger.info(
-                    f"found {layer_feature_attributes=} for {layer_tree_layer.name()=}"
-                )
-            yield layer_feature_attributes, layer_feature
-    else:
-        raise MissingFeatureError(
-            f"no feature was not found for {layer_tree_layer.name()}"
-        )
-
-
-def feature_to_shapely(
-    layer_feature: Any,
-) -> Optional[shapely.geometry.base.BaseGeometry]:
-    feature_geom = layer_feature.geometry()
-    if feature_geom is not None:
-        if True:
-            if not feature_geom.isGeosValid():
-                logger.warning(f"{layer_feature.name()=} is not a valid geometry")
-                if False:
-                    raise GeometryIsInvalidError(f"{layer_feature.name()=} is invalid")
-
-        if True:
-            if feature_geom.isNull() or feature_geom.isEmpty():
-                raise GeometryIsEmptyError(f"{layer_feature.name()=} is empty")
-
-        geom_wkb = feature_geom.asWkb()
-        if geom_wkb is not None:
-            if not isinstance(geom_wkb, bytes):
-                geom_wkb = bytes(geom_wkb)
-            return shapely.from_wkb(geom_wkb)
