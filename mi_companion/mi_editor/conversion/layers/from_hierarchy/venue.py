@@ -27,7 +27,8 @@ from .custom_props import extract_custom_props
 
 __all__ = ["convert_solution_venues"]
 
-from .extraction import feature_to_shapely, special_extract_layer_data
+from .extraction import special_extract_layer_data
+from jord.qgis_utilities.conversion.features import feature_to_shapely
 
 # from .graph import add_venue_graph
 from .syncing import post_process_solution, sync_build_venue_solution

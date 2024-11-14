@@ -1,6 +1,8 @@
 import logging
 from typing import Any, Optional, Tuple
 
+from jord.qgis_utilities.conversion.features import feature_to_shapely
+
 # noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsFeatureRequest,
@@ -12,7 +14,7 @@ from qgis.core import (
 from integration_system.model import Solution
 from mi_companion import DEFAULT_CUSTOM_PROPERTIES, FLOOR_POLYGON_DESCRIPTOR, HALF_SIZE
 from .custom_props import extract_custom_props
-from .extraction import feature_to_shapely, special_extract_layer_data
+from .extraction import special_extract_layer_data
 from .location import add_floor_contents
 from ...projection import prepare_geom_for_mi_db
 

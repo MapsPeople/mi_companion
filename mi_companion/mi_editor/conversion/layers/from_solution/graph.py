@@ -35,7 +35,23 @@ def add_graph_layers(
     highway_type_dropdown_widget: Optional[Any] = None,
     door_type_dropdown_widget: Optional[Any] = None,
     connection_type_dropdown_widget: Optional[Any] = None,
+    entry_point_type_dropdown_widget: Optional[Any] = None,
+    edge_context_type_dropdown_widget: Optional[Any] = None,
 ) -> None:
+    """
+
+    :param graph:
+    :param venue_group:
+    :param qgis_instance_handle:
+    :param solution:
+    :param venue:
+    :param highway_type_dropdown_widget:
+    :param door_type_dropdown_widget:
+    :param connection_type_dropdown_widget:
+    :param entry_point_type_dropdown_widget:
+    :param edge_context_type_dropdown_widget:
+    :return:
+    """
     try:
         if graph.osm_xml:
             (lines, lines_meta_data), (
@@ -75,7 +91,9 @@ def add_graph_layers(
                         group=graph_group,
                         columns=lines_meta_data,
                         categorise_by_attribute="level",
-                        visible=False,
+                        visible=read_bool_setting(
+                            "SHOW_GRAPH_ON_LOAD",
+                        ),
                         crs=solve_target_crs_authid(),
                     )
 
@@ -95,7 +113,23 @@ def add_graph_layers(
                                 highway_type_dropdown_widget,
                             )
 
-            if True:  # SHOW POINTs AS WELL
+            if edge_context_type_dropdown_widget:
+                for layers_inner in graph_lines_layer:
+                    if layers_inner:
+                        if isinstance(layers_inner, Iterable):
+                            for layer in layers_inner:
+                                if layer:
+                                    layer.setEditorWidgetSetup(
+                                        layer.fields().indexFromName("abutters"),
+                                        edge_context_type_dropdown_widget,
+                                    )
+                        else:
+                            layers_inner.setEditorWidgetSetup(
+                                layers_inner.fields().indexFromName("abutters"),
+                                edge_context_type_dropdown_widget,
+                            )
+
+            if False:
                 points = [prepare_geom_for_qgis(p, clean=False) for p in points]
                 logger.info(f"{len(points)=} loaded!")
                 graph_points_layer = add_shapely_layer(
@@ -119,6 +153,7 @@ def add_graph_layers(
                     solution=solution,
                     door_type_dropdown_widget=door_type_dropdown_widget,
                     connection_type_dropdown_widget=connection_type_dropdown_widget,
+                    entry_point_type_dropdown_widget=entry_point_type_dropdown_widget,
                 )
         else:
             logger.warning(f"Venue does not have a valid graph {graph}")

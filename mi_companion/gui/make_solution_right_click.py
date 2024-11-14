@@ -2,6 +2,7 @@ import uuid
 from typing import Any
 
 import shapely
+from jord.qgis_utilities.conversion.features import feature_to_shapely
 from jord.qgis_utilities.helpers import reconnect_signal
 from jord.shapely_utilities import clean_shape
 
@@ -21,10 +22,6 @@ from qgis.gui import QgsMapLayerAction, QgsMapToolIdentify
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
-
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
-    feature_to_shapely,
-)
 
 IDENTIFY_ACTIONS_AUGMENTED = SELECT_ACTIONS_AUGMENTED = False
 

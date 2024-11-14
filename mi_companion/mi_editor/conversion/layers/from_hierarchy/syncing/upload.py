@@ -277,5 +277,5 @@ def show_differences(
                 group=venue_difference_group,
                 crs=f"EPSG:{MI_EPSG_NUMBER}",
             )
-        except Exception as e:  # TODO: HANDLE MIxed GEOM TYPES!
+        except Exception as e:  # TODO: HANDLE Mixed GEOM TYPES!
             logger.error(e)

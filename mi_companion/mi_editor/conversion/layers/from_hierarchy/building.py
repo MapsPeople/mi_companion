@@ -1,6 +1,8 @@
 import logging
 from typing import Any, Optional
 
+from jord.qgis_utilities.conversion.features import feature_to_shapely
+
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
@@ -18,7 +20,7 @@ from mi_companion import (
     HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS,
 )
 from .custom_props import extract_custom_props
-from .extraction import feature_to_shapely, special_extract_layer_data
+from .extraction import special_extract_layer_data
 from .floor import add_building_floors
 from .graph import add_venue_graph
 from .location import add_floor_contents

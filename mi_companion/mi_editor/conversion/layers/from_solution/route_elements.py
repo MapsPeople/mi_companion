@@ -56,6 +56,7 @@ def add_connection_layers(
     graph: Graph,
     connections: ConnectionCollection,
     dropdown_widget: Optional[Any] = None,
+    route_element_type_column: Optional[str] = "connection_type",
 ) -> None:
     connectors = {}
     for c in connections:
@@ -102,7 +103,7 @@ def add_connection_layers(
 
                 reproject_geometry_df(door_df)
 
-                door_layer = add_dataframe_layer(
+                connectors_layer = add_dataframe_layer(
                     qgis_instance_handle=qgis_instance_handle,
                     dataframe=door_df,
                     geometry_column="point",
@@ -112,7 +113,12 @@ def add_connection_layers(
                     crs=solve_target_crs_authid(),
                 )
 
-                make_field_unique(door_layer, field_name="admin_id")
+                make_field_unique(connectors_layer, field_name="admin_id")
+
+                if dropdown_widget:
+                    add_dropdown_widget(
+                        connectors_layer, route_element_type_column, dropdown_widget
+                    )
     else:
         empty_lines = df[df.is_empty]
         if not empty_lines.empty:
@@ -134,6 +140,11 @@ def add_connection_layers(
 
         make_field_unique(connectors_layer, field_name="admin_id")
 
+        if dropdown_widget:
+            add_dropdown_widget(
+                connectors_layer, route_element_type_column, dropdown_widget
+            )
+
 
 def add_route_element_layers(
     *,
@@ -143,6 +154,7 @@ def add_route_element_layers(
     solution: Solution,
     door_type_dropdown_widget: Optional[Any] = None,
     connection_type_dropdown_widget: Optional[Any] = None,
+    entry_point_type_dropdown_widget: Optional[Any] = None,
 ) -> None:
     split_levels_into_individual_groups: bool = False
     if split_levels_into_individual_groups:
@@ -189,12 +201,20 @@ def add_route_element_layers(
             BARRIERS_DESCRIPTOR: solution.barriers,
             ENTRY_POINTS_DESCRIPTOR: solution.entry_points,
         }.items():
+            dropdown_widget = None
+            route_element_type_column = None
+            if desc == ENTRY_POINTS_DESCRIPTOR:
+                dropdown_widget = entry_point_type_dropdown_widget
+                route_element_type_column = "entry_point_type"
+
             add_point_route_element_layers(
                 graph=graph,
                 graph_group=graph_group,
                 qgis_instance_handle=qgis_instance_handle,
                 route_element_collection=col,
                 layer_descriptor=desc,
+                dropdown_widget=dropdown_widget,
+                route_element_type_column=route_element_type_column,
             )
 
         add_polygon_route_element_layers(
@@ -217,6 +237,7 @@ def add_route_element_layers(
 def add_linestring_route_element_layers(
     *,
     dropdown_widget: Optional[Any] = None,
+    route_element_type_column: Optional[str] = "door_type",
     graph: Graph,
     graph_group: Any,
     qgis_instance_handle: Any,
@@ -272,10 +293,13 @@ def add_linestring_route_element_layers(
                     crs=solve_target_crs_authid(),
                 )
 
-                if dropdown_widget:
-                    add_dropdown_widget(door_layer, "door_type", dropdown_widget)
-
                 make_field_unique(door_layer, field_name="admin_id")
+
+                if dropdown_widget:
+                    add_dropdown_widget(
+                        door_layer, route_element_type_column, dropdown_widget
+                    )
+
     else:
         door_df = geopandas.GeoDataFrame(
             df[[c for c in df.columns if ("." not in c)]],
@@ -302,15 +326,16 @@ def add_linestring_route_element_layers(
             crs=solve_target_crs_authid(),
         )
 
-        if dropdown_widget:
-            add_dropdown_widget(door_layer, "door_type", dropdown_widget)
-
         make_field_unique(door_layer, field_name="admin_id")
+
+        if dropdown_widget:
+            add_dropdown_widget(door_layer, route_element_type_column, dropdown_widget)
 
 
 def add_point_route_element_layers(
     *,
     dropdown_widget: Optional[Any] = None,
+    route_element_type_column: str = None,
     graph: Graph,
     graph_group: Any,
     qgis_instance_handle: Any,
@@ -357,7 +382,7 @@ def add_point_route_element_layers(
 
                 reproject_geometry_df(door_df)
 
-                door_layer = add_dataframe_layer(
+                point_layer = add_dataframe_layer(
                     qgis_instance_handle=qgis_instance_handle,
                     dataframe=door_df,
                     geometry_column="point",
@@ -367,10 +392,15 @@ def add_point_route_element_layers(
                     crs=solve_target_crs_authid(),
                 )
 
-                if dropdown_widget:
-                    add_dropdown_widget(door_layer, "door_type", dropdown_widget)
+                make_field_unique(point_layer, field_name="admin_id")
 
-                make_field_unique(door_layer, field_name="admin_id")
+                if (
+                    dropdown_widget is not None
+                    and route_element_type_column is not None
+                ):
+                    add_dropdown_widget(
+                        point_layer, route_element_type_column, dropdown_widget
+                    )
     else:
         door_df = geopandas.GeoDataFrame(
             df[[c for c in df.columns if ("." not in c)]],
@@ -387,7 +417,7 @@ def add_point_route_element_layers(
 
         reproject_geometry_df(door_df)
 
-        door_layer = add_dataframe_layer(
+        point_layer = add_dataframe_layer(
             qgis_instance_handle=qgis_instance_handle,
             dataframe=door_df,
             geometry_column="point",
@@ -397,10 +427,10 @@ def add_point_route_element_layers(
             crs=solve_target_crs_authid(),
         )
 
-        if dropdown_widget:
-            add_dropdown_widget(door_layer, "door_type", dropdown_widget)
+        make_field_unique(point_layer, field_name="admin_id")
 
-        make_field_unique(door_layer, field_name="admin_id")
+        if dropdown_widget is not None and route_element_type_column is not None:
+            add_dropdown_widget(point_layer, route_element_type_column, dropdown_widget)
 
 
 def add_polygon_route_element_layers(
@@ -410,6 +440,8 @@ def add_polygon_route_element_layers(
     qgis_instance_handle: Any,
     route_element_collection: CollectionMixin,
     layer_name: str,
+    route_element_type_column: Optional[str] = None,
+    dropdown_widget: Optional[Any] = None,
 ) -> None:
     df = to_df(route_element_collection)
 
@@ -455,6 +487,15 @@ def add_polygon_route_element_layers(
                 )
 
                 make_field_unique(obstacle_layer, field_name="admin_id")
+
+                if (
+                    dropdown_widget is not None
+                    and route_element_type_column is not None
+                ):
+                    add_dropdown_widget(
+                        obstacle_layer, route_element_type_column, dropdown_widget
+                    )
+
     else:
         obstacle_df = geopandas.GeoDataFrame(
             df[[c for c in df.columns if ("." not in c)]],
@@ -482,3 +523,8 @@ def add_polygon_route_element_layers(
         )
 
         make_field_unique(obstacle_layer, field_name="admin_id")
+
+        if dropdown_widget is not None and route_element_type_column is not None:
+            add_dropdown_widget(
+                obstacle_layer, route_element_type_column, dropdown_widget
+            )

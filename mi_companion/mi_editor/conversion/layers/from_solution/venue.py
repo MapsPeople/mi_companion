@@ -40,8 +40,25 @@ def add_venue_layer(
     highway_type_dropdown_widget: Optional[Any] = None,
     venue_type_dropdown_widget: Optional[Any] = None,
     connection_type_dropdown_widget: Optional[Any] = None,
+    entry_point_type_dropdown_widget: Optional[Any] = None,
+    edge_context_type_dropdown_widget: Optional[Any] = None,
     progress_bar: Optional[Any] = None,
 ) -> None:
+    """
+
+    :param qgis_instance_handle:
+    :param solution:
+    :param solution_group:
+    :param available_location_type_dropdown_widget:
+    :param door_type_dropdown_widget:
+    :param highway_type_dropdown_widget:
+    :param venue_type_dropdown_widget:
+    :param connection_type_dropdown_widget:
+    :param entry_point_type_dropdown_widget:
+    :param edge_context_type_dropdown_widget:
+    :param progress_bar:
+    :return:
+    """
     if True:
         assert len(solution.venues) > 0, "No venues found"
 
@@ -107,6 +124,8 @@ def add_venue_layer(
                     highway_type_dropdown_widget=highway_type_dropdown_widget,
                     door_type_dropdown_widget=door_type_dropdown_widget,
                     connection_type_dropdown_widget=connection_type_dropdown_widget,
+                    entry_point_type_dropdown_widget=entry_point_type_dropdown_widget,
+                    edge_context_type_dropdown_widget=edge_context_type_dropdown_widget,
                 )
 
         if INSERT_INDEX > 0:

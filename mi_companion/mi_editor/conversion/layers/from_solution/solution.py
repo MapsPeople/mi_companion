@@ -2,7 +2,6 @@ import logging
 from typing import Any, Optional
 
 import shapely
-from jord.qgis_utilities import read_plugin_setting
 from jord.qlive_utilities import add_shapely_layer
 
 # noinspection PyUnresolvedReferences
@@ -11,12 +10,18 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup, QgsProject
 
-import integration_system
 from integration_system.mi import (
     SolutionDepth,
     get_remote_solution,
 )
-from integration_system.model import ConnectionType, Solution, VenueType
+from integration_system.model import (
+    ConnectionType,
+    DoorType,
+    EntryPointType,
+    GraphEdgeContextTypes,
+    Solution,
+    VenueType,
+)
 from mi_companion import (
     DESCRIPTOR_BEFORE,
     MI_HIERARCHY_GROUP_NAME,
@@ -71,7 +76,9 @@ def add_solution_layers(
             "ValueMap",
             {
                 "map": {
-                    solution.location_types.get(k).name: k
+                    solution.location_types.get(k)
+                    .name: solution.location_types.get(k)
+                    .name
                     for k in sorted(solution.location_types.keys)
                 }
             },
@@ -83,16 +90,14 @@ def add_solution_layers(
             "ValueMap",
             {
                 "map": {
-                    name: f"{integration_system.model.DoorType.__getitem__(name)}"
-                    for name in sorted(
-                        {l.name for l in integration_system.model.DoorType}
-                    )
+                    name: DoorType.__getitem__(name).value
+                    for name in sorted({l.name for l in DoorType})
                 }
             },
         )
 
     highway_type_dropdown_widget = None
-    if read_plugin_setting("MAKE_HIGHWAY_TYPE_DROPDOWN"):
+    if read_bool_setting("MAKE_HIGHWAY_TYPE_DROPDOWN"):
         highway_type_dropdown_widget = (
             QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
                 "ValueMap",
@@ -101,28 +106,56 @@ def add_solution_layers(
         )
 
     venue_type_dropdown_widget = None
-    if read_plugin_setting("MAKE_VENUE_TYPE_DROPDOWN"):
+    if read_bool_setting("MAKE_VENUE_TYPE_DROPDOWN"):
         venue_type_dropdown_widget = (
             QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
                 "ValueMap",
                 {
                     "map": {
-                        name: f"{VenueType.__getitem__(name)}"
+                        name: VenueType.__getitem__(name).value
                         for name in sorted({l.name for l in VenueType})
                     }
                 },
             )
         )
 
+    entry_point_type_dropdown_widget = None
+    if read_bool_setting("MAKE_ENTRY_POINT_TYPE_DROPDOWN"):
+        entry_point_type_dropdown_widget = (
+            QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
+                "ValueMap",
+                {
+                    "map": {
+                        name: EntryPointType.__getitem__(name).value
+                        for name in sorted({l.name for l in EntryPointType})
+                    }
+                },
+            )
+        )
+
     connection_type_dropdown_widget = None
-    if read_plugin_setting("MAKE_CONNECTION_TYPE_DROPDOWN"):
+    if read_bool_setting("MAKE_CONNECTION_TYPE_DROPDOWN"):
         connection_type_dropdown_widget = (
             QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
                 "ValueMap",
                 {
                     "map": {
-                        name: f"{ConnectionType.__getitem__(name)}"
+                        name: ConnectionType.__getitem__(name).value
                         for name in sorted({l.name for l in ConnectionType})
+                    }
+                },
+            )
+        )
+
+    edge_context_type_dropdown_widget = None
+    if read_bool_setting("MAKE_EDGE_CONTEXT_TYPE_DROPDOWN"):
+        edge_context_type_dropdown_widget = (
+            QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
+                "ValueMap",
+                {
+                    "map": {
+                        name: name
+                        for name in sorted({l for l in GraphEdgeContextTypes})
                     }
                 },
             )
@@ -193,6 +226,8 @@ def add_solution_layers(
         highway_type_dropdown_widget=highway_type_dropdown_widget,
         venue_type_dropdown_widget=venue_type_dropdown_widget,
         connection_type_dropdown_widget=connection_type_dropdown_widget,
+        entry_point_type_dropdown_widget=entry_point_type_dropdown_widget,
+        edge_context_type_dropdown_widget=edge_context_type_dropdown_widget,
     )
 
 

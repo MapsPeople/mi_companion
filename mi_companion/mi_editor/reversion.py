@@ -13,7 +13,7 @@ from mi_companion import HALF_SIZE, MI_HIERARCHY_GROUP_NAME
 
 __all__ = ["revert_venues"]
 
-from mi_companion.qgis_utilities import parse_q_value
+from jord.qgis_utilities.conversion.features import parse_q_value
 
 logger = logging.getLogger(__name__)
 

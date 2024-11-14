@@ -2,6 +2,8 @@ import logging
 import uuid
 from typing import Any, Collection, Mapping, Optional
 
+from jord.qgis_utilities.conversion.features import feature_to_shapely, parse_q_value
+
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
@@ -14,15 +16,11 @@ from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (
     extract_custom_props,
 )
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
-    feature_to_shapely,
-)
 from mi_companion.mi_editor.conversion.layers.type_enums import LocationTypeEnum
+from mi_companion.qgis_utilities import is_str_value_null_like
+from ...projection import prepare_geom_for_mi_db
 
 __all__ = ["add_floor_contents"]
-
-from ...projection import prepare_geom_for_mi_db
-from mi_companion.qgis_utilities import is_str_value_null_like, parse_q_value
 
 logger = logging.getLogger(__name__)
 # noinspection PyUnresolvedReferences

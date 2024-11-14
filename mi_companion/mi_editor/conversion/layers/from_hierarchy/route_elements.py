@@ -3,6 +3,12 @@ import operator
 from collections import defaultdict
 from typing import Any
 
+from jord.qgis_utilities.conversion.features import (
+    GeometryIsEmptyError,
+    feature_to_shapely,
+    parse_q_value,
+)
+
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
@@ -31,12 +37,7 @@ from mi_companion import (
     VERBOSE,
 )
 from mi_companion.configuration.options import read_bool_setting
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
-    GeometryIsEmptyError,
-    feature_to_shapely,
-)
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
-from mi_companion.qgis_utilities import parse_q_value
 
 logger = logging.getLogger(__name__)
 

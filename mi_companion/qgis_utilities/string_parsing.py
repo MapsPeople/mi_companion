@@ -1,11 +1,11 @@
 import json
 import logging
-from typing import Any, List, Tuple
+from typing import List, Tuple
 
 import shapely
 import shapely.wkt
 
-__all__ = ["extract_wkt_elements", "is_str_value_null_like", "is_json", "parse_q_value"]
+__all__ = ["extract_wkt_elements", "is_str_value_null_like", "is_json"]
 
 from mi_companion import NAN_VALUE, NULL_VALUE, STR_NA_VALUE, STR_NONE_VALUE
 
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def is_json(my_json: str) -> bool:
     try:
-        json_object = json.loads(my_json)
+        json.loads(my_json)
     except ValueError as e:
         return False
     return True
@@ -85,19 +85,6 @@ def is_str_value_null_like(v_str_) -> bool:
     )
 
 
-def parse_q_value(v: Any) -> Any:
-    # noinspection PyUnresolvedReferences
-    from qgis.PyQt.QtCore import QVariant
-
-    if isinstance(v, QVariant):
-        if v.isNull():
-            v = None
-        else:
-            v = v.value()
-
-    return v
-
-
 if __name__ == "__main__":
     extract_wkt_elements(
         "GEOMETRYCOLLECTION (POLYGON ((-1.013080440097465 1.00008030103449, 0.9802702725182121 "
@@ -106,12 +93,14 @@ if __name__ == "__main__":
         "0.9805437100213221, 2.9802675555205336 0.9805437100213221, 3.000128012733939 -1.013116389252246, "
         "2.85 -0.9, 1.15 -0.9, 0.9999196989655098 -1.013080440097465, 1.019731748768209 0.9805437100213221)), "
         "POLYGON ((3.0197290314268135 0.980270272518212, 5.0131163892522475 1.000128012733938, "
-        "4.9 0.8500000000000002, 4.9 -0.9, 3.15 -0.9, 2.9999196989655097 -1.0130804400974647, 3.0197290314268135 "
+        "4.9 0.8500000000000002, 4.9 -0.9, 3.15 -0.9, 2.9999196989655097 -1.0130804400974647, "
+        "3.0197290314268135 "
         "0.980270272518212)), POLYGON ((-1.0130804400974653 3.0000803010344903, 0.9805437100213221 "
         "2.9802682512317915, 0.9805437100213221 1.019732444479466, -1.0131163892522457 0.9998719872660614, "
         "-0.9 1.15, -0.9 2.85, -1.0130804400974653 3.0000803010344903)), POLYGON ((1.019456289978678 "
         "2.980543710021322, 2.980543710021322 2.980543710021322, 2.980543710021322 1.019456289978678, "
-        "1.019456289978678 1.019456289978678, 1.019456289978678 2.980543710021322)), POLYGON ((3.019456289978678 "
+        "1.019456289978678 1.019456289978678, 1.019456289978678 2.980543710021322)), POLYGON (("
+        "3.019456289978678 "
         "2.9802675555205336, 5.013116389252247 3.0001280127339385, 4.9 2.850000000000001, "
         "4.9 1.1500000000000001, 5.013080440097467 0.9999196989655101, 3.019456289978678 1.019731748768209, "
         "3.019456289978678 2.9802675555205336)), POLYGON ((-1.013116389252246 2.999871987266061, -0.9 3.15, "
