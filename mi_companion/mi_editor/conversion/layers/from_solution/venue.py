@@ -41,7 +41,7 @@ def add_venue_layer(
     venue_type_dropdown_widget: Optional[Any] = None,
     connection_type_dropdown_widget: Optional[Any] = None,
     entry_point_type_dropdown_widget: Optional[Any] = None,
-    abutters_type_dropdown_widget: Optional[Any] = None,
+    edge_context_type_dropdown_widget: Optional[Any] = None,
     progress_bar: Optional[Any] = None,
 ) -> None:
     """
@@ -55,7 +55,7 @@ def add_venue_layer(
     :param venue_type_dropdown_widget:
     :param connection_type_dropdown_widget:
     :param entry_point_type_dropdown_widget:
-    :param abutters_type_dropdown_widget:
+    :param edge_context_type_dropdown_widget:
     :param progress_bar:
     :return:
     """
@@ -125,7 +125,7 @@ def add_venue_layer(
                     door_type_dropdown_widget=door_type_dropdown_widget,
                     connection_type_dropdown_widget=connection_type_dropdown_widget,
                     entry_point_type_dropdown_widget=entry_point_type_dropdown_widget,
-                    edge_context_type_dropdown_widget=abutters_type_dropdown_widget,
+                    edge_context_type_dropdown_widget=edge_context_type_dropdown_widget,
                 )
 
         if INSERT_INDEX > 0:
