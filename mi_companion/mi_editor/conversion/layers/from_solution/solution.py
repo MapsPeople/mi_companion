@@ -15,7 +15,14 @@ from integration_system.mi import (
     SolutionDepth,
     get_remote_solution,
 )
-from integration_system.model import ConnectionType, DoorType, Solution, VenueType
+from integration_system.model import (
+    AbuttersType,
+    ConnectionType,
+    DoorType,
+    EntryPointType,
+    Solution,
+    VenueType,
+)
 from mi_companion import (
     DESCRIPTOR_BEFORE,
     MI_HIERARCHY_GROUP_NAME,
@@ -84,7 +91,7 @@ def add_solution_layers(
             "ValueMap",
             {
                 "map": {
-                    name: DoorType.__getitem__(name)
+                    name: DoorType.__getitem__(name).value
                     for name in sorted({l.name for l in DoorType})
                 }
             },
@@ -106,8 +113,22 @@ def add_solution_layers(
                 "ValueMap",
                 {
                     "map": {
-                        name: VenueType.__getitem__(name)
+                        name: VenueType.__getitem__(name).value
                         for name in sorted({l.name for l in VenueType})
+                    }
+                },
+            )
+        )
+
+    entry_point_type_dropdown_widget = None
+    if read_plugin_setting("MAKE_ENTRY_POINT_TYPE_DROPDOWN"):
+        entry_point_type_dropdown_widget = (
+            QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
+                "ValueMap",
+                {
+                    "map": {
+                        name: EntryPointType.__getitem__(name).value
+                        for name in sorted({l.name for l in EntryPointType})
                     }
                 },
             )
@@ -120,8 +141,22 @@ def add_solution_layers(
                 "ValueMap",
                 {
                     "map": {
-                        name: ConnectionType.__getitem__(name)
+                        name: ConnectionType.__getitem__(name).value
                         for name in sorted({l.name for l in ConnectionType})
+                    }
+                },
+            )
+        )
+
+    abutters_type_dropdown_widget = None
+    if read_plugin_setting("MAKE_CONNECTION_TYPE_DROPDOWN"):
+        abutters_type_dropdown_widget = (
+            QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
+                "ValueMap",
+                {
+                    "map": {
+                        name: AbuttersType.__getitem__(name).value
+                        for name in sorted({l.name for l in AbuttersType})
                     }
                 },
             )
@@ -192,6 +227,8 @@ def add_solution_layers(
         highway_type_dropdown_widget=highway_type_dropdown_widget,
         venue_type_dropdown_widget=venue_type_dropdown_widget,
         connection_type_dropdown_widget=connection_type_dropdown_widget,
+        entry_point_type_dropdown_widget=entry_point_type_dropdown_widget,
+        abutters_type_dropdown_widget=abutters_type_dropdown_widget,
     )
 
 

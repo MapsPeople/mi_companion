@@ -2,7 +2,7 @@ import logging
 import uuid
 from typing import Any, Tuple
 
-from jord.qgis_utilities import MissingFeatureError, parse_q_value
+from jord.qgis_utilities.conversion.features import MissingFeatureError, parse_q_value
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets, uic

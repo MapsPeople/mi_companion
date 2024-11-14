@@ -42,11 +42,23 @@ def get_graph_data(graph_group: Any, solution: Solution) -> Tuple:
                 graph_id=graph_id, osm_xml=""  # TODO: ADD graph for OSM or edge layer?
             )
             return (graph_key,)
+
     return (None,)
+
+
+def add_graph_edges(*, graph_key: str, graph_group: Any, solution: Solution) -> None:
+    pass
+
+    osm_xml = ""
+
+    solution.update_graph(graph_key, osm_xml=osm_xml)
 
 
 def add_venue_graph(*, solution: Solution, graph_group: Any) -> Optional[str]:
     (graph_key,) = get_graph_data(graph_group, solution)
+
+    if graph_key:
+        add_graph_edges(graph_key=graph_key, graph_group=graph_group, solution=solution)
 
     if graph_key:
         add_route_elements(graph_key, graph_group, solution)

@@ -1,6 +1,8 @@
 import logging
 from typing import Any, Dict, List, Optional
 
+from jord.qgis_utilities.conversion.features import parse_q_value
+
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
@@ -21,7 +23,6 @@ from mi_companion import (
     SOLUTION_DATA_DESCRIPTOR,
     SOLUTION_DESCRIPTOR,
 )
-from mi_companion.qgis_utilities import parse_q_value
 from .venue import convert_solution_venues
 
 __all__ = ["layer_hierarchy_to_solution", "convert_solution_layers_to_solution"]
