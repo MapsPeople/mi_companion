@@ -203,7 +203,17 @@ def get_last_verified(layer_attributes: Mapping) -> datetime:
         if isinstance(last_verified, str):
             ...
         elif isinstance(last_verified, QDateTime):
-            last_verified = last_verified.toPyDate()
+            try:
+                last_verified = last_verified.toPyDate()
+            except:
+                try:
+                    last_verified = last_verified.toPyDateTime()
+                except:
+                    try:
+                        last_verified = last_verified.toPython()
+                    except Exception as e:
+                        raise e
+
         elif isinstance(last_verified, datetime):
             last_verified = last_verified.timestamp()
         # elif isinstance(last_verified, int):
