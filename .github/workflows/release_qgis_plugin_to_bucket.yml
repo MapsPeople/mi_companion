@@ -20,18 +20,18 @@ jobs:
             platform: macosx_10_9_x86_64
           - os: ubuntu-latest
             platform: manylinux2014_x86_64
-          - os: macos-latest
-            python-version: "3.9"
-            platform: macosx_11_0_arm64
-          - os: macos-latest
-            python-version: "3.12"
-            platform: macosx_11_0_arm64
-          - os: ubuntu-latest
-            platform: manylinux2014_x86_64
-            python-version: "3.10"
-          - os: ubuntu-latest
-            platform: manylinux2014_x86_64
-            python-version: "3.11"
+    #          - os: macos-latest
+    #            python-version: "3.9"
+    #            platform: macosx_11_0_arm64
+    #          - os: macos-latest
+    #            python-version: "3.12"
+    #            platform: macosx_11_0_arm64
+    #          - os: ubuntu-latest
+    #            platform: manylinux2014_x86_64
+    #            python-version: "3.10"
+    #          - os: ubuntu-latest
+    #            platform: manylinux2014_x86_64
+    #            python-version: "3.11"
 
     if: github.repository_owner == 'MapsPeople'
 
