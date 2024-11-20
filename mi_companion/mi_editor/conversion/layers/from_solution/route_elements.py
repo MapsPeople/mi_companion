@@ -58,6 +58,16 @@ def add_connection_layers(
     dropdown_widget: Optional[Any] = None,
     route_element_type_column: Optional[str] = "connection_type",
 ) -> None:
+    """
+
+    :param graph_group:
+    :param qgis_instance_handle:
+    :param graph:
+    :param connections:
+    :param dropdown_widget:
+    :param route_element_type_column:
+    :return:
+    """
     connectors = {}
     for c in connections:
         for connector_key, connector in c.connectors.items():
@@ -156,6 +166,17 @@ def add_route_element_layers(
     connection_type_dropdown_widget: Optional[Any] = None,
     entry_point_type_dropdown_widget: Optional[Any] = None,
 ) -> None:
+    """
+
+    :param qgis_instance_handle:
+    :param graph_group:
+    :param graph:
+    :param solution:
+    :param door_type_dropdown_widget:
+    :param connection_type_dropdown_widget:
+    :param entry_point_type_dropdown_widget:
+    :return:
+    """
     split_levels_into_individual_groups: bool = False
     if split_levels_into_individual_groups:
         route_element_collections = {
@@ -203,6 +224,7 @@ def add_route_element_layers(
         }.items():
             dropdown_widget = None
             route_element_type_column = None
+
             if desc == ENTRY_POINTS_DESCRIPTOR:
                 dropdown_widget = entry_point_type_dropdown_widget
                 route_element_type_column = "entry_point_type"

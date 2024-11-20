@@ -10,8 +10,9 @@ from mi_companion import (
     DESCRIPTOR_BEFORE,
     GRAPH_DATA_DESCRIPTOR,
     GRAPH_DESCRIPTOR,
-    NAVIGATION_LINES_DESCRIPTOR,
+    NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
     NAVIGATION_POINT_DESCRIPTOR,
+    NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_solution.route_elements import (
@@ -82,15 +83,56 @@ def add_graph_layers(
 
             if True:
                 lines = [prepare_geom_for_qgis(l, clean=False) for l in lines]
+
+                horizontals = list(
+                    zip(
+                        *[
+                            (l, meta)
+                            for l, meta in zip(lines, lines_meta_data, strict=True)
+                            if meta["highway"] == "footway"
+                        ],
+                        strict=True,
+                    )
+                )
+                verticals = list(
+                    zip(
+                        *[
+                            (l, meta)
+                            for l, meta in zip(lines, lines_meta_data, strict=True)
+                            if meta["highway"] != "footway"
+                        ],
+                        strict=True,
+                    )
+                )
+
                 logger.info(f"{len(lines)=} loaded!")
-                if lines:
+                if horizontals:
+                    horizontal_lines, horizontal_lines_meta_data = horizontals
                     graph_lines_layer = add_shapely_layer(
                         qgis_instance_handle=qgis_instance_handle,
-                        geoms=lines,
-                        name=NAVIGATION_LINES_DESCRIPTOR,
+                        geoms=horizontal_lines,
+                        name=NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
                         group=graph_group,
-                        columns=lines_meta_data,
+                        columns=horizontal_lines_meta_data,
                         categorise_by_attribute="level",
+                        visible=read_bool_setting(
+                            "SHOW_GRAPH_ON_LOAD",
+                        ),
+                        crs=solve_target_crs_authid(),
+                    )
+
+                if verticals:
+                    vertical_lines, vertical_lines_meta_data = verticals
+                    vertical_points = []
+                    vertical_points_meta_data = []
+
+                    graph_lines_layer = add_shapely_layer(
+                        qgis_instance_handle=qgis_instance_handle,
+                        geoms=vertical_points,
+                        name=NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
+                        group=graph_group,
+                        columns=vertical_points_meta_data,
+                        categorise_by_attribute="vertical_id",
                         visible=read_bool_setting(
                             "SHOW_GRAPH_ON_LOAD",
                         ),
@@ -128,6 +170,22 @@ def add_graph_layers(
                                 layers_inner.fields().indexFromName("abutters"),
                                 edge_context_type_dropdown_widget,
                             )
+
+            if False:
+                points = [prepare_geom_for_qgis(p, clean=False) for p in points]
+                logger.info(f"{len(points)=} loaded!")
+                graph_points_layer = add_shapely_layer(
+                    qgis_instance_handle=qgis_instance_handle,
+                    geoms=points,
+                    name=NAVIGATION_POINT_DESCRIPTOR,
+                    group=graph_group,
+                    columns=points_meta_data,
+                    visible=read_bool_setting(
+                        "SHOW_GRAPH_ON_LOAD",
+                    ),
+                    categorise_by_attribute="level",
+                    crs=solve_target_crs_authid(),
+                )
 
             if False:
                 points = [prepare_geom_for_qgis(p, clean=False) for p in points]

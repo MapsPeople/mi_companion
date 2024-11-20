@@ -138,13 +138,11 @@ def add_venue_level_hierarchy(
             logger.debug(f"skipping {venue_group_item=}")
         else:
             if GRAPH_DESCRIPTOR in venue_group_item.name():
-                logger.warning(
-                    f"Not handling graphs yet, {venue_group_item.name()}, skipping"
-                )
                 graph_key = add_venue_graph(
                     solution=solution,
                     graph_group=venue_group_item,
                 )
+
                 if graph_key:
                     venue = solution.venues.get(venue_key)
                     venue.graph = solution.graphs.get(graph_key)
