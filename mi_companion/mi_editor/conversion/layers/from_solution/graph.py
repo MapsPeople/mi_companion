@@ -140,38 +140,38 @@ def add_graph_layers(
                     )
 
             # TODO: ADD graph_bounds to a poly layer
+            if graph_lines_layer:
+                if highway_type_dropdown_widget:
+                    for layers_inner in graph_lines_layer:
+                        if layers_inner:
+                            if isinstance(layers_inner, Iterable):
+                                for layer in layers_inner:
+                                    if layer:
+                                        layer.setEditorWidgetSetup(
+                                            layer.fields().indexFromName("highway"),
+                                            highway_type_dropdown_widget,
+                                        )
+                            else:
+                                layers_inner.setEditorWidgetSetup(
+                                    layers_inner.fields().indexFromName("highway"),
+                                    highway_type_dropdown_widget,
+                                )
 
-            if highway_type_dropdown_widget:
-                for layers_inner in graph_lines_layer:
-                    if layers_inner:
-                        if isinstance(layers_inner, Iterable):
-                            for layer in layers_inner:
-                                if layer:
-                                    layer.setEditorWidgetSetup(
-                                        layer.fields().indexFromName("highway"),
-                                        highway_type_dropdown_widget,
-                                    )
-                        else:
-                            layers_inner.setEditorWidgetSetup(
-                                layers_inner.fields().indexFromName("highway"),
-                                highway_type_dropdown_widget,
-                            )
-
-            if edge_context_type_dropdown_widget:
-                for layers_inner in graph_lines_layer:
-                    if layers_inner:
-                        if isinstance(layers_inner, Iterable):
-                            for layer in layers_inner:
-                                if layer:
-                                    layer.setEditorWidgetSetup(
-                                        layer.fields().indexFromName("abutters"),
-                                        edge_context_type_dropdown_widget,
-                                    )
-                        else:
-                            layers_inner.setEditorWidgetSetup(
-                                layers_inner.fields().indexFromName("abutters"),
-                                edge_context_type_dropdown_widget,
-                            )
+                if edge_context_type_dropdown_widget:
+                    for layers_inner in graph_lines_layer:
+                        if layers_inner:
+                            if isinstance(layers_inner, Iterable):
+                                for layer in layers_inner:
+                                    if layer:
+                                        layer.setEditorWidgetSetup(
+                                            layer.fields().indexFromName("abutters"),
+                                            edge_context_type_dropdown_widget,
+                                        )
+                            else:
+                                layers_inner.setEditorWidgetSetup(
+                                    layers_inner.fields().indexFromName("abutters"),
+                                    edge_context_type_dropdown_widget,
+                                )
 
             if False:
                 points = [prepare_geom_for_qgis(p, clean=False) for p in points]

@@ -152,7 +152,7 @@ def sync_build_venue_solution(
 
         return False
 
-    sync_level = SyncLevel.VENUE
+    sync_level = SyncLevel.venue
 
     strategy = dict(default_strategy())
     if not read_bool_setting("UPDATE_GRAPH"):

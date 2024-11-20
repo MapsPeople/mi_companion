@@ -10,8 +10,7 @@ from qgis.PyQt import QtWidgets
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.graph_utilities import lines_to_osm_xml
-from integration_system.model import Solution
-from integration_system.model.graph import FALLBACK_OSM_GRAPH
+from integration_system.model import FALLBACK_OSM_GRAPH, Solution
 from mi_companion import GRAPH_DATA_DESCRIPTOR, NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
     extract_layer_data_single,
