@@ -425,10 +425,11 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())
 
-        include_route_elements = False
         include_occupants = False
         include_media = False
-        include_graph = False
+
+        include_route_elements = read_bool_setting("ADD_ROUTE_ELEMENTS")
+        include_graph = read_bool_setting("ADD_GRAPH")
 
         with InjectedProgressBar(parent=self.iface_.mainWindow().statusBar()) as bar:
             self.changes_label.setText(f"Uploading venues")

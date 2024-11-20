@@ -94,7 +94,9 @@ def add_graph_edges(*, graph_key: str, graph_group: Any, solution: Solution) -> 
 
 
 def add_venue_graph(*, solution: Solution, graph_group: Any) -> Optional[str]:
-    (graph_key,) = get_graph_data(graph_group, solution)
+    (graph_key,) = get_graph_data(
+        graph_group, solution
+    )  # TODO: ADD graph_bounds from a poly layer
 
     if graph_key:
         add_graph_edges(graph_key=graph_key, graph_group=graph_group, solution=solution)
