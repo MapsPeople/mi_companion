@@ -1,0 +1,3 @@
+jord
+requests
+pyqt6
