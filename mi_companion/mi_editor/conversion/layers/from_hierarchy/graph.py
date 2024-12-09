@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 from jord.qgis_utilities.conversion.features import feature_to_shapely, parse_q_value
 
@@ -12,6 +12,7 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 from integration_system.graph_utilities import lines_to_osm_xml
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
 from mi_companion import GRAPH_DATA_DESCRIPTOR, NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR
+from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
     extract_layer_data_single,
 )
@@ -50,7 +51,20 @@ def get_graph_data(graph_group: Any, solution: Solution) -> Tuple:
     return (None,)
 
 
-def add_graph_edges(*, graph_key: str, graph_group: Any, solution: Solution) -> None:
+def add_graph_edges(
+    *,
+    graph_key: str,
+    graph_group: Any,
+    solution: Solution,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
+) -> None:
+    if not read_bool_setting("UPLOAD_OSM_GRAPH"):
+        logger.warning("OSM graph upload is disabled")
+        return
+
     verticals = {}
     horizontals = []
 
@@ -89,18 +103,50 @@ def add_graph_edges(*, graph_key: str, graph_group: Any, solution: Solution) -> 
         if True:
             raise e
 
-    solution.update_graph(graph_key, osm_xml=osm_xml)
+    try:
+        solution.update_graph(graph_key, osm_xml=osm_xml)
+    except Exception as e:
+        _invalid = f"Invalid graph: {e}"
+        logger.error(_invalid)
+        if collect_invalid:
+            issues.append(_invalid)
+        else:
+            raise e
 
 
-def add_venue_graph(*, solution: Solution, graph_group: Any) -> Optional[str]:
+def add_venue_graph(
+    *,
+    solution: Solution,
+    graph_group: Any,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
+) -> Optional[str]:
     (graph_key,) = get_graph_data(
         graph_group, solution
     )  # TODO: ADD graph_bounds from a poly layer
 
     if graph_key:
-        add_graph_edges(graph_key=graph_key, graph_group=graph_group, solution=solution)
+        add_graph_edges(
+            graph_key=graph_key,
+            graph_group=graph_group,
+            solution=solution,
+            issues=issues,
+            collect_invalid=collect_invalid,
+            collect_warnings=collect_warnings,
+            collect_errors=collect_errors,
+        )
 
     if graph_key:
-        add_route_elements(graph_key, graph_group, solution)
+        add_route_elements(
+            graph_key,
+            graph_group,
+            solution,
+            issues=issues,
+            collect_invalid=collect_invalid,
+            collect_warnings=collect_warnings,
+            collect_errors=collect_errors,
+        )
 
     return graph_key

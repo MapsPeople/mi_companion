@@ -155,7 +155,9 @@ def sync_build_venue_solution(
     sync_level = SyncLevel.venue
 
     strategy = dict(default_strategy())
-    if not read_bool_setting("UPDATE_GRAPH"):
+    if not (
+        read_bool_setting("UPDATE_GRAPH") and read_bool_setting("UPLOAD_OSM_GRAPH")
+    ):
         strategy[Graph] = default_matcher, None  # Do not update graph
 
     success = synchronize(
@@ -276,5 +278,6 @@ def show_differences(
                 group=venue_difference_group,
                 crs=f"EPSG:{MI_EPSG_NUMBER}",
             )
+
         except Exception as e:  # TODO: HANDLE Mixed GEOM TYPES!
             logger.error(e)

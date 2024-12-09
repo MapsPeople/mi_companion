@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 from jord.qgis_utilities.conversion.features import feature_to_shapely
 
@@ -35,6 +35,10 @@ def add_building_floors(
     num_solution_elements: int,
     num_venue_elements: int,
     num_building_elements: int,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
 ) -> None:
     building_group_elements = venue_group_item.children()
     num_building_group_elements = len(building_group_elements)
@@ -73,7 +77,13 @@ def add_building_floors(
             continue
 
         floor_attributes, floor_key = get_floor_data(
-            building_key, building_group_item, solution
+            building_key,
+            building_group_item,
+            solution,
+            issues=issues,
+            collect_invalid=collect_invalid,
+            collect_warnings=collect_warnings,
+            collect_errors=collect_errors,
         )
 
         if floor_key is None:
@@ -94,11 +104,21 @@ def add_building_floors(
                 else None
             ),
             floor_index=floor_index,
+            issues=issues,
+            collect_invalid=collect_invalid,
+            collect_warnings=collect_warnings,
+            collect_errors=collect_errors,
         )
 
 
 def get_floor_data(
-    building_key: str, floor_group_items: Any, solution: Solution
+    building_key: str,
+    floor_group_items: Any,
+    solution: Solution,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
 ) -> Tuple:
     for floor_level_item in floor_group_items.children():
         if (
@@ -125,15 +145,25 @@ def get_floor_data(
             if door_linestring is not None:
                 custom_props = extract_custom_props(floor_attributes)
 
-                floor_key = solution.add_floor(
-                    external_id=external_id,
-                    name=name,
-                    floor_index=floor_attributes["floor_index"],
-                    polygon=prepare_geom_for_mi_db(door_linestring),
-                    building_key=building_key,
-                    custom_properties=(
-                        custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
-                    ),
-                )
+                try:
+                    floor_key = solution.add_floor(
+                        external_id=external_id,
+                        name=name,
+                        floor_index=floor_attributes["floor_index"],
+                        polygon=prepare_geom_for_mi_db(door_linestring),
+                        building_key=building_key,
+                        custom_properties=(
+                            custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
+                        ),
+                    )
+                except Exception as e:
+                    _invalid = f"Invalid floor: {e}"
+                    logger.error(_invalid)
+                    if collect_invalid:
+                        issues.append(_invalid)
+                        return floor_attributes, None
+                    else:
+                        raise e
+
                 return floor_attributes, floor_key
     return None, None
