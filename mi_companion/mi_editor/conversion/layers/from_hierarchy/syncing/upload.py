@@ -249,16 +249,47 @@ def show_differences(
                     operation_counter
                 )  # TODO: ALL OF THIS CAN BE IMPROVED! WITH SOME proper IDs
 
-                differences[diff_op_ith] = shapely.wkt.loads(
-                    i.replace("\n", "")[0].replace("\n", "").strip()
-                )  # Also one parses a single geom per operation
-                if is_multi(differences[diff_op_ith]):
-                    rep_points = []
-                    for g in differences[diff_op_ith].geoms:
-                        rep_points.append(g.representative_point())
-                    differences[f"{diff_op_ith}_coherence"] = shapely.LineString(
-                        rep_points
+                geom_wkt = i.replace("\n", "")[0].replace("\n", "").strip()
+
+                if geom_wkt == "":
+                    logger.warning(
+                        f"Empty geometry WKT for operation: {o.operation_type.name} {o.item_type.__name__}, skipping, "
+                        f"{i}"
                     )
+                    try:
+                        differences[diff_op_ith] = shapely.wkt.loads(
+                            i
+                        )  # Also one parses a single geom per operation
+                        if is_multi(differences[diff_op_ith]):
+                            rep_points = []
+                            for g in differences[diff_op_ith].geoms:
+                                rep_points.append(g.representative_point())
+
+                            differences[f"{diff_op_ith}_coherence"] = (
+                                shapely.LineString(rep_points)
+                            )
+                    except:
+                        logger.error(f"Error parsing geometry WKT: {i}")
+
+                else:
+                    try:
+                        differences[diff_op_ith] = shapely.wkt.loads(
+                            geom_wkt
+                        )  # Also one parses a single geom per operation
+                        if is_multi(differences[diff_op_ith]):
+                            rep_points = []
+                            for g in differences[diff_op_ith].geoms:
+                                rep_points.append(g.representative_point())
+
+                            differences[f"{diff_op_ith}_coherence"] = (
+                                shapely.LineString(rep_points)
+                            )
+                    except:
+                        logger.error(f"Error parsing geometry WKT: {geom_wkt}")
+
+        logger.warning(
+            f"Operation: {o.operation_type.name} {o.item_type.__name__} differences: {differences}"
+        )
 
         try:
             import geopandas

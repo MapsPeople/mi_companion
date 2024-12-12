@@ -2,6 +2,7 @@ import logging
 from typing import Any, Iterable, Optional
 from xml.etree.ElementTree import ParseError
 
+import shapely
 from jord.qlive_utilities import add_shapely_layer
 
 from integration_system.graph_utilities import osm_xml_to_lines
@@ -123,8 +124,27 @@ def add_graph_layers(
 
                 if verticals:
                     vertical_lines, vertical_lines_meta_data = verticals
+
                     vertical_points = []
                     vertical_points_meta_data = []
+
+                    for ith, (line, meta_data) in enumerate(
+                        zip(vertical_lines, vertical_lines_meta_data)
+                    ):
+                        meta_data["vertical_id"] = meta_data["osmid"]
+                        levels = meta_data["level"].split(";")
+
+                        coords = line.coords
+                        num_coords = len(coords)
+
+                        for ith_c, c in enumerate(coords):
+                            meta_data_copy = meta_data.copy()
+                            vertical_points.append(shapely.geometry.Point(c))
+                            if ith_c >= num_coords - 1:
+                                meta_data_copy["level"] = levels[-1]
+                            else:
+                                meta_data_copy["level"] = levels[ith_c]
+                            vertical_points_meta_data.append(meta_data_copy)
 
                     graph_lines_layer = add_shapely_layer(
                         qgis_instance_handle=qgis_instance_handle,
