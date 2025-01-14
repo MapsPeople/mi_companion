@@ -4,7 +4,7 @@ description=GDS tooling
 
 qgisMinimumVersion=3.36
 #qgisMaximumVersion=3.38
-version=0.6.0
+version=0.6.1
 
 author=heider
 email=chen@mapspeople.com
