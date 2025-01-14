@@ -9,7 +9,7 @@ from pathlib import Path
 from subprocess import PIPE, Popen, STDOUT
 from typing import Optional, Union
 
-from mi_companion.constants import BUNDLED_PACKAGES_DIR
+from mi_companion.constants import BUNDLED_PACKAGES_DIR, VERSION
 
 THIS_DIR = Path(__file__).parent
 TARGET_DIR = THIS_DIR / BUNDLED_PACKAGES_DIR
@@ -59,7 +59,8 @@ def package_dependencies(
                 shutil.rmtree(bundle_name)
 
     if version is not None:
-        bundle_name = bundle_name.with_stem(f"{bundle_name.stem}_{version}")
+        assert VERSION == version  # JUST MAKE SURE!
+        # bundle_name = bundle_name.with_stem(f"{bundle_name.stem}.{version}")
 
     bundle_name.mkdir(parents=True, exist_ok=True)
 
@@ -119,7 +120,7 @@ def package_dependencies(
     emit_additional_bundle_files(
         python_version=python_version,
         target_site_packages_dir=bundle_name,
-        BUNDLE_VERSION=version,
+        BUNDLE_VERSION=VERSION,
         BUNDLE_PROJECT_NAME=project_name,
     )
 
@@ -212,7 +213,6 @@ if __name__ == "__main__":
         default=f"{sys.version_info.major}.{sys.version_info.minor}",
         required=False,
     )
-    # parser.add_argument("plugin_name", help="Which plugin to bundle dependencies", type=str)
     parser.add_argument(
         "--plugin-version",
         help="Which plugin version",
@@ -239,7 +239,7 @@ if __name__ == "__main__":
     package_dependencies(
         bundle_name=args.target_dir,
         python_version=args.python_version,
-        version=args.plugin_version,  # BUNDLE_PROJECT_NAME=args.plugin_name
+        version=args.plugin_version,
         platform=args.platform,
         clean=False,
     )

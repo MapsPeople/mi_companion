@@ -13,14 +13,15 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.12"]
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [windows-latest]
+        #os: [macos-latest, windows-latest, ubuntu-latest]
         include:
           - os: windows-latest
             platform: win_amd64
-          - os: macos-latest
-            platform: macosx_10_9_x86_64
-          - os: ubuntu-latest
-            platform: manylinux2014_x86_64
+          #- os: macos-latest
+          #  platform: macosx_10_9_x86_64
+          #- os: ubuntu-latest
+          #  platform: manylinux2014_x86_64
 
     if: github.repository_owner == 'MapsPeople'
 
@@ -53,8 +54,7 @@ jobs:
       - name: Package QGIS Plugin
         run: |
           python bundle_packaging.py --python-version ${{ matrix.python-version }} --plugin-version ${{ env.RELEASE_VERSION }} --platform ${{ matrix.platform }}
-          qgis-plugin-ci release ${{ env.RELEASE_VERSION }} -a mi_companion_bundle_${{ env.RELEASE_VERSION }}
-          -u https://qgis.mapsindoors.com/plugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/mi_companion.${{ env.RELEASE_VERSION }}.zip
+          qgis-plugin-ci package ${{ env.RELEASE_VERSION }} -a mi_companion_bundle.${{ env.RELEASE_VERSION }}/ -u https://qgis.mapsindoors.com/plugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/mi_companion.${{ env.RELEASE_VERSION }}.zip
 
       - id: "auth"
         name: auth
