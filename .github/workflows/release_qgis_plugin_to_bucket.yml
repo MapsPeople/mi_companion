@@ -54,7 +54,7 @@ jobs:
       - name: Package QGIS Plugin
         run: |
           python bundle_packaging.py --python-version ${{ matrix.python-version }} --plugin-version ${{ env.RELEASE_VERSION }} --platform ${{ matrix.platform }}
-          qgis-plugin-ci package ${{ env.RELEASE_VERSION }} -a mi_companion_bundle.${{ env.RELEASE_VERSION }}/ -u https://qgis.mapsindoors.com/plugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/mi_companion.${{ env.RELEASE_VERSION }}.zip
+          qgis-plugin-ci package ${{ env.RELEASE_VERSION }} -a mi_companion_bundle.${{ env.RELEASE_VERSION }}/ -u https://qgis.mapsindoors.com/plugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
 
       - id: "auth"
         name: auth
