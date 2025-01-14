@@ -1,25 +1,36 @@
-0.5.1 Project shape to project crs and fix category bug on upload
+# CHANGELOG
 
-0.4.8 Address on Venue now supported
+## Unreleased
 
-0.4.0 Support Multi Polygon floors
+## 0.6.0 - 2025-01-14
 
-0.3.6 Handle Custom PROPERties PROPERly
+* Added validation button
 
-0.3.1 More robust hierarchy parsing, and change default target CRS to 3857 and convert back to 4326 on upload
+## 0.5.0 - 2024-12-01
 
-0.3.0 Graph disabled, compat entry point and square new solution default polygons
+* Project shape to project crs and fix category bug on upload
 
-0.2.9 Major parsing refactor, more logging
+## 0.4.0 - 2024-11-01
 
-0.2.8 Tested and ready for use
+* Address on Venue now supported
+* Support for Multi Polygon floors
 
-0.2.7 Duplication
+## 0.3.0 - 2024-10-01
 
-0.2.6 Svg import
+* Handle Custom PROPERties PROPERly
+* More robust hierarchy parsing, and change default target CRS to 3857 and convert back to 4326 on upload
+* Graph disabled, compat entry point and square new solution default polygons
 
-0.2.5 Manager API
+## 0.2.0 - 2024-09-01
 
-0.2.4 Differentiation
+* Major parsing refactor, more logging
+* Tested and ready for use
+* Layer Duplication
+* Svg import
+* Manager API
+* Differentiation
+* CI Release
 
-0.2.0 CI Release
+## 0.1.0 - 2024-08-01
+
+* Initial release

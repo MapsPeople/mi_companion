@@ -320,3 +320,5 @@ linux/
 .gitlab-ci-local
 
 mi_companion_bundle-0.0.2/
+
+release.md
