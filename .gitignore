@@ -310,7 +310,6 @@ cython_debug/
 
 .run/
 
-mi_companion_bundle
 oda_installers
 .DS_STORE
 app.yaml
@@ -318,7 +317,7 @@ secure_files/
 
 linux/
 .gitlab-ci-local
-
-mi_companion_bundle-0.0.2/
-
+mi_companion_bundle*
 release.md
+
+plugins.xml
