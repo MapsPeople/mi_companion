@@ -1,8 +1,9 @@
 import logging
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Mapping, Optional
 from xml.etree.ElementTree import ParseError
 
 import shapely
+from jord.qgis_utilities.fields import make_field_not_null
 from jord.qlive_utilities import add_shapely_layer
 
 from integration_system.graph_utilities import osm_xml_to_lines
@@ -90,7 +91,7 @@ def add_graph_layers(
                         *[
                             (l, meta)
                             for l, meta in zip(lines, lines_meta_data, strict=True)
-                            if meta["highway"] == "footway"
+                            if not is_vertical_edge(meta)
                         ],
                         strict=True,
                     )
@@ -100,16 +101,17 @@ def add_graph_layers(
                         *[
                             (l, meta)
                             for l, meta in zip(lines, lines_meta_data, strict=True)
-                            if meta["highway"] != "footway"
+                            if is_vertical_edge(meta)
                         ],
                         strict=True,
                     )
                 )
 
                 logger.info(f"{len(lines)=} loaded!")
+                graph_lines_layer_horizontal = None
                 if horizontals:
                     horizontal_lines, horizontal_lines_meta_data = horizontals
-                    graph_lines_layer = add_shapely_layer(
+                    graph_lines_layer_horizontal = add_shapely_layer(
                         qgis_instance_handle=qgis_instance_handle,
                         geoms=horizontal_lines,
                         name=NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
@@ -122,6 +124,7 @@ def add_graph_layers(
                         crs=solve_target_crs_authid(),
                     )
 
+                graph_lines_layer_vertical = None
                 if verticals:
                     vertical_lines, vertical_lines_meta_data = verticals
 
@@ -132,21 +135,24 @@ def add_graph_layers(
                         zip(vertical_lines, vertical_lines_meta_data)
                     ):
                         meta_data["vertical_id"] = meta_data["osmid"]
-                        levels = meta_data["level"].split(";")
+                        if False:
+                            levels = meta_data["level"].split(";")
 
-                        coords = line.coords
-                        num_coords = len(coords)
+                            coords = line.coords
+                            num_coords = len(coords)
 
-                        for ith_c, c in enumerate(coords):
-                            meta_data_copy = meta_data.copy()
-                            vertical_points.append(shapely.geometry.Point(c))
-                            if ith_c >= num_coords - 1:
-                                meta_data_copy["level"] = levels[-1]
-                            else:
-                                meta_data_copy["level"] = levels[ith_c]
-                            vertical_points_meta_data.append(meta_data_copy)
+                            for ith_c, c in enumerate(coords):
+                                meta_data_copy = meta_data.copy()
+                                vertical_points.append(shapely.geometry.Point(c))
+                                if ith_c >= num_coords - 1:
+                                    meta_data_copy["level"] = levels[-1]
+                                else:
+                                    meta_data_copy["level"] = levels[ith_c]
+                                vertical_points_meta_data.append(meta_data_copy)
+                        else:
+                            ...
 
-                    graph_lines_layer = add_shapely_layer(
+                    graph_lines_layer_vertical = add_shapely_layer(
                         qgis_instance_handle=qgis_instance_handle,
                         geoms=vertical_points,
                         name=NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
@@ -159,39 +165,54 @@ def add_graph_layers(
                         crs=solve_target_crs_authid(),
                     )
 
-            # TODO: ADD graph_bounds to a poly layer
-            if graph_lines_layer:
-                if highway_type_dropdown_widget:
-                    for layers_inner in graph_lines_layer:
-                        if layers_inner:
-                            if isinstance(layers_inner, Iterable):
-                                for layer in layers_inner:
-                                    if layer:
-                                        layer.setEditorWidgetSetup(
-                                            layer.fields().indexFromName("highway"),
-                                            highway_type_dropdown_widget,
-                                        )
-                            else:
-                                layers_inner.setEditorWidgetSetup(
-                                    layers_inner.fields().indexFromName("highway"),
-                                    highway_type_dropdown_widget,
-                                )
+                    for field_name in ("vertical_id",):
+                        make_field_not_null(
+                            graph_lines_layer_vertical, field_name=field_name
+                        )
 
-                if edge_context_type_dropdown_widget:
-                    for layers_inner in graph_lines_layer:
-                        if layers_inner:
-                            if isinstance(layers_inner, Iterable):
-                                for layer in layers_inner:
-                                    if layer:
-                                        layer.setEditorWidgetSetup(
-                                            layer.fields().indexFromName("abutters"),
-                                            edge_context_type_dropdown_widget,
-                                        )
-                            else:
-                                layers_inner.setEditorWidgetSetup(
-                                    layers_inner.fields().indexFromName("abutters"),
-                                    edge_context_type_dropdown_widget,
-                                )
+            # TODO: ADD graph_bounds to a poly layer
+            for a in (
+                graph_lines_layer_horizontal,
+                graph_lines_layer_vertical,
+            ):  # TODO: Vertical level based in node context rather than edge
+                # context, because edge context is wrong ATM
+                if a:
+                    for field_name in ("level", "abutters", "highway"):
+                        make_field_not_null(a, field_name=field_name)
+
+                    if highway_type_dropdown_widget:
+                        for layers_inner in a:
+                            if layers_inner:
+                                if isinstance(layers_inner, Iterable):
+                                    for layer in layers_inner:
+                                        if layer:
+                                            layer.setEditorWidgetSetup(
+                                                layer.fields().indexFromName("highway"),
+                                                highway_type_dropdown_widget,
+                                            )
+                                else:
+                                    layers_inner.setEditorWidgetSetup(
+                                        layers_inner.fields().indexFromName("highway"),
+                                        highway_type_dropdown_widget,
+                                    )
+
+                    if edge_context_type_dropdown_widget:
+                        for layers_inner in a:
+                            if layers_inner:
+                                if isinstance(layers_inner, Iterable):
+                                    for layer in layers_inner:
+                                        if layer:
+                                            layer.setEditorWidgetSetup(
+                                                layer.fields().indexFromName(
+                                                    "abutters"
+                                                ),
+                                                edge_context_type_dropdown_widget,
+                                            )
+                                else:
+                                    layers_inner.setEditorWidgetSetup(
+                                        layers_inner.fields().indexFromName("abutters"),
+                                        edge_context_type_dropdown_widget,
+                                    )
 
             if False:
                 points = [prepare_geom_for_qgis(p, clean=False) for p in points]
@@ -238,5 +259,16 @@ def add_graph_layers(
         else:
             logger.warning(f"Venue does not have a valid graph {graph}")
 
+        # TODO: Add graph bounds to a poly layer
+
     except ParseError as e:
         logger.error(e)
+
+
+def is_vertical_edge(meta: Mapping[str, str]) -> bool:
+    if meta["highway"] == "footway":
+        return False
+    elif meta["highway"] == "residential":
+        return False
+
+    return True

@@ -170,10 +170,11 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         signals.reconnect_signal(
             self.solution_reload_button.clicked, self.refresh_solution_combo_box
         )
-        signals.reconnect_signal(
-            self.solution_combo_box.lineEdit().editingFinished,
-            self.refresh_solution_combo_box,
-        )
+        if False:
+            signals.reconnect_signal(
+                self.solution_combo_box.lineEdit().editingFinished,
+                self.refresh_solution_combo_box,
+            )
 
         signals.reconnect_signal(
             self.venue_reload_button.clicked, self.refresh_venue_button_clicked

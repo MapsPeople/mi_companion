@@ -150,6 +150,8 @@ def add_graph_edges(
 
                     verticals[vert_id] = (v_type, level_geoms, feature_attributes)
 
+    # TODO: ADD graph_bounds from a poly layer
+
     try:
         osm_xml = lines_to_osm_xml(horizontals, verticals=verticals).decode(
             "utf-8"

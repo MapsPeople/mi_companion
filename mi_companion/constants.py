@@ -5,19 +5,15 @@ from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
 
-BUNDLED_PACKAGES_DIR = "mi_companion_bundle"
-
-relative_bundled_packages_dir = Path(__file__).parent.parent / BUNDLED_PACKAGES_DIR
 logger = logging.getLogger(__name__)
 
-if relative_bundled_packages_dir.exists():
-    logger.info(f"Loading {relative_bundled_packages_dir}")
-    site.addsitedir(str(relative_bundled_packages_dir))
-    sys.path = [str(relative_bundled_packages_dir), *sys.path]
-else:
-    logger.warning(
-        f"Could not find bundled packages dir at {relative_bundled_packages_dir}"
-    )
+
+def read_version_from_metadata(metadata_file: Path) -> str:
+    with open(metadata_file) as f:
+        for l in f.readlines():
+            if "version=" in l:
+                return l.split("=")[-1].strip()
+    raise Exception(f"Did not find version in {metadata_file=}")
 
 
 def read_author_from_metadata(metadata_file: Path) -> str:
@@ -46,14 +42,6 @@ def read_project_name_from_metadata(metadata_file: Path) -> str:
     raise Exception(f"Did not find version in {metadata_file=}")
 
 
-def read_version_from_metadata(metadata_file: Path) -> str:
-    with open(metadata_file) as f:
-        for l in f.readlines():
-            if "version=" in l:
-                return l.split("=")[-1].strip()
-    raise Exception(f"Did not find version in {metadata_file=}")
-
-
 PLUGIN_DIR = Path(__file__).parent
 METADATA_FILE = PLUGIN_DIR / "metadata.txt"
 
@@ -61,6 +49,27 @@ PROJECT_NAME = read_project_name_from_metadata(METADATA_FILE)
 VERSION = read_version_from_metadata(METADATA_FILE)
 PLUGIN_AUTHOR = read_author_from_metadata(METADATA_FILE)
 PLUGIN_REPOSITORY = read_repository_from_metadata(METADATA_FILE)
+
+BUNDLED_PACKAGES_DIR = "mi_companion_bundle"
+
+if not PLUGIN_DIR.is_symlink():
+    BUNDLED_PACKAGES_DIR += f"_{VERSION}"
+    logger.info(
+        f"Installed version of plugin detected, targeting {BUNDLED_PACKAGES_DIR}"
+    )
+else:
+    logger.warning(f"Plugin dir is symlinked, assuming development version")
+
+relative_bundled_packages_dir = Path(__file__).parent.parent / BUNDLED_PACKAGES_DIR
+
+if relative_bundled_packages_dir.exists():
+    logger.info(f"Loading {relative_bundled_packages_dir}")
+    site.addsitedir(str(relative_bundled_packages_dir))
+    sys.path = [str(relative_bundled_packages_dir), *sys.path]
+else:
+    logger.warning(
+        f"Could not find bundled packages dir at {relative_bundled_packages_dir}"
+    )
 
 try:
     from apppath import AppPath

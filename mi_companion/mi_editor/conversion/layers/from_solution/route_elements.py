@@ -6,6 +6,7 @@ import geopandas
 from geopandas import GeoDataFrame
 from jord.qgis_utilities.fields import (
     add_dropdown_widget,
+    make_field_not_null,
     make_field_unique,
 )
 from jord.qlive_utilities import add_dataframe_layer
@@ -125,6 +126,9 @@ def add_connection_layers(
 
                 make_field_unique(connectors_layer, field_name="admin_id")
 
+                for field_name in ("floor_index", "connection_id", "connection_type"):
+                    make_field_not_null(connectors_layer, field_name=field_name)
+
                 if dropdown_widget:
                     add_dropdown_widget(
                         connectors_layer, route_element_type_column, dropdown_widget
@@ -147,6 +151,9 @@ def add_connection_layers(
             group=graph_group,
             crs=solve_target_crs_authid(),
         )
+
+        for field_name in ("floor_index", "connection_id", "connection_type"):
+            make_field_not_null(connectors_layer, field_name=field_name)
 
         make_field_unique(connectors_layer, field_name="admin_id")
 
@@ -315,6 +322,9 @@ def add_linestring_route_element_layers(
                     crs=solve_target_crs_authid(),
                 )
 
+                for field_name in ("floor_index",):
+                    make_field_not_null(door_layer, field_name=field_name)
+
                 make_field_unique(door_layer, field_name="admin_id")
 
                 if dropdown_widget:
@@ -347,6 +357,9 @@ def add_linestring_route_element_layers(
             group=graph_group,
             crs=solve_target_crs_authid(),
         )
+
+        for field_name in ("floor_index",):
+            make_field_not_null(door_layer, field_name=field_name)
 
         make_field_unique(door_layer, field_name="admin_id")
 
@@ -414,6 +427,9 @@ def add_point_route_element_layers(
                     crs=solve_target_crs_authid(),
                 )
 
+                for field_name in ("floor_index",):
+                    make_field_not_null(point_layer, field_name=field_name)
+
                 make_field_unique(point_layer, field_name="admin_id")
 
                 if (
@@ -448,6 +464,9 @@ def add_point_route_element_layers(
             group=graph_group,
             crs=solve_target_crs_authid(),
         )
+
+        for field_name in ("floor_index",):
+            make_field_not_null(point_layer, field_name=field_name)
 
         make_field_unique(point_layer, field_name="admin_id")
 
@@ -508,6 +527,9 @@ def add_polygon_route_element_layers(
                     crs=solve_target_crs_authid(),
                 )
 
+                for field_name in ("floor_index",):
+                    make_field_not_null(obstacle_layer, field_name=field_name)
+
                 make_field_unique(obstacle_layer, field_name="admin_id")
 
                 if (
@@ -543,6 +565,9 @@ def add_polygon_route_element_layers(
             group=graph_group,
             crs=solve_target_crs_authid(),
         )
+
+        for field_name in ("floor_index",):
+            make_field_not_null(obstacle_layer, field_name=field_name)
 
         make_field_unique(obstacle_layer, field_name="admin_id")
 
