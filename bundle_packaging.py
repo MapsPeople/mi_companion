@@ -7,7 +7,7 @@ import sysconfig
 from multiprocessing import Pipe
 from pathlib import Path
 from subprocess import PIPE, Popen, STDOUT
-from typing import Union
+from typing import Optional, Union
 
 from mi_companion.constants import BUNDLED_PACKAGES_DIR
 
@@ -44,21 +44,24 @@ def catching_callable(*args, **kwargs) -> None:
 
 def package_dependencies(
     *,
-    target_site_packages_dir: Union[str, Path],
+    bundle_name: Union[str, Path],
     clean: bool = True,
     python_version: str = "3.11",
-    version: str = "0.0.1",
+    version: Optional[str] = None,
     project_name: str = "MapsIndoors",
     platform: str = sysconfig.get_platform(),
 ) -> None:
-    if isinstance(target_site_packages_dir, str):
-        target_site_packages_dir = Path(target_site_packages_dir)
+    if isinstance(bundle_name, str):
+        bundle_name = Path(bundle_name)
     if True:
-        if target_site_packages_dir.exists():
+        if bundle_name.exists():
             if clean:
-                shutil.rmtree(target_site_packages_dir)
+                shutil.rmtree(bundle_name)
 
-    target_site_packages_dir.mkdir(parents=True, exist_ok=True)
+    if version is not None:
+        bundle_name = bundle_name.with_stem(f"{bundle_name.stem}_{version}")
+
+    bundle_name.mkdir(parents=True, exist_ok=True)
 
     submodule_directory = Path(__file__).parent.absolute()
 
@@ -96,7 +99,7 @@ def package_dependencies(
                 "install",
                 "-U",
                 "-t",
-                f"{target_site_packages_dir}",
+                f"{bundle_name}",
                 "-r",
                 f"{REQUIREMENTS_FILE}",
                 "--break-system-packages",
@@ -115,7 +118,7 @@ def package_dependencies(
 
     emit_additional_bundle_files(
         python_version=python_version,
-        target_site_packages_dir=target_site_packages_dir,
+        target_site_packages_dir=bundle_name,
         BUNDLE_VERSION=version,
         BUNDLE_PROJECT_NAME=project_name,
     )
@@ -214,7 +217,7 @@ if __name__ == "__main__":
         "--plugin-version",
         help="Which plugin version",
         type=str,
-        default="0.0.1",
+        default=None,
         required=False,
     )
     parser.add_argument(
@@ -234,7 +237,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     package_dependencies(
-        target_site_packages_dir=args.target_dir,
+        bundle_name=args.target_dir,
         python_version=args.python_version,
         version=args.plugin_version,  # BUNDLE_PROJECT_NAME=args.plugin_name
         platform=args.platform,

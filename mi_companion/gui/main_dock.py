@@ -170,11 +170,24 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         signals.reconnect_signal(
             self.solution_reload_button.clicked, self.refresh_solution_combo_box
         )
+        if False:
+            signals.reconnect_signal(
+                self.solution_combo_box.lineEdit().editingFinished,
+                self.refresh_solution_combo_box,
+            )
+
         signals.reconnect_signal(
             self.venue_reload_button.clicked, self.refresh_venue_button_clicked
         )
+        if False:
+            signals.reconnect_signal(
+                self.venue_combo_box.lineEdit().editingFinished,
+                self.refresh_venue_button_clicked,
+            )
+
         signals.reconnect_signal(self.sync_button.clicked, self.download_button_clicked)
         signals.reconnect_signal(self.upload_button.clicked, self.upload_button_clicked)
+
         # signals.reconnect_signal(self.revert_button.clicked, self.revert_button_clicked)
 
         signals.reconnect_signal(
@@ -363,7 +376,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             logger.error(f"No venue was selected!")
             return
 
-        solution_depth = SolutionDepth.OBSTACLES
+        solution_depth = SolutionDepth.obstacles
 
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())
@@ -421,14 +434,15 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
     def upload_button_clicked(self) -> None:
         self.set_update_sync_settings()
 
-        solution_depth = SolutionDepth.OBSTACLES
+        solution_depth = SolutionDepth.obstacles
         if self.solution_depth_combo_box:
             solution_depth = str(self.solution_combo_box.currentText())
 
-        include_route_elements = False
         include_occupants = False
         include_media = False
-        include_graph = False
+
+        include_route_elements = read_bool_setting("ADD_ROUTE_ELEMENTS")
+        include_graph = read_bool_setting("ADD_GRAPH")
 
         with InjectedProgressBar(parent=self.iface_.mainWindow().statusBar()) as bar:
             self.changes_label.setText(f"Uploading venues")

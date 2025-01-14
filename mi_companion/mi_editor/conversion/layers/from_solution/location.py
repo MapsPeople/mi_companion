@@ -13,7 +13,7 @@ from mi_companion.constants import (
     USE_EXTERNAL_ID_FLOOR_SELECTION,
 )
 from .custom_props import process_custom_props_df, to_df
-from ..type_enums import LocationTypeEnum
+from ..type_enums import BackendLocationTypeEnum
 from ...projection import (
     reproject_geometry_df,
     solve_target_crs_authid,
@@ -212,7 +212,7 @@ def add_floor_content_layers(
 ) -> None:
     room_layer = add_location_layer(
         location_collection=solution.rooms,
-        name=LocationTypeEnum.ROOM.value,
+        name=BackendLocationTypeEnum.ROOM.value,
         geometry_column_name=LocationGeometryType.polygon,
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
@@ -222,7 +222,7 @@ def add_floor_content_layers(
 
     area_layer = add_location_layer(
         location_collection=solution.areas,
-        name=LocationTypeEnum.AREA.value,
+        name=BackendLocationTypeEnum.AREA.value,
         geometry_column_name=LocationGeometryType.polygon,
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
@@ -232,7 +232,7 @@ def add_floor_content_layers(
 
     poi_layer = add_location_layer(
         location_collection=solution.points_of_interest,
-        name=LocationTypeEnum.POI.value,
+        name=BackendLocationTypeEnum.POI.value,
         geometry_column_name=LocationGeometryType.point,
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,

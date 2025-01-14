@@ -35,12 +35,15 @@ def convert_solution_layers_to_solution(
     *,
     progress_bar: callable,
     mi_group: Any,
-    solution_depth: SolutionDepth = SolutionDepth.OBSTACLES,
+    solution_depth: SolutionDepth = SolutionDepth.obstacles,
     include_route_elements: bool = False,
     include_occupants: bool = False,
     include_media: bool = False,
     include_graph: bool = False,
     upload_venues: bool = True,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    collect_invalid: bool = False,
 ) -> Optional[List[Solution]]:
     mi_group_children = mi_group.children()
     num_mi_group_elements = len(mi_group_children)
@@ -49,10 +52,26 @@ def convert_solution_layers_to_solution(
         logger.warning("No solutions to upload")
         return
 
+    if upload_venues:
+        assert not (collect_invalid or collect_warnings or collect_errors), (
+            f"collect_invalid={collect_invalid}, "
+            f"collect_warnings={collect_warnings}, "
+            f"collect_errors={collect_errors} are not "
+            f"supported when upload_venues="
+            f"{upload_venues}"
+        )
+
     solutions = []
+    issues = []
 
     for ith_child, mi_group_child in enumerate(mi_group_children):
         if SOLUTION_DESCRIPTOR not in str(mi_group_child.name()):
+            _warning = (
+                f"{mi_group_child=} was skipped, did not contain {SOLUTION_DESCRIPTOR}"
+            )
+            logger.warning(_warning)
+            if collect_warnings:
+                issues.append(_warning)
             return
 
         if progress_bar:
@@ -60,7 +79,10 @@ def convert_solution_layers_to_solution(
                 int(10 + (90 * (float(ith_child + 1) / num_mi_group_elements)))
             )
         if not isinstance(mi_group_child, QgsLayerTreeGroup):
-            logger.warning(f"{mi_group_child=} was skipped")
+            _warning = f"{mi_group_child=} was skipped"
+            logger.warning(_warning)
+            if collect_warnings:
+                issues.append(_warning)
             continue
 
         logger.info(f"Serialising {str(mi_group_child.name())}")
@@ -71,7 +93,11 @@ def convert_solution_layers_to_solution(
         solution_data: Optional[Dict] = None
 
         if len(mi_group_child.children()) == 0:
-            logger.warning("No venues to upload")
+            _warning = "No venues to upload"
+            logger.warning(_warning)
+            if collect_warnings:
+                issues.append(_warning)
+
             continue
 
         for child_solution_group in mi_group_child.children():
@@ -94,9 +120,10 @@ def convert_solution_layers_to_solution(
                 }
 
         if not solution_data:
-            logger.error(
-                f"Did not find solution_data layer, skipping {solution_layer_name}"
-            )
+            _error = f"Did not find solution_data layer, skipping {solution_layer_name}"
+            logger.error(_error)
+            if collect_errors:
+                issues.append(_error)
             continue
 
         solution_external_id = solution_data["external_id"]
@@ -142,6 +169,10 @@ def convert_solution_layers_to_solution(
                 include_media=include_media,
                 include_graph=include_graph,
                 upload_venues=upload_venues,
+                collect_invalid=collect_invalid,
+                collect_warnings=collect_warnings,
+                collect_errors=collect_errors,
+                issues=issues,
             )
         )
 
@@ -153,7 +184,7 @@ def layer_hierarchy_to_solution(
     mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
     *,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
-    solution_depth: SolutionDepth = SolutionDepth.OBSTACLES,
+    solution_depth: SolutionDepth = SolutionDepth.obstacles,
     include_route_elements: bool = False,
     include_occupants: bool = False,
     include_media: bool = False,

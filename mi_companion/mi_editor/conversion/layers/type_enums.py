@@ -1,9 +1,9 @@
 from enum import Enum
 
-__all__ = ["LocationTypeEnum"]
+__all__ = ["BackendLocationTypeEnum"]
 
 
-class LocationTypeEnum(Enum):
+class BackendLocationTypeEnum(Enum):
     ROOM = "rooms"
     POI = "pois"
     AREA = "areas"

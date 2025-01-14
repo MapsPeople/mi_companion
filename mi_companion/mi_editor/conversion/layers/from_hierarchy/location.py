@@ -1,6 +1,6 @@
 import logging
 import uuid
-from typing import Any, Collection, Mapping, Optional
+from typing import Any, Collection, List, Mapping, Optional
 
 from jord.qgis_utilities.conversion.features import feature_to_shapely, parse_q_value
 
@@ -16,7 +16,7 @@ from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (
     extract_custom_props,
 )
-from mi_companion.mi_editor.conversion.layers.type_enums import LocationTypeEnum
+from mi_companion.mi_editor.conversion.layers.type_enums import BackendLocationTypeEnum
 from mi_companion.qgis_utilities import is_str_value_null_like
 from ...projection import prepare_geom_for_mi_db
 
@@ -37,7 +37,11 @@ def add_floor_locations(
     location_group_items: Any,
     solution: Solution,
     floor_key: str,
-    location_type: LocationTypeEnum,
+    backend_location_type: BackendLocationTypeEnum,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
 ) -> None:
     layer = location_group_items.layer()
     if layer:
@@ -65,10 +69,22 @@ def add_floor_locations(
                 if read_bool_setting(
                     "ALLOW_LOCATION_TYPE_CREATION"
                 ):  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
-                    location_type_key = solution.add_location_type(location_type_name)
+
+                    try:
+                        location_type_key = solution.add_location_type(
+                            location_type_name
+                        )
+                    except Exception as e:
+                        _invalid = f"{location_type_name=} is invalid {e}"
+                        logger.error(_invalid)
+                        if collect_invalid:
+                            issues.append(_invalid)
+                        else:
+                            raise e
+
                 else:
                     raise ValueError(
-                        f"{location_type_key} is not a valid location type"
+                        f"{location_type_key} is not a location type that already exists"
                     )
 
             custom_props = extract_custom_props(feature_attributes)
@@ -204,12 +220,22 @@ def add_floor_locations(
                                         if read_bool_setting(
                                             "ALLOW_CATEGORY_TYPE_CREATION"
                                         ):  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
-                                            category_key = solution.add_category(
-                                                category_name
-                                            )
+                                            try:
+                                                category_key = solution.add_category(
+                                                    category_name
+                                                )
+                                            except Exception as e:
+                                                _invalid = (
+                                                    f"{category_name=} is invalid {e}"
+                                                )
+                                                logger.error(_invalid)
+                                                if collect_invalid:
+                                                    issues.append(_invalid)
+                                                else:
+                                                    raise e
                                         else:
                                             raise ValueError(
-                                                f"{category_key} is not a valid category"
+                                                f"{category_key} is not a category that already exists"
                                             )
                                     cat_keys.append(category_key)
                                 else:
@@ -223,24 +249,33 @@ def add_floor_locations(
 
                 shapely_geom = prepare_geom_for_mi_db(location_geometry)
 
-                if location_type == LocationTypeEnum.ROOM:
-                    location_key = solution.add_room(
-                        polygon=shapely_geom,
-                        **common_kvs,
-                    )
-                elif location_type == LocationTypeEnum.AREA:
-                    location_key = solution.add_area(
-                        polygon=shapely_geom,
-                        **common_kvs,
-                    )
-                elif location_type == LocationTypeEnum.POI:
-                    location_key = solution.add_point_of_interest(
-                        point=shapely_geom, **common_kvs
-                    )
-                else:
-                    raise Exception(f"{location_type=} is unknown")
-                if VERBOSE:
-                    logger.info(f"added {location_type} {location_key}")
+                try:
+                    if backend_location_type == BackendLocationTypeEnum.ROOM:
+                        location_key = solution.add_room(
+                            polygon=shapely_geom,
+                            **common_kvs,
+                        )
+                    elif backend_location_type == BackendLocationTypeEnum.AREA:
+                        location_key = solution.add_area(
+                            polygon=shapely_geom,
+                            **common_kvs,
+                        )
+                    elif backend_location_type == BackendLocationTypeEnum.POI:
+                        location_key = solution.add_point_of_interest(
+                            point=shapely_geom, **common_kvs
+                        )
+                    else:
+                        raise Exception(f"{backend_location_type=} is unknown")
+
+                    if VERBOSE:
+                        logger.info(f"added {backend_location_type} {location_key}")
+                except Exception as e:
+                    _invalid = f"Invalid location: {e}"
+                    logger.error(_invalid)
+                    if collect_invalid:
+                        issues.append(_invalid)
+                    else:
+                        raise e
 
 
 def extract_field_value(feature_attributes: Mapping[str, Any], field_name: str) -> Any:
@@ -276,31 +311,56 @@ def add_floor_contents(
     solution: Solution,
     graph_key: Optional[str] = None,  # TODO: UNUSED
     floor_index: Optional[int] = None,  # TODO: UNUSED
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
 ) -> None:
     for location_group_item in floor_group_items.children():
         if (
             isinstance(location_group_item, QgsLayerTreeLayer)
-            and LocationTypeEnum.ROOM.value in location_group_item.name()
+            and BackendLocationTypeEnum.ROOM.value in location_group_item.name()
             and floor_key is not None
         ):
             add_floor_locations(
-                location_group_item, solution, floor_key, LocationTypeEnum.ROOM
+                location_group_item,
+                solution,
+                floor_key,
+                BackendLocationTypeEnum.ROOM,
+                issues=issues,
+                collect_invalid=collect_invalid,
+                collect_warnings=collect_warnings,
+                collect_errors=collect_errors,
             )
 
         if (
             isinstance(location_group_item, QgsLayerTreeLayer)
-            and LocationTypeEnum.POI.value in location_group_item.name()
+            and BackendLocationTypeEnum.POI.value in location_group_item.name()
             and floor_key is not None
         ):
             add_floor_locations(
-                location_group_item, solution, floor_key, LocationTypeEnum.POI
+                location_group_item,
+                solution,
+                floor_key,
+                BackendLocationTypeEnum.POI,
+                issues=issues,
+                collect_invalid=collect_invalid,
+                collect_warnings=collect_warnings,
+                collect_errors=collect_errors,
             )
 
         if (
             isinstance(location_group_item, QgsLayerTreeLayer)
-            and LocationTypeEnum.AREA.value in location_group_item.name()
+            and BackendLocationTypeEnum.AREA.value in location_group_item.name()
             and floor_key is not None
         ):
             add_floor_locations(
-                location_group_item, solution, floor_key, LocationTypeEnum.AREA
+                location_group_item,
+                solution,
+                floor_key,
+                BackendLocationTypeEnum.AREA,
+                issues=issues,
+                collect_invalid=collect_invalid,
+                collect_warnings=collect_warnings,
+                collect_errors=collect_errors,
             )

@@ -28,7 +28,6 @@ def revert_venues(
 
     :param original_solution_venues:
     :param mi_hierarchy_group_name:
-    :param settings:
     :param progress_bar:
     :return:
     """
@@ -123,5 +122,5 @@ def revert_venues(
                             original_solution_venues[solution_external_id][
                                 venue_attributes["external_id"]
                             ],
-                            sync_level=SyncLevel.VENUE,
+                            sync_level=SyncLevel.venue,
                         )

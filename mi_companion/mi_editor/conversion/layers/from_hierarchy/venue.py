@@ -57,12 +57,16 @@ def convert_solution_venues(
     solution_occupants_enabled: bool,
     ith_solution: int,
     num_solution_elements: int,
-    solution_depth: SolutionDepth = SolutionDepth.OBSTACLES,
+    solution_depth: SolutionDepth = SolutionDepth.obstacles,
     include_route_elements: bool = False,
     include_occupants: bool = False,
     include_media: bool = False,
     include_graph: bool = False,
     upload_venues: bool = True,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
 ) -> List[Solution]:
     solution_group_children = mi_group_child.children()
     num_solution_group_elements = len(solution_group_children)
@@ -101,7 +105,14 @@ def convert_solution_venues(
             solution = copy.deepcopy(existing_solution)
 
         if VENUE_DESCRIPTOR in solution_group_item.name():
-            venue_key = get_venue_key(solution, solution_group_item)
+            venue_key = get_venue_key(
+                solution,
+                solution_group_item,
+                issues=issues,
+                collect_invalid=collect_invalid,
+                collect_warnings=collect_warnings,
+                collect_errors=collect_errors,
+            )
 
             if venue_key is None:
                 logger.warning(
@@ -118,11 +129,48 @@ def convert_solution_venues(
                 solution=solution,
                 solution_group_item=solution_group_item,
                 venue_key=venue_key,
+                issues=issues,
+                collect_invalid=collect_invalid,
+                collect_warnings=collect_warnings,
+                collect_errors=collect_errors,
             )
 
         post_process_solution(solution)
 
-        if upload_venues:
+        if collect_invalid:
+            assert upload_venues is False, "Cannot upload venues if collecting invalid"
+            title = f"Validation {venue_key}"
+            if issues:
+                QtWidgets.QMessageBox.information(
+                    None, title, "- " + "\n\n- ".join(issues)
+                )
+            else:
+                QtWidgets.QMessageBox.information(None, title, "No issues found")
+
+            issue_points = []
+            for issue in issues:
+                if isinstance(issue, str):
+                    logger.error(issue)
+                else:
+                    logger.error(f"{issue=}")
+                    issue_points.append(issue)
+
+            if issue_points:
+                ...
+                # qgis_instance_handle.iface.mapCanvas().setSelection(            issue_points            )
+                # add_shapely_layer(qgis_instance_handle=qgis_instance_handle, geoms=issue_points)
+                # TODO: Add  shapely layer with issues
+
+        elif upload_venues:
+            assert (
+                len(issues) == 0
+                and not collect_invalid
+                and not collect_warnings
+                and not collect_errors
+            ), (
+                f"Did not expect issues: {issues=}, {collect_invalid=}, {collect_warnings=}, {collect_errors=}, "
+                f"cannot upload!"
+            )
             sync_build_venue_solution(
                 qgis_instance_handle=qgis_instance_handle,
                 include_graph=include_graph,
@@ -140,7 +188,14 @@ def convert_solution_venues(
     return solutions
 
 
-def get_venue_key(solution: Solution, venue_group_items: Any) -> Optional[str]:
+def get_venue_key(
+    solution: Solution,
+    venue_group_items: Any,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
+) -> Optional[str]:
     for venue_level_item in venue_group_items.children():
         layer_type_test = isinstance(venue_level_item, QgsLayerTreeLayer)
         layer_name = str(venue_level_item.name()).lower().strip()
@@ -164,18 +219,29 @@ def get_venue_key(solution: Solution, venue_group_items: Any) -> Optional[str]:
             geom_shapely = feature_to_shapely(layer_feature)
             if geom_shapely:
                 custom_props = extract_custom_props(layer_attributes)
-                return solution.add_venue(
-                    admin_id=admin_id,
-                    external_id=external_id,
-                    name=name,
-                    polygon=prepare_geom_for_mi_db(geom_shapely),
-                    venue_type=venue_type,
-                    last_verified=last_verified,
-                    custom_properties=(
-                        custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
-                    ),
-                    address=address,
-                )
+                try:
+                    venue_key = solution.add_venue(
+                        admin_id=admin_id,
+                        external_id=external_id,
+                        name=name,
+                        polygon=prepare_geom_for_mi_db(geom_shapely),
+                        venue_type=venue_type,
+                        last_verified=last_verified,
+                        custom_properties=(
+                            custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
+                        ),
+                        address=address,
+                    )
+                except Exception as e:
+                    _invalid = f"Invalid venue: {e}"
+                    logger.error(_invalid)
+                    if collect_invalid:
+                        issues.append(_invalid)
+                        return None
+                    else:
+                        raise e
+
+                return venue_key
 
     logger.error(f"Did not find venue in {venue_group_items.children()=}")
 

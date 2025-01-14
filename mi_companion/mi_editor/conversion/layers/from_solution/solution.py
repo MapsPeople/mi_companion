@@ -242,7 +242,7 @@ def solution_venue_to_layer_hierarchy(
     include_media: bool = False,
     include_route_elements: bool = True,
     include_graph: bool = True,
-    depth: SolutionDepth = SolutionDepth.OBSTACLES,
+    depth: SolutionDepth = SolutionDepth.obstacles,
 ) -> Solution:
     """
     Return solution and created widget objects

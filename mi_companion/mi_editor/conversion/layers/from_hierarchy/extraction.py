@@ -107,6 +107,7 @@ def extract_layer_data_single(layer_tree_layer: Any) -> Tuple:
                     layer_feature.attributes(),
                 )
             }
+
             if len(layer_feature_attributes) == 0:
                 logger.error(
                     f"Did not find attributes, skipping {layer_tree_layer.name()} {list(geometry_layer.getFeatures())}"
@@ -115,6 +116,7 @@ def extract_layer_data_single(layer_tree_layer: Any) -> Tuple:
                 logger.info(
                     f"found {layer_feature_attributes=} for {layer_tree_layer.name()=}"
                 )
+
             return layer_feature_attributes, layer_feature
 
     raise MissingFeatureError(f"no feature was not found for {layer_tree_layer.name()}")

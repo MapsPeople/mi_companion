@@ -1,7 +1,7 @@
 import logging
 import operator
 from collections import defaultdict
-from typing import Any
+from typing import Any, List, Optional
 
 from jord.qgis_utilities.conversion.features import (
     GeometryIsEmptyError,
@@ -53,7 +53,16 @@ __all__ = [
 ]
 
 
-def add_doors(*, graph_key: str, door_layer_tree_node: Any, solution: Solution) -> None:
+def add_doors(
+    *,
+    graph_key: str,
+    door_layer_tree_node: Any,
+    solution: Solution,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
+) -> None:
     doors_linestring_layer = door_layer_tree_node.layer()
     for door_feature in doors_linestring_layer.getFeatures():
         door_attributes = {
@@ -96,7 +105,13 @@ def add_doors(*, graph_key: str, door_layer_tree_node: Any, solution: Solution) 
 
 
 def add_barriers(
-    graph_key: str, barrier_layer_tree_node: Any, solution: Solution
+    graph_key: str,
+    barrier_layer_tree_node: Any,
+    solution: Solution,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
 ) -> None:
     barriers_linestring_layer = barrier_layer_tree_node.layer()
     for barrier_feature in barriers_linestring_layer.getFeatures():
@@ -127,7 +142,15 @@ def add_barriers(
             logger.error(f"{barrier_linestring=}")
 
 
-def add_avoids(graph_key: str, avoid_layer_tree_node: Any, solution: Solution) -> None:
+def add_avoids(
+    graph_key: str,
+    avoid_layer_tree_node: Any,
+    solution: Solution,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
+) -> None:
     avoids_linestring_layer = avoid_layer_tree_node.layer()
     for avoid_feature in avoids_linestring_layer.getFeatures():
         avoid_attributes = {
@@ -160,7 +183,13 @@ def add_avoids(graph_key: str, avoid_layer_tree_node: Any, solution: Solution) -
 
 
 def add_prefers(
-    graph_key: str, prefer_layer_tree_node: Any, solution: Solution
+    graph_key: str,
+    prefer_layer_tree_node: Any,
+    solution: Solution,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
 ) -> None:
     prefers_linestring_layer = prefer_layer_tree_node.layer()
     for prefer_feature in prefers_linestring_layer.getFeatures():
@@ -193,7 +222,13 @@ def add_prefers(
 
 
 def add_obstacles(
-    graph_key: str, obstacle_layer_tree_node: Any, solution: Solution
+    graph_key: str,
+    obstacle_layer_tree_node: Any,
+    solution: Solution,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
 ) -> None:
     obstacles_linestring_layer = obstacle_layer_tree_node.layer()
     for obstacle_feature in obstacles_linestring_layer.getFeatures():
@@ -226,7 +261,13 @@ def add_obstacles(
 
 
 def add_entry_points(
-    graph_key: str, entry_point_layer_tree_node: Any, solution: Solution
+    graph_key: str,
+    entry_point_layer_tree_node: Any,
+    solution: Solution,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
 ) -> None:
     entry_points_linestring_layer = entry_point_layer_tree_node.layer()
     for entry_point_feature in entry_points_linestring_layer.getFeatures():
@@ -256,13 +297,22 @@ def add_entry_points(
         entry_point_geom = feature_to_shapely(entry_point_feature)
 
         if entry_point_geom is not None:
-            entry_point_key = solution.add_entry_point(
-                entry_point_attributes["admin_id"],
-                point=prepare_geom_for_mi_db(entry_point_geom),
-                entry_point_type=EntryPointType(entry_point_type),
-                floor_index=int(entry_point_attributes["floor_index"]),
-                graph_key=graph_key,
-            )
+            try:
+                entry_point_key = solution.add_entry_point(
+                    entry_point_attributes["admin_id"],
+                    point=prepare_geom_for_mi_db(entry_point_geom),
+                    entry_point_type=EntryPointType(entry_point_type),
+                    floor_index=int(entry_point_attributes["floor_index"]),
+                    graph_key=graph_key,
+                )
+            except Exception as e:
+                _invalid = f"Invalid entry point: {e}"
+                logger.error(_invalid)
+                if collect_invalid:
+                    issues.append(_invalid)
+                    continue
+                else:
+                    raise e
             if VERBOSE:
                 logger.info("added entry_point", entry_point_key)
         else:
@@ -321,7 +371,15 @@ def get_connections(connections_layer_tree_node: Any) -> dict:  # TODO: FINISH!
     return connections
 
 
-def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> None:
+def add_route_elements(
+    graph_key: str,
+    graph_group: Any,
+    solution: Solution,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
+) -> None:
     if read_bool_setting("ADD_ROUTE_ELEMENTS") and graph_key is not None:
         for ith_graph_group_item, graph_group_item in enumerate(graph_group.children()):
             if MAKE_FLOOR_WISE_LAYERS:
@@ -334,6 +392,10 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                             graph_key=graph_key,
                             door_layer_tree_node=sub_graph_group_item,
                             solution=solution,
+                            issues=issues,
+                            collect_invalid=collect_invalid,
+                            collect_warnings=collect_warnings,
+                            collect_errors=collect_errors,
                         )
                 else:
                     logger.debug(f"Skipped adding {DOORS_DESCRIPTOR}")
@@ -347,6 +409,10 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                             graph_key=graph_key,
                             barrier_layer_tree_node=sub_graph_group_item,
                             solution=solution,
+                            issues=issues,
+                            collect_invalid=collect_invalid,
+                            collect_warnings=collect_warnings,
+                            collect_errors=collect_errors,
                         )
                 else:
                     logger.debug(f"Skipped adding {BARRIERS_DESCRIPTOR}")
@@ -360,6 +426,10 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                             graph_key=graph_key,
                             avoid_layer_tree_node=sub_graph_group_item,
                             solution=solution,
+                            issues=issues,
+                            collect_invalid=collect_invalid,
+                            collect_warnings=collect_warnings,
+                            collect_errors=collect_errors,
                         )
                 else:
                     logger.debug(f"Skipped adding {AVOIDS_DESCRIPTOR}")
@@ -373,6 +443,10 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                             graph_key=graph_key,
                             prefer_layer_tree_node=sub_graph_group_item,
                             solution=solution,
+                            issues=issues,
+                            collect_invalid=collect_invalid,
+                            collect_warnings=collect_warnings,
+                            collect_errors=collect_errors,
                         )
                 else:
                     logger.debug(f"Skipped adding {PREFERS_DESCRIPTOR}")
@@ -386,6 +460,10 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                             graph_key=graph_key,
                             obstacle_layer_tree_node=sub_graph_group_item,
                             solution=solution,
+                            issues=issues,
+                            collect_invalid=collect_invalid,
+                            collect_warnings=collect_warnings,
+                            collect_errors=collect_errors,
                         )
                 else:
                     logger.debug(f"Skipped adding {OBSTACLES_DESCRIPTOR}")
@@ -399,6 +477,10 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                             graph_key=graph_key,
                             entry_point_layer_tree_node=sub_graph_group_item,
                             solution=solution,
+                            issues=issues,
+                            collect_invalid=collect_invalid,
+                            collect_warnings=collect_warnings,
+                            collect_errors=collect_errors,
                         )
                 else:
                     logger.debug(f"Skipped adding {ENTRY_POINTS_DESCRIPTOR}")
@@ -416,7 +498,15 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                         for k, v in connections.items():
                             connections_agg[k].extend(v)
 
-                    assemble_connections(connections_agg, solution, graph_key)
+                    assemble_connections(
+                        connections_agg,
+                        solution,
+                        graph_key,
+                        issues=issues,
+                        collect_invalid=collect_invalid,
+                        collect_warnings=collect_warnings,
+                        collect_errors=collect_errors,
+                    )
                 else:
                     logger.debug(f"Skipped adding {CONNECTORS_DESCRIPTOR}")
             else:
@@ -428,6 +518,10 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                         graph_key=graph_key,
                         door_layer_tree_node=graph_group_item,
                         solution=solution,
+                        issues=issues,
+                        collect_invalid=collect_invalid,
+                        collect_warnings=collect_warnings,
+                        collect_errors=collect_errors,
                     )
                 else:
                     logger.debug(f"Skipped adding {DOORS_DESCRIPTOR}")
@@ -440,6 +534,10 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                         graph_key=graph_key,
                         barrier_layer_tree_node=graph_group_item,
                         solution=solution,
+                        issues=issues,
+                        collect_invalid=collect_invalid,
+                        collect_warnings=collect_warnings,
+                        collect_errors=collect_errors,
                     )
                 else:
                     logger.debug(f"Skipped adding {BARRIERS_DESCRIPTOR}")
@@ -452,6 +550,10 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                         graph_key=graph_key,
                         avoid_layer_tree_node=graph_group_item,
                         solution=solution,
+                        issues=issues,
+                        collect_invalid=collect_invalid,
+                        collect_warnings=collect_warnings,
+                        collect_errors=collect_errors,
                     )
                 else:
                     logger.debug(f"Skipped adding {AVOIDS_DESCRIPTOR}")
@@ -464,6 +566,10 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                         graph_key=graph_key,
                         prefer_layer_tree_node=graph_group_item,
                         solution=solution,
+                        issues=issues,
+                        collect_invalid=collect_invalid,
+                        collect_warnings=collect_warnings,
+                        collect_errors=collect_errors,
                     )
                 else:
                     logger.debug(f"Skipped adding {PREFERS_DESCRIPTOR}")
@@ -476,6 +582,10 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                         graph_key=graph_key,
                         obstacle_layer_tree_node=graph_group_item,
                         solution=solution,
+                        issues=issues,
+                        collect_invalid=collect_invalid,
+                        collect_warnings=collect_warnings,
+                        collect_errors=collect_errors,
                     )
                 else:
                     logger.debug(f"Skipped adding {OBSTACLES_DESCRIPTOR}")
@@ -488,6 +598,10 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                         graph_key=graph_key,
                         entry_point_layer_tree_node=graph_group_item,
                         solution=solution,
+                        issues=issues,
+                        collect_invalid=collect_invalid,
+                        collect_warnings=collect_warnings,
+                        collect_errors=collect_errors,
                     )
                 else:
                     logger.debug(f"Skipped adding {ENTRY_POINTS_DESCRIPTOR}")
@@ -499,12 +613,29 @@ def add_route_elements(graph_key: str, graph_group: Any, solution: Solution) -> 
                     connections = get_connections(
                         connections_layer_tree_node=graph_group_item,
                     )
-                    assemble_connections(connections, solution, graph_key)
+                    assemble_connections(
+                        connections,
+                        solution,
+                        graph_key,
+                        issues=issues,
+                        collect_invalid=collect_invalid,
+                        collect_warnings=collect_warnings,
+                        collect_errors=collect_errors,
+                    )
                 else:
                     logger.debug(f"Skipped adding {CONNECTORS_DESCRIPTOR}")
 
 
-def assemble_connections(connections, solution, graph_key):
+def assemble_connections(
+    connections,
+    solution,
+    graph_key,
+    *,
+    collect_invalid: bool = False,
+    collect_warnings: bool = False,
+    collect_errors: bool = False,
+    issues: Optional[List[str]] = None,
+):
     for connection_id, connector_tuples in connections.items():
         inner_connector_tuples, connection_types = zip(*connector_tuples)
 
@@ -527,11 +658,22 @@ def assemble_connections(connections, solution, graph_key):
                 )
             )
 
-        connector_key = solution.add_connection(
-            connection_id,
-            connectors=connectors,
-            connection_type=ConnectionType(connection_type),
-            graph_key=graph_key,
-        )
-        if VERBOSE:
-            logger.info("added connector", connector_key)
+        try:
+            connector_key = solution.add_connection(
+                connection_id,
+                connectors=connectors,
+                connection_type=ConnectionType(connection_type),
+                graph_key=graph_key,
+            )
+
+            if VERBOSE:
+                logger.info("added connector", connector_key)
+
+        except Exception as e:
+            _invalid = f"Invalid connection: {e}"
+            logger.error(_invalid)
+            if collect_invalid:
+                issues.append(_invalid)
+                continue
+            else:
+                raise e

@@ -1,7 +1,9 @@
 #!/usr/bin/python
 import logging
 
-from integration_system.validation import validate_venue
+from jord.qgis_utilities.helpers import InjectedProgressBar
+
+from mi_companion.mi_editor import convert_solution_layers_to_solution
 
 logger = logging.getLogger(__name__)
 
@@ -16,33 +18,28 @@ from qgis.core import (
 
 def run() -> None:
     """
-    Transform geometry for all features in the selected group
-
-    WARNING! Settings -> Options -> MapsIndoor Beta -> "REPROJECT_SHAPES" must be set to "True"
-
-    0: Linear:            Linear transform    ( min. 3 GCPs )
-    1: Helmert:           Helmert transform   ( min. 3 GCPs )
-    2: PolynomialOrder1:  Polynomial order 1  ( min. 3 GCPs )
-    3: PolynomialOrder2:  Polyonmial order 2  ( min. 6 GCPs )
-    4: PolynomialOrder3:  Polynomial order 3  ( min. 10 GCPs )
-    5: ThinPlateSpline:   Thin plate splines
-    6: Projective:        Projective
-    65535:                InvalidTransform: Invalid transform
-
-
-    :param gcp_points_file_path: The path to the file containing the GCPs
-    :param method: Which method to use for the transformation
-    :return:
+    Validate the hierarchy of the solution layers.
     """
+
+    # noinspection PyUnresolvedReferences
+    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
     # noinspection PyUnresolvedReferences
     from qgis.utils import iface
 
-    selected_nodes = iface.layerTreeView().selectedNodes()
+    from mi_companion import MI_HIERARCHY_GROUP_NAME
 
-    if len(selected_nodes) > 0:
-        for n in iter(selected_nodes):
-            validate_venue(n)
-    else:
-        logger.error(f"Number of selected nodes was {len(selected_nodes)}")
-        logger.error(f"Please select node in the layer tree")
+    qgis_instance_handle = QgsProject.instance()
+
+    layer_tree_root = QgsProject.instance().layerTreeRoot()
+
+    mi_group = layer_tree_root.findGroup(MI_HIERARCHY_GROUP_NAME)
+
+    with InjectedProgressBar(parent=iface.mainWindow().statusBar()) as progress_bar:
+        solutions = convert_solution_layers_to_solution(
+            qgis_instance_handle,
+            progress_bar=progress_bar,
+            mi_group=mi_group,
+            upload_venues=False,
+            collect_invalid=True,
+        )

@@ -34,8 +34,6 @@ from mi_companion.mi_editor.conversion.projection import (
 
 logger = logging.getLogger(__name__)
 
-USE_EXISTING_GRAPH = True
-
 
 def sync_build_venue_solution(
     *,
@@ -154,10 +152,14 @@ def sync_build_venue_solution(
 
         return False
 
-    sync_level = SyncLevel.VENUE
+    sync_level = SyncLevel.venue
+
     strategy = dict(default_strategy())
-    if USE_EXISTING_GRAPH:
+    if not (
+        read_bool_setting("UPDATE_GRAPH") and read_bool_setting("UPLOAD_OSM_GRAPH")
+    ):
         strategy[Graph] = default_matcher, None  # Do not update graph
+
     success = synchronize(
         solution,
         sync_level=sync_level,
@@ -177,12 +179,11 @@ def sync_build_venue_solution(
             else None
         ),
         depth=solution_depth,
-        include_route_elements=read_bool_setting(
-            "ADD_ROUTE_ELEMENTS"
-        ),  # include_route_elements,
+        include_route_elements=read_bool_setting("ADD_ROUTE_ELEMENTS")
+        and include_route_elements,
         include_occupants=include_occupants,
         include_media=include_media,
-        include_graph=read_bool_setting("ADD_GRAPH"),  # include_graph,
+        include_graph=read_bool_setting("ADD_GRAPH") and include_graph,
         operation_solver=strategy_solver(
             sync_level=sync_level, depth=solution_depth, strategy=strategy
         ),
@@ -248,16 +249,47 @@ def show_differences(
                     operation_counter
                 )  # TODO: ALL OF THIS CAN BE IMPROVED! WITH SOME proper IDs
 
-                differences[diff_op_ith] = shapely.wkt.loads(
-                    i.replace("\n", "")[0].replace("\n", "").strip()
-                )  # Also one parses a single geom per operation
-                if is_multi(differences[diff_op_ith]):
-                    rep_points = []
-                    for g in differences[diff_op_ith].geoms:
-                        rep_points.append(g.representative_point())
-                    differences[f"{diff_op_ith}_coherence"] = shapely.LineString(
-                        rep_points
+                geom_wkt = i.replace("\n", "")[0].replace("\n", "").strip()
+
+                if geom_wkt == "":
+                    logger.warning(
+                        f"Empty geometry WKT for operation: {o.operation_type.name} {o.item_type.__name__}, skipping, "
+                        f"{i}"
                     )
+                    try:
+                        differences[diff_op_ith] = shapely.wkt.loads(
+                            i
+                        )  # Also one parses a single geom per operation
+                        if is_multi(differences[diff_op_ith]):
+                            rep_points = []
+                            for g in differences[diff_op_ith].geoms:
+                                rep_points.append(g.representative_point())
+
+                            differences[f"{diff_op_ith}_coherence"] = (
+                                shapely.LineString(rep_points)
+                            )
+                    except:
+                        logger.error(f"Error parsing geometry WKT: {i}")
+
+                else:
+                    try:
+                        differences[diff_op_ith] = shapely.wkt.loads(
+                            geom_wkt
+                        )  # Also one parses a single geom per operation
+                        if is_multi(differences[diff_op_ith]):
+                            rep_points = []
+                            for g in differences[diff_op_ith].geoms:
+                                rep_points.append(g.representative_point())
+
+                            differences[f"{diff_op_ith}_coherence"] = (
+                                shapely.LineString(rep_points)
+                            )
+                    except:
+                        logger.error(f"Error parsing geometry WKT: {geom_wkt}")
+
+        logger.warning(
+            f"Operation: {o.operation_type.name} {o.item_type.__name__} differences: {differences}"
+        )
 
         try:
             import geopandas
@@ -277,5 +309,6 @@ def show_differences(
                 group=venue_difference_group,
                 crs=f"EPSG:{MI_EPSG_NUMBER}",
             )
+
         except Exception as e:  # TODO: HANDLE Mixed GEOM TYPES!
             logger.error(e)
