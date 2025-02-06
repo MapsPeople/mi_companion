@@ -52,7 +52,9 @@ PLUGIN_REPOSITORY = read_repository_from_metadata(METADATA_FILE)
 
 BUNDLED_PACKAGES_DIR = "mi_companion_bundle"
 
-if not PLUGIN_DIR.is_symlink():
+if not PLUGIN_DIR.is_symlink() or (
+    not (Path(__file__).parent.parent / BUNDLED_PACKAGES_DIR).exists()
+):
     BUNDLED_PACKAGES_DIR += f".{VERSION}"
     logger.info(
         f"Installed version of plugin detected, targeting {BUNDLED_PACKAGES_DIR}"

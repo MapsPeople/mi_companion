@@ -3,7 +3,7 @@ name=MapsIndoors Beta
 description=GDS tooling
 
 qgisMinimumVersion=3.36
-#qgisMaximumVersion=3.38
+qgisMaximumVersion=3.99
 version=0.6.1
 
 author=heider
@@ -22,6 +22,7 @@ server=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
+
 experimental=False
 hasProcessingProvider=no
 

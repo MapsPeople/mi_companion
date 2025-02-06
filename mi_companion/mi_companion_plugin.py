@@ -28,6 +28,8 @@ from .constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 
 logger = logging.getLogger(__name__)
 
+# my_plugin = qgis.utils.plugins['MapsIndoors Beta']
+
 try:
     from jord.qt_utilities import DockWidgetAreaFlag
     from jord.qgis_utilities.helpers import signals

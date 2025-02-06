@@ -2,9 +2,6 @@ import logging
 from logging import config
 from pathlib import Path
 
-import google.auth.exceptions
-import google.cloud
-import google.cloud.logging
 import yaml
 
 # noinspection PyUnresolvedReferences
@@ -47,8 +44,12 @@ def setup_logging(
                 print("Error in Logging Configuration. Using default configs")
                 logging.basicConfig(level=default_level)
 
-        if True:
+        if False:
             try:
+                import google.auth.exceptions
+                import google.cloud
+                import google.cloud.logging
+
                 client = google.cloud.logging.Client()
                 client.setup_logging(name="iasjfiasjfisaj")
                 print("Sending logs to Google Cloud")
