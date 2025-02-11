@@ -153,7 +153,7 @@ def add_graph_edges(
     # TODO: ADD graph_bounds from a poly layer
 
     try:
-        osm_xml = lines_to_osm_xml(horizontals, verticals=verticals).decode(
+        osm_xml = lines_to_osm_xml(horizontals=horizontals, verticals=verticals).decode(
             "utf-8"
         )  # OSMNX HAS SOME WEIRD BUGS!
     except Exception as e:

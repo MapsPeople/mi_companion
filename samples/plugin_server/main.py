@@ -1,9 +1,9 @@
 import logging
 import os
 import tempfile
+import typing
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Callable
 
 from flask import Flask, redirect, send_from_directory
 from google.cloud import storage
@@ -34,7 +34,7 @@ def authenticate() -> Response:
     )
 
 
-def requires_auth(f) -> Callable:
+def requires_auth(f) -> typing.Callable:
     @wraps(f)
     def decorated(*args, **kwargs) -> Response:
         auth = request.authorization

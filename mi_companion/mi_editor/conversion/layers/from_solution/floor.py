@@ -120,4 +120,5 @@ def add_floor_layers(
 
             assert floor_layer is not None
             make_field_unique(floor_layer)
+            # set3dviewsettings()
             # TODO: Use SolutionItem Annotations for field constraints

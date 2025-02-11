@@ -31,3 +31,5 @@ plugin_dependencies=Memory Layer Saver,First Aid
 
 # Tags are comma separated with spaces allowed
 tags=python, mapsindoors, companion, shapely
+
+changelog=

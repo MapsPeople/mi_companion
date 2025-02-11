@@ -125,50 +125,51 @@ def add_graph_layers(
                     )
 
                 graph_lines_layer_vertical = None
-                if verticals:
-                    vertical_lines, vertical_lines_meta_data = verticals
+                if False:
+                    if verticals:
+                        vertical_lines, vertical_lines_meta_data = verticals
 
-                    vertical_points = []
-                    vertical_points_meta_data = []
+                        vertical_points = []
+                        vertical_points_meta_data = []
 
-                    for ith, (line, meta_data) in enumerate(
-                        zip(vertical_lines, vertical_lines_meta_data)
-                    ):
-                        meta_data["vertical_id"] = meta_data["osmid"]
-                        if False:
-                            levels = meta_data["level"].split(";")
+                        for ith, (line, meta_data) in enumerate(
+                            zip(vertical_lines, vertical_lines_meta_data)
+                        ):
+                            meta_data["vertical_id"] = meta_data["osmid"]
+                            if False:
+                                levels = meta_data["level"].split(";")
 
-                            coords = line.coords
-                            num_coords = len(coords)
+                                coords = line.coords
+                                num_coords = len(coords)
 
-                            for ith_c, c in enumerate(coords):
-                                meta_data_copy = meta_data.copy()
-                                vertical_points.append(shapely.geometry.Point(c))
-                                if ith_c >= num_coords - 1:
-                                    meta_data_copy["level"] = levels[-1]
-                                else:
-                                    meta_data_copy["level"] = levels[ith_c]
-                                vertical_points_meta_data.append(meta_data_copy)
-                        else:
-                            ...
+                                for ith_c, c in enumerate(coords):
+                                    meta_data_copy = meta_data.copy()
+                                    vertical_points.append(shapely.geometry.Point(c))
+                                    if ith_c >= num_coords - 1:
+                                        meta_data_copy["level"] = levels[-1]
+                                    else:
+                                        meta_data_copy["level"] = levels[ith_c]
+                                    vertical_points_meta_data.append(meta_data_copy)
+                            else:
+                                ...
 
-                    graph_lines_layer_vertical = add_shapely_layer(
-                        qgis_instance_handle=qgis_instance_handle,
-                        geoms=vertical_points,
-                        name=NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
-                        group=graph_group,
-                        columns=vertical_points_meta_data,
-                        categorise_by_attribute="vertical_id",
-                        visible=read_bool_setting(
-                            "SHOW_GRAPH_ON_LOAD",
-                        ),
-                        crs=solve_target_crs_authid(),
-                    )
-
-                    for field_name in ("vertical_id",):
-                        make_field_not_null(
-                            graph_lines_layer_vertical, field_name=field_name
+                        graph_lines_layer_vertical = add_shapely_layer(
+                            qgis_instance_handle=qgis_instance_handle,
+                            geoms=vertical_points,
+                            name=NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
+                            group=graph_group,
+                            columns=vertical_points_meta_data,
+                            categorise_by_attribute="vertical_id",
+                            visible=read_bool_setting(
+                                "SHOW_GRAPH_ON_LOAD",
+                            ),
+                            crs=solve_target_crs_authid(),
                         )
+
+                        for field_name in ("vertical_id",):
+                            make_field_not_null(
+                                graph_lines_layer_vertical, field_name=field_name
+                            )
 
             # TODO: ADD graph_bounds to a poly layer
             for a in (
@@ -176,7 +177,7 @@ def add_graph_layers(
                 graph_lines_layer_vertical,
             ):  # TODO: Vertical level based in node context rather than edge
                 # context, because edge context is wrong ATM
-                if a:
+                if a is not None:
                     for field_name in ("level", "abutters", "highway"):
                         make_field_not_null(a, field_name=field_name)
 
