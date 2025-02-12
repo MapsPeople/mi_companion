@@ -44,7 +44,13 @@ repos:
         verbose: true
         #exclude: ^tests/
         entry: bash -c 'mypy "$@" || true' -- # only print
-        additional_dependencies: [tokenize-rt==3.2.0]
+        additional_dependencies:
+          [
+            tokenize-rt>=3.2.0,
+            mypy-extensions>=0.4.3,
+            typing-extensions>=4.0.1,
+            types-PyYAML>=5.4.6,
+          ]
         #args: [ --strict ]
 
   - repo: https://github.com/pycqa/flake8
