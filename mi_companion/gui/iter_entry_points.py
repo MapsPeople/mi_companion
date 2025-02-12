@@ -1,6 +1,6 @@
 import logging
 import pkgutil
-from typing import Dict
+from typing import Callable, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -9,7 +9,7 @@ def get_entry_points(
     module_: object,
     entry_point_name_field: str = "ENTRY_POINT_NAME",
     entry_point_callable_field: str = "ENTRY_POINT_DIALOG",
-) -> Dict[str, callable]:
+) -> Dict[str, Callable]:
     entry_points_ = {}
     import importlib
 

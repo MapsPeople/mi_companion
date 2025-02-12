@@ -2,7 +2,7 @@ import logging
 import math
 import os
 from collections import defaultdict
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 from jord.qgis_utilities import read_plugin_setting
 from jord.qgis_utilities.helpers import InjectedProgressBar, signals
@@ -66,7 +66,7 @@ ensure_in_sys_path(Path(__file__).parent.parent)
 class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
     plugin_closing = pyqtSignal()
 
-    def entry_point_wrapper(self, k, a: callable):
+    def entry_point_wrapper(self, k, a: Callable):
         def f():
             if k not in self.entry_point_instances:
                 self.entry_point_instances[k] = a()

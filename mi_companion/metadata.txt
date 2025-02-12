@@ -6,7 +6,7 @@ qgisMinimumVersion=3.36
 qgisMaximumVersion=3.99
 version=0.6.1
 
-author=heider
+author=Heider
 email=chen@mapspeople.com
 
 category=Web
@@ -25,6 +25,9 @@ deprecated=False
 
 experimental=False
 hasProcessingProvider=no
+#hasProcessingProvider=yes
+supportsQt6=yes
+#class_name=MICompanion
 
 plugin_dependencies=Memory Layer Saver,First Aid
 #Eqip is not necessary for bundled installations
