@@ -1,13 +1,21 @@
 import logging
 from typing import Any
 
+from jord.qgis_utilities.enums import Qgis3dCullingMode, Qgis3dFacade
 from jord.qgis_utilities.fields import make_field_unique
+from jord.qgis_utilities.styling import set3dviewsettings
 from jord.qlive_utilities import add_shapely_layer
 
 from integration_system.model import Building, Floor, Solution
-from mi_companion import DESCRIPTOR_BEFORE, FLOOR_DESCRIPTOR, FLOOR_POLYGON_DESCRIPTOR
+from mi_companion import (
+    DESCRIPTOR_BEFORE,
+    FLOOR_DESCRIPTOR,
+    FLOOR_HEIGHT,
+    FLOOR_POLYGON_DESCRIPTOR,
+)
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.constants import (
+    FLOOR_VERTICAL_SPACING,
     INSERT_INDEX,
 )
 from .location import add_floor_content_layers
@@ -19,6 +27,8 @@ from ...projection import (
 logger = logging.getLogger(__name__)
 
 __all__ = ["add_floor_layers"]
+
+SHOW_FLOOR_LAYERS_ON_LOAD = False
 
 
 def add_floor_layers(
@@ -80,7 +90,7 @@ def add_floor_layers(
                         }
                     ],
                     group=floor_group,
-                    visible=False,
+                    visible=SHOW_FLOOR_LAYERS_ON_LOAD,
                     crs=solve_target_crs_authid(),
                 )
 
@@ -114,11 +124,18 @@ def add_floor_layers(
                         }
                     ],
                     group=floor_group,
-                    visible=False,
+                    visible=SHOW_FLOOR_LAYERS_ON_LOAD,
                     crs=solve_target_crs_authid(),
                 )
 
             assert floor_layer is not None
             make_field_unique(floor_layer)
-            # set3dviewsettings()
+            set3dviewsettings(
+                floor_layer,
+                offset=(FLOOR_VERTICAL_SPACING + FLOOR_HEIGHT) * floor.floor_index,
+                extrusion=FLOOR_VERTICAL_SPACING,
+                facades=Qgis3dFacade.walls_and_roofs,
+                culling_mode=Qgis3dCullingMode.no_culling,
+                color=(111, 111, 111),
+            )
             # TODO: Use SolutionItem Annotations for field constraints

@@ -43,6 +43,10 @@ def run(*, path: Path, open_folder_on_completion: bool = False) -> None:
             mi_group=mi_group,
             upload_venues=False,
         )
+        if solutions is None:
+            logger.warning("No solutions found")
+            return
+
         for sol in solutions:
             with open(
                 (path / f"{id(sol)}").with_suffix(SERIALISED_SOLUTION_EXTENSION), "w"
