@@ -5,7 +5,16 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 
-def run(*, new_name: str = "", randomize_field: Optional[str] = "external_id") -> None:
+def run(
+    *, new_name: str = "", randomize_fields: Optional[str] = "admin_id, external_id"
+) -> None:
+    """
+    Duplicate selected group in layer tree view
+
+    :param new_name:
+    :param randomize_fields: What fields to randomize, separated by comma
+    :return:
+    """
     from jord.qgis_utilities.helpers import duplicate_groups
 
     # noinspection PyUnresolvedReferences
@@ -25,9 +34,11 @@ def run(*, new_name: str = "", randomize_field: Optional[str] = "external_id") -
                 f"Selected Node is {group.name()} of type {type(group)}, not a QgsLayerTreeGroup"
             )
         if new_group:
-            if randomize_field:
-                from jord.qgis_utilities.helpers import randomize_sub_tree_field
+            if randomize_fields:
+                for randomize_field in randomize_fields.split(","):
+                    randomize_field = randomize_field.replace(" ", "")
+                    from jord.qgis_utilities.helpers import randomize_sub_tree_field
 
-                randomize_sub_tree_field(new_group.children(), randomize_field)
+                    randomize_sub_tree_field(new_group.children(), randomize_field)
     else:
         logging.error(f"There are {len(selected_nodes)}, please only select one")

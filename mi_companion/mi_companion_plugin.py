@@ -1,11 +1,11 @@
 """
- mi_companion
+mi_companion
 
-                              -------------------
-        begin                : 2023-03-03
-        git sha              : $Format:%H$
-        copyright            : (C) 2022 by MapsPeople
-        email                : chen@mapspeople.com
+                             -------------------
+       begin                : 2023-03-03
+       git sha              : $Format:%H$
+       copyright            : (C) 2022 by MapsPeople
+       email                : chen@mapspeople.com
 
 """
 
@@ -27,6 +27,8 @@ from qgis.core import QgsSettings
 from .constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 
 logger = logging.getLogger(__name__)
+
+# my_plugin = qgis.utils.plugins['MapsIndoors Beta']
 
 try:
     from jord.qt_utilities import DockWidgetAreaFlag

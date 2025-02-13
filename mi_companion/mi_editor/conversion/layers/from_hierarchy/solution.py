@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from jord.qgis_utilities.conversion.features import parse_q_value
 
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 def convert_solution_layers_to_solution(
     qgis_instance_handle: Any,
     *,
-    progress_bar: callable,
+    progress_bar: Callable,
     mi_group: Any,
     solution_depth: SolutionDepth = SolutionDepth.obstacles,
     include_route_elements: bool = False,

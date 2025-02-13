@@ -12,7 +12,7 @@ repos:
   #        files: \.(py.j2|py)$
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.19.0
+    rev: v3.19.1
     hooks:
       - id: pyupgrade
         args:
@@ -20,7 +20,7 @@ repos:
           - --keep-runtime-typing
 
   - repo: https://github.com/ambv/black
-    rev: 24.10.0
+    rev: 25.1.0
     hooks:
       - id: black
         exclude: resources.py
@@ -38,12 +38,19 @@ repos:
       - id: validate-pyproject
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.13.0
+    rev: v1.15.0
     hooks:
       - id: mypy
         verbose: true
         #exclude: ^tests/
         entry: bash -c 'mypy "$@" || true' -- # only print
+        additional_dependencies:
+          [
+            tokenize-rt>=3.2.0,
+            mypy-extensions>=0.4.3,
+            typing-extensions>=4.0.1,
+            types-PyYAML>=5.4.6,
+          ]
         #args: [ --strict ]
 
   - repo: https://github.com/pycqa/flake8

@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 from jord.qgis_utilities.fields import make_field_unique
 from jord.qlive_utilities import add_shapely_layer
@@ -34,7 +34,7 @@ def add_building_layers(
     venue_group: Any,
     qgis_instance_handle: Any,
     available_location_type_map_widget: Optional[Any] = None,
-    progress_bar: Optional[callable] = None,
+    progress_bar: Optional[Callable] = None,
 ) -> None:
     num_buildings = float(len(solution.buildings))
 

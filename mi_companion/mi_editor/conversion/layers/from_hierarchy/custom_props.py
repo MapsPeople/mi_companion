@@ -24,7 +24,7 @@ __all__ = ["extract_custom_props"]
 
 
 def extract_custom_props(
-    layer_attributes: Mapping[str, Any]
+    layer_attributes: Mapping[str, Any],
 ) -> Optional[Mapping[str, Mapping[str, Any]]]:
     """
     THIS IS THE DIRTIEST function ever written, null is a hell of a concept

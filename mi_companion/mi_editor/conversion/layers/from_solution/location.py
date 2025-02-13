@@ -1,5 +1,6 @@
 import logging
 
+from jord.qgis_utilities.constraints import set_geometry_constraints
 from jord.qgis_utilities.fields import (
     add_dropdown_widget,
     make_field_boolean,
@@ -8,8 +9,11 @@ from jord.qgis_utilities.fields import (
     make_field_reuse_last_entered_value,
     make_field_unique,
 )
+from jord.qgis_utilities.styling import set3dviewsettings
 
 from mi_companion.constants import (
+    FLOOR_HEIGHT,
+    FLOOR_VERTICAL_SPACING,
     USE_EXTERNAL_ID_FLOOR_SELECTION,
 )
 from .custom_props import process_custom_props_df, to_df
@@ -219,6 +223,13 @@ def add_floor_content_layers(
         floor=floor,
         dropdown_widget=available_location_type_map_widget,
     )
+    set3dviewsettings(
+        room_layer,
+        offset=FLOOR_VERTICAL_SPACING
+        + (FLOOR_HEIGHT + FLOOR_VERTICAL_SPACING) * floor.floor_index,
+        extrusion=FLOOR_HEIGHT,
+    )
+    set_geometry_constraints(room_layer)
 
     area_layer = add_location_layer(
         location_collection=solution.areas,
@@ -229,6 +240,7 @@ def add_floor_content_layers(
         floor=floor,
         dropdown_widget=available_location_type_map_widget,
     )
+    set_geometry_constraints(area_layer)
 
     poi_layer = add_location_layer(
         location_collection=solution.points_of_interest,
@@ -239,6 +251,7 @@ def add_floor_content_layers(
         floor=floor,
         dropdown_widget=available_location_type_map_widget,
     )
+    set_geometry_constraints(poi_layer)
 
 
 if __name__ == "__main__":

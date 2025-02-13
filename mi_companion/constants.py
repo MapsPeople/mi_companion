@@ -52,7 +52,9 @@ PLUGIN_REPOSITORY = read_repository_from_metadata(METADATA_FILE)
 
 BUNDLED_PACKAGES_DIR = "mi_companion_bundle"
 
-if not PLUGIN_DIR.is_symlink():
+if not PLUGIN_DIR.is_symlink() or (
+    not (Path(__file__).parent.parent / BUNDLED_PACKAGES_DIR).exists()
+):
     BUNDLED_PACKAGES_DIR += f".{VERSION}"
     logger.info(
         f"Installed version of plugin detected, targeting {BUNDLED_PACKAGES_DIR}"
@@ -134,6 +136,7 @@ DEFAULT_PLUGIN_SETTINGS = {
     "ALLOW_CATEGORY_TYPE_CREATION": True,
     "IGNORE_EMPTY_SHAPES": True,
     "UPLOAD_OSM_GRAPH": False,
+    "FLOOR_HEIGHT": 4.0,
 }
 
 MI_EPSG_NUMBER = 4326
@@ -152,6 +155,8 @@ DESCRIPTOR_BEFORE = True
 DEFAULT_CUSTOM_PROPERTIES = None
 
 HALF_SIZE = 0.5
+FLOOR_HEIGHT = 4.0
+FLOOR_VERTICAL_SPACING = 1.0
 
 REAL_NONE_JSON_VALUE = "REAL_NONE"
 NAN_VALUE = "nan"

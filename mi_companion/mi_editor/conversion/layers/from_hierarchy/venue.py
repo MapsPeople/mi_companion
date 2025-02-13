@@ -1,7 +1,7 @@
 import copy
 import logging
 from datetime import datetime
-from typing import Any, List, Mapping, Optional
+from typing import Any, Callable, List, Mapping, Optional
 
 from PyQt5.QtCore import QDateTime
 
@@ -50,7 +50,7 @@ def convert_solution_venues(
     *,
     mi_group_child: QgsLayerTreeGroup,
     existing_solution: Solution,
-    progress_bar: callable,
+    progress_bar: Callable,
     solution_external_id: str,
     solution_name: str,
     solution_customer_id: str,

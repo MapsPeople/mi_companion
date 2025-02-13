@@ -1,3 +1,4 @@
+import typing
 from typing import Optional
 
 import pyproj
@@ -31,7 +32,7 @@ MI_CRS_AUTHID = f"EPSG:{MI_EPSG_NUMBER}"
 MI_CRS = pyproj.CRS(MI_EPSG_NUMBER)
 
 
-def get_back_projection() -> callable:
+def get_back_projection() -> typing.Callable:
     destination_crs = pyproj.CRS(get_target_crs_auth_id())
 
     return pyproj.Transformer.from_crs(
@@ -39,7 +40,7 @@ def get_back_projection() -> callable:
     ).transform
 
 
-def get_forward_projection() -> callable:
+def get_forward_projection() -> typing.Callable:
     destination_crs = pyproj.CRS(get_target_crs_auth_id())
 
     return pyproj.Transformer.from_crs(
@@ -63,7 +64,7 @@ def should_reproject_to_project() -> bool:
 def prepare_geom_for_mi_db(
     geom_shapely: shapely.geometry.base.BaseGeometry,
     clean: bool = True,
-    back_projection: Optional[callable] = None,
+    back_projection: Optional[typing.Callable] = None,
 ) -> shapely.geometry.base.BaseGeometry:
     if back_projection is None:
         back_projection = get_back_projection()
@@ -80,7 +81,7 @@ def prepare_geom_for_mi_db(
 def prepare_geom_for_qgis(
     geom_shapely: shapely.geometry.base.BaseGeometry,
     clean: bool = True,
-    forward_projection: Optional[callable] = None,
+    forward_projection: Optional[typing.Callable] = None,
 ) -> shapely.geometry.base.BaseGeometry:
     if forward_projection is None:
         forward_projection = get_forward_projection()

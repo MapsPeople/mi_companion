@@ -46,7 +46,7 @@ def package_dependencies(
     *,
     bundle_name: Union[str, Path],
     clean: bool = True,
-    python_version: str = "3.11",
+    python_version: str = "3.12",
     version: Optional[str] = None,
     project_name: str = "MapsIndoors",
     platform: str = sysconfig.get_platform(),

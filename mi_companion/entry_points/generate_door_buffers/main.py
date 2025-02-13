@@ -9,6 +9,8 @@ from jord.shapely_utilities import dilate, is_multi
 
 logger = logging.getLogger(__name__)
 
+CRS = f"EPSG:3857"
+
 
 def run(*, buffer_distance: float = 0.01, only_active_layer: bool = True) -> None:
     # noinspection PyUnresolvedReferences
@@ -62,7 +64,7 @@ def run(*, buffer_distance: float = 0.01, only_active_layer: bool = True) -> Non
                     geoms=door_buffers.values(),
                     name="door_buffers",
                     visible=True,
-                    crs=f"EPSG:3857",
+                    crs=CRS,
                 )
 
             else:
