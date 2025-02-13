@@ -59,7 +59,10 @@ def package_dependencies(
                 shutil.rmtree(bundle_name)
 
     if version is not None:
-        assert VERSION == version  # JUST MAKE SURE!
+        version = version.replace(" ", "")
+        assert (
+            VERSION.replace(" ", "").lower() == version
+        ), f"{VERSION}!={version}"  # JUST MAKE SURE!
         # bundle_name = bundle_name.with_stem(f"{bundle_name.stem}.{version}")
 
     bundle_name.mkdir(parents=True, exist_ok=True)
