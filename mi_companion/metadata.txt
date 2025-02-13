@@ -15,7 +15,7 @@ icon=icon.png
 
 tracker=https://github.com/MapsPeople
 repository=https://github.com/MapsPeople
-homepage=https://github.com/MapsPeople
+homepage=https://www.mapspeople.com/mapsindoors
 
 # If the plugin can run on QGIS Server.
 server=False

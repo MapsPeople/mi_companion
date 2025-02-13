@@ -6,7 +6,12 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ## Unreleased
 
-* Nothing
+* Added a button to open the MapsIndoors solution in the browser
+
+## 0.6.2 - 2025-02-13
+
+* Layer geometry constraints now enforced
+* 3d view styling support
 
 ## 0.6.0 - 2025-01-14
 
@@ -69,15 +74,14 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
     * Edit Category
 
 * Transform data into MapsIndoors data:
-    * Load data from QGIS layer into MapsIndoors solution
+    * Load data from QGIS layers into MapsIndoors solution
 
-* Post processing:
+* Post-processing:
     * Geo-reference a venue
     * Regenerate adminId
 
 * Upload/Export solution:
     * Upload solution to MapsIndoors
-    * Automated dependency lookups of QGIS plugin for Windows
 
 ## 0.5.0 - 2024-12-01
 
@@ -90,19 +94,18 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ## 0.3.0 - 2024-10-01
 
-* Handle Custom PROPERties PROPERly
+* Handle Custom PROPERties PROPERly, (bug fix)
 * More robust hierarchy parsing, and change default target CRS to 3857 and convert back to 4326 on upload
-* Graph disabled, compat entry point and square new solution default polygons
+* Graph disabled by default, compatibility entry point
 
 ## 0.2.0 - 2024-09-01
 
 * Major parsing refactor, more logging
-* Tested and ready for use
-* Layer Duplication
+* Layer Duplication button
 * Svg import
-* Manager API
-* Differentiation
-* CI Release
+* Now uses the Manager API for all operations
+* Differentiation of Solutions
+* CI Release pipeline
 
 ## 0.1.0 - 2024-08-01
 

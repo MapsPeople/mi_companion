@@ -74,14 +74,13 @@ Import/Export > Import Layers from DXF/DWG)
         logger.info("Oda converter was not found...")
         # TODO: Maybe run bundled installer?
 
-    assert oda_converter_path_.exists(), f"{oda_converter_path} is not a valid path"
+    dwg_file_path = Path(path)
 
-    svg_file_path = Path(path)
-
-    if svg_file_path.suffix == ".dwg":
-        new_dxf_path: Path = convert_to_dxf(svg_file_path, oda_converter_path_)
+    if dwg_file_path.suffix == ".dwg":
+        assert oda_converter_path_.exists(), f"{oda_converter_path} is not a valid path"
+        new_dxf_path: Path = convert_to_dxf(dwg_file_path, oda_converter_path_)
     else:
-        new_dxf_path = svg_file_path
+        new_dxf_path = dwg_file_path
 
     out_path = new_dxf_path.with_suffix(".gpkg")
 

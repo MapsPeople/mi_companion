@@ -1,5 +1,6 @@
 import logging
 
+from jord.qgis_utilities.constraints import set_geometry_constraints
 from jord.qgis_utilities.fields import (
     add_dropdown_widget,
     make_field_boolean,
@@ -228,7 +229,7 @@ def add_floor_content_layers(
         + (FLOOR_HEIGHT + FLOOR_VERTICAL_SPACING) * floor.floor_index,
         extrusion=FLOOR_HEIGHT,
     )
-    # set_geometry_constraints(room_layer)
+    set_geometry_constraints(room_layer)
 
     area_layer = add_location_layer(
         location_collection=solution.areas,
@@ -239,7 +240,7 @@ def add_floor_content_layers(
         floor=floor,
         dropdown_widget=available_location_type_map_widget,
     )
-    # set_geometry_constraints(area_layer)
+    set_geometry_constraints(area_layer)
 
     poi_layer = add_location_layer(
         location_collection=solution.points_of_interest,
@@ -250,6 +251,7 @@ def add_floor_content_layers(
         floor=floor,
         dropdown_widget=available_location_type_map_widget,
     )
+    set_geometry_constraints(poi_layer)
 
 
 if __name__ == "__main__":

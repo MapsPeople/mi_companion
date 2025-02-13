@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 
+from jord.qgis_utilities.constraints import set_geometry_constraints
 from jord.qgis_utilities.enums import Qgis3dCullingMode, Qgis3dFacade
 from jord.qgis_utilities.fields import make_field_unique
 from jord.qgis_utilities.styling import set3dviewsettings
@@ -138,4 +139,5 @@ def add_floor_layers(
                 culling_mode=Qgis3dCullingMode.no_culling,
                 color=(111, 111, 111),
             )
+            set_geometry_constraints(floor_layer)
             # TODO: Use SolutionItem Annotations for field constraints
