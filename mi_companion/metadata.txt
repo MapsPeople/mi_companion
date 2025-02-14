@@ -1,12 +1,11 @@
 [general]
 name=MapsIndoors Beta
-description=GDS tooling
 
 qgisMinimumVersion=3.36
 qgisMaximumVersion=3.99
 version=0.6.3
 
-author=Heider
+author=MapsPeople A/S
 email=chen@mapspeople.com
 
 category=Web
