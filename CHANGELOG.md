@@ -1,87 +1,71 @@
-# CHANGELOG
+# Changelog
 
 All notable changes to this project will be documented in this file.
 
-The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
-
-## Unreleased
-
-* Added a button to open the MapsIndoors solution in the browser
+The format is based on * [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## 0.6.2 - 2025-02-13
 
 * Layer geometry constraints now enforced
-* 3d view styling support
+* 3D view styling support
 
 ## 0.6.0 - 2025-01-14
 
-* Added a validation button
+* Validation button added
 
-* Data import:
-    * Import SVG
+* [Data import] Import SVG
 
-* Transform data into QGIS layers:
-    * Copy and paste Group with data included
+* [Transform data into QGIS layers] Copy and paste Group with data included
 
-* Venue Management:
-    * Load a Venue
-    * Create a Venue
-    * Edit Venue
-    * Move Venue from one Solution to another
+* [Venue Management] Load a Venue
+* [Venue Management] Create a Venue
+* [Venue Management] Edit a Venue
+* [Venue Management] Move a Venue from one Solution to another
 
-* Building Management:
-    * Load a Building
-    * Create a Building
-    * Edit Building
-    * Move Building from one Venue to another
-    * Move Building from one Solution to another
-    * Delete Building
+* [Building Management] Load a Building
+* [Building Management] Create a Building
+* [Building Management] Edit a Building
+* [Building Management] Move a Building from one Venue to another
+* [Building Management] Move a Building from one Solution to another
+* [Building Management] Delete a Building
 
-* Floor Management:
-    * Load a Floor
-    * Create a Floor
-    * Edit Floor
-    * Move Floor from one Building to another
-    * Move Floor from one Solution to another
-    * Delete Floor
+* [Floor Management] Load a Floor
+* [Floor Management] Create a Floor
+* [Floor Management] Edit a Floor
+* [Floor Management] Move a Floor from one Building to another
+* [Floor Management] Move a Floor from one Solution to another
+* [Floor Management] Delete a Floor
 
-* Location Management:
-    * Load a Location
-    * Create a Location
-    * Edit Location
-    * Move Location from one Floor to another
-    * Move Location from one Solution to another
-    * Delete Location
+* [Location Management] Load a Location
+* [Location Management] Create a Location
+* [Location Management] Edit a Location
+* [Location Management] Move a Location from one Floor to another
+* [Location Management] Move a Location from one Solution to another
+* [Location Management] Delete a Location
 
-* Graph Management:
-    * Load a Graph
-    * Create a Graph
+* [Graph Management] Load a Graph
+* [Graph Management] Create a Graph
 
-* Route Element Management:
-    * Load Route Elements
-    * Create a Route Element
-    * Edit Route Element
-    * Delete Route Element
+* [Route Element Management] Load a Route Elements
+* [Route Element Management] Create a Route Element
+* [Route Element Management] Edit a Route Element
+* [Route Element Management] Delete a Route Element
 
-* Location Type Management:
-    * Load a Location Type
-    * Create a Location Type
-    * Edit Location Type
+* [Location Type Management] Load a Location Type
+* [Location Type Management] Create a Location Type
+* [Location Type Management] Edit a Location Type
 
-* Category Management:
-    * Load a Category
-    * Create a Category
-    * Edit Category
+* [Category Management] Load a Category
+* [Category Management] Create a Category
+* [Category Management] Edit a Category
 
-* Transform data into MapsIndoors data:
-    * Load data from QGIS layers into MapsIndoors solution
+* [Transform data into MapsIndoors data] Load data from QGIS layers into MapsIndoors solution
 
-* Post-processing:
-    * Geo-reference a venue
-    * Regenerate adminId
+* [Post-processing] Geo-reference a venue
+* [Post-processing] Regenerate adminId
 
-* Upload/Export solution:
-    * Upload solution to MapsIndoors
+* [Upload/Export solution] Upload a solution to MapsIndoors
 
 ## 0.5.0 - 2024-12-01
 
@@ -102,8 +86,6 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 * Major parsing refactor, more logging
 * Layer Duplication button
-* Svg import
-* Now uses the Manager API for all operations
 * Differentiation of Solutions
 * CI Release pipeline
 

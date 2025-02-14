@@ -23,6 +23,7 @@ from ...projection import (
 from mi_companion.constants import (
     INSERT_INDEX,
 )
+from jord.qgis_utilities.constraints import set_geometry_constraints
 
 logger = logging.getLogger(__name__)
 
@@ -98,6 +99,7 @@ def add_building_layers(
             )
 
             make_field_unique(building_layer)
+            set_geometry_constraints(building_layer)
 
             add_floor_layers(
                 available_location_type_map_widget=available_location_type_map_widget,
