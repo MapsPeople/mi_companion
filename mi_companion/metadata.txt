@@ -11,6 +11,7 @@ email=chen@mapspeople.com
 category=Web
 about=The MapsIndoors plugin comprises various tools for the GIS workflows as well as the MapsIndoors Editor
 icon=icon.png
+#description=MapsIndoors Companion Plugin
 
 tracker=https://github.com/MapsPeople
 repository=https://github.com/MapsPeople
