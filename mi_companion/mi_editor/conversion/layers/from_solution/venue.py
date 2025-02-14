@@ -1,6 +1,7 @@
 import logging
 from typing import Any, Iterable, Optional
 
+from jord.qgis_utilities.constraints import set_geometry_constraints
 from jord.qgis_utilities.fields import make_field_unique
 from jord.qlive_utilities import add_shapely_layer
 
@@ -178,6 +179,8 @@ def add_venue_polygon_layer(
         visible=False,
         crs=solve_target_crs_authid(),
     )
+    set_geometry_constraints(venue_layer)
+
     if venue_type_dropdown_widget:
         for layers_inner in venue_layer:
             if layers_inner:
