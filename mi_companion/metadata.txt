@@ -3,7 +3,7 @@ name=MapsIndoors Beta
 
 qgisMinimumVersion=3.36
 qgisMaximumVersion=3.99
-version=0.6.3
+version=0.6.4
 
 author=MapsPeople A/S
 email=chen@mapspeople.com
@@ -11,7 +11,7 @@ email=chen@mapspeople.com
 category=Web
 about=The MapsIndoors plugin comprises various tools for the GIS workflows as well as the MapsIndoors Editor
 icon=icon.png
-#description=MapsIndoors Companion Plugin
+description=MapsIndoors QGIS Plugin
 
 tracker=https://github.com/MapsPeople
 repository=https://github.com/MapsPeople
@@ -24,15 +24,15 @@ server=False
 deprecated=False
 
 experimental=False
-hasProcessingProvider=no
-#hasProcessingProvider=yes
-supportsQt6=yes
-#class_name=MICompanion
+# hasProcessingProvider=no
+# hasProcessingProvider=yes
+# supportsQt6=yes
+# class_name=MICompanion
 
 plugin_dependencies=Memory Layer Saver,First Aid
-#Eqip is not necessary for bundled installations
+# Eqip is not necessary for bundled installations
 
 # Tags are comma separated with spaces allowed
 tags=python, mapsindoors, companion, shapely
 
-changelog=
+changelog=CHANGELOG.md

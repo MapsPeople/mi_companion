@@ -19,8 +19,10 @@ from mi_companion.configuration.options import read_bool_setting
 from mi_companion.constants import (
     INSERT_INDEX,
 )
+from mi_companion.mi_editor.conversion.layers.from_solution.routing.graph import (
+    add_graph_layers,
+)
 from .building import add_building_layers
-from .graph import add_graph_layers
 from ...projection import (
     prepare_geom_for_qgis,
     solve_target_crs_authid,

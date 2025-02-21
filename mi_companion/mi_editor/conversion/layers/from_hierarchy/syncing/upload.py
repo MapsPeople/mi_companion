@@ -160,34 +160,41 @@ def sync_build_venue_solution(
     ):
         strategy[Graph] = default_matcher, None  # Do not update graph
 
-    success = synchronize(
-        solution,
-        sync_level=sync_level,
-        operation_progress_callback=(
-            operation_progress_bar_callable
-            if read_bool_setting("OPERATION_PROGRESS_BAR_ENABLED")
-            else None
-        ),
-        solving_progress_callback=(
-            solving_progress_bar_callable
-            if read_bool_setting("SOLVING_PROGRESS_BAR_ENABLED")
-            else None
-        ),
-        confirmation_callback=(
-            confirmation_dialog
-            if read_bool_setting("CONFIRMATION_DIALOG_ENABLED")
-            else None
-        ),
-        depth=solution_depth,
-        include_route_elements=read_bool_setting("ADD_ROUTE_ELEMENTS")
-        and include_route_elements,
-        include_occupants=include_occupants,
-        include_media=include_media,
-        include_graph=read_bool_setting("ADD_GRAPH") and include_graph,
-        operation_solver=strategy_solver(
-            sync_level=sync_level, depth=solution_depth, strategy=strategy
-        ),
-    )
+    try:
+        success = synchronize(
+            solution,
+            sync_level=sync_level,
+            operation_progress_callback=(
+                operation_progress_bar_callable
+                if read_bool_setting("OPERATION_PROGRESS_BAR_ENABLED")
+                else None
+            ),
+            solving_progress_callback=(
+                solving_progress_bar_callable
+                if read_bool_setting("SOLVING_PROGRESS_BAR_ENABLED")
+                else None
+            ),
+            confirmation_callback=(
+                confirmation_dialog
+                if read_bool_setting("CONFIRMATION_DIALOG_ENABLED")
+                else None
+            ),
+            depth=solution_depth,
+            include_route_elements=read_bool_setting("ADD_ROUTE_ELEMENTS")
+            and include_route_elements,
+            include_occupants=include_occupants,
+            include_media=include_media,
+            include_graph=read_bool_setting("ADD_GRAPH") and include_graph,
+            operation_solver=strategy_solver(
+                sync_level=sync_level, depth=solution_depth, strategy=strategy
+            ),
+        )
+    except Exception as e:
+        logger.error(
+            'Error synchronising, try running the "Compatilibity" button to fix solution',
+            e,
+        )
+        return
 
     if VERBOSE:
         logger.info("Synchronised")

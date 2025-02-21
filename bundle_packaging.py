@@ -146,7 +146,7 @@ version={BUNDLE_VERSION}
 author=heider
 email=chen@mapspeople.com
 
-description=A Python dependency bundle
+description=A Python dependency bundle, please keep the matching version installed, you may prune the rest.
 about=A bundle of Python dependencies for the MapsIndoors plugin
 
 tracker=https://github.com/MapsPeople
@@ -157,7 +157,8 @@ category=Web
 icon=icon.png
 
 hasProcessingProvider=no
-experimental=False
+experimental=True
+deprecated=True
 
 # Tags are comma separated with spaces allowed
 tags=python, mapsindoors, companion
