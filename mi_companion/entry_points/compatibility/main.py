@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import logging
+from textwrap import indent
 from typing import Optional
 
 from jord.qgis_utilities import read_plugin_setting
@@ -53,7 +54,23 @@ def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> 
     if new_solution_external_id:
         solution_external_id = new_solution_external_id
 
-    make_solution_compatible(solution_id, new_external_id=solution_external_id)
+    compatibility_report = make_solution_compatible(
+        solution_id, new_external_id=solution_external_id
+    )
+    # noinspection PyUnresolvedReferences
+    from qgis.PyQt.QtWidgets import (
+        QMessageBox,
+    )
+
+    # noinspection PyUnresolvedReferences
+    from qgis.PyQt import QtGui, QtWidgets, uic
+
+    formatted_report = indent(("\n".join(compatibility_report)), "  - ")
+    QtWidgets.QMessageBox.information(
+        None,
+        "Compatiblity Report",
+        f"Compatibilised Solution {solution_id}:\n{formatted_report}",
+    )
 
     logger.info(f"Finished compatiblisation on {solution_id=}")
 

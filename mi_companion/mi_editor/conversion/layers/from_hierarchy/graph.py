@@ -13,7 +13,7 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 from integration_system.graph_utilities import lines_to_osm_xml
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
 from mi_companion import (
-    GRAPH_DATA_DESCRIPTOR,
+    GRAPH_BOUND_DESCRIPTOR,
     NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
     NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
 )
@@ -40,16 +40,21 @@ def get_graph_data(graph_group: Any, solution: Solution) -> Tuple:
                 graph_level_item,
                 QgsLayerTreeLayer,
             )
-            and GRAPH_DATA_DESCRIPTOR.lower().strip()
+            and GRAPH_BOUND_DESCRIPTOR.lower().strip()
             in str(graph_level_item.name()).lower().strip()
         ):
-            layer_attributes, *_ = extract_layer_data_single(graph_level_item)
+            layer_attributes, layer_geom = extract_layer_data_single(graph_level_item)
             graph_id = (
                 layer_attributes["graph_id"] if "graph_id" in layer_attributes else None
             )
+            graph_bound_geom = prepare_geom_for_mi_db(
+                feature_to_shapely(layer_geom), clean=True
+            )
 
             graph_key = solution.add_graph(
-                graph_id=graph_id, osm_xml=""  # TODO: ADD graph for OSM or edge layer?
+                graph_id=graph_id,
+                osm_xml=FALLBACK_OSM_GRAPH,
+                boundary=graph_bound_geom,
             )
             return (graph_key,)
 
@@ -149,8 +154,6 @@ def add_graph_edges(
                         level_geoms[level] = location_geometry
 
                     verticals[vert_id] = (v_type, level_geoms, feature_attributes)
-
-    # TODO: ADD graph_bounds from a poly layer
 
     try:
         osm_xml = lines_to_osm_xml(horizontals=horizontals, verticals=verticals).decode(
