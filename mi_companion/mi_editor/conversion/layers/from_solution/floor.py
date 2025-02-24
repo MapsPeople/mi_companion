@@ -18,6 +18,7 @@ from mi_companion.configuration.options import read_bool_setting
 from mi_companion.constants import (
     FLOOR_VERTICAL_SPACING,
     INSERT_INDEX,
+    SHOW_FLOOR_LAYERS_ON_LOAD,
 )
 from .location import add_floor_content_layers
 from ...projection import (
@@ -28,8 +29,6 @@ from ...projection import (
 logger = logging.getLogger(__name__)
 
 __all__ = ["add_floor_layers"]
-
-SHOW_FLOOR_LAYERS_ON_LOAD = False
 
 
 def add_floor_layers(

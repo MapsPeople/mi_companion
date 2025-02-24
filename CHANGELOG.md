@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.6.4 - 2025-02-21
 
+* [Bug-fix] Caddy import now handles 3dfaces in polylines neatly
+* [Bug-fix] Venue-type dropdown now has the correct values
+* [Usability] Improved default location layer styling, for the upcoming display-rule based styling
+
+## 0.6.4 - 2025-02-21
+
 * [New feature] Compatibility button new displays a report of what was changed
 
 ## 0.6.3 - 2025-02-13

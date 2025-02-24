@@ -68,15 +68,15 @@ Import/Export > Import Layers from DXF/DWG)
 
     auto_add_layers: bool = True
 
-    oda_converter_path_ = Path(oda_converter_path)
-
-    if not oda_converter_path_.exists():
-        logger.info("Oda converter was not found...")
-        # TODO: Maybe run bundled installer?
-
     dwg_file_path = Path(path)
 
     if dwg_file_path.suffix == ".dwg":
+        oda_converter_path_ = Path(oda_converter_path)
+
+        if not oda_converter_path_.exists():
+            logger.info("Oda converter was not found...")
+            # TODO: Maybe run bundled installer?
+
         assert oda_converter_path_.exists(), f"{oda_converter_path} is not a valid path"
         new_dxf_path: Path = convert_to_dxf(dwg_file_path, oda_converter_path_)
     else:
@@ -110,7 +110,7 @@ Import/Export > Import Layers from DXF/DWG)
                 crs.createFromId(crs_id)
                 sub_v_layer.setCrs(crs)
                 if layer_column in sub_v_layer.fields().names():
-                    categorise_layer(sub_v_layer, layer_column)
+                    categorise_layer(sub_v_layer, layer_column, outline_only=True)
 
                 QgsProject.instance().addMapLayer(sub_v_layer, False)
                 import_group.addLayer(sub_v_layer)

@@ -67,6 +67,7 @@ def add_location_layer(
     floor_group: Any,
     floor: Floor,
     dropdown_widget: Optional[Any] = None,
+    opacity: float = 1.0,
 ) -> Optional[List[Any]]:  # QgsVectorLayer
 
     shape_df = to_df(location_collection)
@@ -156,6 +157,7 @@ def add_location_layer(
         group=floor_group,
         categorise_by_attribute="location_type.name",
         crs=solve_target_crs_authid(),
+        opacity=opacity,
     )
 
     layer = None
@@ -222,6 +224,7 @@ def add_floor_content_layers(
         floor_group=floor_group,
         floor=floor,
         dropdown_widget=available_location_type_map_widget,
+        opacity=0.8,
     )
     set3dviewsettings(
         room_layer,
@@ -239,6 +242,7 @@ def add_floor_content_layers(
         floor_group=floor_group,
         floor=floor,
         dropdown_widget=available_location_type_map_widget,
+        opacity=0.6,
     )
     set_geometry_constraints(area_layer)
 
