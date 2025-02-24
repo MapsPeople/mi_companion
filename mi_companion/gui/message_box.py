@@ -1,3 +1,5 @@
+from typing import Any
+
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QMessageBox, QTextEdit
 
@@ -8,7 +10,7 @@ class ResizableMessageBox(QMessageBox):  # TODO: MOVE THIS TO JORD!
         super().__init__(*args, **kwargs)
         self.setSizeGripEnabled(True)
 
-    def event(self, event):
+    def event(self, event: Any) -> Any:
         if event.type() in (event.LayoutRequest, event.Resize):
             if event.type() == event.Resize:
                 res = super().event(event)

@@ -55,7 +55,7 @@ class DeploymentOptionsPageFactory(QgsOptionsWidgetFactory):
         return load_icon("mp_notext.png")
 
     # noinspection PyPep8Naming,PyMethodMayBeStatic
-    def createWidget(self, parent: Any):
+    def createWidget(self, parent: Any) -> "DeploymentCompanionOptionsPage":
         return DeploymentCompanionOptionsPage(parent)
 
 
@@ -188,7 +188,7 @@ def read_bool_setting(key: str) -> bool:
 
 class DeploymentCompanionOptionsPage(QgsOptionsPageWidget):
 
-    def __init__(self, parent):
+    def __init__(self, parent: Any):
         super().__init__(parent)
         root_layout = QHBoxLayout()
         root_layout.setContentsMargins(0, 0, 0, 0)
