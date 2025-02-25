@@ -9,7 +9,7 @@ from jord.qgis_utilities.fields import (
     make_field_reuse_last_entered_value,
     make_field_unique,
 )
-from jord.qgis_utilities.styling import set3dviewsettings
+from jord.qgis_utilities.styling import set_3d_view_settings
 
 from mi_companion.constants import (
     FLOOR_HEIGHT,
@@ -226,7 +226,7 @@ def add_floor_content_layers(
         dropdown_widget=available_location_type_map_widget,
         opacity=0.8,
     )
-    set3dviewsettings(
+    set_3d_view_settings(
         room_layer,
         offset=FLOOR_VERTICAL_SPACING
         + (FLOOR_HEIGHT + FLOOR_VERTICAL_SPACING) * floor.floor_index,

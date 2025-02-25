@@ -77,7 +77,9 @@ def add_graph_layers(
 
             graph_boundary = venue.graph.boundary
             if graph_boundary is None:
-                logger.warning(f"Graph {graph} has no boundary")
+                logger.warning(
+                    f"Graph {graph} has no boundary, defaulting to venue boundary"
+                )
                 graph_boundary = venue.polygon
 
             graph_boundary = prepare_geom_for_qgis(graph_boundary, clean=False)

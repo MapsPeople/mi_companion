@@ -66,9 +66,7 @@ def add_venue_graph(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> Optional[str]:
-    (graph_key,) = get_graph_data(
-        graph_group, solution
-    )  # TODO: ADD graph_bounds from a poly layer
+    (graph_key,) = get_graph_data(graph_group, solution)
 
     if graph_key:
         # add_graph_edges(

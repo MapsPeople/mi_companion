@@ -4,7 +4,7 @@ from typing import Any
 from jord.qgis_utilities.constraints import set_geometry_constraints
 from jord.qgis_utilities.enums import Qgis3dCullingMode, Qgis3dFacade
 from jord.qgis_utilities.fields import make_field_unique
-from jord.qgis_utilities.styling import set3dviewsettings
+from jord.qgis_utilities.styling import set_3d_view_settings
 from jord.qlive_utilities import add_shapely_layer
 
 from integration_system.model import Building, Floor, Solution
@@ -130,7 +130,7 @@ def add_floor_layers(
 
             assert floor_layer is not None
             make_field_unique(floor_layer)
-            set3dviewsettings(
+            set_3d_view_settings(
                 floor_layer,
                 offset=(FLOOR_VERTICAL_SPACING + FLOOR_HEIGHT) * floor.floor_index,
                 extrusion=FLOOR_VERTICAL_SPACING,

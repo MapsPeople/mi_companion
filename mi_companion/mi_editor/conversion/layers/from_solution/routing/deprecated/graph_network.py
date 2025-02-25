@@ -7,7 +7,7 @@ from jord.qgis_utilities.fields import (
     make_field_not_null,
     make_field_unique,
 )
-from jord.qgis_utilities.styling import set3dviewsettings
+from jord.qgis_utilities.styling import set_3d_view_settings
 from jord.qlive_utilities import add_dataframe_layer, add_shapely_layer
 
 from mi_companion import (
@@ -82,7 +82,7 @@ def add_graph_network_layers(
                 crs=solve_target_crs_authid(),
             )
             if False:
-                set3dviewsettings(  # MAKE offset CONDITIONAL ON FLOOR_INDEX column
+                set_3d_view_settings(  # MAKE offset CONDITIONAL ON FLOOR_INDEX column
                     graph_lines_layer_horizontal,
                     offset=FLOOR_HEIGHT * HALF_SIZE,
                     edge_width=GRAPH_EDGE_WIDTH,
@@ -132,7 +132,7 @@ def add_graph_network_layers(
                     crs=solve_target_crs_authid(),
                 )
                 if False:
-                    set3dviewsettings(graph_lines_layer_vertical)
+                    set_3d_view_settings(graph_lines_layer_vertical)
 
                 for field_name in ("vertical_id",):
                     make_field_not_null(

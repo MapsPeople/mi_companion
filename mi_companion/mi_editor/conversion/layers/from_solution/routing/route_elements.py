@@ -7,7 +7,7 @@ from jord.qgis_utilities.fields import (
     make_field_not_null,
     make_field_unique,
 )
-from jord.qgis_utilities.styling import set3dviewsettings
+from jord.qgis_utilities.styling import set_3d_view_settings
 from jord.qlive_utilities import add_dataframe_layer
 
 from integration_system.model import (
@@ -106,7 +106,7 @@ def add_route_element_layers(
         )
 
         if False:
-            set3dviewsettings(  # MAKE offset CONDITIONAL ON FLOOR_INDEX column
+            set_3d_view_settings(  # MAKE offset CONDITIONAL ON FLOOR_INDEX column
                 door_layers,
                 offset=FLOOR_VERTICAL_SPACING,
                 edge_width=DOOR_LINE_WIDTH,
