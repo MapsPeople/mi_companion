@@ -37,6 +37,7 @@ def add_floor_layers(
     building_group: Any,
     qgis_instance_handle: Any,
     solution: Solution,
+    visible: bool = SHOW_FLOOR_LAYERS_ON_LOAD,
     # add_floor_polygon_geometry: bool = True,
 ) -> None:
     building_bottom_floor_tracker = {}
@@ -90,7 +91,7 @@ def add_floor_layers(
                         }
                     ],
                     group=floor_group,
-                    visible=SHOW_FLOOR_LAYERS_ON_LOAD,
+                    visible=visible,
                     crs=solve_target_crs_authid(),
                 )
 
