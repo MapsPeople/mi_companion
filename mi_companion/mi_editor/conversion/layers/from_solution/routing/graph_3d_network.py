@@ -2,6 +2,7 @@ import logging
 from typing import Iterable
 
 import shapely
+from jord.qgis_utilities.constraints import set_geometry_constraints
 from jord.qgis_utilities.fields import (
     add_dropdown_widget,
     make_field_not_null,
@@ -17,7 +18,6 @@ from mi_companion import (
     HALF_SIZE,
     NAVIGATION_GRAPH_LINES_DESCRIPTOR,
 )
-from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.projection import (
     prepare_geom_for_qgis,
     solve_target_crs_authid,
@@ -157,9 +157,7 @@ def add_graph_3d_network_layers(
         group=graph_group,
         columns=lines_meta_data,
         categorise_by_attribute="highway",
-        visible=read_bool_setting(
-            "SHOW_GRAPH_ON_LOAD",
-        ),
+        visible=True,
         crs=solve_target_crs_authid(),
     )
     if True:
@@ -174,6 +172,8 @@ def add_graph_3d_network_layers(
         set_z_based_graduated_styling(
             layers=graph_lines_layer,
         )
+
+        set_geometry_constraints(graph_lines_layer)
 
     for a in (graph_lines_layer,):
         if a is not None:
