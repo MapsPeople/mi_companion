@@ -4,7 +4,7 @@ from typing import Any
 from jord.qgis_utilities.constraints import set_geometry_constraints
 from jord.qgis_utilities.enums import Qgis3dCullingMode, Qgis3dFacade
 from jord.qgis_utilities.fields import make_field_unique
-from jord.qgis_utilities.styling import set3dviewsettings
+from jord.qgis_utilities.styling import set_3d_view_settings
 from jord.qlive_utilities import add_shapely_layer
 
 from integration_system.model import Building, Floor, Solution
@@ -37,6 +37,7 @@ def add_floor_layers(
     building_group: Any,
     qgis_instance_handle: Any,
     solution: Solution,
+    visible: bool = SHOW_FLOOR_LAYERS_ON_LOAD,
     # add_floor_polygon_geometry: bool = True,
 ) -> None:
     building_bottom_floor_tracker = {}
@@ -90,7 +91,7 @@ def add_floor_layers(
                         }
                     ],
                     group=floor_group,
-                    visible=SHOW_FLOOR_LAYERS_ON_LOAD,
+                    visible=visible,
                     crs=solve_target_crs_authid(),
                 )
 
@@ -130,7 +131,7 @@ def add_floor_layers(
 
             assert floor_layer is not None
             make_field_unique(floor_layer)
-            set3dviewsettings(
+            set_3d_view_settings(
                 floor_layer,
                 offset=(FLOOR_VERTICAL_SPACING + FLOOR_HEIGHT) * floor.floor_index,
                 extrusion=FLOOR_VERTICAL_SPACING,

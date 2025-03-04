@@ -14,8 +14,8 @@ from mi_companion import (
     GRAPH_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
-from mi_companion.mi_editor.conversion.layers.from_solution.routing.graph_network import (
-    add_graph_network_layers,
+from mi_companion.mi_editor.conversion.layers.from_solution.routing.graph_3d_network import (
+    add_graph_3d_network_layers,
 )
 from mi_companion.mi_editor.conversion.layers.from_solution.routing.route_elements import (
     add_route_element_layers,
@@ -77,7 +77,9 @@ def add_graph_layers(
 
             graph_boundary = venue.graph.boundary
             if graph_boundary is None:
-                logger.warning(f"Graph {graph} has no boundary")
+                logger.warning(
+                    f"Graph {graph} has no boundary, defaulting to venue boundary"
+                )
                 graph_boundary = venue.polygon
 
             graph_boundary = prepare_geom_for_qgis(graph_boundary, clean=False)
@@ -94,7 +96,8 @@ def add_graph_layers(
             set_geometry_constraints(graph_bound_layer)
             make_field_not_null(graph_bound_layer, field_name="graph_id")
 
-            add_graph_network_layers(
+            # add_graph_network_layers(
+            add_graph_3d_network_layers(
                 edge_context_type_dropdown_widget=edge_context_type_dropdown_widget,
                 graph_group=graph_group,
                 highway_type_dropdown_widget=highway_type_dropdown_widget,

@@ -57,6 +57,7 @@ def add_building_layers(
                 building_group=venue_group,
                 qgis_instance_handle=qgis_instance_handle,
                 solution=solution,
+                visible=False,
             )
 
         elif building.venue.key == venue.key:

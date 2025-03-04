@@ -1,64 +1,23 @@
 import logging
 from collections import defaultdict
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional
 
 from jord.qgis_utilities.conversion.features import feature_to_shapely, parse_q_value
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtWidgets
-
-# noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.graph_utilities import lines_to_osm_xml
+from integration_system.graph_utilities.deprecated.old_graph_format import (
+    lines_and_points_to_osm_xml,
+)
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
 from mi_companion import (
-    GRAPH_BOUND_DESCRIPTOR,
     NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
     NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
-    extract_layer_data_single,
-)
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.route_elements import (
-    add_route_elements,
-)
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
 
-__all__ = ["add_venue_graph"]
-
 logger = logging.getLogger(__name__)
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtCore import QVariant
-
-
-def get_graph_data(graph_group: Any, solution: Solution) -> Tuple:
-    for graph_level_item in graph_group.children():
-        if (
-            isinstance(
-                graph_level_item,
-                QgsLayerTreeLayer,
-            )
-            and GRAPH_BOUND_DESCRIPTOR.lower().strip()
-            in str(graph_level_item.name()).lower().strip()
-        ):
-            layer_attributes, layer_geom = extract_layer_data_single(graph_level_item)
-            graph_id = (
-                layer_attributes["graph_id"] if "graph_id" in layer_attributes else None
-            )
-            graph_bound_geom = prepare_geom_for_mi_db(
-                feature_to_shapely(layer_geom), clean=True
-            )
-
-            graph_key = solution.add_graph(
-                graph_id=graph_id,
-                osm_xml=FALLBACK_OSM_GRAPH,
-                boundary=graph_bound_geom,
-            )
-            return (graph_key,)
-
-    return (None,)
+__all__ = ["add_graph_edges"]
 
 
 def add_graph_edges(
@@ -156,7 +115,9 @@ def add_graph_edges(
                     verticals[vert_id] = (v_type, level_geoms, feature_attributes)
 
     try:
-        osm_xml = lines_to_osm_xml(horizontals=horizontals, verticals=verticals).decode(
+        osm_xml = lines_and_points_to_osm_xml(
+            horizontals=horizontals, verticals=verticals
+        ).decode(
             "utf-8"
         )  # OSMNX HAS SOME WEIRD BUGS!
     except Exception as e:
@@ -174,41 +135,3 @@ def add_graph_edges(
             issues.append(_invalid)
         else:
             raise e
-
-
-def add_venue_graph(
-    *,
-    solution: Solution,
-    graph_group: Any,
-    collect_invalid: bool = False,
-    collect_warnings: bool = False,
-    collect_errors: bool = False,
-    issues: Optional[List[str]] = None,
-) -> Optional[str]:
-    (graph_key,) = get_graph_data(
-        graph_group, solution
-    )  # TODO: ADD graph_bounds from a poly layer
-
-    if graph_key:
-        add_graph_edges(
-            graph_key=graph_key,
-            graph_group=graph_group,
-            solution=solution,
-            issues=issues,
-            collect_invalid=collect_invalid,
-            collect_warnings=collect_warnings,
-            collect_errors=collect_errors,
-        )
-
-    if graph_key:
-        add_route_elements(
-            graph_key,
-            graph_group,
-            solution,
-            issues=issues,
-            collect_invalid=collect_invalid,
-            collect_warnings=collect_warnings,
-            collect_errors=collect_errors,
-        )
-
-    return graph_key

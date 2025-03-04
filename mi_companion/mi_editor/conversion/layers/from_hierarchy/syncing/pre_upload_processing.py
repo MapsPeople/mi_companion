@@ -10,6 +10,8 @@ from mi_companion.configuration.options import read_bool_setting
 
 logger = logging.getLogger(__name__)
 
+__all__ = ["post_process_solution"]
+
 
 def post_process_solution(solution: Solution) -> None:
     floor_child_geoms = defaultdict(list)

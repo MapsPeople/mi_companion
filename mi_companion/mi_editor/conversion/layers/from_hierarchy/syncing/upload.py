@@ -34,6 +34,8 @@ from mi_companion.mi_editor.conversion.projection import (
 
 logger = logging.getLogger(__name__)
 
+__all__ = ["sync_build_venue_solution"]
+
 
 def sync_build_venue_solution(
     *,
@@ -194,6 +196,7 @@ def sync_build_venue_solution(
             'Error synchronising, try running the "Compatilibity" button to fix solution',
             e,
         )
+        raise e
         return
 
     if VERBOSE:
