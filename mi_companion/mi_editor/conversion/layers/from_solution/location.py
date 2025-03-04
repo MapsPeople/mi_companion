@@ -9,7 +9,11 @@ from jord.qgis_utilities.fields import (
     make_field_reuse_last_entered_value,
     make_field_unique,
 )
-from jord.qgis_utilities.styling import set_3d_view_settings, set_label_styling
+from jord.qgis_utilities.styling import (
+    set_3d_view_settings,
+    set_label_styling,
+    set_layer_rendering_scale,
+)
 
 from mi_companion.constants import (
     FLOOR_HEIGHT,
@@ -50,6 +54,9 @@ BOOLEAN_LOCATION_ATTRS = ("is_searchable", "is_active")
 STR_LOCATION_ATTRS = ("description", "external_id", "name", "admin_id")
 FLOAT_LOCATION_ATTRS = ()
 INT_LOCATION_ATTRS = ()
+
+LAYER_LABEL_VISIBLE_MIN_RATIO = 1 / 999
+LAYER_GEOM_VISIBLE_MIN_RATIO = 1 / 9999
 
 
 class LocationGeometryType(StrEnum):
@@ -232,7 +239,12 @@ def add_floor_content_layers(
         + (FLOOR_HEIGHT + FLOOR_VERTICAL_SPACING) * floor.floor_index,
         extrusion=FLOOR_HEIGHT,
     )
-    set_label_styling(room_layer)
+    set_label_styling(room_layer, min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO)
+    if LAYER_GEOM_VISIBLE_MIN_RATIO:
+        set_layer_rendering_scale(
+            room_layer,
+            min_ratio=LAYER_GEOM_VISIBLE_MIN_RATIO,
+        )
     set_geometry_constraints(room_layer)
 
     area_layer = add_location_layer(
@@ -245,7 +257,12 @@ def add_floor_content_layers(
         dropdown_widget=available_location_type_map_widget,
         opacity=0.6,
     )
-    set_label_styling(area_layer)
+    set_label_styling(area_layer, min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO)
+    if LAYER_GEOM_VISIBLE_MIN_RATIO:
+        set_layer_rendering_scale(
+            area_layer,
+            min_ratio=LAYER_GEOM_VISIBLE_MIN_RATIO,
+        )
     set_geometry_constraints(area_layer)
 
     poi_layer = add_location_layer(
@@ -257,7 +274,12 @@ def add_floor_content_layers(
         floor=floor,
         dropdown_widget=available_location_type_map_widget,
     )
-    set_label_styling(poi_layer)
+    set_label_styling(poi_layer, min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO)
+    if LAYER_GEOM_VISIBLE_MIN_RATIO:
+        set_layer_rendering_scale(
+            poi_layer,
+            min_ratio=LAYER_GEOM_VISIBLE_MIN_RATIO,
+        )
     set_geometry_constraints(poi_layer)
 
 

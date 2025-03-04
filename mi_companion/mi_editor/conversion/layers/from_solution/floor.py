@@ -18,7 +18,6 @@ from mi_companion.configuration.options import read_bool_setting
 from mi_companion.constants import (
     FLOOR_VERTICAL_SPACING,
     INSERT_INDEX,
-    SHOW_FLOOR_LAYERS_ON_LOAD,
 )
 from .location import add_floor_content_layers
 from ...projection import (
@@ -37,7 +36,7 @@ def add_floor_layers(
     building_group: Any,
     qgis_instance_handle: Any,
     solution: Solution,
-    visible: bool = SHOW_FLOOR_LAYERS_ON_LOAD,
+    visible: bool = True,
     # add_floor_polygon_geometry: bool = True,
 ) -> None:
     building_bottom_floor_tracker = {}
@@ -125,7 +124,7 @@ def add_floor_layers(
                         }
                     ],
                     group=floor_group,
-                    visible=SHOW_FLOOR_LAYERS_ON_LOAD,
+                    visible=visible,
                     crs=solve_target_crs_authid(),
                 )
 

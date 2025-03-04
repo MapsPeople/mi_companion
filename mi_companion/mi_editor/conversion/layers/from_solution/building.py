@@ -22,6 +22,7 @@ from ...projection import (
 )
 from mi_companion.constants import (
     INSERT_INDEX,
+    SHOW_FLOOR_LAYERS_ON_LOAD,
 )
 from jord.qgis_utilities.constraints import set_geometry_constraints
 
@@ -47,17 +48,22 @@ def add_building_layers(
         if progress_bar:
             progress_bar.setValue(int(20 + (float(ith) / num_buildings) * 80))
 
-        if (
-            HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS
-            and get_outside_building_admin_id(venue.admin_id) == building.admin_id
-        ):
+        is_outside_building = (
+            get_outside_building_admin_id(venue.admin_id) == building.admin_id
+        )
+        floor_poly_layer_should_be_visible = SHOW_FLOOR_LAYERS_ON_LOAD
+
+        if is_outside_building:
+            floor_poly_layer_should_be_visible = False
+
+        if HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS and is_outside_building:
             add_floor_layers(
                 available_location_type_map_widget=available_location_type_map_widget,
                 building=building,
                 building_group=venue_group,
                 qgis_instance_handle=qgis_instance_handle,
                 solution=solution,
-                visible=False,
+                visible=floor_poly_layer_should_be_visible,
             )
 
         elif building.venue.key == venue.key:
@@ -108,6 +114,7 @@ def add_building_layers(
                 building_group=building_group,
                 qgis_instance_handle=qgis_instance_handle,
                 solution=solution,
+                visible=floor_poly_layer_should_be_visible,
             )
         else:
             ...
