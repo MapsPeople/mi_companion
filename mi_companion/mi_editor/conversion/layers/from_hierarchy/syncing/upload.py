@@ -192,12 +192,15 @@ def sync_build_venue_solution(
             ),
         )
     except Exception as e:
+        QtWidgets.QMessageBox.critical(
+            None,
+            window_title,
+            f"ERROR: {solution_name}:{venue_name} venue could not be uploaded, {e}",
+        )
         logger.error(
-            'Error synchronising, try running the "Compatilibity" button to fix solution',
-            e,
+            f'Error synchronising, try running the "Compatibility" button to fix solution {e}'
         )
         raise e
-        return
 
     if VERBOSE:
         logger.info("Synchronised")

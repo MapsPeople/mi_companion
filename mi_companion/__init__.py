@@ -14,14 +14,14 @@ def classFactory(iface):  # pylint: disable=invalid-name
     logger = None
     #
     from .mi_companion_plugin import MapsIndoorsCompanionPlugin
-
-    from jord.qgis_utilities import read_plugin_setting
-    from jord.qgis_utilities.helpers.logging import add_logging_handler_once
+    import logging
+    from jord.qgis_utilities import (
+        read_plugin_setting,
+        add_logging_handler_once,
+        setup_logger,
+    )
 
     try:
-        from jord.qgis_utilities.helpers.logging import setup_logger
-        import logging
-
         logging_level = read_plugin_setting(
             "LOGGING_LEVEL",
             default_value=DEFAULT_PLUGIN_SETTINGS["LOGGING_LEVEL"],
@@ -66,9 +66,6 @@ def classFactory(iface):  # pylint: disable=invalid-name
                 logger.error(f"{e}")
 
     try:
-        from jord.qgis_utilities.helpers.logging import setup_logger
-        import logging
-
         logging_level = read_plugin_setting(
             "LOGGING_LEVEL",
             default_value=DEFAULT_PLUGIN_SETTINGS["LOGGING_LEVEL"],

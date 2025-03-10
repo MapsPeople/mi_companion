@@ -1,8 +1,7 @@
 import logging
 from typing import Any, Optional
 
-import shapely
-from jord.qlive_utilities import add_shapely_layer
+from jord.qlive_utilities import add_no_geom_layer, add_shapely_layer
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -34,11 +33,6 @@ from .venue import add_venue_layer
 
 __all__ = ["solution_venue_to_layer_hierarchy", "add_solution_layers"]
 
-from ...projection import (
-    prepare_geom_for_qgis,
-    solve_target_crs_authid,
-)
-
 logger = logging.getLogger(__name__)
 
 
@@ -50,6 +44,15 @@ def add_solution_layers(
     mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
 ) -> None:
+    """
+
+    :param qgis_instance_handle:
+    :param solution:
+    :param layer_tree_root:
+    :param mi_hierarchy_group_name:
+    :param progress_bar:
+    :return:
+    """
     mi_group = layer_tree_root.findGroup(mi_hierarchy_group_name)
 
     if not mi_group:  # add it if it does not exist
@@ -175,18 +178,10 @@ def add_solution_layers(
 
     for venue in solution.venues:
         if not found_solution_data:
-            if venue:
-                solution_point = venue.polygon.representative_point()
-            else:
-                solution_point = shapely.Point(0, 0)
-
-            layer = add_shapely_layer(
+            layer = add_no_geom_layer(
                 qgis_instance_handle=qgis_instance_handle,
                 name=SOLUTION_DATA_DESCRIPTOR,
                 group=solution_group,
-                geoms=[
-                    prepare_geom_for_qgis(solution_point)
-                ],  # Does not really matter where this point is
                 columns=[
                     {
                         "external_id": solution.external_id,
@@ -196,18 +191,7 @@ def add_solution_layers(
                     }
                 ],
                 visible=False,
-                crs=solve_target_crs_authid(),
             )
-
-            if False:  # CLEAR GEOMETRY AS IT IS NOT NEEDED, TODO: DOES NOT WORK
-                for l in layer:
-                    l.startEditing()
-                    for f in l.getFeatures():
-                        # f:QgsFeature
-                        f.clearGeometry()
-                        # l.changeGeometry(fid, geom)
-                        assert not f.hasGeometry()
-                    l.commitChanges()
 
         if venue is None:
             logger.warning("Venue was not found!")
