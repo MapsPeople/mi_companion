@@ -16,7 +16,7 @@ class ValueDimension(str, Enum):
 
 
 def set_coordinate(
-    feature: Any, value: float, coord_type: ValueDimension = ValueDimension.Z
+    feature: Any, value: float, coord_type: ValueDimension = ValueDimension.M
 ) -> Any:
     """
 
@@ -101,7 +101,7 @@ def set_coordinate(
 
 
 def run(
-    *, value: float = 0.0, dimension: str = "z", only_active_layer: bool = True
+    *, value: float = 0.0, dimension: str = "m", only_active_layer: bool = True
 ) -> None:
     """
 

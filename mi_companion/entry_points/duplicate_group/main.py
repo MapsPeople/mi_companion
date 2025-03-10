@@ -17,6 +17,8 @@ def run(
     """
     from jord.qgis_utilities.helpers import duplicate_groups
 
+    # TODO: ADD INDIVIDUAL LAYER FUNCTIONALITY
+
     # noinspection PyUnresolvedReferences
     from qgis.utils import iface
 

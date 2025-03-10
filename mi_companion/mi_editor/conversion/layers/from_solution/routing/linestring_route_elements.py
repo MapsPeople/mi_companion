@@ -16,6 +16,7 @@ from mi_companion.mi_editor.conversion.projection import (
     reproject_geometry_df,
     solve_target_crs_authid,
 )
+from mi_companion.qgis_utilities.styling import apply_display_rule
 
 logger = logging.getLogger(__name__)
 __all__ = ["add_linestring_route_element_layers"]
@@ -31,6 +32,8 @@ def add_linestring_route_element_layers(
     doors: DoorCollection,
 ) -> None:
     doors_name = f"{DOORS_DESCRIPTOR}"
+
+    display_rules = None
 
     if len(doors) == 0:
         return
@@ -84,6 +87,7 @@ def add_linestring_route_element_layers(
                     make_field_not_null(linestring_layer, field_name=field_name)
 
                 make_field_unique(linestring_layer, field_name="admin_id")
+                apply_display_rule(linestring_layer, display_rules=display_rules)
 
                 if dropdown_widget:
                     add_dropdown_widget(
@@ -120,6 +124,7 @@ def add_linestring_route_element_layers(
             make_field_not_null(linestring_layer, field_name=field_name)
 
         make_field_unique(linestring_layer, field_name="admin_id")
+        apply_display_rule(linestring_layer, display_rules=display_rules)
 
         if dropdown_widget:
             add_dropdown_widget(
