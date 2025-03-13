@@ -1,8 +1,11 @@
 import logging
 from typing import Any, Iterable, Optional
 
-from jord.qgis_utilities.constraints import set_geometry_constraints
-from jord.qgis_utilities.fields import make_field_unique
+from jord.qgis_utilities import (
+    make_field_not_null,
+    make_field_unique,
+    set_geometry_constraints,
+)
 from jord.qlive_utilities import add_shapely_layer
 
 # noinspection PyUnresolvedReferences
@@ -198,4 +201,6 @@ def add_venue_polygon_layer(
                         layers_inner.fields().indexFromName("venue_type"),
                         venue_type_dropdown_widget,
                     )
-    make_field_unique(venue_layer)
+    make_field_unique(venue_layer, field_name="admin_id")
+    for field_name in ("name",):
+        make_field_not_null(venue_layer, field_name=field_name)

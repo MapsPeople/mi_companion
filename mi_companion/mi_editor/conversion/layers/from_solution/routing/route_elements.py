@@ -5,6 +5,7 @@ from typing import Any, Optional
 from jord.qgis_utilities.fields import (
     add_dropdown_widget,
     make_field_not_null,
+    make_field_reuse_last_entered_value,
     make_field_unique,
 )
 from jord.qgis_utilities.styling import set_3d_view_settings
@@ -77,7 +78,9 @@ def add_route_element_layers(
             Obstacle: solution.obstacles,
             Connection: solution.connections,
         }
+
         unique_levels = defaultdict(dict)
+
         for type_, res in route_element_collections:
             for re in res:
                 re: RouteElementItem
@@ -105,6 +108,9 @@ def add_route_element_layers(
             doors=solution.doors,
         )
 
+        for field_name in ("door_type",):
+            make_field_reuse_last_entered_value(door_layers, field_name=field_name)
+
         if False:
             set_3d_view_settings(  # MAKE offset CONDITIONAL ON FLOOR_INDEX column
                 door_layers,
@@ -127,7 +133,7 @@ def add_route_element_layers(
                 dropdown_widget = entry_point_type_dropdown_widget
                 route_element_type_column = "entry_point_type"
 
-            add_point_route_element_layers(
+            added_point_layers = add_point_route_element_layers(
                 graph=graph,
                 graph_group=graph_group,
                 qgis_instance_handle=qgis_instance_handle,
@@ -136,6 +142,12 @@ def add_route_element_layers(
                 dropdown_widget=dropdown_widget,
                 route_element_type_column=route_element_type_column,
             )
+
+            if desc == ENTRY_POINTS_DESCRIPTOR:
+                for field_name in ("entry_point_type",):
+                    make_field_reuse_last_entered_value(
+                        added_point_layers, field_name=field_name
+                    )
 
         add_polygon_route_element_layers(
             graph=graph,

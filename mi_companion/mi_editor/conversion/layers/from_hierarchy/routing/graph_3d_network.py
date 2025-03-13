@@ -114,7 +114,7 @@ def add_3d_graph_edges(
                     layer_feature = set_z_from_m(layer_feature)
 
                     graph_line = prepare_geom_for_mi_db(
-                        feature_to_shapely(layer_feature), clean=False
+                        feature_to_shapely(layer_feature, validate=False), clean=False
                     )
 
                     lines.append((graph_line, feature_attributes))

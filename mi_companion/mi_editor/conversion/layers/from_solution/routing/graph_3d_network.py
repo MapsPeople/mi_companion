@@ -6,6 +6,7 @@ from jord.qgis_utilities.constraints import set_geometry_constraints
 from jord.qgis_utilities.fields import (
     add_dropdown_widget,
     make_field_not_null,
+    make_field_reuse_last_entered_value,
     make_field_unique,
 )
 from jord.qgis_utilities.styling import set_3d_view_settings
@@ -18,6 +19,9 @@ from mi_companion import (
     HALF_SIZE,
     NAVIGATION_GRAPH_LINES_DESCRIPTOR,
 )
+from mi_companion.mi_editor.conversion.layers.from_solution.routing.styling.graduated import (
+    set_m_based_graduated_styling,
+)
 from mi_companion.mi_editor.conversion.projection import (
     prepare_geom_for_qgis,
     solve_target_crs_authid,
@@ -26,155 +30,6 @@ from mi_companion.mi_editor.conversion.projection import (
 logger = logging.getLogger(__name__)
 
 __all__ = ["add_graph_3d_network_layers"]
-
-
-def set_z_based_graduated_styling(layers, *, repaint: bool = False):
-    """
-
-    :param layers:
-    :param repaint:
-    :return:
-    """
-    for layers_inner in layers:
-        if layers_inner:
-            if isinstance(layers_inner, Iterable):
-                for layer in layers_inner:
-                    if layer:
-                        set_z_based_graduated_styling_single_layer(
-                            layer, repaint=repaint
-                        )
-            else:
-                set_z_based_graduated_styling_single_layer(
-                    layers_inner, repaint=repaint
-                )
-
-
-def set_m_based_graduated_styling(layers, *, repaint: bool = False):
-    """
-
-    :param layers:
-    :param repaint:
-    :return:
-    """
-    for layers_inner in layers:
-        if layers_inner:
-            if isinstance(layers_inner, Iterable):
-                for layer in layers_inner:
-                    if layer:
-                        set_m_based_graduated_styling_single_layer(
-                            layer, repaint=repaint
-                        )
-            else:
-                set_m_based_graduated_styling_single_layer(
-                    layers_inner, repaint=repaint
-                )
-
-
-def set_m_based_graduated_styling_single_layer(layer, *, repaint: bool = False):
-    """
-    Sets a graduated color style based on unique z-coordinates.
-    Each unique z value gets assigned a different color.
-    """
-    from qgis.core import (
-        QgsGraduatedSymbolRenderer,
-        QgsSymbol,
-        QgsRendererRange,
-        QgsExpression,
-    )
-
-    # z_expression = QgsExpression("z_max($geometry)")
-    # z_expression.prepare(layer.fields())
-    # unique_vals = []
-    unique_vals = set()
-
-    for feature in layer.getFeatures():
-        if False:
-            # m_val = z_expression.evaluate(feature)
-            # if m_val not in unique_vals:
-            #    unique_vals.append(m_val)
-            ...
-        else:
-            geom = feature.geometry()
-            if geom:
-                m_val = geom.constGet().mAt(0)  # Get z from first vertex
-                unique_vals.add(m_val)
-
-    # unique_vals.sort()
-    unique_vals = sorted(unique_vals)
-
-    from qgis.core import QgsStyle
-
-    ramp = QgsStyle.defaultStyle().colorRamp("Spectral")
-
-    ranges = []
-    for i, m_val in enumerate(unique_vals):
-        color = ramp.color(i / (len(unique_vals) - 1 if len(unique_vals) > 1 else 1))
-
-        symbol = QgsSymbol.defaultSymbol(layer.geometryType())
-        symbol.setColor(color)
-
-        range_label = f"Level {m_val}"
-        value_range = QgsRendererRange(m_val, m_val, symbol, range_label)
-        ranges.append(value_range)
-
-    renderer = QgsGraduatedSymbolRenderer("m_max($geometry)", ranges)
-    layer.setRenderer(renderer)
-    if repaint:
-        layer.triggerRepaint()
-
-
-def set_z_based_graduated_styling_single_layer(layer, *, repaint: bool = False):
-    """
-    Sets a graduated color style based on unique z-coordinates.
-    Each unique z value gets assigned a different color.
-    """
-    from qgis.core import (
-        QgsGraduatedSymbolRenderer,
-        QgsSymbol,
-        QgsRendererRange,
-        QgsExpression,
-    )
-
-    # z_expression = QgsExpression("z_max($geometry)")
-    # z_expression.prepare(layer.fields())
-    # unique_vals = []
-    unique_vals = set()
-
-    for feature in layer.getFeatures():
-        if False:
-            # z_val = z_expression.evaluate(feature)
-            # if z_val not in unique_vals:
-            #  unique_vals.append(z_val)
-            ...
-        else:
-            geom = feature.geometry()
-            if geom:
-                z_val = geom.constGet().zAt(0)  # Get z from first vertex
-                unique_vals.add(z_val)
-
-    # unique_vals.sort()
-    unique_vals = sorted(unique_vals)
-
-    from qgis.core import QgsStyle
-
-    ramp = QgsStyle.defaultStyle().colorRamp("Spectral")
-
-    ranges = []
-    for i, z_val in enumerate(unique_vals):
-        color = ramp.color(i / (len(unique_vals) - 1 if len(unique_vals) > 1 else 1))
-
-        symbol = QgsSymbol.defaultSymbol(layer.geometryType())
-        symbol.setColor(color)
-
-        range_label = f"Level {z_val}"
-        value_range = QgsRendererRange(z_val, z_val, symbol, range_label)
-        ranges.append(value_range)
-
-    renderer = QgsGraduatedSymbolRenderer("z_max($geometry)", ranges)
-    layer.setRenderer(renderer)
-    if repaint:
-        layer.triggerRepaint()
-
 
 EDGE_BASED_LEVELS = False  # OSM EXPORTER FROM MI SUCKS
 
@@ -277,12 +132,15 @@ def add_graph_3d_network_layers(
             layers=graph_lines_layer,
         )
 
-        set_geometry_constraints(graph_lines_layer)
+        # set_geometry_constraints(graph_lines_layer)
 
     for a in (graph_lines_layer,):
         if a is not None:
             for field_name in ("abutters", "highway"):
                 make_field_not_null(a, field_name=field_name)
+                make_field_reuse_last_entered_value(
+                    layers=graph_lines_layer, field_name=field_name
+                )
 
             if highway_type_dropdown_widget:
                 for layers_inner in a:

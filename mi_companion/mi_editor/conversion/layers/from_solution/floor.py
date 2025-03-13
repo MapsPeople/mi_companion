@@ -129,7 +129,7 @@ def add_floor_layers(
                 )
 
             assert floor_layer is not None
-            make_field_unique(floor_layer)
+            make_field_unique(floor_layer, field_name="admin_id")
             set_3d_view_settings(
                 floor_layer,
                 offset=(FLOOR_VERTICAL_SPACING + FLOOR_HEIGHT) * floor.floor_index,

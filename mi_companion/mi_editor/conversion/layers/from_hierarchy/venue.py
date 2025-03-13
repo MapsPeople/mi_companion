@@ -119,21 +119,25 @@ def convert_solution_venues(
                     f"Did not find venue for {solution_group_item=}, skipping"
                 )
                 continue
-
-            add_venue_level_hierarchy(
-                ith_solution=ith_solution,
-                ith_venue=ith_solution_child,
-                num_solution_elements=num_solution_elements,
-                num_venue_elements=num_solution_group_elements,
-                progress_bar=progress_bar,
-                solution=solution,
-                solution_group_item=solution_group_item,
-                venue_key=venue_key,
-                issues=issues,
-                collect_invalid=collect_invalid,
-                collect_warnings=collect_warnings,
-                collect_errors=collect_errors,
-            )
+            try:
+                add_venue_level_hierarchy(
+                    ith_solution=ith_solution,
+                    ith_venue=ith_solution_child,
+                    num_solution_elements=num_solution_elements,
+                    num_venue_elements=num_solution_group_elements,
+                    progress_bar=progress_bar,
+                    solution=solution,
+                    solution_group_item=solution_group_item,
+                    venue_key=venue_key,
+                    issues=issues,
+                    collect_invalid=collect_invalid,
+                    collect_warnings=collect_warnings,
+                    collect_errors=collect_errors,
+                )
+            except Exception as ex:
+                logger.error(f"Failed to add {solution_group_item=}, {ex=}")
+                QtWidgets.QMessageBox.critical(None, "Error", f"\n\n- {str(ex)}")
+                raise ex
 
         post_process_solution(solution)
 
@@ -141,7 +145,7 @@ def convert_solution_venues(
             assert upload_venues is False, "Cannot upload venues if collecting invalid"
             title = f"Validation {venue_key}"
             if issues:
-                QtWidgets.QMessageBox.information(
+                QtWidgets.QMessageBox.critical(
                     None, title, "- " + "\n\n- ".join(issues)
                 )
             else:
