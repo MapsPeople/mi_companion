@@ -179,6 +179,8 @@ def add_floor_locations(
             if name is None:
                 raise ValueError(f"{layer_feature} is missing a valid name")
 
+            # TODO: IMPLEMENT POP UP CONFIRMATION OF DELETE FEATURE WHEN MISSING GEOMETRIES.
+
             location_geometry = feature_to_shapely(layer_feature)
 
             if location_geometry is None:
