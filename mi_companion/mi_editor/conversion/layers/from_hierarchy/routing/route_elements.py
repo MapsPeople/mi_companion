@@ -1,7 +1,7 @@
 import logging
 import operator
 from collections import defaultdict
-from typing import Any, List, Optional
+from typing import Any, List, Mapping, Optional
 
 from jord.qgis_utilities.conversion.features import (
     GeometryIsEmptyError,
@@ -73,17 +73,6 @@ def add_doors(
             )
         }
 
-        door_type = door_attributes["door_type"]
-
-        if isinstance(door_type, str):
-            ...
-        elif isinstance(door_type, QVariant):
-            # logger.warning(f"{typeToDisplayString(type(v))}")
-            if door_type.isNull():  # isNull(v):
-                door_type = None
-            else:
-                door_type = door_type.value()
-
         try:
             door_linestring = feature_to_shapely(door_feature)
         except GeometryIsEmptyError as e:
@@ -96,12 +85,26 @@ def add_doors(
         door_key = solution.add_door(
             door_attributes["admin_id"],
             linestring=prepare_geom_for_mi_db(door_linestring, clean=False),
-            door_type=DoorType(door_type),
+            door_type=get_door_type(door_attributes),
             floor_index=int(door_attributes["floor_index"]),
             graph_key=graph_key,
         )
         if VERBOSE:
             logger.info("added door", door_key)
+
+
+def get_door_type(door_attributes: Mapping[str, Any]) -> DoorType:
+    door_type = door_attributes["door_type"]
+    if isinstance(door_type, str):
+        ...
+    elif isinstance(door_type, QVariant):
+        # logger.warning(f"{typeToDisplayString(type(v))}")
+        if door_type.isNull():  # isNull(v):
+            door_type = None
+        else:
+            door_type = door_type.value()
+
+    return DoorType(door_type)
 
 
 def add_barriers(
@@ -279,20 +282,7 @@ def add_entry_points(
             )
         }
 
-        try:
-            entry_point_type = entry_point_attributes["entry_point_type"]
-        except GeometryIsEmptyError as e:
-            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
-                raise e
-
-        if isinstance(entry_point_type, str):
-            ...
-        elif isinstance(entry_point_type, QVariant):
-            # logger.warning(f"{typeToDisplayString(type(v))}")
-            if entry_point_type.isNull():  # isNull(v):
-                entry_point_type = None
-            else:
-                entry_point_type = entry_point_type.value()
+        entry_point_type = get_entry_point_type(entry_point_attributes)
 
         entry_point_geom = feature_to_shapely(entry_point_feature)
 
@@ -301,7 +291,7 @@ def add_entry_points(
                 entry_point_key = solution.add_entry_point(
                     entry_point_attributes["admin_id"],
                     point=prepare_geom_for_mi_db(entry_point_geom),
-                    entry_point_type=EntryPointType(entry_point_type),
+                    entry_point_type=entry_point_type,
                     floor_index=int(entry_point_attributes["floor_index"]),
                     graph_key=graph_key,
                 )
@@ -321,6 +311,28 @@ def add_entry_points(
             )
 
 
+def get_entry_point_type(entry_point_attributes: Mapping[str, Any]) -> EntryPointType:
+    try:
+        entry_point_type = entry_point_attributes["entry_point_type"]
+    except Exception as e:
+        logger.error(e)
+        logger.error(entry_point_attributes)
+        logger.error(f"Defaulting to EntryPointType.any")
+        entry_point_type = EntryPointType.any.value
+        # raise e
+
+    if isinstance(entry_point_type, str):
+        ...
+    elif isinstance(entry_point_type, QVariant):
+        # logger.warning(f"{typeToDisplayString(type(v))}")
+        if entry_point_type.isNull():  # isNull(v):
+            entry_point_type = None
+        else:
+            entry_point_type = entry_point_type.value()
+
+    return EntryPointType(entry_point_type)
+
+
 def get_connections(connections_layer_tree_node: Any) -> dict:  # TODO: FINISH!
     connectors_linestring_layer = connections_layer_tree_node.layer()
     connections = defaultdict(list)
@@ -333,19 +345,11 @@ def get_connections(connections_layer_tree_node: Any) -> dict:  # TODO: FINISH!
             )
         }
 
-        connection_type = connector_attributes["connection_type"]
         connection_id = connector_attributes["connection_id"]
         connector_floor_index = connector_attributes["floor_index"]
         connector_external_id = connector_attributes["admin_id"]
 
-        if isinstance(connection_type, str):
-            ...
-        elif isinstance(connection_type, QVariant):
-            # logger.warning(f"{typeToDisplayString(type(v))}")
-            if connection_type.isNull():  # isNull(v):
-                connection_type = None
-            else:
-                connection_type = connection_type.value()
+        connection_type = get_connection_type(connector_attributes)
 
         try:
             connector_point = feature_to_shapely(connector_feature)
@@ -369,6 +373,19 @@ def get_connections(connections_layer_tree_node: Any) -> dict:  # TODO: FINISH!
                 f"Error while adding {connector_external_id} {connector_point=}"
             )
     return connections
+
+
+def get_connection_type(connector_attributes: Mapping[str, Any]) -> ConnectionType:
+    connection_type = connector_attributes["connection_type"]
+    if isinstance(connection_type, str):
+        ...
+    elif isinstance(connection_type, QVariant):
+        # logger.warning(f"{typeToDisplayString(type(v))}")
+        if connection_type.isNull():  # isNull(v):
+            connection_type = None
+        else:
+            connection_type = connection_type.value()
+    return ConnectionType(connection_type)
 
 
 def add_route_elements(
@@ -662,7 +679,7 @@ def assemble_connections(
             connector_key = solution.add_connection(
                 connection_id,
                 connectors=connectors,
-                connection_type=ConnectionType(connection_type),
+                connection_type=connection_type,
                 graph_key=graph_key,
             )
 

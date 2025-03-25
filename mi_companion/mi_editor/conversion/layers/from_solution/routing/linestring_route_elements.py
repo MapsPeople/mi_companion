@@ -1,10 +1,11 @@
 import logging
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import geopandas
 from jord.qgis_utilities.fields import (
     add_dropdown_widget,
     make_field_not_null,
+    make_field_reuse_last_entered_value,
     make_field_unique,
 )
 from jord.qlive_utilities import add_dataframe_layer
@@ -16,7 +17,6 @@ from mi_companion.mi_editor.conversion.projection import (
     reproject_geometry_df,
     solve_target_crs_authid,
 )
-from mi_companion.qgis_utilities.styling import apply_display_rule
 
 logger = logging.getLogger(__name__)
 __all__ = ["add_linestring_route_element_layers"]
@@ -30,13 +30,15 @@ def add_linestring_route_element_layers(
     graph_group: Any,
     qgis_instance_handle: Any,
     doors: DoorCollection,
-) -> None:
+) -> List[Any]:
     doors_name = f"{DOORS_DESCRIPTOR}"
 
     display_rules = None
 
+    added_layers = []
+
     if len(doors) == 0:
-        return
+        return []
 
     df = to_df(doors)
 
@@ -44,7 +46,7 @@ def add_linestring_route_element_layers(
         logger.warning(
             f"No floor index found for {doors_name}, {df.columns}, {len(df)}"
         )
-        return
+        return []
 
     df["floor_index"] = df["floor_index"].astype(str)
 
@@ -83,11 +85,14 @@ def add_linestring_route_element_layers(
                     crs=solve_target_crs_authid(),
                 )
 
+                added_layers.append(linestring_layer)
+
                 for field_name in ("floor_index",):
                     make_field_not_null(linestring_layer, field_name=field_name)
+                    make_field_reuse_last_entered_value(linestring_layer, field_name)
 
                 make_field_unique(linestring_layer, field_name="admin_id")
-                apply_display_rule(linestring_layer, display_rules=display_rules)
+                # apply_display_rule(linestring_layer, display_rules=display_rules)
 
                 if dropdown_widget:
                     add_dropdown_widget(
@@ -122,11 +127,16 @@ def add_linestring_route_element_layers(
 
         for field_name in ("floor_index",):
             make_field_not_null(linestring_layer, field_name=field_name)
+            make_field_reuse_last_entered_value(linestring_layer, field_name=field_name)
 
         make_field_unique(linestring_layer, field_name="admin_id")
-        apply_display_rule(linestring_layer, display_rules=display_rules)
+        # apply_display_rule(linestring_layer, display_rules=display_rules)
 
         if dropdown_widget:
             add_dropdown_widget(
                 linestring_layer, route_element_type_column, dropdown_widget
             )
+
+        added_layers.append(linestring_layer)
+
+    return added_layers

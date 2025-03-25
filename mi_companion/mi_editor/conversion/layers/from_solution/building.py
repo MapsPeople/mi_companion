@@ -105,7 +105,7 @@ def add_building_layers(
                 crs=solve_target_crs_authid(),
             )
 
-            make_field_unique(building_layer)
+            make_field_unique(building_layer, field_name="admin_id")
             set_geometry_constraints(building_layer)
 
             add_floor_layers(

@@ -5,6 +5,7 @@ import geopandas
 from jord.qgis_utilities.fields import (
     add_dropdown_widget,
     make_field_not_null,
+    make_field_reuse_last_entered_value,
     make_field_unique,
 )
 from jord.qlive_utilities import add_dataframe_layer
@@ -33,6 +34,8 @@ def add_polygon_route_element_layers(
     dropdown_widget: Optional[Any] = None,
 ) -> None:
     df = to_df(route_element_collection)
+
+    added_layers = []
 
     if "floor_index" not in df:
         logger.warning(f"No floor index found for {layer_name}")
@@ -75,6 +78,8 @@ def add_polygon_route_element_layers(
                     crs=solve_target_crs_authid(),
                 )
 
+                added_layers.append(obstacle_layer)
+
                 for field_name in ("floor_index",):
                     make_field_not_null(obstacle_layer, field_name=field_name)
 
@@ -114,8 +119,11 @@ def add_polygon_route_element_layers(
             crs=solve_target_crs_authid(),
         )
 
+        added_layers.append(obstacle_layer)
+
         for field_name in ("floor_index",):
             make_field_not_null(obstacle_layer, field_name=field_name)
+            make_field_reuse_last_entered_value(obstacle_layer, field_name)
 
         make_field_unique(obstacle_layer, field_name="admin_id")
 
@@ -123,3 +131,5 @@ def add_polygon_route_element_layers(
             add_dropdown_widget(
                 obstacle_layer, route_element_type_column, dropdown_widget
             )
+
+    return added_layers

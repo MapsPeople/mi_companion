@@ -1,11 +1,12 @@
 import logging
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import geopandas
 from geopandas import GeoDataFrame
 from jord.qgis_utilities.fields import (
     add_dropdown_widget,
     make_field_not_null,
+    make_field_reuse_last_entered_value,
     make_field_unique,
 )
 from jord.qlive_utilities import add_dataframe_layer
@@ -30,7 +31,7 @@ def add_connection_layers(
     connections: ConnectionCollection,
     dropdown_widget: Optional[Any] = None,
     route_element_type_column: Optional[str] = "connection_type",
-) -> None:
+) -> List[Any]:
     """
 
     :param graph_group:
@@ -41,6 +42,8 @@ def add_connection_layers(
     :param route_element_type_column:
     :return:
     """
+    added_layers = []
+
     connectors = {}
     for c in connections:
         for connector_key, connector in c.connectors.items():
@@ -53,7 +56,7 @@ def add_connection_layers(
             }
 
     if len(connectors) == 0:
-        return
+        return []
 
     df = (
         GeoDataFrame.from_dict(connectors, orient="index")
@@ -95,11 +98,15 @@ def add_connection_layers(
                     group=doors_group,
                     crs=solve_target_crs_authid(),
                 )
+                added_layers.append(connectors_layer)
 
                 make_field_unique(connectors_layer, field_name="admin_id")
 
                 for field_name in ("floor_index", "connection_id", "connection_type"):
                     make_field_not_null(connectors_layer, field_name=field_name)
+                    make_field_reuse_last_entered_value(
+                        connectors_layer, field_name=field_name
+                    )
 
                 if dropdown_widget:
                     add_dropdown_widget(
@@ -124,8 +131,11 @@ def add_connection_layers(
             crs=solve_target_crs_authid(),
         )
 
+        added_layers.append(connectors_layer)
+
         for field_name in ("floor_index", "connection_id", "connection_type"):
             make_field_not_null(connectors_layer, field_name=field_name)
+            make_field_reuse_last_entered_value(connectors_layer, field_name=field_name)
 
         make_field_unique(connectors_layer, field_name="admin_id")
 
@@ -133,3 +143,5 @@ def add_connection_layers(
             add_dropdown_widget(
                 connectors_layer, route_element_type_column, dropdown_widget
             )
+
+    return added_layers

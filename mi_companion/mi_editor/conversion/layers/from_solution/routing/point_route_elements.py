@@ -1,13 +1,11 @@
 import logging
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import geopandas
 from jord.qgis_utilities.fields import (
     add_dropdown_widget,
-    add_dropdown_widget,
     make_field_not_null,
-    make_field_not_null,
-    make_field_unique,
+    make_field_reuse_last_entered_value,
     make_field_unique,
 )
 from jord.qlive_utilities import add_dataframe_layer, add_dataframe_layer
@@ -34,11 +32,11 @@ def add_point_route_element_layers(
     qgis_instance_handle: Any,
     layer_descriptor: str,
     route_element_collection: CollectionMixin,
-) -> None:
+) -> List[Any]:
     doors_name = layer_descriptor
 
     if len(route_element_collection) == 0:
-        return
+        return []
 
     df = to_df(route_element_collection)
 
@@ -46,9 +44,11 @@ def add_point_route_element_layers(
         logger.warning(
             f"No floor index found for {doors_name}, {df.columns}, {len(df)}"
         )
-        return
+        return []
 
     df["floor_index"] = df["floor_index"].astype(str)
+
+    added_layers = []
 
     if MAKE_FLOOR_WISE_LAYERS:
         doors_group = graph_group.insertGroup(INSERT_INDEX, doors_name)
@@ -85,8 +85,13 @@ def add_point_route_element_layers(
                     crs=solve_target_crs_authid(),
                 )
 
+                added_layers.append(point_layer)
+
                 for field_name in ("floor_index",):
                     make_field_not_null(point_layer, field_name=field_name)
+                    make_field_reuse_last_entered_value(
+                        point_layer, field_name=field_name
+                    )
 
                 make_field_unique(point_layer, field_name="admin_id")
 
@@ -123,10 +128,15 @@ def add_point_route_element_layers(
             crs=solve_target_crs_authid(),
         )
 
+        added_layers.append(point_layer)
+
         for field_name in ("floor_index",):
             make_field_not_null(point_layer, field_name=field_name)
+            make_field_reuse_last_entered_value(point_layer, field_name=field_name)
 
         make_field_unique(point_layer, field_name="admin_id")
 
         if dropdown_widget is not None and route_element_type_column is not None:
             add_dropdown_widget(point_layer, route_element_type_column, dropdown_widget)
+
+    return added_layers

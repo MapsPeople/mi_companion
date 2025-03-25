@@ -52,7 +52,7 @@ def create_mi_layer(layer_data: dict, layer_name: str) -> bool:
         )
 
         if layer:
-            make_field_unique(layer)
+            make_field_unique(layer, field_name="admin_id")
             set_3d_view_settings(layer)
             return True
 
