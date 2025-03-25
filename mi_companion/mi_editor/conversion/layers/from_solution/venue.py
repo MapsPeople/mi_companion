@@ -156,7 +156,7 @@ def add_venue_polygon_layer(
                 "external_id": venue.external_id,
                 "name": venue.name,
                 "last_verified": venue.last_verified,
-                "venue_type": venue.venue_type.name,
+                "venue_type": venue.venue_type.value,
                 **(
                     {
                         f"address.city": venue.address.city,

@@ -1,8 +1,5 @@
 import logging
-from itertools import count
 from typing import Any, Collection, List, Optional
-
-import shapely
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtWidgets
@@ -20,17 +17,13 @@ from integration_system.mi import (
     synchronize,
 )
 from integration_system.model import (
-    DIFFERENCE_GROUP_NAME,
     Graph,
-    SHAPELY_DIFFERENCE_DESCRIPTION,
     Solution,
 )
 from mi_companion import VERBOSE
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.gui.message_box import ResizableMessageBox
-from mi_companion.mi_editor.conversion.projection import (
-    MI_EPSG_NUMBER,
-)
+from .operation_visualisation import show_differences
 
 logger = logging.getLogger(__name__)
 
@@ -127,7 +120,10 @@ def sync_build_venue_solution(
         )
         msg_box.setIcon(QtWidgets.QMessageBox.Information)
         msg_box.setWindowTitle(window_title)
-        msg_box.setText(f"The {solution_name}:{venue_name} venue has been modified.")
+        text_msg = f"The {solution_name}:{venue_name} venue has been modified."
+        if read_bool_setting("UPLOAD_OSM_GRAPH"):
+            text_msg += "\nNote: Graph will always update ATM"
+        msg_box.setText(text_msg)
         msg_box.setInformativeText(
             f"Do you want to sync following changes?\n\n{aggregate_operation_description(operations)}"
         )
@@ -211,117 +207,3 @@ def sync_build_venue_solution(
             window_title,
             f"Successfully uploaded {solution_name}:{venue_name} venue",
         )
-
-
-def show_differences(
-    *,
-    qgis_instance_handle: Any,
-    solution: Solution,
-    solution_name: str,
-    operations: Collection[MIOperation],
-) -> None:
-    mi_db_difference_group = (
-        QgsProject.instance().layerTreeRoot().findGroup(DIFFERENCE_GROUP_NAME)
-    )
-
-    if not mi_db_difference_group:  # did not find the group
-        mi_db_difference_group = (
-            QgsProject.instance().layerTreeRoot().insertGroup(0, DIFFERENCE_GROUP_NAME)
-        )
-
-    solution_difference_group = mi_db_difference_group.findGroup(solution_name)
-
-    if not solution_difference_group:  # did not find the group
-        solution_difference_group = mi_db_difference_group.insertGroup(0, solution_name)
-
-    venue = next(iter(solution.venues))
-    venue_diff_name = venue.name
-
-    venue_difference_group = solution_difference_group.findGroup(venue_diff_name)
-
-    if venue_difference_group:  # Found the group
-        for node in [
-            child
-            for child in venue_difference_group.children()
-            # if child.nodeType() == 0
-        ]:
-            venue_difference_group.removeChildNode(node)
-    else:  # did not find the group
-        venue_difference_group = solution_difference_group.insertGroup(
-            0, venue_diff_name
-        )
-
-    for o in operations:
-        differences = {}
-        operation_counter = iter(count())
-        from jord.shapely_utilities import is_multi
-
-        if SHAPELY_DIFFERENCE_DESCRIPTION in o.context:
-            for i in o.context.split(SHAPELY_DIFFERENCE_DESCRIPTION)[1:]:
-                diff_op_ith = next(
-                    operation_counter
-                )  # TODO: ALL OF THIS CAN BE IMPROVED! WITH SOME proper IDs
-
-                geom_wkt = i.replace("\n", "")[0].replace("\n", "").strip()
-
-                if geom_wkt == "":
-                    logger.warning(
-                        f"Empty geometry WKT for operation: {o.operation_type.name} {o.item_type.__name__}, skipping, "
-                        f"{i}"
-                    )
-                    try:
-                        differences[diff_op_ith] = shapely.wkt.loads(
-                            i
-                        )  # Also one parses a single geom per operation
-                        if is_multi(differences[diff_op_ith]):
-                            rep_points = []
-                            for g in differences[diff_op_ith].geoms:
-                                rep_points.append(g.representative_point())
-
-                            differences[f"{diff_op_ith}_coherence"] = (
-                                shapely.LineString(rep_points)
-                            )
-                    except:
-                        logger.error(f"Error parsing geometry WKT: {i}")
-
-                else:
-                    try:
-                        differences[diff_op_ith] = shapely.wkt.loads(
-                            geom_wkt
-                        )  # Also one parses a single geom per operation
-                        if is_multi(differences[diff_op_ith]):
-                            rep_points = []
-                            for g in differences[diff_op_ith].geoms:
-                                rep_points.append(g.representative_point())
-
-                            differences[f"{diff_op_ith}_coherence"] = (
-                                shapely.LineString(rep_points)
-                            )
-                    except:
-                        logger.error(f"Error parsing geometry WKT: {geom_wkt}")
-
-        logger.warning(
-            f"Operation: {o.operation_type.name} {o.item_type.__name__} differences: {differences}"
-        )
-
-        try:
-            import geopandas
-
-            df = geopandas.GeoDataFrame(
-                {"op_ith": differences.keys(), "geometry": differences.values()},
-                crs=f"EPSG:{MI_EPSG_NUMBER}",
-                geometry="geometry",
-            )
-            from jord.qlive_utilities import add_dataframe_layer
-
-            add_dataframe_layer(
-                qgis_instance_handle=qgis_instance_handle,
-                dataframe=df,
-                geometry_column="geometry",
-                name=f"{o.item_type.__name__} differences",
-                group=venue_difference_group,
-                crs=f"EPSG:{MI_EPSG_NUMBER}",
-            )
-
-        except Exception as e:  # TODO: HANDLE Mixed GEOM TYPES!
-            logger.error(e)

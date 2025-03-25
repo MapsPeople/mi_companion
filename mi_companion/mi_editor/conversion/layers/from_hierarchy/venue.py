@@ -314,7 +314,9 @@ def get_venue_type(layer_attributes):
             else:
                 venue_type_str = venue_type_str.value()
 
-        venue_type = VenueType.__getitem__(venue_type_str)
+        # venue_type = VenueType.__getitem__(venue_type_str)
+        venue_type = VenueType(int(venue_type_str))
     else:
         venue_type = VenueType.not_specified
+
     return venue_type
