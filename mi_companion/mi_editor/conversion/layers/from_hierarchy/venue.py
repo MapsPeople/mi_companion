@@ -30,6 +30,8 @@ __all__ = ["convert_solution_venues"]
 from .extraction import special_extract_layer_data
 from jord.qgis_utilities.conversion.features import feature_to_shapely
 
+from .location_type import get_location_type_data
+
 # from .graph import add_venue_graph
 from .syncing import post_process_solution, sync_build_venue_solution
 from ...projection import prepare_geom_for_mi_db
@@ -68,10 +70,48 @@ def convert_solution_venues(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> List[Solution]:
+    """
+
+    :param qgis_instance_handle:
+    :param mi_group_child:
+    :param existing_solution:
+    :param progress_bar:
+    :param solution_external_id:
+    :param solution_name:
+    :param solution_customer_id:
+    :param solution_occupants_enabled:
+    :param ith_solution:
+    :param num_solution_elements:
+    :param solution_depth:
+    :param include_route_elements:
+    :param include_occupants:
+    :param include_media:
+    :param include_graph:
+    :param upload_venues:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     solution_group_children = mi_group_child.children()
     num_solution_group_elements = len(solution_group_children)
     solutions = []
     venue_key = None
+
+    if existing_solution is None:
+        solution = Solution(
+            external_id=solution_external_id,
+            name=solution_name,
+            customer_id=solution_customer_id,
+            occupants_enabled=solution_occupants_enabled,
+            # occupants_enabled =...
+            # default_language = ...
+        )
+    else:
+        solution = copy.deepcopy(existing_solution)
+
+    get_location_type_data(solution_group_children, solution)
 
     for ith_solution_child, solution_group_item in enumerate(solution_group_children):
         if progress_bar:
@@ -91,18 +131,6 @@ def convert_solution_venues(
 
         if not isinstance(solution_group_item, QgsLayerTreeGroup):
             continue  # Selected the solution_data object
-
-        if existing_solution is None:
-            solution = Solution(
-                external_id=solution_external_id,
-                name=solution_name,
-                customer_id=solution_customer_id,
-                occupants_enabled=solution_occupants_enabled,
-                # occupants_enabled =...
-                # default_language = ...
-            )
-        else:
-            solution = copy.deepcopy(existing_solution)
 
         if VENUE_DESCRIPTOR in solution_group_item.name():
             venue_key = get_venue_key(
@@ -144,6 +172,7 @@ def convert_solution_venues(
         if collect_invalid:
             assert upload_venues is False, "Cannot upload venues if collecting invalid"
             title = f"Validation {venue_key}"
+
             if issues:
                 QtWidgets.QMessageBox.critical(
                     None, title, "- " + "\n\n- ".join(issues)
@@ -214,12 +243,6 @@ def get_venue_key(
                 name,
             ) = special_extract_layer_data(venue_level_item)
 
-            venue_type = get_venue_type(layer_attributes)
-
-            last_verified = get_last_verified(layer_attributes)
-
-            address = get_address(layer_attributes)
-
             geom_shapely = feature_to_shapely(layer_feature)
             if geom_shapely:
                 custom_props = extract_custom_props(layer_attributes)
@@ -229,12 +252,12 @@ def get_venue_key(
                         external_id=external_id,
                         name=name,
                         polygon=prepare_geom_for_mi_db(geom_shapely),
-                        venue_type=venue_type,
-                        last_verified=last_verified,
+                        venue_type=get_venue_type(layer_attributes),
+                        last_verified=get_last_verified(layer_attributes),
                         custom_properties=(
                             custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
                         ),
-                        address=address,
+                        address=get_address(layer_attributes),
                     )
                 except Exception as e:
                     _invalid = f"Invalid venue: {e}"
@@ -250,7 +273,7 @@ def get_venue_key(
     logger.error(f"Did not find venue in {venue_group_items.children()=}")
 
 
-def get_address(layer_attributes):
+def get_address(layer_attributes: Mapping[str, Any]) -> Optional[PostalAddress]:
     if "address.city" in layer_attributes and layer_attributes["address.city"]:
         address = PostalAddress(
             city=layer_attributes["address.city"],
@@ -263,10 +286,11 @@ def get_address(layer_attributes):
 
     else:
         address = None
+
     return address
 
 
-def get_last_verified(layer_attributes: Mapping) -> datetime:
+def get_last_verified(layer_attributes: Mapping[str, Any]) -> datetime:
     if "last_verified" in layer_attributes and layer_attributes["last_verified"]:
         last_verified = layer_attributes["last_verified"]
 
@@ -291,9 +315,9 @@ def get_last_verified(layer_attributes: Mapping) -> datetime:
         elif isinstance(last_verified, QVariant):
             # logger.warning(f"{typeToDisplayString(type(v))}")
             if last_verified.isNull():  # isNull(v):
-                venue_type_str = None
+                last_verified = None
             else:
-                venue_type_str = last_verified.value()
+                last_verified = last_verified.value()
 
     else:
         last_verified = None
@@ -301,7 +325,7 @@ def get_last_verified(layer_attributes: Mapping) -> datetime:
     return last_verified
 
 
-def get_venue_type(layer_attributes):
+def get_venue_type(layer_attributes: Mapping[str, Any]) -> Optional[VenueType]:
     if "venue_type" in layer_attributes and layer_attributes["venue_type"]:
         venue_type_str = layer_attributes["venue_type"]
 

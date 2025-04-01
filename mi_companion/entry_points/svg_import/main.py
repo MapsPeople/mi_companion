@@ -4,16 +4,15 @@
 import logging
 from pathlib import Path
 
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
 logger = logging.getLogger(__name__)
 
 
 def run(*, svg_file_path: Path) -> None:
     from svaguely import parse_svg
     from warg import flatten_mapping
-
-    # noinspection PyUnresolvedReferences
-    # from qgis.utils import iface
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
     from jord.qlive_utilities import add_dataframe_layer
     import geopandas

@@ -3,6 +3,11 @@
 import logging
 from pathlib import Path
 
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
 from warg import system_open_path
 
 logger = logging.getLogger(__name__)
@@ -10,11 +15,6 @@ SERIALISED_SOLUTION_EXTENSION = ".json"
 
 
 def run(*, path: Path, open_folder_on_completion: bool = False) -> None:
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-
-    # noinspection PyUnresolvedReferences
-    from qgis.utils import iface
     from jord.qgis_utilities.helpers import InjectedProgressBar
 
     from integration_system.json_serde import to_json

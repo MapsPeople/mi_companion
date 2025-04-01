@@ -19,10 +19,8 @@ from qgis.PyQt.QtCore import QVariant
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.model import (
-    ConnectionType,
+    Connection,
     Connector,
-    DoorType,
-    EntryPointType,
     Solution,
 )
 from mi_companion import (
@@ -37,7 +35,15 @@ from mi_companion import (
     VERBOSE,
 )
 from mi_companion.configuration.options import read_bool_setting
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
+    extract_feature_attributes,
+)
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from .parsing import (
+    get_connection_type,
+    get_door_type,
+    get_entry_point_type,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -63,15 +69,20 @@ def add_doors(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> None:
+    """
+
+    :param graph_key:
+    :param door_layer_tree_node:
+    :param solution:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     doors_linestring_layer = door_layer_tree_node.layer()
     for door_feature in doors_linestring_layer.getFeatures():
-        door_attributes = {
-            k.name(): parse_q_value(v)
-            for k, v in zip(
-                door_feature.fields(),
-                door_feature.attributes(),
-            )
-        }
+        door_attributes = extract_feature_attributes(door_feature)
 
         try:
             door_linestring = feature_to_shapely(door_feature)
@@ -93,20 +104,6 @@ def add_doors(
             logger.info("added door", door_key)
 
 
-def get_door_type(door_attributes: Mapping[str, Any]) -> DoorType:
-    door_type = door_attributes["door_type"]
-    if isinstance(door_type, str):
-        ...
-    elif isinstance(door_type, QVariant):
-        # logger.warning(f"{typeToDisplayString(type(v))}")
-        if door_type.isNull():  # isNull(v):
-            door_type = None
-        else:
-            door_type = door_type.value()
-
-    return DoorType(door_type)
-
-
 def add_barriers(
     graph_key: str,
     barrier_layer_tree_node: Any,
@@ -116,33 +113,40 @@ def add_barriers(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> None:
+    """
+
+    :param graph_key:
+    :param barrier_layer_tree_node:
+    :param solution:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     barriers_linestring_layer = barrier_layer_tree_node.layer()
     for barrier_feature in barriers_linestring_layer.getFeatures():
-        barrier_attributes = {
-            k.name(): parse_q_value(v)
-            for k, v in zip(
-                barrier_feature.fields(),
-                barrier_feature.attributes(),
-            )
-        }
+        barrier_attributes = extract_feature_attributes(barrier_feature)
         try:
             barrier_linestring = feature_to_shapely(barrier_feature)
-        except GeometryIsEmptyError as e:
-            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
-                raise e
 
-        if barrier_linestring is not None:
+            if barrier_linestring is None:
+                logger.error(f"{barrier_linestring=}")
+                continue
+
             barrier_key = solution.add_barrier(
                 barrier_attributes["admin_id"],
                 point=prepare_geom_for_mi_db(barrier_linestring),
                 floor_index=int(barrier_attributes["floor_index"]),
                 graph_key=graph_key,
             )
+
             if VERBOSE:
                 logger.info("added barrier", barrier_key)
 
-        else:
-            logger.error(f"{barrier_linestring=}")
+        except GeometryIsEmptyError as e:
+            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
+                raise e
 
 
 def add_avoids(
@@ -154,35 +158,44 @@ def add_avoids(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> None:
+    """
+
+    :param graph_key:
+    :param avoid_layer_tree_node:
+    :param solution:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     avoids_linestring_layer = avoid_layer_tree_node.layer()
     for avoid_feature in avoids_linestring_layer.getFeatures():
-        avoid_attributes = {
-            k.name(): parse_q_value(v)
-            for k, v in zip(
-                avoid_feature.fields(),
-                avoid_feature.attributes(),
-            )
-        }
+        avoid_attributes = extract_feature_attributes(avoid_feature)
 
         try:
             avoid_point = feature_to_shapely(avoid_feature)
-        except GeometryIsEmptyError as e:
-            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
-                raise e
 
-        if avoid_point is not None:
+            if avoid_point is None:
+                logger.error(f"{avoid_point=}")
+                logger.error(
+                    f'Error while adding {avoid_attributes["admin_id"]} {avoid_point=}'
+                )
+                continue
+
             avoid_key = solution.add_avoid(
                 avoid_attributes["admin_id"],
                 point=prepare_geom_for_mi_db(avoid_point),
                 floor_index=int(avoid_attributes["floor_index"]),
                 graph_key=graph_key,
             )
+
             if VERBOSE:
                 logger.info("added avoid", avoid_key)
-            else:
-                logger.error(
-                    f'Error while adding {avoid_attributes["admin_id"]} {avoid_point=}'
-                )
+
+        except GeometryIsEmptyError as e:
+            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
+                raise e
 
 
 def add_prefers(
@@ -194,22 +207,30 @@ def add_prefers(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> None:
+    """
+
+    :param graph_key:
+    :param prefer_layer_tree_node:
+    :param solution:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     prefers_linestring_layer = prefer_layer_tree_node.layer()
     for prefer_feature in prefers_linestring_layer.getFeatures():
-        prefer_attributes = {
-            k.name(): parse_q_value(v)
-            for k, v in zip(
-                prefer_feature.fields(),
-                prefer_feature.attributes(),
-            )
-        }
+        prefer_attributes = extract_feature_attributes(prefer_feature)
+
         try:
             prefer_point = feature_to_shapely(prefer_feature)
-        except GeometryIsEmptyError as e:
-            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
-                raise e
 
-        if prefer_point is not None:
+            if prefer_point is None:
+                logger.error(
+                    f'Error while adding {prefer_attributes["admin_id"]} {prefer_point=}'
+                )
+                continue
+
             prefer_key = solution.add_prefer(
                 prefer_attributes["admin_id"],
                 point=prepare_geom_for_mi_db(prefer_point),
@@ -218,10 +239,10 @@ def add_prefers(
             )
             if VERBOSE:
                 logger.info("added prefer", prefer_key)
-        else:
-            logger.error(
-                f'Error while adding {prefer_attributes["admin_id"]} {prefer_point=}'
-            )
+
+        except GeometryIsEmptyError as e:
+            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
+                raise e
 
 
 def add_obstacles(
@@ -233,22 +254,29 @@ def add_obstacles(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> None:
+    """
+
+    :param graph_key:
+    :param obstacle_layer_tree_node:
+    :param solution:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     obstacles_linestring_layer = obstacle_layer_tree_node.layer()
     for obstacle_feature in obstacles_linestring_layer.getFeatures():
-        obstacle_attributes = {
-            k.name(): parse_q_value(v)
-            for k, v in zip(
-                obstacle_feature.fields(),
-                obstacle_feature.attributes(),
-            )
-        }
+        obstacle_attributes = extract_feature_attributes(obstacle_feature)
         try:
             obstacle_poly = feature_to_shapely(obstacle_feature)
-        except GeometryIsEmptyError as e:
-            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
-                raise e
 
-        if obstacle_poly is not None:
+            if obstacle_poly is None:
+                logger.error(
+                    f'Error while adding {obstacle_attributes["admin_id"]} {obstacle_poly=}'
+                )
+                continue
+
             obstacle_key = solution.add_obstacle(
                 obstacle_attributes["admin_id"],
                 polygon=prepare_geom_for_mi_db(obstacle_poly),
@@ -257,10 +285,10 @@ def add_obstacles(
             )
             if VERBOSE:
                 logger.info("added obstacle", obstacle_key)
-        else:
-            logger.error(
-                f'Error while adding {obstacle_attributes["admin_id"]} {obstacle_poly=}'
-            )
+
+        except GeometryIsEmptyError as e:
+            if not read_bool_setting("IGNORE_EMPTY_SHAPES"):
+                raise e
 
 
 def add_entry_points(
@@ -272,78 +300,60 @@ def add_entry_points(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> None:
+    """
+
+    :param graph_key:
+    :param entry_point_layer_tree_node:
+    :param solution:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     entry_points_linestring_layer = entry_point_layer_tree_node.layer()
     for entry_point_feature in entry_points_linestring_layer.getFeatures():
-        entry_point_attributes = {
-            k.name(): parse_q_value(v)
-            for k, v in zip(
-                entry_point_feature.fields(),
-                entry_point_feature.attributes(),
-            )
-        }
+        entry_point_attributes = extract_feature_attributes(entry_point_feature)
 
-        entry_point_type = get_entry_point_type(entry_point_attributes)
+        try:
+            entry_point_geom = feature_to_shapely(entry_point_feature)
 
-        entry_point_geom = feature_to_shapely(entry_point_feature)
-
-        if entry_point_geom is not None:
-            try:
-                entry_point_key = solution.add_entry_point(
-                    entry_point_attributes["admin_id"],
-                    point=prepare_geom_for_mi_db(entry_point_geom),
-                    entry_point_type=entry_point_type,
-                    floor_index=int(entry_point_attributes["floor_index"]),
-                    graph_key=graph_key,
+            if entry_point_geom is None:
+                logger.error(
+                    f'Error while adding {entry_point_attributes["admin_id"]} {entry_point_geom=}'
                 )
-            except Exception as e:
-                _invalid = f"Invalid entry point: {e}"
-                logger.error(_invalid)
-                if collect_invalid:
-                    issues.append(_invalid)
-                    continue
-                else:
-                    raise e
+                continue
+
+            entry_point_key = solution.add_entry_point(
+                entry_point_attributes["admin_id"],
+                point=prepare_geom_for_mi_db(entry_point_geom),
+                entry_point_type=get_entry_point_type(entry_point_attributes),
+                floor_index=int(entry_point_attributes["floor_index"]),
+                graph_key=graph_key,
+            )
+
             if VERBOSE:
                 logger.info("added entry_point", entry_point_key)
-        else:
-            logger.error(
-                f'Error while adding {entry_point_attributes["admin_id"]} {entry_point_geom=}'
-            )
-
-
-def get_entry_point_type(entry_point_attributes: Mapping[str, Any]) -> EntryPointType:
-    try:
-        entry_point_type = entry_point_attributes["entry_point_type"]
-    except Exception as e:
-        logger.error(e)
-        logger.error(entry_point_attributes)
-        logger.error(f"Defaulting to EntryPointType.any")
-        entry_point_type = EntryPointType.any.value
-        # raise e
-
-    if isinstance(entry_point_type, str):
-        ...
-    elif isinstance(entry_point_type, QVariant):
-        # logger.warning(f"{typeToDisplayString(type(v))}")
-        if entry_point_type.isNull():  # isNull(v):
-            entry_point_type = None
-        else:
-            entry_point_type = entry_point_type.value()
-
-    return EntryPointType(entry_point_type)
+        except Exception as e:
+            _invalid = f"Invalid entry point: {e}"
+            logger.error(_invalid)
+            if collect_invalid:
+                issues.append(_invalid)
+                continue
+            else:
+                raise e
 
 
 def get_connections(connections_layer_tree_node: Any) -> dict:  # TODO: FINISH!
+    """
+
+    :param connections_layer_tree_node:
+    :return:
+    """
     connectors_linestring_layer = connections_layer_tree_node.layer()
     connections = defaultdict(list)
     for connector_feature in connectors_linestring_layer.getFeatures():
-        connector_attributes = {
-            k.name(): parse_q_value(v)
-            for k, v in zip(
-                connector_feature.fields(),
-                connector_feature.attributes(),
-            )
-        }
+        connector_attributes = extract_feature_attributes(connector_feature)
 
         connection_id = connector_attributes["connection_id"]
         connector_floor_index = connector_attributes["floor_index"]
@@ -375,19 +385,6 @@ def get_connections(connections_layer_tree_node: Any) -> dict:  # TODO: FINISH!
     return connections
 
 
-def get_connection_type(connector_attributes: Mapping[str, Any]) -> ConnectionType:
-    connection_type = connector_attributes["connection_type"]
-    if isinstance(connection_type, str):
-        ...
-    elif isinstance(connection_type, QVariant):
-        # logger.warning(f"{typeToDisplayString(type(v))}")
-        if connection_type.isNull():  # isNull(v):
-            connection_type = None
-        else:
-            connection_type = connection_type.value()
-    return ConnectionType(connection_type)
-
-
 def add_route_elements(
     graph_key: str,
     graph_group: Any,
@@ -397,6 +394,17 @@ def add_route_elements(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> None:
+    """
+
+    :param graph_key:
+    :param graph_group:
+    :param solution:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     if read_bool_setting("ADD_ROUTE_ELEMENTS") and graph_key is not None:
         for ith_graph_group_item, graph_group_item in enumerate(graph_group.children()):
             if MAKE_FLOOR_WISE_LAYERS:
@@ -644,15 +652,26 @@ def add_route_elements(
 
 
 def assemble_connections(
-    connections,
-    solution,
-    graph_key,
+    connections: Mapping[str, List[Connection]],
+    solution: Solution,
+    graph_key: str,
     *,
     collect_invalid: bool = False,
     collect_warnings: bool = False,
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ):
+    """
+
+    :param connections:
+    :param solution:
+    :param graph_key:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     for connection_id, connector_tuples in connections.items():
         inner_connector_tuples, connection_types = zip(*connector_tuples)
 

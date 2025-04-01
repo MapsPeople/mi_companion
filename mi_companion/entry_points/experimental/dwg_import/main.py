@@ -1,10 +1,26 @@
 #!/usr/bin/python
 import logging
+import os
 from pathlib import Path
 
-from warg import system_open_path
+# noinspection PyUnresolvedReferences
+from qgis.core import (
+    QgsApplication,
+    QgsFeature,
+    QgsGeometry,
+    QgsLayerTree,
+    QgsLayerTreeGroup,
+    QgsLayerTreeLayer,
+    QgsLayerTreeModel,
+    QgsProject,
+    QgsProject,
+    QgsRasterLayer,
+    QgsVectorLayer,
+)
 
 logger = logging.getLogger(__name__)
+
+__all__ = []
 
 
 def run(
@@ -26,25 +42,9 @@ def run(
     :param oda_converter_path:
     :return:
     """
+    from warg import system_open_path
 
     from jord.cad_utilities import convert_to_dxf
-    import os
-
-    # noinspection PyUnresolvedReferences
-    # from qgis.utils import iface
-    from qgis.core import (
-        QgsLayerTreeGroup,
-        QgsLayerTreeLayer,
-        QgsProject,
-        QgsApplication,
-        QgsFeature,
-        QgsGeometry,
-        QgsLayerTree,
-        QgsLayerTreeModel,
-        QgsProject,
-        QgsRasterLayer,
-        QgsVectorLayer,
-    )
 
     """
 alternative

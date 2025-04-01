@@ -16,6 +16,11 @@ from qgis.PyQt import QtGui, QtWidgets, uic
 from qgis.PyQt.QtCore import pyqtSignal
 
 # noinspection PyUnresolvedReferences
+from qgis.PyQt.QtWidgets import (
+    QMessageBox,
+)
+
+# noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsApplication,
     QgsFeature,
@@ -97,11 +102,6 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
     def upgrade_clicked(self, *_) -> None:
         # noinspection PyUnresolvedReferences
         import pyplugin_installer
-
-        # noinspection PyUnresolvedReferences
-        from qgis.PyQt.QtWidgets import (
-            QMessageBox,
-        )
 
         msg = f"Upgrading plugin to the latest version"
         QMessageBox.information(
@@ -279,6 +279,20 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                     ],
                     project_name=PROJECT_NAME,
                 ),
+                manager_api_timeout=read_plugin_setting(
+                    "MAPS_INDOORS_MANAGER_API_TIMEOUT",
+                    default_value=DEFAULT_PLUGIN_SETTINGS[
+                        "MAPS_INDOORS_MANAGER_API_TIMEOUT"
+                    ],
+                    project_name=PROJECT_NAME,
+                ),
+                media_api_timeout=read_plugin_setting(
+                    "MAPS_INDOORS_MEDIA_API_TIMEOUT",
+                    default_value=DEFAULT_PLUGIN_SETTINGS[
+                        "MAPS_INDOORS_MEDIA_API_TIMEOUT"
+                    ],
+                    project_name=PROJECT_NAME,
+                ),
             )
         )
 
@@ -376,18 +390,20 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             logger.error(f"No venue was selected!")
             return
 
-        solution_depth = SolutionDepth.obstacles
+        solution_depth = SolutionDepth.occupants
 
-        if self.solution_depth_combo_box:
-            solution_depth = str(self.solution_combo_box.currentText())
+        if False:
+            if self.solution_depth_combo_box:
+                solution_depth = str(self.solution_combo_box.currentText())
 
         include_route_elements = read_bool_setting("ADD_ROUTE_ELEMENTS")
         include_graph = read_bool_setting("ADD_GRAPH")
+        include_occupants = read_bool_setting("ADD_OCCUPANTS")
+        include_media = read_bool_setting("ADD_MEDIA")
 
-        include_occupants = False
-        include_media = False
-
-        with InjectedProgressBar(parent=self.iface_.mainWindow().statusBar()) as bar:
+        with InjectedProgressBar(
+            parent=self.iface_.mainWindow().statusBar()
+        ) as download_bar:
             if venue_name.strip() == "":  # TODO: Not supported ATM
                 venues = list(self.venue_name_id_map.values())
                 num_venues = float(len(venues))
@@ -408,7 +424,8 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                             include_media=include_media,
                             include_graph=include_graph,
                         )
-                    bar.setValue(int((float(i) / num_venues) * 100))
+                    download_bar.setValue(int((float(i) / num_venues) * 100))
+
             else:
                 if venue_name in self.venue_name_id_map:
                     self.changes_label.setText(f"Downloading {venue_name}")
@@ -420,7 +437,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                         self,
                         self.solution_external_id,
                         self.venue_name_id_map[venue_name],
-                        progress_bar=bar,
+                        progress_bar=download_bar,
                         depth=solution_depth,
                         include_route_elements=include_route_elements,
                         include_occupants=include_occupants,
@@ -428,6 +445,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                         include_graph=include_graph,
                     )
                     self.changes_label.setText(f"Downloaded {venue_name}")
+
                 else:
                     logger.warning(f"Venue {venue_name} not found")
 

@@ -35,7 +35,8 @@ def add_building_layers(
     venue: Venue,
     venue_group: Any,
     qgis_instance_handle: Any,
-    available_location_type_map_widget: Optional[Any] = None,
+    location_type_dropdown_widget: Optional[Any] = None,
+    occupant_dropdown_widget: Optional[Any] = None,
     progress_bar: Optional[Callable] = None,
 ) -> None:
     num_buildings = float(len(solution.buildings))
@@ -58,7 +59,8 @@ def add_building_layers(
 
         if HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS and is_outside_building:
             add_floor_layers(
-                available_location_type_map_widget=available_location_type_map_widget,
+                location_type_dropdown_widget=location_type_dropdown_widget,
+                occupant_dropdown_widget=occupant_dropdown_widget,
                 building=building,
                 building_group=venue_group,
                 qgis_instance_handle=qgis_instance_handle,
@@ -109,7 +111,8 @@ def add_building_layers(
             set_geometry_constraints(building_layer)
 
             add_floor_layers(
-                available_location_type_map_widget=available_location_type_map_widget,
+                location_type_dropdown_widget=location_type_dropdown_widget,
+                occupant_dropdown_widget=occupant_dropdown_widget,
                 building=building,
                 building_group=building_group,
                 qgis_instance_handle=qgis_instance_handle,

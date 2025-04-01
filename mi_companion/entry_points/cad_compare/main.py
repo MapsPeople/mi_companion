@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
-
 import logging
 from pathlib import Path
+
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsProject
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +29,6 @@ def run(*, original_dxf_path: Path, new_dxf_path: Path) -> None:
     diff = get_entity_differences(original_dxf_path, new_dxf_path)
 
     if True:
-        # noinspection PyUnresolvedReferences
-        from qgis.core import QgsProject
         from jord.qlive_utilities import add_dataframe_layer
 
         diff_geoms = geopandas.GeoDataFrame(
@@ -51,8 +51,6 @@ def run(*, original_dxf_path: Path, new_dxf_path: Path) -> None:
             )
 
     if True:
-        # noinspection PyUnresolvedReferences
-        from qgis.core import QgsProject
         from jord.qlive_utilities import add_dataframe_layer
 
         added_geoms = geopandas.GeoDataFrame(
@@ -75,8 +73,6 @@ def run(*, original_dxf_path: Path, new_dxf_path: Path) -> None:
             )
 
     if True:
-        # noinspection PyUnresolvedReferences
-        from qgis.core import QgsProject
         from jord.qlive_utilities import add_dataframe_layer
 
         remaining_geoms = geopandas.GeoDataFrame(
@@ -99,8 +95,6 @@ def run(*, original_dxf_path: Path, new_dxf_path: Path) -> None:
             )
 
     if True:
-        # noinspection PyUnresolvedReferences
-        from qgis.core import QgsProject
         from jord.qlive_utilities import add_dataframe_layer
 
         removed_geoms = geopandas.GeoDataFrame(

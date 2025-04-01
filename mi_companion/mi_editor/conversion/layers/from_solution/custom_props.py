@@ -1,8 +1,7 @@
 import copy
 import dataclasses
-import json
 import logging
-from typing import Collection, Mapping
+from typing import Mapping
 
 from geopandas import GeoDataFrame
 from pandas import DataFrame, json_normalize
@@ -11,7 +10,7 @@ from integration_system.model import CollectionMixin
 from mi_companion import NULL_VALUE, REAL_NONE_JSON_VALUE
 
 logger = logging.getLogger(__name__)
-__all__ = ["process_custom_props_df", "to_df"]
+__all__ = ["process_custom_props_df"]
 
 
 def process_custom_props_df(df: GeoDataFrame) -> None:
@@ -129,49 +128,3 @@ def to_df_2(coll_mix: CollectionMixin) -> DataFrame:
         cs.append(dataclasses.asdict(c))
 
     return json_normalize(cs)
-
-
-def to_df(collection_: CollectionMixin) -> DataFrame:
-    # noinspection PyTypeChecker
-    converted_items = []
-
-    for item in collection_:
-        if False:
-            if hasattr(item, "custom_properties"):
-                custom_properties = getattr(item, "custom_properties")
-                if custom_properties is not None:
-                    for language, translations in copy.deepcopy(
-                        custom_properties
-                    ).items():
-                        for custom_property, value in translations.items():
-                            if value is None:
-                                custom_properties[language][
-                                    custom_property
-                                ] = REAL_NONE_JSON_VALUE
-
-                    setattr(item, "custom_properties", custom_properties)
-
-        item_as_dict = dataclasses.asdict(item)
-
-        if "categories" in item_as_dict:
-            list_of_category_dicts = item_as_dict.pop("categories")
-
-            keys = []
-            if list_of_category_dicts:
-                for cat in list_of_category_dicts:
-                    if False:
-                        a = json.loads(cat["name"])
-                        if isinstance(a, str):
-                            keys.append(a)
-                        elif isinstance(a, Collection):
-                            keys.extend(a)
-                        else:
-                            raise NotImplementedError(f"{type(a)} is not supported")
-                    else:
-                        keys.append(cat["name"])
-
-            item_as_dict["category_keys"] = keys
-
-        converted_items.append(item_as_dict)
-
-    return json_normalize(converted_items)

@@ -12,7 +12,6 @@ from qgis.PyQt import QtGui, QtWidgets, uic
 from qgis.PyQt.QtCore import pyqtSignal
 
 # noinspection PyUnresolvedReferences
-# noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsApplication,
     QgsFeature,

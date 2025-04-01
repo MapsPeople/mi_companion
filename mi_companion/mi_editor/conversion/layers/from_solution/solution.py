@@ -1,6 +1,12 @@
 import logging
 from typing import Any, Optional
 
+from jord.qgis_utilities import (
+    make_enum_dropdown_widget,
+    make_iterable_dropdown_widget,
+    make_mapping_dropdown_widget,
+    make_value_relation_widget,
+)
 from jord.qlive_utilities import add_no_geom_layer, add_shapely_layer
 
 # noinspection PyUnresolvedReferences
@@ -22,13 +28,16 @@ from integration_system.model import (
     VenueType,
 )
 from mi_companion import (
+    ADD_LOCATION_TYPE_LAYERS,
     DESCRIPTOR_BEFORE,
+    LOCATION_TYPE_DESCRIPTOR,
     MI_HIERARCHY_GROUP_NAME,
     OSM_HIGHWAY_TYPES,
     SOLUTION_DATA_DESCRIPTOR,
     SOLUTION_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
+from .location_type import add_location_type_layer
 from .venue import add_venue_layer
 
 __all__ = ["solution_venue_to_layer_hierarchy", "add_solution_layers"]
@@ -73,95 +82,30 @@ def add_solution_layers(
     solution_group.setExpanded(True)
     # solution_group.setExpanded(False)
 
-    available_location_type_dropdown_widget = None
-    if read_bool_setting("MAKE_LOCATION_TYPE_DROPDOWN"):
-        available_location_type_dropdown_widget = QgsEditorWidgetSetup(
-            "ValueMap",
-            {
-                "map": {
-                    solution.location_types.get(k)
-                    .name: solution.location_types.get(k)
-                    .name
-                    for k in sorted(solution.location_types.keys)
-                }
-            },
-        )
-
     door_type_dropdown_widget = None
     if read_bool_setting("MAKE_DOOR_TYPE_DROPDOWN"):
-        door_type_dropdown_widget = QgsEditorWidgetSetup(
-            "ValueMap",
-            {
-                "map": {
-                    name: DoorType.__getitem__(name).value
-                    for name in sorted({l.name for l in DoorType})
-                }
-            },
-        )
+        door_type_dropdown_widget = make_enum_dropdown_widget(DoorType)
 
     highway_type_dropdown_widget = None
     if read_bool_setting("MAKE_HIGHWAY_TYPE_DROPDOWN"):
-        highway_type_dropdown_widget = (
-            QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
-                "ValueMap",
-                {"map": {k: OSM_HIGHWAY_TYPES[k] for k in sorted(OSM_HIGHWAY_TYPES)}},
-            )
-        )
+        highway_type_dropdown_widget = make_mapping_dropdown_widget(OSM_HIGHWAY_TYPES)
 
     venue_type_dropdown_widget = None
     if read_bool_setting("MAKE_VENUE_TYPE_DROPDOWN"):
-        venue_type_dropdown_widget = (
-            QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
-                "ValueMap",
-                {
-                    "map": {
-                        name: VenueType.__getitem__(name).value
-                        for name in sorted({l.name for l in VenueType})
-                    }
-                },
-            )
-        )
+        venue_type_dropdown_widget = make_enum_dropdown_widget(VenueType)
 
     entry_point_type_dropdown_widget = None
     if read_bool_setting("MAKE_ENTRY_POINT_TYPE_DROPDOWN"):
-        entry_point_type_dropdown_widget = (
-            QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
-                "ValueMap",
-                {
-                    "map": {
-                        name: EntryPointType.__getitem__(name).value
-                        for name in sorted({l.name for l in EntryPointType})
-                    }
-                },
-            )
-        )
+        entry_point_type_dropdown_widget = make_enum_dropdown_widget(EntryPointType)
 
     connection_type_dropdown_widget = None
     if read_bool_setting("MAKE_CONNECTION_TYPE_DROPDOWN"):
-        connection_type_dropdown_widget = (
-            QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
-                "ValueMap",
-                {
-                    "map": {
-                        name: ConnectionType.__getitem__(name).value
-                        for name in sorted({l.name for l in ConnectionType})
-                    }
-                },
-            )
-        )
+        connection_type_dropdown_widget = make_enum_dropdown_widget(ConnectionType)
 
     edge_context_type_dropdown_widget = None
     if read_bool_setting("MAKE_EDGE_CONTEXT_TYPE_DROPDOWN"):
-        edge_context_type_dropdown_widget = (
-            QgsEditorWidgetSetup(  # 'UniqueValues', {'Editable':True},
-                "ValueMap",
-                {
-                    "map": {
-                        name: name
-                        for name in sorted({l for l in GraphEdgeContextTypes})
-                    }
-                },
-            )
+        edge_context_type_dropdown_widget = make_iterable_dropdown_widget(
+            GraphEdgeContextTypes
         )
 
     # solution_layer_name = f"{solution.name}_solution_data"
@@ -200,18 +144,61 @@ def add_solution_layers(
         if progress_bar:
             progress_bar.setValue(10)
 
+    available_location_type_dropdown_widget = None
+
+    location_type_layer = None
+    if ADD_LOCATION_TYPE_LAYERS:
+        for c in solution_group.children():
+            if LOCATION_TYPE_DESCRIPTOR in c.name():
+                location_type_layer = [c.layer()]
+                logger.info(f"Found location type layer: {LOCATION_TYPE_DESCRIPTOR}")
+                break
+
+        if location_type_layer is None:
+            location_type_layer = add_location_type_layer(
+                solution,
+                qgis_instance_handle=qgis_instance_handle,
+                solution_group=solution_group,
+                layer_name=LOCATION_TYPE_DESCRIPTOR,
+            )
+            logger.info(f"Adding location type layer: {LOCATION_TYPE_DESCRIPTOR}")
+
+        assert len(location_type_layer) == 1
+
+        location_type_layer = location_type_layer[0]
+
+        available_location_type_dropdown_widget = make_value_relation_widget(
+            location_type_layer.id(), target_key_field_name="admin_id"
+        )
+
+    else:
+        if read_bool_setting("MAKE_LOCATION_TYPE_DROPDOWN"):
+            available_location_type_dropdown_widget = make_value_map_widget(solution)
+
     add_venue_layer(
         progress_bar=progress_bar,
         qgis_instance_handle=qgis_instance_handle,
         solution=solution,
         solution_group=solution_group,
-        available_location_type_dropdown_widget=available_location_type_dropdown_widget,
+        location_type_dropdown_widget=available_location_type_dropdown_widget,
         door_type_dropdown_widget=door_type_dropdown_widget,
         highway_type_dropdown_widget=highway_type_dropdown_widget,
         venue_type_dropdown_widget=venue_type_dropdown_widget,
         connection_type_dropdown_widget=connection_type_dropdown_widget,
         entry_point_type_dropdown_widget=entry_point_type_dropdown_widget,
         edge_context_type_dropdown_widget=edge_context_type_dropdown_widget,
+    )
+
+
+def make_value_map_widget(solution):
+    return QgsEditorWidgetSetup(
+        "ValueMap",
+        {
+            "map": {
+                solution.location_types.get(k).name: solution.location_types.get(k).name
+                for k in sorted(solution.location_types.keys)
+            }
+        },
     )
 
 
@@ -222,11 +209,11 @@ def solution_venue_to_layer_hierarchy(
     mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
     *,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
-    include_occupants: bool = False,
+    include_occupants: bool = True,
     include_media: bool = False,
     include_route_elements: bool = True,
     include_graph: bool = True,
-    depth: SolutionDepth = SolutionDepth.obstacles,
+    depth: SolutionDepth = SolutionDepth.occupants,
 ) -> Solution:
     """
     Return solution and created widget objects

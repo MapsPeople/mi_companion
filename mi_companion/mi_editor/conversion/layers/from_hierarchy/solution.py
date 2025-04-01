@@ -190,6 +190,18 @@ def layer_hierarchy_to_solution(
     include_media: bool = False,
     include_graph: bool = False,
 ) -> None:
+    """
+
+    :param qgis_instance_handle:
+    :param mi_hierarchy_group_name:
+    :param progress_bar:
+    :param solution_depth:
+    :param include_route_elements:
+    :param include_occupants:
+    :param include_media:
+    :param include_graph:
+    :return:
+    """
     if False:
         ...
 

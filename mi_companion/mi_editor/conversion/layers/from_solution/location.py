@@ -1,26 +1,32 @@
+import copy
+import dataclasses
+import json
 import logging
 
 from jord.qgis_utilities.constraints import set_geometry_constraints
 from jord.qgis_utilities.fields import (
-    add_dropdown_widget,
     make_field_boolean,
     make_field_default,
     make_field_not_null,
     make_field_reuse_last_entered_value,
     make_field_unique,
+    set_field_widget,
 )
 from jord.qgis_utilities.styling import (
     set_3d_view_settings,
     set_label_styling,
     set_layer_rendering_scale,
 )
+from pandas import DataFrame, json_normalize
 
+from integration_system.pandas_serde import collection_to_df
+from mi_companion import REAL_NONE_JSON_VALUE
 from mi_companion.constants import (
     FLOOR_HEIGHT,
     FLOOR_VERTICAL_SPACING,
     USE_EXTERNAL_ID_FLOOR_SELECTION,
 )
-from .custom_props import process_custom_props_df, to_df
+from .custom_props import process_custom_props_df
 from ..type_enums import BackendLocationTypeEnum
 from ...projection import (
     reproject_geometry_df,
@@ -32,7 +38,7 @@ try:
 except ImportError:
     from strenum import StrEnum
 
-from typing import Any, Iterable, List, Optional
+from typing import Any, Collection, Iterable, List, Optional
 
 import geopandas
 from jord.qlive_utilities import add_dataframe_layer
@@ -65,23 +71,77 @@ class LocationGeometryType(StrEnum):
     polygon = "polygon"
 
 
+def locations_to_df(collection_: CollectionMixin) -> DataFrame:
+    # noinspection PyTypeChecker
+    converted_items = []
+
+    for item in collection_:
+        if False:
+            if hasattr(item, "custom_properties"):
+                custom_properties = getattr(item, "custom_properties")
+                if custom_properties is not None:
+                    for language, translations in copy.deepcopy(
+                        custom_properties
+                    ).items():
+                        for custom_property, value in translations.items():
+                            if value is None:
+                                custom_properties[language][
+                                    custom_property
+                                ] = REAL_NONE_JSON_VALUE
+
+                    setattr(item, "custom_properties", custom_properties)
+
+        item_as_dict = dataclasses.asdict(item)
+
+        if "categories" in item_as_dict:
+            list_of_category_dicts = item_as_dict.pop("categories")
+
+            keys = []
+            if list_of_category_dicts:
+                for cat in list_of_category_dicts:
+                    if False:
+                        a = json.loads(cat["name"])
+                        if isinstance(a, str):
+                            keys.append(a)
+                        elif isinstance(a, Collection):
+                            keys.extend(a)
+                        else:
+                            raise NotImplementedError(f"{type(a)} is not supported")
+                    else:
+                        keys.append(cat["name"])
+
+            item_as_dict["category_keys"] = keys
+
+        item_as_dict["key"] = item.key
+
+        converted_items.append(item_as_dict)
+
+    a = json_normalize(converted_items)
+    if not a.empty:
+        a.set_index("key", inplace=True)
+
+    return a
+
+
 def add_location_layer(
     location_collection: CollectionMixin,
     name: str,
     geometry_column_name: LocationGeometryType,
     *,
+    occupant_collection: Optional[CollectionMixin] = None,
     qgis_instance_handle: Any,
     floor_group: Any,
     floor: Floor,
-    dropdown_widget: Optional[Any] = None,
+    location_type_dropdown_widget: Optional[Any] = None,
+    occupant_dropdown_widget: Optional[Any] = None,
     opacity: float = 1.0,
 ) -> Optional[List[Any]]:  # QgsVectorLayer
 
-    shape_df = to_df(location_collection)
+    shape_df = locations_to_df(location_collection)
 
     assert len(location_collection) == len(shape_df)
     if shape_df.empty:
-        logger.warning(f"{name=} {shape_df=} was empty!")
+        logger.info(f"{name=} {shape_df=} was empty!")
 
         return
 
@@ -107,7 +167,7 @@ def add_location_layer(
         c
         for c in shape_df.columns
         if ("." not in c)
-        or ("location_type.name" == c)
+        or ("location_type.admin_id" == c)
         or (
             "custom_properties." in c
             and (".custom_properties" not in c)  # Only this objects custom_properties
@@ -156,13 +216,26 @@ def add_location_layer(
     for attr_name in INT_LOCATION_ATTRS:
         locations_df[attr_name] = shape_df[attr_name].astype(int)
 
+    locations_df.rename(
+        columns={"location_type.admin_id": "location_type"}, inplace=True
+    )
+
+    if occupant_dropdown_widget:
+        if occupant_collection:
+            a = collection_to_df(occupant_collection)
+            locations_df["occupant"] = locations_df.index.map(
+                lambda x: x if x in a.index else None
+            )
+        else:
+            locations_df["occupant"] = locations_df.index
+
     added_layers = add_dataframe_layer(
         qgis_instance_handle=qgis_instance_handle,
         dataframe=locations_df,
         geometry_column=geometry_column_name.value,
         name=name,
         group=floor_group,
-        categorise_by_attribute="location_type.name",
+        categorise_by_attribute="location_type",
         crs=solve_target_crs_authid(),
         opacity=opacity,
     )
@@ -188,16 +261,23 @@ def add_location_layer(
         len(shape_df) == layer.featureCount()
     ), f"Some Features where dropped, should not happen! {len(shape_df)}!={layer.featureCount()}"
 
-    if dropdown_widget:
-        add_dropdown_widget(
+    if location_type_dropdown_widget:
+        set_field_widget(
             added_layers,
-            "location_type.name",
-            dropdown_widget,
+            "location_type",
+            location_type_dropdown_widget,
+        )
+
+    if occupant_dropdown_widget:
+        set_field_widget(
+            added_layers,
+            "occupant",
+            occupant_dropdown_widget,
         )
 
     make_field_unique(added_layers, field_name="admin_id")
 
-    for field_name in ("name", "location_type.name", "is_searchable", "is_active"):
+    for field_name in ("name", "location_type", "is_searchable", "is_active"):
         make_field_not_null(added_layers, field_name=field_name)
 
     for field_name, field_default in {"is_searchable": True, "is_active": True}.items():
@@ -209,7 +289,7 @@ def add_location_layer(
         for field_name in BOOLEAN_LOCATION_ATTRS:
             make_field_boolean(added_layers, field_name=field_name)
 
-    for field_name in ("name", "location_type.name", "is_searchable", "is_active"):
+    for field_name in ("name", "location_type", "is_searchable", "is_active"):
         make_field_reuse_last_entered_value(added_layers, field_name=field_name)
 
     return added_layers
@@ -221,16 +301,19 @@ def add_floor_content_layers(
     solution: Solution,
     floor: Floor,
     floor_group: Any,
-    available_location_type_map_widget: Optional[Any] = None,
+    location_type_dropdown_widget: Optional[Any] = None,
+    occupant_dropdown_widget: Optional[Any] = None,
 ) -> None:
     room_layer = add_location_layer(
         location_collection=solution.rooms,
+        occupant_collection=solution.occupants,
         name=BackendLocationTypeEnum.ROOM.value,
         geometry_column_name=LocationGeometryType.polygon,
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
         floor=floor,
-        dropdown_widget=available_location_type_map_widget,
+        location_type_dropdown_widget=location_type_dropdown_widget,
+        occupant_dropdown_widget=occupant_dropdown_widget,
         opacity=0.8,
     )
     set_3d_view_settings(
@@ -249,12 +332,14 @@ def add_floor_content_layers(
 
     area_layer = add_location_layer(
         location_collection=solution.areas,
+        occupant_collection=solution.occupants,
         name=BackendLocationTypeEnum.AREA.value,
         geometry_column_name=LocationGeometryType.polygon,
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
         floor=floor,
-        dropdown_widget=available_location_type_map_widget,
+        location_type_dropdown_widget=location_type_dropdown_widget,
+        occupant_dropdown_widget=occupant_dropdown_widget,
         opacity=0.6,
     )
     set_label_styling(area_layer, min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO)
@@ -267,12 +352,14 @@ def add_floor_content_layers(
 
     poi_layer = add_location_layer(
         location_collection=solution.points_of_interest,
+        occupant_collection=solution.occupants,
         name=BackendLocationTypeEnum.POI.value,
         geometry_column_name=LocationGeometryType.point,
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
         floor=floor,
-        dropdown_widget=available_location_type_map_widget,
+        location_type_dropdown_widget=location_type_dropdown_widget,
+        occupant_dropdown_widget=occupant_dropdown_widget,
     )
     set_label_styling(poi_layer, min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO)
     if LAYER_GEOM_VISIBLE_MIN_RATIO:

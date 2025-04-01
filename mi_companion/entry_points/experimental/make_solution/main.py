@@ -3,6 +3,9 @@ import logging
 import uuid
 from typing import Optional
 
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
 SOME_COMMENT_IGNORE_THIS = """
     decimal                            Distinguisable                          N/S or E/W  | E/W     E/W
      E/W
@@ -54,9 +57,6 @@ def run(
 
     if wgs84_degree_long is None:
         wgs84_degree_long = 0
-
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
     # noinspection PyUnresolvedReferences
     # from qgis.utils import iface

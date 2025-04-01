@@ -4,10 +4,10 @@ from typing import Any, List, Optional
 import geopandas
 from geopandas import GeoDataFrame
 from jord.qgis_utilities.fields import (
-    add_dropdown_widget,
     make_field_not_null,
     make_field_reuse_last_entered_value,
     make_field_unique,
+    set_field_widget,
 )
 from jord.qlive_utilities import add_dataframe_layer
 
@@ -109,7 +109,7 @@ def add_connection_layers(
                     )
 
                 if dropdown_widget:
-                    add_dropdown_widget(
+                    set_field_widget(
                         connectors_layer, route_element_type_column, dropdown_widget
                     )
     else:
@@ -140,7 +140,7 @@ def add_connection_layers(
         make_field_unique(connectors_layer, field_name="admin_id")
 
         if dropdown_widget:
-            add_dropdown_widget(
+            set_field_widget(
                 connectors_layer, route_element_type_column, dropdown_widget
             )
 

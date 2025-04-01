@@ -1,3 +1,4 @@
+# noinspection PyUnresolvedReferences
 from qgis.core import QgsApplication, QgsAuthManager, QgsAuthMethodConfig
 
 auth_manager = QgsApplication.authManager()

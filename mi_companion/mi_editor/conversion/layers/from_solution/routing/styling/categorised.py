@@ -1,17 +1,23 @@
+from typing import Any
+
+# noinspection PyUnresolvedReferences
+from qgis.core import (
+    QgsCategorizedSymbolRenderer,
+    QgsExpression,
+    QgsRendererCategory,
+    QgsRendererRange,
+    QgsStyle,
+    QgsSymbol,
+)
+
+
 def set_m_based_categorised_styling_single_layer(
-    layer, *, repaint: bool = False
+    layer: Any, *, repaint: bool = False
 ) -> None:
     """
     Sets a graduated color style based on unique z-coordinates.
     Each unique m value gets assigned a different color.
     """
-    from qgis.core import (
-        QgsCategorizedSymbolRenderer,
-        QgsSymbol,
-        QgsRendererRange,
-        QgsExpression,
-        QgsRendererCategory,
-    )
 
     unique_vals = set()
 
@@ -25,8 +31,6 @@ def set_m_based_categorised_styling_single_layer(
 
     # unique_vals.sort()
     unique_vals = sorted(unique_vals)
-
-    from qgis.core import QgsStyle
 
     ramp = QgsStyle.defaultStyle().colorRamp("Spectral")
 

@@ -102,6 +102,8 @@ DEFAULT_PLUGIN_SETTINGS = {
     "MAPS_INDOORS_TOKEN_ENDPOINT": "https://auth.mapsindoors.com/connect/token",
     "MAPS_INDOORS_MANAGER_API_HOST": "https://v2.mapsindoors.com",
     "MAPS_INDOORS_MEDIA_API_HOST": "https://media.mapsindoors.com",
+    "MAPS_INDOORS_MEDIA_API_TIMEOUT": 1000,
+    "MAPS_INDOORS_MANAGER_API_TIMEOUT": 1000,
     "MAPS_INDOORS_MANAGER_API_TOKEN": None,
     "MAPS_INDOORS_INTEGRATION_API_TOKEN": None,
     "GENERATE_MISSING_EXTERNAL_IDS": True,
@@ -110,6 +112,8 @@ DEFAULT_PLUGIN_SETTINGS = {
     "AWAIT_CONFIRMATION": True,
     "ADVANCED_MODE": False,
     "ADD_GRAPH": True,
+    "ADD_OCCUPANTS": False,
+    "ADD_MEDIA": False,
     "ADD_ROUTE_ELEMENTS": True,
     "ONLY_SHOW_FIRST_FLOOR": True,
     "CONFIRMATION_DIALOG_ENABLED": True,
@@ -132,7 +136,7 @@ DEFAULT_PLUGIN_SETTINGS = {
     "POST_FIT_BUILDINGS": False,
     "POST_FIT_VENUES": False,
     "ALLOW_SOLUTION_CREATION": False,
-    "ALLOW_LOCATION_TYPE_CREATION": False,
+    "ALLOW_LOCATION_TYPE_CREATION": True,
     "ALLOW_CATEGORY_TYPE_CREATION": True,
     "IGNORE_EMPTY_SHAPES": True,
     "UPLOAD_OSM_GRAPH": False,
@@ -145,14 +149,23 @@ GDS_EPSG_NUMBER = 3857
 INSERT_INDEX = 0  # if zero first, if one after hierarchy data
 USE_EXTERNAL_ID_FLOOR_SELECTION = False
 VERBOSE = False
-OSM_HIGHWAY_TYPES = {"footway": "footway", "elevator": "elevator", "steps": "steps"}
+
 ALLOW_DUPLICATE_VENUES_IN_PROJECT = False
 MAKE_FLOOR_WISE_LAYERS = True
+
 ADD_STRING_NAN_CUSTOM_PROPERTY_VALUES = False
 ADD_FLOAT_NAN_CUSTOM_PROPERTY_VALUES = False
 ADD_REAL_NONE_CUSTOM_PROPERTY_VALUES = True
+
 DESCRIPTOR_BEFORE = True
 DEFAULT_CUSTOM_PROPERTIES = None
+HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS = False
+SPLIT_LEVELS_INTO_INDIVIDUAL_GROUPS = False
+SHOW_FLOOR_LAYERS_ON_LOAD = True
+
+# NOT FINISHED!
+ADD_OCCUPANT_LAYERS = True
+ADD_LOCATION_TYPE_LAYERS = True
 
 HALF_SIZE = 0.5
 
@@ -179,6 +192,7 @@ BUILDING_DESCRIPTOR = "(Building)"
 VENUE_DESCRIPTOR = "(Venue)"
 GRAPH_DESCRIPTOR = "(Graph)"
 
+LOCATION_TYPE_DESCRIPTOR = "location_types"
 SOLUTION_DATA_DESCRIPTOR = "solution_data"
 FLOOR_POLYGON_DESCRIPTOR = "floor_polygon"
 BUILDING_POLYGON_DESCRIPTOR = "building_polygon"
@@ -208,6 +222,30 @@ ROUTE_ELEMENT_LAYER_DESCRIPTORS = [
     OBSTACLES_DESCRIPTOR,
 ]
 
-HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS = False
-SPLIT_LEVELS_INTO_INDIVIDUAL_GROUPS = False
-SHOW_FLOOR_LAYERS_ON_LOAD = True
+COMMON_OSM_HIGHWAY_TYPES = {
+    "residential": "residential",
+    "corridor": "corridor",
+    "cycleway": "cycleway",
+    "crossing": "crossing",
+    "pedestrian": "pedestrian",
+    "service": "service",
+    "unclassified": "unclassified",
+    "tertiary": "tertiary",
+    "secondary": "secondary",
+    "primary": "primary",
+}
+
+OSM_HIGHWAY_TYPES = {
+    "footway": "footway",
+    "elevator": "elevator",
+    "steps": "steps",
+    "ladder": "ladder",
+}
+
+OSM_ABUTTER_TYPES = {
+    "commercial": "commercial",
+    "industrial": "industrial",
+    "mixed": "mixed",
+    "residential": "residential",
+    "retail": "retail",
+}

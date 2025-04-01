@@ -15,13 +15,21 @@ from qgis.PyQt.QtWidgets import (
 )
 
 # noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsMapLayerType, QgsProject
+from qgis.core import (
+    QgsLayerTreeGroup,
+    QgsLayerTreeLayer,
+    QgsMapLayerType,
+    QgsProject,
+)
 
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsMapLayerAction, QgsMapToolIdentify
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+
+# noinspection PyUnresolvedReferences
+# from qgis.utils import iface
 
 IDENTIFY_ACTIONS_AUGMENTED = SELECT_ACTIONS_AUGMENTED = False
 
@@ -51,12 +59,6 @@ def show_make_solution_dialog_action_callable(layer: Any, feature: Any) -> None:
         f"Feature's WKT ({layer.name()}:{feature.id()})",
         feature.geometry().asWkt(),
     )
-
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-
-    # noinspection PyUnresolvedReferences
-    # from qgis.utils import iface
 
     from integration_system.model import Solution
     from mi_companion.mi_editor import add_solution_layers

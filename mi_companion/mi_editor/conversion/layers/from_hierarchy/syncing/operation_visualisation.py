@@ -18,9 +18,9 @@ from integration_system.model import (
 )
 from mi_companion import MI_EPSG_NUMBER
 
-logger = logging.getLogger(__name__)
-
 __all__ = ["show_differences", "extract_operation_difference_geometry"]
+
+logger = logging.getLogger(__name__)
 
 
 def show_differences(
@@ -30,6 +30,14 @@ def show_differences(
     solution_name: str,
     operations: Collection[MIOperation],
 ) -> None:
+    """
+
+    :param qgis_instance_handle:
+    :param solution:
+    :param solution_name:
+    :param operations:
+    :return:
+    """
     mi_db_difference_group = (
         QgsProject.instance().layerTreeRoot().findGroup(DIFFERENCE_GROUP_NAME)
     )
@@ -92,6 +100,13 @@ def show_differences(
 def extract_operation_difference_geometry(
     differences: Dict[str, Any], o: MIOperation, operation_ith: str
 ):
+    """
+
+    :param differences:
+    :param o:
+    :param operation_ith:
+    :return:
+    """
     from jord.shapely_utilities import is_multi
 
     for ith, i in enumerate(o.context.split(SHAPELY_DIFFERENCE_DESCRIPTION)[1:]):

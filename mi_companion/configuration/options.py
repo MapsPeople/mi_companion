@@ -85,13 +85,6 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         self.populate_settings()
 
     def populate_settings(self) -> None:
-        # from qgis.core import QgsSettings
-        # noinspection PyUnresolvedReferences
-
-        # qs = QgsSettings()
-        # setting_keys = qs.allKeys()
-        # setting_keys = list_project_settings()
-
         if hasattr(self, "settings_list_model"):
             del self.settings_list_model
 

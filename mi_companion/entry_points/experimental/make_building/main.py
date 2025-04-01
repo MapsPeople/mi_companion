@@ -1,22 +1,24 @@
 #!/usr/bin/python
 import logging
 
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
+
+from mi_companion.mi_editor.conversion import (
+    add_building_layers,
+)
+
+__all__ = []
+
 logger = logging.getLogger(__name__)
 
 
 def run(*, name: str = "New Building (Building)") -> None:
     import shapely
     from jord.shapely_utilities import dilate
-    from mi_companion.mi_editor.conversion import (
-        add_building_layers,
-    )
-
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-
-    # noinspection PyUnresolvedReferences
-    from qgis.utils import iface
-
     from integration_system.model import Solution
 
     parent = None

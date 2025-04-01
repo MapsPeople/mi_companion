@@ -7,18 +7,18 @@ from jord.qgis_utilities.conversion.features import feature_to_shapely
 from jord.qlive_utilities import add_shapely_layer
 from jord.shapely_utilities import dilate, is_multi
 
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsProject
+
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
+
 logger = logging.getLogger(__name__)
 
 CRS = f"EPSG:3857"
 
 
 def run(*, buffer_distance: float = 0.01, only_active_layer: bool = True) -> None:
-    # noinspection PyUnresolvedReferences
-    from qgis.utils import iface
-
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsProject
-
     if only_active_layer:
         if False:
             layers = list(iface.activeLayer())

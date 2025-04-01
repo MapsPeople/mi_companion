@@ -3,29 +3,30 @@ import logging
 
 from jord.qgis_utilities.helpers import InjectedProgressBar
 
+# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences
+from qgis.core import (
+    Qgis,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsLayerTreeGroup,
+    QgsLayerTreeLayer,
+    QgsProject,
+    QgsProject,
+)
+
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
+
 from mi_companion.mi_editor import convert_solution_layers_to_solution
 
 logger = logging.getLogger(__name__)
-
-# noinspection PyUnresolvedReferences
-from qgis.core import (
-    QgsProject,
-    QgsCoordinateTransform,
-    QgsCoordinateReferenceSystem,
-    Qgis,
-)
 
 
 def run() -> None:
     """
     Validate the hierarchy of the solution layers.
     """
-
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-
-    # noinspection PyUnresolvedReferences
-    from qgis.utils import iface
 
     from mi_companion import MI_HIERARCHY_GROUP_NAME
 

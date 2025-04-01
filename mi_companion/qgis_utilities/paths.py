@@ -35,6 +35,13 @@ def get_icon_path(
     defaults: Mapping = DEFAULT_PLUGIN_SETTINGS,
     project_name: str = PROJECT_NAME,
 ) -> str:
+    """
+
+    :param icon_file_name:
+    :param defaults:
+    :param project_name:
+    :return:
+    """
     from jord.qgis_utilities import read_plugin_setting
 
     resource_path = read_plugin_setting(
@@ -47,6 +54,12 @@ def get_icon_path(
 
 @passes_kws_to(get_icon_path)
 def load_icon(*args, **kwargs) -> QIcon:
+    """
+
+    :param args:
+    :param kwargs:
+    :return:
+    """
     icon = QIcon(get_icon_path(*args, **kwargs))
 
     if icon.isNull():
