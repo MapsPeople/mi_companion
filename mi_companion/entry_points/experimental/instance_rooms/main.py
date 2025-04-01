@@ -6,5 +6,5 @@ logger = logging.getLogger(__name__)
 __all__ = []
 
 
-def run(*, a, b: Optional[str] = None, c: int = 1) -> None:
+def run(*, a: str, b: Optional[str] = None, c: int = 1) -> None:
     print(f"Nice {a=} {b=} {c=}")

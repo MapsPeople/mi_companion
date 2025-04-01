@@ -1,4 +1,4 @@
-def reload_package():
+def reload_package() -> None:
     package = "yourPackageName"
     import importlib
     import pkgutil

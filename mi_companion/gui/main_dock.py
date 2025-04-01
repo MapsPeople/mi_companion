@@ -71,7 +71,7 @@ ensure_in_sys_path(Path(__file__).parent.parent)
 class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
     plugin_closing = pyqtSignal()
 
-    def entry_point_wrapper(self, k, a: Callable):
+    def entry_point_wrapper(self, k: str, a: Callable) -> Callable:
         def f():
             if k not in self.entry_point_instances:
                 self.entry_point_instances[k] = a()

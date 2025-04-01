@@ -1,8 +1,6 @@
 import logging
-import typing
 from inspect import isclass
 from pathlib import Path
-from typing import Generic, Union
 
 # noinspection PyUnresolvedReferences
 import qgis
@@ -17,30 +15,15 @@ FORM_CLASS, _ = uic.loadUiType(str(Path(__file__).parent / "dialog.ui"))
 
 __all__ = ["Dialog"]
 
-try:  # Python >= 3.8
-    from typing import Literal, get_args, get_origin
-
-except ImportError:  # Compatibility
-    get_args = lambda t: getattr(t, "__args__", ()) if t is not Generic else Generic
-    get_origin = lambda t: getattr(t, "__origin__", None)
-# assert get_origin(Union[int, str]) is Union
-# assert get_args(Union[int, str]) == (int, str)
-
 logger = logging.getLogger(__name__)
 
-
-def is_union(field) -> bool:
-    return typing.get_origin(field) is Union
-
-
-def is_optional(field) -> bool:
-    return is_union(field) and type(None) in typing.get_args(field)
+from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
+from jord.qgis_utilities.helpers import signals
 
 
 class Dialog(QDialog, FORM_CLASS):
 
     def __init__(self, parent=None):  #: QWidget
-        from jord.qgis_utilities.helpers import signals
 
         super().__init__(parent)
         self.setupUi(self)
