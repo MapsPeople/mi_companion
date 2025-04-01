@@ -2,13 +2,14 @@ import logging
 from collections import defaultdict
 from typing import Any, List, Optional
 
-from jord.qgis_utilities.conversion.features import feature_to_shapely, parse_q_value
+# noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.graph_utilities.deprecated.old_graph_format import (
     lines_and_points_to_osm_xml,
 )
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
+from jord.qgis_utilities.conversion.features import feature_to_shapely, parse_q_value
 from mi_companion import (
     NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
     NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
@@ -30,6 +31,17 @@ def add_graph_edges(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> None:
+    """
+
+    :param graph_key:
+    :param graph_group:
+    :param solution:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     if not read_bool_setting("UPLOAD_OSM_GRAPH"):
         logger.warning("OSM graph upload is disabled")
         return
@@ -98,6 +110,7 @@ def add_graph_edges(
                             level not in levels
                         ), f"Duplicate level: {level} for vertical_line {vert_id}"
                         levels.append(_level)
+
                         assert (
                             v_type == _v_type
                         ), f"Type mismatch: {v_type} != {_v_type} for vertical_line {vert_id}"

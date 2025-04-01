@@ -2,7 +2,14 @@
 import logging
 from typing import Optional
 
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
+
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
+
 logger = logging.getLogger(__name__)
+__all__ = []
 
 
 def run(
@@ -15,32 +22,30 @@ def run(
     :param randomize_fields: What fields to randomize, separated by comma
     :return:
     """
-    from jord.qgis_utilities.helpers import duplicate_groups
+    from jord.qgis_utilities.helpers import duplicate_groups, duplicate_tree_node
 
     # TODO: ADD INDIVIDUAL LAYER FUNCTIONALITY
 
-    # noinspection PyUnresolvedReferences
-    from qgis.utils import iface
-
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup
-
     selected_nodes = iface.layerTreeView().selectedNodes()
-    if len(selected_nodes) == 1:
-        group = next(iter(selected_nodes))
+    if len(selected_nodes) == 1:  # TODO: SHOULD WE ALLOW MORE?
         new_group = None
-        if isinstance(group, QgsLayerTreeGroup):
-            new_group, group_items = duplicate_groups(group, new_name=new_name)
-        else:
-            logging.error(
-                f"Selected Node is {group.name()} of type {type(group)}, not a QgsLayerTreeGroup"
-            )
-        if new_group:
-            if randomize_fields:
-                for randomize_field in randomize_fields.split(","):
-                    randomize_field = randomize_field.replace(" ", "")
-                    from jord.qgis_utilities.helpers import randomize_sub_tree_field
+        for group in selected_nodes:
+            if isinstance(group, QgsLayerTreeLayer):
+                if new_name is ... or new_name == "" or new_name is None:
+                    new_name = f"{group.name()} (Copy)"
+                duplicate_tree_node(group.parent(), group, new_name=new_name)
+            elif isinstance(group, QgsLayerTreeGroup):
+                new_group, group_items = duplicate_groups(group, new_name=new_name)
+            else:
+                logging.error(
+                    f"Selected Node is {group.name()} of type {type(group)}, not a QgsLayerTreeGroup"
+                )
+            if new_group:
+                if randomize_fields:
+                    for randomize_field in randomize_fields.split(","):
+                        randomize_field = randomize_field.replace(" ", "")
+                        from jord.qgis_utilities.helpers import randomize_sub_tree_field
 
-                    randomize_sub_tree_field(new_group.children(), randomize_field)
+                        randomize_sub_tree_field(new_group.children(), randomize_field)
     else:
         logging.error(f"There are {len(selected_nodes)}, please only select one")

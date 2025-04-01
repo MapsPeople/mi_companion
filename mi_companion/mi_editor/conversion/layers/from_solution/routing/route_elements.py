@@ -2,15 +2,6 @@ import logging
 from collections import defaultdict
 from typing import Any, Optional
 
-from jord.qgis_utilities.fields import (
-    add_dropdown_widget,
-    make_field_not_null,
-    make_field_reuse_last_entered_value,
-    make_field_unique,
-)
-from jord.qgis_utilities.styling import set_3d_view_settings
-from jord.qlive_utilities import add_dataframe_layer
-
 from integration_system.model import (
     Avoid,
     Barrier,
@@ -23,6 +14,10 @@ from integration_system.model import (
     RouteElementItem,
     Solution,
 )
+from jord.qgis_utilities.fields import (
+    make_field_reuse_last_entered_value,
+)
+from jord.qgis_utilities.styling import set_3d_view_settings
 from mi_companion import (
     AVOIDS_DESCRIPTOR,
     BARRIERS_DESCRIPTOR,

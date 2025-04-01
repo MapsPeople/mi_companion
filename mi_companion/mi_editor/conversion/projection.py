@@ -3,9 +3,12 @@ from typing import Optional
 
 import pyproj
 import shapely
-from jord.shapely_utilities import clean_shape
 from pandas import DataFrame
 
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
+from jord.shapely_utilities import clean_shape
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.constants import (
     GDS_EPSG_NUMBER,
@@ -33,6 +36,10 @@ MI_CRS = pyproj.CRS(MI_EPSG_NUMBER)
 
 
 def get_back_projection() -> typing.Callable:
+    """
+
+    :return:
+    """
     destination_crs = pyproj.CRS(get_target_crs_auth_id())
 
     return pyproj.Transformer.from_crs(
@@ -41,6 +48,10 @@ def get_back_projection() -> typing.Callable:
 
 
 def get_forward_projection() -> typing.Callable:
+    """
+
+    :return:
+    """
     destination_crs = pyproj.CRS(get_target_crs_auth_id())
 
     return pyproj.Transformer.from_crs(
@@ -49,6 +60,10 @@ def get_forward_projection() -> typing.Callable:
 
 
 def should_reproject() -> bool:
+    """
+
+    :return:
+    """
     target_crs = get_target_crs_auth_id()
     if read_bool_setting("REPROJECT_SHAPES"):
         if target_crs != MI_CRS_AUTHID:
@@ -58,6 +73,10 @@ def should_reproject() -> bool:
 
 
 def should_reproject_to_project() -> bool:
+    """
+
+    :return:
+    """
     return read_bool_setting("REPROJECT_TO_PROJECT_CRS")
 
 
@@ -66,6 +85,13 @@ def prepare_geom_for_mi_db(
     clean: bool = True,
     back_projection: Optional[typing.Callable] = None,
 ) -> shapely.geometry.base.BaseGeometry:
+    """
+
+    :param geom_shapely:
+    :param clean:
+    :param back_projection:
+    :return:
+    """
     if back_projection is None:
         back_projection = get_back_projection()
 
@@ -83,6 +109,13 @@ def prepare_geom_for_qgis(
     clean: bool = True,
     forward_projection: Optional[typing.Callable] = None,
 ) -> shapely.geometry.base.BaseGeometry:
+    """
+
+    :param geom_shapely:
+    :param clean:
+    :param forward_projection:
+    :return:
+    """
     if forward_projection is None:
         forward_projection = get_forward_projection()
 
@@ -96,6 +129,11 @@ def prepare_geom_for_qgis(
 
 
 def reproject_geometry_df(df: DataFrame) -> DataFrame:
+    """
+
+    :param df:
+    :return:
+    """
     df.set_crs(epsg=MI_EPSG_NUMBER, inplace=True, allow_override=True)
 
     if should_reproject():
@@ -105,6 +143,10 @@ def reproject_geometry_df(df: DataFrame) -> DataFrame:
 
 
 def solve_target_crs_authid() -> str:
+    """
+
+    :return:
+    """
     # QgsProject.instance().setCrs(my_crs)
     # if iface.mapCanvas().mapRenderer().hasCrsTransformEnabled():
     #  my_crs = core.QgsCoordinateReferenceSystem(4326,core.QgsCoordinateReferenceSystem.EpsgCrsId)
@@ -123,8 +165,6 @@ def post_steps():
 QTimer.singleShot(500, lambda: post_steps)
 
 """
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
     # iface.mapCanvas().mapSettings().destinationCrs().authid()
     # canvas.mapRenderer().destinationCrs().authid()
@@ -138,9 +178,10 @@ QTimer.singleShot(500, lambda: post_steps)
 
 
 def get_target_crs_auth_id() -> str:
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+    """
 
+    :return:
+    """
     if should_reproject_to_project:
         target_crs = QgsProject.instance().crs().authid()
     else:
@@ -150,9 +191,10 @@ def get_target_crs_auth_id() -> str:
 
 
 def get_target_crs_srsid() -> int:
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+    """
 
+    :return:
+    """
     if should_reproject_to_project:
         target_crs = QgsProject.instance().crs().srsid()
     else:

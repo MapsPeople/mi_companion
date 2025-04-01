@@ -1,5 +1,6 @@
+import logging
 import os
-from typing import Any, Generic, ParamSpecArgs, ParamSpecKwargs, Union
+from typing import Any
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
@@ -11,23 +12,11 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.u
 
 __all__ = ["Dialog"]
 
-try:  # Python >= 3.8
-    from typing import Literal, get_args, get_origin
+from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
 
-except ImportError:  # Compatibility
-    get_args = lambda t: getattr(t, "__args__", ()) if t is not Generic else Generic
-    get_origin = lambda t: getattr(t, "__origin__", None)
+from jord.qgis_utilities.helpers import signals
 
-# assert get_origin(Union[int, str]) is Union
-# assert get_args(Union[int, str]) == (int, str)
-
-
-def is_union(field: Union[ParamSpecArgs, ParamSpecKwargs]) -> bool:
-    return get_origin(field) is Union
-
-
-def is_optional(field: Union[ParamSpecArgs, ParamSpecKwargs]) -> bool:
-    return is_union(field) and type(None) in get_args(field)
+logger = logging.getLogger(__name__)
 
 
 class Dialog(QDialog, FORM_CLASS):
@@ -35,8 +24,6 @@ class Dialog(QDialog, FORM_CLASS):
     def __init__(self, parent: Any = None):
         super().__init__(parent)
         self.setupUi(self)
-
-        from jord.qgis_utilities.helpers import signals
 
         signals.reconnect_signal(self.compute_button.clicked, self.on_compute_clicked)
 

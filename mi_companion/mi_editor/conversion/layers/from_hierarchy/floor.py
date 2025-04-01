@@ -1,8 +1,6 @@
 import logging
 from typing import Any, List, Optional, Tuple
 
-from jord.qgis_utilities.conversion.features import feature_to_shapely
-
 # noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsFeatureRequest,
@@ -12,6 +10,7 @@ from qgis.core import (
 )
 
 from integration_system.model import Solution
+from jord.qgis_utilities.conversion.features import feature_to_shapely
 from mi_companion import DEFAULT_CUSTOM_PROPERTIES, FLOOR_POLYGON_DESCRIPTOR, HALF_SIZE
 from .custom_props import extract_custom_props
 from .extraction import special_extract_layer_data
@@ -40,6 +39,24 @@ def add_building_floors(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> None:
+    """
+
+    :param building_key:
+    :param venue_group_item:
+    :param solution:
+    :param progress_bar:
+    :param ith_solution:
+    :param ith_venue:
+    :param ith_building:
+    :param num_solution_elements:
+    :param num_venue_elements:
+    :param num_building_elements:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     building_group_elements = venue_group_item.children()
     num_building_group_elements = len(building_group_elements)
 
@@ -120,6 +137,17 @@ def get_floor_data(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> Tuple:
+    """
+
+    :param building_key:
+    :param floor_group_items:
+    :param solution:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     for floor_level_item in floor_group_items.children():
         if (
             isinstance(

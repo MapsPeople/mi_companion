@@ -3,12 +3,13 @@ import logging
 from textwrap import indent
 from typing import Optional
 
-from jord.qgis_utilities import read_plugin_setting
-
 from integration_system.config import MapsIndoors, Settings, set_settings
+from jord.qgis_utilities import read_plugin_setting
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 
 logger = logging.getLogger(__name__)
+
+__all__ = []
 
 
 def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> None:

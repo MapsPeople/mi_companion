@@ -1,15 +1,17 @@
 import logging
 from typing import Any, List, Optional, Tuple
 
-from jord.qgis_utilities.conversion.features import feature_to_shapely, parse_q_value
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
+
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtCore import QVariant
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
+from jord.qgis_utilities.conversion.features import feature_to_shapely
 from mi_companion import (
     GRAPH_BOUND_DESCRIPTOR,
 )
@@ -25,11 +27,15 @@ from .route_elements import (
 __all__ = ["add_venue_graph"]
 
 logger = logging.getLogger(__name__)
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtCore import QVariant
 
 
 def get_graph_data(graph_group: Any, solution: Solution) -> Tuple:
+    """
+
+    :param graph_group:
+    :param solution:
+    :return:
+    """
     for graph_level_item in graph_group.children():
         if (
             isinstance(
@@ -66,6 +72,16 @@ def add_venue_graph(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> Optional[str]:
+    """
+
+    :param solution:
+    :param graph_group:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     (graph_key,) = get_graph_data(graph_group, solution)
 
     if graph_key:

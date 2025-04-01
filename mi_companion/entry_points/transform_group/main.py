@@ -6,7 +6,6 @@ from jord.qgis_utilities import (
     get_gcp_transformer_from_file,
     transform_sub_tree_features,
 )
-
 from mi_companion.constants import MI_EPSG_NUMBER
 from mi_companion.mi_editor import get_target_crs_srsid
 
@@ -29,6 +28,8 @@ if False:  # TODO: Transform if not the same as GCPs!
 
 # FORWARD_TRANSFORM = QgsCoordinateTransform(DEST_CRS, SOURCE_CRS, QgsProject.instance())
 # BACKWARD_TRANSFORM = QgsCoordinateTransform(DEST_CRS, SOURCE_CRS, QgsProject.instance())
+
+__all__ = []
 
 
 def run(

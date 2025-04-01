@@ -1,17 +1,17 @@
 #!/usr/bin/python
 import logging
-
-logger = logging.getLogger(__name__)
+from typing import Dict, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
-    QgsProject,
-    QgsCoordinateTransform,
-    QgsCoordinateReferenceSystem,
     Qgis,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsProject,
 )
 
-from typing import Dict, Optional
+__all__ = []
+logger = logging.getLogger(__name__)
 
 
 def get_available_mi_layers() -> Dict[str, str]:

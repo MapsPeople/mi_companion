@@ -1,11 +1,12 @@
 import logging
 from collections import defaultdict
 from itertools import chain
+from typing import Union
 
 import shapely
-from jord.shapely_utilities import is_multi
 
-from integration_system.model import Area, Room, Solution
+from integration_system.model import Area, PointOfInterest, Room, Solution
+from jord.shapely_utilities import is_multi
 from mi_companion.configuration.options import read_bool_setting
 
 logger = logging.getLogger(__name__)
@@ -14,11 +15,17 @@ __all__ = ["post_process_solution"]
 
 
 def post_process_solution(solution: Solution) -> None:
+    """
+
+    :param solution:
+    :return:
+    """
     floor_child_geoms = defaultdict(list)
     floor_child_geoms_extras = defaultdict(list)
     for floor in solution.floors:
         for feat in chain(solution.rooms, solution.areas, solution.points_of_interest):
             assert hasattr(feat, "floor")
+            feat: Union[Room, Area, PointOfInterest]
             if feat.floor.key == floor.key:
                 if isinstance(feat, Room):  #
                     floor_child_geoms[floor.key].append(feat.polygon)

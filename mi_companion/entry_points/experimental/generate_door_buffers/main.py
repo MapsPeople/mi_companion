@@ -2,6 +2,13 @@
 import logging
 
 import shapely
+
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsProject
+
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
+
 from jord.geometric_analysis import buffer_principal_axis
 from jord.qgis_utilities.conversion.features import feature_to_shapely
 from jord.qlive_utilities import add_shapely_layer
@@ -11,14 +18,10 @@ logger = logging.getLogger(__name__)
 
 CRS = f"EPSG:3857"
 
+__all__ = []
+
 
 def run(*, buffer_distance: float = 0.01, only_active_layer: bool = True) -> None:
-    # noinspection PyUnresolvedReferences
-    from qgis.utils import iface
-
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsProject
-
     if only_active_layer:
         if False:
             layers = list(iface.activeLayer())

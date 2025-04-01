@@ -3,7 +3,14 @@ import logging
 import uuid
 from typing import Any
 
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsProject
+
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
+
 logger = logging.getLogger(__name__)
+__all__ = []
 
 
 def randomize_fields_selected_features(feature, field_name: str) -> Any:  # QgsFeature
@@ -35,12 +42,6 @@ def randomize_fields_selected_features(feature, field_name: str) -> Any:  # QgsF
 
 
 def run(*, field_name: str = "admin_id", only_active_layer: bool = False) -> None:
-    # noinspection PyUnresolvedReferences
-    from qgis.utils import iface
-
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsProject
-
     if only_active_layer:
         if False:
             layers = list(iface.activeLayer())

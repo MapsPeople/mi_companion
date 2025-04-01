@@ -1,13 +1,14 @@
 #!/usr/bin/python
 import logging
 
-from jord.qgis_utilities import read_plugin_setting
-
 from integration_system.compatibilization import make_route_elements_compatible
 from integration_system.config import MapsIndoors, Settings, set_settings
+from jord.qgis_utilities import read_plugin_setting
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 
 logger = logging.getLogger(__name__)
+
+__all__ = []
 
 
 def run(*, solution_id: str) -> None:

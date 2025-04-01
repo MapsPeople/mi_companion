@@ -13,6 +13,11 @@ logger = logging.getLogger(__name__)
 
 
 def is_json(my_json: str) -> bool:
+    """
+
+    :param my_json:
+    :return:
+    """
     try:
         json.loads(my_json)
     except ValueError as e:
@@ -23,6 +28,11 @@ def is_json(my_json: str) -> bool:
 def extract_wkt_elements(
     exception_str: str,
 ) -> List[Tuple[str, shapely.geometry.base.BaseGeometry]]:
+    """
+
+    :param exception_str:
+    :return:
+    """
     from jord.geopandas_utilities import WktTypeEnum
 
     wkt_elements = []
@@ -76,6 +86,11 @@ def extract_wkt_elements(
 
 
 def is_str_value_null_like(v_str_) -> bool:
+    """
+
+    :param v_str_:
+    :return:
+    """
     return (
         (v_str_ == NAN_VALUE.lower())
         or (v_str_ == NULL_VALUE.lower())

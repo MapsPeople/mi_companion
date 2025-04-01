@@ -1,16 +1,18 @@
 import logging
 import uuid
-from typing import Any, Collection, List, Mapping, Optional
-
-from jord.qgis_utilities.conversion.features import feature_to_shapely, parse_q_value
+from typing import Any, Collection, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
 # noinspection PyUnresolvedReferences
+from qgis.PyQt.QtCore import QVariant
+
+# noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.model import Category, LocationType, Solution
+from jord.qgis_utilities.conversion.features import feature_to_shapely
 from mi_companion import DEFAULT_CUSTOM_PROPERTIES, VERBOSE
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (
@@ -18,13 +20,12 @@ from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import
 )
 from mi_companion.mi_editor.conversion.layers.type_enums import BackendLocationTypeEnum
 from mi_companion.qgis_utilities import is_str_value_null_like
+from .extraction import extract_feature_attributes, extract_field_value, parse_field
 from ...projection import prepare_geom_for_mi_db
 
 __all__ = ["add_floor_contents"]
 
 logger = logging.getLogger(__name__)
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtCore import QVariant
 
 
 class MissingKeyColumn(Exception): ...
@@ -43,28 +44,30 @@ def add_floor_locations(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> None:
+    """
+
+    :param location_group_items:
+    :param solution:
+    :param floor_key:
+    :param backend_location_type:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     layer = location_group_items.layer()
     if layer:
         for layer_feature in layer.getFeatures():
-            feature_attributes = {
-                k.name(): parse_q_value(v)
-                for k, v in zip(
-                    layer_feature.fields(),
-                    layer_feature.attributes(),
-                )
-            }
+            feature_attributes = extract_feature_attributes(layer_feature)
 
-            location_type_name = feature_attributes["location_type.name"]
-            if isinstance(location_type_name, str):
-                ...
-            elif isinstance(location_type_name, QVariant):
-                # logger.warning(f"{typeToDisplayString(type(v))}")
-                if location_type_name.isNull():  # isNull(v):
-                    location_type_name = None
-                else:
-                    location_type_name = location_type_name.value()
+            location_type_admin_id = parse_field(
+                feature_attributes, field_name="location_type"
+            )
 
-            location_type_key = LocationType.compute_key(name=location_type_name)
+            location_type_key = LocationType.compute_key(
+                admin_id=location_type_admin_id
+            )
             if solution.location_types.get(location_type_key) is None:
                 if read_bool_setting(
                     "ALLOW_LOCATION_TYPE_CREATION"
@@ -72,10 +75,10 @@ def add_floor_locations(
 
                     try:
                         location_type_key = solution.add_location_type(
-                            location_type_name
+                            admin_id=location_type_admin_id, name=location_type_admin_id
                         )
                     except Exception as e:
-                        _invalid = f"{location_type_name=} is invalid {e}"
+                        _invalid = f"{location_type_admin_id=} is invalid {e}"
                         logger.error(_invalid)
                         if collect_invalid:
                             issues.append(_invalid)
@@ -280,32 +283,6 @@ def add_floor_locations(
                         raise e
 
 
-def extract_field_value(feature_attributes: Mapping[str, Any], field_name: str) -> Any:
-    field_value = feature_attributes[field_name]
-    if field_value is None:
-        ...
-    elif isinstance(field_value, str):
-        v = field_value
-        v_str = v.lower().strip()
-        if is_str_value_null_like(v_str):
-            field_value = None
-        else:
-            field_value = v
-    elif isinstance(field_value, QVariant):
-        if field_value.isNull():
-            field_value = None
-        else:
-            v = str(field_value.value())
-
-            v_str = v.lower().strip()
-            if is_str_value_null_like(v_str):
-                field_value = None
-            else:
-                field_value = v
-
-    return field_value
-
-
 def add_floor_contents(
     *,
     floor_group_items: QgsLayerTreeGroup,
@@ -318,6 +295,19 @@ def add_floor_contents(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> None:
+    """
+
+    :param floor_group_items:
+    :param floor_key:
+    :param solution:
+    :param graph_key:
+    :param floor_index:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     for location_group_item in floor_group_items.children():
         if (
             isinstance(location_group_item, QgsLayerTreeLayer)

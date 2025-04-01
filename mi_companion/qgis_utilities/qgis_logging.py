@@ -11,20 +11,43 @@ __doc__ = "Logging"
 
 __all__ = ["setup_logging"]
 
+from mi_companion.constants import PROJECT_NAME
+
 
 def log(msg: str, level=Qgis.Info) -> None:
-    QgsMessageLog.logMessage(msg, "MI Companion", level)
+    """
+
+    :param msg:
+    :param level:
+    :return:
+    """
+    QgsMessageLog.logMessage(msg, PROJECT_NAME, level)
 
 
 def logger_info(msg: str) -> None:
+    """
+
+    :param msg:
+    :return:
+    """
     log(msg)
 
 
 def logger_warning(msg: str) -> None:
+    """
+
+    :param msg:
+    :return:
+    """
     log(msg, Qgis.Warning)
 
 
 def logger_error(msg: str) -> None:
+    """
+
+    :param msg:
+    :return:
+    """
     log(msg, Qgis.Critical)
 
 
@@ -32,6 +55,12 @@ def setup_logging(
     default_path: Path = Path(__file__).parent / "logging.yaml",
     default_level: int = logging.INFO,
 ) -> None:
+    """
+
+    :param default_path:
+    :param default_level:
+    :return:
+    """
     if default_path.exists():
         with open(default_path) as f:
             try:

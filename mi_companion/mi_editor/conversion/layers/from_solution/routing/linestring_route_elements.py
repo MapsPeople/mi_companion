@@ -2,17 +2,19 @@ import logging
 from typing import Any, List, Optional
 
 import geopandas
+
+from integration_system.model import DoorCollection, Graph
 from jord.qgis_utilities.fields import (
-    add_dropdown_widget,
     make_field_not_null,
     make_field_reuse_last_entered_value,
     make_field_unique,
+    set_field_widget,
 )
 from jord.qlive_utilities import add_dataframe_layer
-
-from integration_system.model import DoorCollection, Graph
 from mi_companion import DOORS_DESCRIPTOR, INSERT_INDEX, MAKE_FLOOR_WISE_LAYERS
-from mi_companion.mi_editor.conversion.layers.from_solution.custom_props import to_df
+from mi_companion.mi_editor.conversion.layers.from_solution.location import (
+    locations_to_df,
+)
 from mi_companion.mi_editor.conversion.projection import (
     reproject_geometry_df,
     solve_target_crs_authid,
@@ -40,7 +42,7 @@ def add_linestring_route_element_layers(
     if len(doors) == 0:
         return []
 
-    df = to_df(doors)
+    df = locations_to_df(doors)
 
     if "floor_index" not in df:
         logger.warning(
@@ -95,7 +97,7 @@ def add_linestring_route_element_layers(
                 # apply_display_rule(linestring_layer, display_rules=display_rules)
 
                 if dropdown_widget:
-                    add_dropdown_widget(
+                    set_field_widget(
                         linestring_layer, route_element_type_column, dropdown_widget
                     )
 
@@ -133,7 +135,7 @@ def add_linestring_route_element_layers(
         # apply_display_rule(linestring_layer, display_rules=display_rules)
 
         if dropdown_widget:
-            add_dropdown_widget(
+            set_field_widget(
                 linestring_layer, route_element_type_column, dropdown_widget
             )
 

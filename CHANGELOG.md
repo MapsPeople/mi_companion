@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
+## 0.6.10 - 2025-04-01
+
+* [New Layer] LocationType(s) is now an editable layer
+
 ## 0.6.9 - 2025-03-25
 
 * [Improvement] Duplication now works on individual layers too, it also copies more of the QGSVectorLayer

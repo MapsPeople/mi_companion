@@ -1,8 +1,6 @@
 import logging
 from typing import Any, Callable, Dict, List, Optional
 
-from jord.qgis_utilities.conversion.features import parse_q_value
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
@@ -18,6 +16,7 @@ from integration_system.mi import (
     get_solution_name_external_id_map,
 )
 from integration_system.model import Solution
+from jord.qgis_utilities.conversion.features import parse_q_value
 from mi_companion import (
     MI_HIERARCHY_GROUP_NAME,
     SOLUTION_DATA_DESCRIPTOR,
@@ -190,6 +189,18 @@ def layer_hierarchy_to_solution(
     include_media: bool = False,
     include_graph: bool = False,
 ) -> None:
+    """
+
+    :param qgis_instance_handle:
+    :param mi_hierarchy_group_name:
+    :param progress_bar:
+    :param solution_depth:
+    :param include_route_elements:
+    :param include_occupants:
+    :param include_media:
+    :param include_graph:
+    :return:
+    """
     if False:
         ...
 

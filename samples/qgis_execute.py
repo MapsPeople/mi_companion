@@ -1,5 +1,6 @@
 from pathlib import Path
 
+# noinspection PyUnresolvedReferences
 from qgis.core import QgsApplication
 
 QgsApplication.setPrefixPath(

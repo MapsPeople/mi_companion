@@ -1,11 +1,19 @@
 import logging
 from typing import Any, List, Optional
 
-from jord.qgis_utilities.conversion.features import feature_to_shapely, parse_q_value
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+# noinspection PyUnresolvedReferences
+from qgis.core import (
+    QgsGeometry,
+    QgsLayerTreeGroup,
+    QgsLayerTreeLayer,
+    QgsPoint,
+    QgsProject,
+    QgsWkbTypes,
+)
 
 from integration_system.graph_utilities.from_3d_lines import lines_3d_to_osm_xml
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
+from jord.qgis_utilities.conversion.features import feature_to_shapely, parse_q_value
 from mi_companion import (
     NAVIGATION_GRAPH_LINES_DESCRIPTOR,
 )
@@ -18,8 +26,12 @@ __all__ = ["add_3d_graph_edges"]
 
 
 def set_z_from_m(layer_feature: Any) -> Any:
-    """Sets z coordinates from m values for the feature geometry"""
-    from qgis.core import QgsWkbTypes, QgsPoint, QgsGeometry
+    """
+    Sets z coordinates from m values for the feature geometry
+
+    :param layer_feature:
+    :return:
+    """
 
     if not layer_feature:
         logger.error("Feature was None")
@@ -51,9 +63,11 @@ def set_z_from_m(layer_feature: Any) -> Any:
         new_geom = QgsGeometry.fromPointXYZ(
             new_vertices[0].x(), new_vertices[0].y(), new_vertices[0].z()
         )
+
     elif geom_type == QgsWkbTypes.LineGeometry:
         assert len(new_vertices) >= 2, "Line geometry must have at least two vertices"
         new_geom = QgsGeometry.fromPolyline(new_vertices)
+
     elif geom_type == QgsWkbTypes.PolygonGeometry:
         rings = geom.asPolygon()
         assert rings, "Invalid polygon geometry"
@@ -68,6 +82,7 @@ def set_z_from_m(layer_feature: Any) -> Any:
                     vertex_index += 1
             new_rings.append(ring_vertices)
         new_geom = QgsGeometry.fromPolygonXYZ(new_rings)
+
     else:
         logger.error(f"Unsupported geometry type: {geom_type}")
         return layer_feature
@@ -86,6 +101,17 @@ def add_3d_graph_edges(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> None:
+    """
+
+    :param graph_key:
+    :param graph_group:
+    :param solution:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     if not read_bool_setting("UPLOAD_OSM_GRAPH"):
         logger.warning("OSM graph upload is disabled")
         return

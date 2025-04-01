@@ -16,9 +16,6 @@ __all__ = [
 import logging
 from typing import Any
 
-from jord.qgis_utilities import read_plugin_setting, store_plugin_setting
-from jord.qgis_utilities.helpers import reconnect_signal
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtGui, uic
 
@@ -34,6 +31,8 @@ from qgis.core import QgsProject
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 
+from jord.qgis_utilities import read_plugin_setting, store_plugin_setting
+from jord.qgis_utilities.helpers import reconnect_signal
 from ..constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, VERSION
 from ..qgis_utilities import get_icon_path, load_icon, resolve_path
 
@@ -85,13 +84,6 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         self.populate_settings()
 
     def populate_settings(self) -> None:
-        # from qgis.core import QgsSettings
-        # noinspection PyUnresolvedReferences
-
-        # qs = QgsSettings()
-        # setting_keys = qs.allKeys()
-        # setting_keys = list_project_settings()
-
         if hasattr(self, "settings_list_model"):
             del self.settings_list_model
 

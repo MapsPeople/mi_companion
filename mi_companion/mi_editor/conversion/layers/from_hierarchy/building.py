@@ -1,8 +1,6 @@
 import logging
 from typing import Any, List, Optional
 
-from jord.qgis_utilities.conversion.features import feature_to_shapely
-
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
@@ -11,6 +9,7 @@ from integration_system.mi import (
     get_outside_building_floor_name,
 )
 from integration_system.model import Solution
+from jord.qgis_utilities.conversion.features import feature_to_shapely
 from mi_companion import (
     BUILDING_POLYGON_DESCRIPTOR,
     DEFAULT_CUSTOM_PROPERTIES,
@@ -48,6 +47,22 @@ def add_venue_level_hierarchy(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> None:
+    """
+
+    :param ith_solution:
+    :param ith_venue:
+    :param num_solution_elements:
+    :param num_venue_elements:
+    :param progress_bar:
+    :param solution:
+    :param solution_group_item:
+    :param venue_key:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     venue_group_elements = solution_group_item.children()
     num_venue_group_elements = len(venue_group_elements)
     for ith_venue_group_item, venue_group_item in enumerate(venue_group_elements):
@@ -205,6 +220,17 @@ def get_building_key(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> Optional[str]:
+    """
+
+    :param building_group_items:
+    :param solution:
+    :param venue_key:
+    :param collect_invalid:
+    :param collect_warnings:
+    :param collect_errors:
+    :param issues:
+    :return:
+    """
     for floor_group_items in building_group_items.children():
         if (
             isinstance(floor_group_items, QgsLayerTreeLayer)

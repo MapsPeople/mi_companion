@@ -1,13 +1,12 @@
 import logging
-from typing import Any
+from typing import Any, Optional
 
+from integration_system.model import Building, Floor, Solution
 from jord.qgis_utilities.constraints import set_geometry_constraints
 from jord.qgis_utilities.enums import Qgis3dCullingMode, Qgis3dFacade
 from jord.qgis_utilities.fields import make_field_unique
 from jord.qgis_utilities.styling import set_3d_view_settings
 from jord.qlive_utilities import add_shapely_layer
-
-from integration_system.model import Building, Floor, Solution
 from mi_companion import (
     DESCRIPTOR_BEFORE,
     FLOOR_DESCRIPTOR,
@@ -31,7 +30,9 @@ __all__ = ["add_floor_layers"]
 
 
 def add_floor_layers(
-    available_location_type_map_widget: Any,
+    *,
+    location_type_dropdown_widget: Optional[Any] = None,
+    occupant_dropdown_widget: Optional[Any] = None,
     building: Building,
     building_group: Any,
     qgis_instance_handle: Any,
@@ -99,7 +100,8 @@ def add_floor_layers(
                 solution=solution,
                 floor=floor,
                 floor_group=floor_group,
-                available_location_type_map_widget=available_location_type_map_widget,
+                location_type_dropdown_widget=location_type_dropdown_widget,
+                occupant_dropdown_widget=occupant_dropdown_widget,
             )
 
             if INSERT_INDEX > 0:

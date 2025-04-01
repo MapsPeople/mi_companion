@@ -3,9 +3,32 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-from warg import system_open_path
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtGui import QColor, QFont
+
+# noinspection PyUnresolvedReferences
+from qgis.core import (
+    Qgis,
+    QgsApplication,
+    QgsFeature,
+    QgsGeometry,
+    QgsLayerTree,
+    QgsLayerTreeGroup,
+    QgsLayerTreeLayer,
+    QgsLayerTreeModel,
+    QgsPalLayerSettings,
+    QgsProject,
+    QgsProject,
+    QgsRasterLayer,
+    QgsTextBufferSettings,
+    QgsTextFormat,
+    QgsVectorLayer,
+    QgsVectorLayerSimpleLabeling,
+)
 
 logger = logging.getLogger(__name__)
+
+__all__ = []
 
 
 def run(
@@ -30,35 +53,11 @@ def run(
     :param font_size: Font size of labels.
     :return:
     """
-
+    from warg import system_open_path
     from jord.cad_utilities import convert_to_dxf
     from jord.qgis_utilities import categorise_layer
 
-    # noinspection PyUnresolvedReferences
-    # from qgis.utils import iface
-    from qgis.core import (
-        QgsLayerTreeGroup,
-        QgsLayerTreeLayer,
-        QgsProject,
-        QgsApplication,
-        QgsFeature,
-        QgsGeometry,
-        QgsLayerTree,
-        QgsLayerTreeModel,
-        QgsProject,
-        QgsRasterLayer,
-        QgsVectorLayer,
-        QgsPalLayerSettings,
-        QgsTextFormat,
-        QgsTextBufferSettings,
-        QgsVectorLayerSimpleLabeling,
-        Qgis,
-    )
-
     from caddy.exporting import export_to
-
-    # noinspection PyUnresolvedReferences
-    from qgis.PyQt.QtGui import QColor, QFont
 
     """
 alternative

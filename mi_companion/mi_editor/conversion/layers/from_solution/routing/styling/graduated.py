@@ -1,7 +1,18 @@
-from typing import Iterable
+from typing import Any, Collection, Iterable
+
+# noinspection PyUnresolvedReferences
+from qgis.core import (
+    QgsExpression,
+    QgsGraduatedSymbolRenderer,
+    QgsRendererRange,
+    QgsStyle,
+    QgsSymbol,
+)
 
 
-def set_z_based_graduated_styling(layers, *, repaint: bool = False):
+def set_z_based_graduated_styling(
+    layers: Collection[Any], *, repaint: bool = False
+) -> None:
     """
 
     :param layers:
@@ -22,7 +33,9 @@ def set_z_based_graduated_styling(layers, *, repaint: bool = False):
                 )
 
 
-def set_m_based_graduated_styling(layers, *, repaint: bool = False):
+def set_m_based_graduated_styling(
+    layers: Collection[Any], *, repaint: bool = False
+) -> None:
     """
 
     :param layers:
@@ -43,17 +56,13 @@ def set_m_based_graduated_styling(layers, *, repaint: bool = False):
                 )
 
 
-def set_m_based_graduated_styling_single_layer(layer, *, repaint: bool = False):
+def set_m_based_graduated_styling_single_layer(
+    layer: Collection[Any], *, repaint: bool = False
+) -> None:
     """
     Sets a graduated color style based on unique z-coordinates.
     Each unique z value gets assigned a different color.
     """
-    from qgis.core import (
-        QgsGraduatedSymbolRenderer,
-        QgsSymbol,
-        QgsRendererRange,
-        QgsExpression,
-    )
 
     # z_expression = QgsExpression("z_max($geometry)")
     # z_expression.prepare(layer.fields())
@@ -75,8 +84,6 @@ def set_m_based_graduated_styling_single_layer(layer, *, repaint: bool = False):
     # unique_vals.sort()
     unique_vals = sorted(unique_vals)
 
-    from qgis.core import QgsStyle
-
     ramp = QgsStyle.defaultStyle().colorRamp("Spectral")
 
     ranges = []
@@ -96,17 +103,13 @@ def set_m_based_graduated_styling_single_layer(layer, *, repaint: bool = False):
         layer.triggerRepaint()
 
 
-def set_z_based_graduated_styling_single_layer(layer, *, repaint: bool = False):
+def set_z_based_graduated_styling_single_layer(
+    layer: Collection[Any], *, repaint: bool = False
+) -> None:
     """
     Sets a graduated color style based on unique z-coordinates.
     Each unique z value gets assigned a different color.
     """
-    from qgis.core import (
-        QgsGraduatedSymbolRenderer,
-        QgsSymbol,
-        QgsRendererRange,
-        QgsExpression,
-    )
 
     # z_expression = QgsExpression("z_max($geometry)")
     # z_expression.prepare(layer.fields())
@@ -127,8 +130,6 @@ def set_z_based_graduated_styling_single_layer(layer, *, repaint: bool = False):
 
     # unique_vals.sort()
     unique_vals = sorted(unique_vals)
-
-    from qgis.core import QgsStyle
 
     ramp = QgsStyle.defaultStyle().colorRamp("Spectral")
 

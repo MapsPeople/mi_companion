@@ -1,27 +1,25 @@
 #!/usr/bin/python
-
-
 import logging
 from pathlib import Path
 
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
+
+from jord.qgis_utilities.helpers import InjectedProgressBar
+from mi_companion import MI_HIERARCHY_GROUP_NAME
+from mi_companion.mi_editor.conversion import add_solution_layers
 from midf.conversion import to_mi_solution
 from midf.linking import link_imdf
 from midf.loading import load_imdf
 
 logger = logging.getLogger(__name__)
+__all__ = []
 
 
 def run(*, imdf_zip_file_path: Path) -> None:
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-
-    # noinspection PyUnresolvedReferences
-    from qgis.utils import iface
-    from jord.qgis_utilities.helpers import InjectedProgressBar
-
-    from mi_companion import MI_HIERARCHY_GROUP_NAME
-    from mi_companion.mi_editor.conversion import add_solution_layers
-
     qgis_instance_handle = QgsProject.instance()
     layer_tree_root = QgsProject.instance().layerTreeRoot()
 

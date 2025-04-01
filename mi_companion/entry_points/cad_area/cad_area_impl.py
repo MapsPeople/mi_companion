@@ -9,6 +9,8 @@ from mi_companion import PROJECT_APP_PATH
 
 logger = logging.getLogger(__name__)
 
+__all__ = []
+
 
 def write_csv(csv_file_name: Path, area_list: Collection[Mapping]) -> None:
     if len(area_list) == 0:

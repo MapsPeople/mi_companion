@@ -3,6 +3,12 @@ import logging
 from enum import Enum
 from typing import Any
 
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsGeometry, QgsMultiPoint, QgsPoint, QgsProject, QgsWkbTypes
+
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
+
 logger = logging.getLogger(__name__)
 
 __all__ = []
@@ -28,7 +34,6 @@ def set_coordinate(
     :param coord_type:
     :return:
     """
-    from qgis.core import QgsWkbTypes, QgsPoint, QgsGeometry, QgsMultiPoint
 
     if feature is None:
         logger.error("Feature was None")
@@ -112,8 +117,6 @@ def run(
     :param only_active_layer: Only apply to active layer
     :return:
     """
-    from qgis.utils import iface
-    from qgis.core import QgsProject
 
     if not isinstance(dimension, ValueDimension):
         dimension = ValueDimension(dimension.lower())

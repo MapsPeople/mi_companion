@@ -10,16 +10,16 @@ from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
 )
 
 BOOLEAN_LOCATION_TYPE_ATTRS = ()
-STR_LOCATION_TYPE_ATTRS = ("key", "name")
+STR_LOCATION_TYPE_ATTRS = ("name", "admin_id")
 FLOAT_LOCATION_TYPE_ATTRS = ()
 INTEGER_LOCATION_TYPE_ATTRS = ()
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["get_occupant_data"]
+__all__ = ["get_location_type_data"]
 
 
-def get_occupant_data(
+def get_location_type_data(
     solution_group_items: Any,
     solution: Solution,
     collect_invalid: bool = False,

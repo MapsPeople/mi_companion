@@ -1,18 +1,19 @@
 import logging
 from typing import Any, Iterable, Optional
 
-from jord.qgis_utilities import (
-    make_field_not_null,
-    make_field_unique,
-    set_geometry_constraints,
-)
-from jord.qlive_utilities import add_shapely_layer
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
 from integration_system.model import Solution, Venue
+from jord.qgis_utilities import (
+    make_field_not_null,
+    make_field_unique,
+    make_value_relation_widget,
+    set_geometry_constraints,
+)
+from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
+    ADD_OCCUPANT_LAYERS,
     ALLOW_DUPLICATE_VENUES_IN_PROJECT,
     DESCRIPTOR_BEFORE,
     VENUE_DESCRIPTOR,
@@ -26,6 +27,7 @@ from mi_companion.mi_editor.conversion.layers.from_solution.routing.graph import
     add_graph_layers,
 )
 from .building import add_building_layers
+from .occupant import add_occupant_layer
 from ...projection import (
     prepare_geom_for_qgis,
     solve_target_crs_authid,
@@ -41,7 +43,7 @@ def add_venue_layer(
     qgis_instance_handle: Any,
     solution: Solution,
     solution_group: Any,
-    available_location_type_dropdown_widget: Optional[Any] = None,
+    location_type_dropdown_widget: Optional[Any] = None,
     door_type_dropdown_widget: Optional[Any] = None,
     highway_type_dropdown_widget: Optional[Any] = None,
     venue_type_dropdown_widget: Optional[Any] = None,
@@ -55,7 +57,7 @@ def add_venue_layer(
     :param qgis_instance_handle:
     :param solution:
     :param solution_group:
-    :param available_location_type_dropdown_widget:
+    :param location_type_dropdown_widget:
     :param door_type_dropdown_widget:
     :param highway_type_dropdown_widget:
     :param venue_type_dropdown_widget:
@@ -110,13 +112,29 @@ def add_venue_layer(
         if progress_bar:
             progress_bar.setValue(20)
 
+        occupant_dropdown_widget = None
+        if ADD_OCCUPANT_LAYERS:
+            occupant_layer = add_occupant_layer(
+                solution=solution,
+                venue_group=venue_group,
+                qgis_instance_handle=qgis_instance_handle,
+            )
+            if occupant_layer:
+                assert len(occupant_layer) == 1
+                occupant_layer = occupant_layer[0]
+                occupant_dropdown_widget = make_value_relation_widget(
+                    occupant_layer.id(),
+                    allow_null_values=True,
+                )
+
         add_building_layers(
             solution=solution,
             progress_bar=progress_bar,
             venue=venue,
             venue_group=venue_group,
             qgis_instance_handle=qgis_instance_handle,
-            available_location_type_map_widget=available_location_type_dropdown_widget,
+            location_type_dropdown_widget=location_type_dropdown_widget,
+            occupant_dropdown_widget=occupant_dropdown_widget,
         )
 
         if read_bool_setting("ADD_GRAPH"):  # add graph
@@ -146,6 +164,14 @@ def add_venue_polygon_layer(
     venue_group: Any,
     venue_type_dropdown_widget: Any,
 ) -> None:
+    """
+
+    :param qgis_instance_handle:
+    :param venue:
+    :param venue_group:
+    :param venue_type_dropdown_widget:
+    :return:
+    """
     venue_layer = add_shapely_layer(
         qgis_instance_handle=qgis_instance_handle,
         geoms=[prepare_geom_for_qgis(venue.polygon)],

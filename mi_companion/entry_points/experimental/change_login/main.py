@@ -1,23 +1,30 @@
 #!/usr/bin/python
 import logging
 
-logger = logging.getLogger(__name__)
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtWidgets import QInputDialog
 
 # noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences
 from qgis.core import (
-    QgsProject,
-    QgsCoordinateTransform,
-    QgsCoordinateReferenceSystem,
     Qgis,
+    QgsApplication,
+    QgsAuthManager,
+    QgsAuthMethodConfig,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsProject,
 )
+
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
+
+__all__ = []
+logger = logging.getLogger(__name__)
 
 
 def run(username: str, password: str) -> None:
     """Add an MI layer to the project from available options"""
-    from qgis.PyQt.QtWidgets import QInputDialog
-    from qgis.utils import iface
-
-    from qgis.core import QgsApplication, QgsAuthManager, QgsAuthMethodConfig
 
     auth_manager = QgsApplication.authManager()
     new_auth_cfg = QgsAuthMethodConfig()

@@ -1,7 +1,11 @@
 #!/usr/bin/python
 import logging
 
-from jord.qlive_utilities import add_no_geom_layer
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsProject
+
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +22,8 @@ def run() -> None:
     :param only_active_layer: Only apply to active layer
     :return:
     """
-    from qgis.utils import iface
-    from qgis.core import QgsProject
+
+    from jord.qlive_utilities import add_no_geom_layer
 
     columns = [{"a": "b", "c": "d"}, {"a": "c", "c": "d"}, {"a": "c", "c": "e"}]
 

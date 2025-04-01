@@ -3,6 +3,9 @@ import logging
 import uuid
 from typing import Optional
 
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
 SOME_COMMENT_IGNORE_THIS = """
     decimal                            Distinguisable                          N/S or E/W  | E/W     E/W
      E/W
@@ -33,6 +36,7 @@ as%20OpenStreetMap%2C%20and%20GPS%20devices
 """
 
 logger = logging.getLogger(__name__)
+__all__ = []
 
 
 def run(
@@ -54,9 +58,6 @@ def run(
 
     if wgs84_degree_long is None:
         wgs84_degree_long = 0
-
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
     # noinspection PyUnresolvedReferences
     # from qgis.utils import iface

@@ -1,18 +1,20 @@
 import logging
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import geopandas
+
+from integration_system.model import CollectionMixin, Graph
 from jord.qgis_utilities.fields import (
-    add_dropdown_widget,
     make_field_not_null,
     make_field_reuse_last_entered_value,
     make_field_unique,
+    set_field_widget,
 )
 from jord.qlive_utilities import add_dataframe_layer
-
-from integration_system.model import CollectionMixin, Graph
 from mi_companion import INSERT_INDEX, MAKE_FLOOR_WISE_LAYERS
-from mi_companion.mi_editor.conversion.layers.from_solution.custom_props import to_df
+from mi_companion.mi_editor.conversion.layers.from_solution.location import (
+    locations_to_df,
+)
 from mi_companion.mi_editor.conversion.projection import (
     reproject_geometry_df,
     solve_target_crs_authid,
@@ -32,14 +34,14 @@ def add_polygon_route_element_layers(
     layer_name: str,
     route_element_type_column: Optional[str] = None,
     dropdown_widget: Optional[Any] = None,
-) -> None:
-    df = to_df(route_element_collection)
+) -> Optional[List[Any]]:
+    df = locations_to_df(route_element_collection)
 
     added_layers = []
 
     if "floor_index" not in df:
         logger.warning(f"No floor index found for {layer_name}")
-        return
+        return None
 
     df["floor_index"] = df["floor_index"].astype(str)
 
@@ -89,7 +91,7 @@ def add_polygon_route_element_layers(
                     dropdown_widget is not None
                     and route_element_type_column is not None
                 ):
-                    add_dropdown_widget(
+                    set_field_widget(
                         obstacle_layer, route_element_type_column, dropdown_widget
                     )
 
@@ -128,8 +130,6 @@ def add_polygon_route_element_layers(
         make_field_unique(obstacle_layer, field_name="admin_id")
 
         if dropdown_widget is not None and route_element_type_column is not None:
-            add_dropdown_widget(
-                obstacle_layer, route_element_type_column, dropdown_widget
-            )
+            set_field_widget(obstacle_layer, route_element_type_column, dropdown_widget)
 
     return added_layers

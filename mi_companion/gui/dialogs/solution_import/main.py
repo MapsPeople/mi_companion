@@ -2,15 +2,16 @@
 import logging
 from pathlib import Path
 
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
+
 logger = logging.getLogger(__name__)
 
 
 def run(*, path: Path) -> None:
-    # noinspection PyUnresolvedReferences
-    from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-
-    # noinspection PyUnresolvedReferences
-    from qgis.utils import iface
     from jord.qgis_utilities.helpers import InjectedProgressBar
 
     from integration_system.json_serde import from_json

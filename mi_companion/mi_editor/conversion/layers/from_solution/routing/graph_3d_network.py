@@ -2,16 +2,13 @@ import logging
 from typing import Iterable
 
 import shapely
-from jord.qgis_utilities.constraints import set_geometry_constraints
+
 from jord.qgis_utilities.fields import (
-    add_dropdown_widget,
     make_field_not_null,
     make_field_reuse_last_entered_value,
-    make_field_unique,
 )
 from jord.qgis_utilities.styling import set_3d_view_settings
-from jord.qlive_utilities import add_dataframe_layer, add_shapely_layer, add_wkb_layer
-
+from jord.qlive_utilities import add_wkb_layer
 from mi_companion import (
     FLOOR_HEIGHT,
     GRAPH_EDGE_COLOR,
@@ -44,7 +41,19 @@ def add_graph_3d_network_layers(
     points,
     points_meta_data,
     qgis_instance_handle,
-):
+) -> None:
+    """
+
+    :param edge_context_type_dropdown_widget:
+    :param graph_group:
+    :param highway_type_dropdown_widget:
+    :param lines:
+    :param lines_meta_data:
+    :param points:
+    :param points_meta_data:
+    :param qgis_instance_handle:
+    :return:
+    """
     lines = [prepare_geom_for_qgis(l, clean=False) for l in lines]
 
     logger.info(f"{len(lines)=} loaded!")
