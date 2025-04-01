@@ -6,11 +6,11 @@ from qgis.PyQt import uic
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
+from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
+
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
 
 __all__ = ["Dialog"]
-
-from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
 
 
 class Dialog(QDialog, FORM_CLASS):
