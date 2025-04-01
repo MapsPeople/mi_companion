@@ -2,16 +2,13 @@ import logging
 from typing import Iterable
 
 import shapely
-from jord.qgis_utilities.constraints import set_geometry_constraints
+
 from jord.qgis_utilities.fields import (
     make_field_not_null,
     make_field_reuse_last_entered_value,
-    make_field_unique,
-    set_field_widget,
 )
 from jord.qgis_utilities.styling import set_3d_view_settings
-from jord.qlive_utilities import add_dataframe_layer, add_shapely_layer, add_wkb_layer
-
+from jord.qlive_utilities import add_wkb_layer
 from mi_companion import (
     FLOOR_HEIGHT,
     GRAPH_EDGE_COLOR,

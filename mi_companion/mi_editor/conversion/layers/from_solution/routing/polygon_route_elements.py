@@ -2,6 +2,8 @@ import logging
 from typing import Any, List, Optional
 
 import geopandas
+
+from integration_system.model import CollectionMixin, Graph
 from jord.qgis_utilities.fields import (
     make_field_not_null,
     make_field_reuse_last_entered_value,
@@ -9,8 +11,6 @@ from jord.qgis_utilities.fields import (
     set_field_widget,
 )
 from jord.qlive_utilities import add_dataframe_layer
-
-from integration_system.model import CollectionMixin, Graph
 from mi_companion import INSERT_INDEX, MAKE_FLOOR_WISE_LAYERS
 from mi_companion.mi_editor.conversion.layers.from_solution.location import (
     locations_to_df,

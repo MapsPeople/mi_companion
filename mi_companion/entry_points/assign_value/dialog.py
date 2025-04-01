@@ -1,14 +1,13 @@
 import logging
 import os
 
-from jord.qgis_utilities.helpers import signals
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
+from jord.qgis_utilities.helpers import signals
 from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))

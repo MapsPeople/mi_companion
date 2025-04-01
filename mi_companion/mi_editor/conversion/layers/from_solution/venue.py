@@ -1,6 +1,10 @@
 import logging
 from typing import Any, Iterable, Optional
 
+# noinspection PyUnresolvedReferences
+from qgis.PyQt import QtWidgets
+
+from integration_system.model import Solution, Venue
 from jord.qgis_utilities import (
     make_field_not_null,
     make_field_unique,
@@ -8,11 +12,6 @@ from jord.qgis_utilities import (
     set_geometry_constraints,
 )
 from jord.qlive_utilities import add_shapely_layer
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtWidgets
-
-from integration_system.model import Solution, Venue
 from mi_companion import (
     ADD_OCCUPANT_LAYERS,
     ALLOW_DUPLICATE_VENUES_IN_PROJECT,

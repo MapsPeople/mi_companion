@@ -3,12 +3,6 @@ import operator
 from collections import defaultdict
 from typing import Any, List, Mapping, Optional
 
-from jord.qgis_utilities.conversion.features import (
-    GeometryIsEmptyError,
-    feature_to_shapely,
-    parse_q_value,
-)
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
@@ -22,6 +16,10 @@ from integration_system.model import (
     Connection,
     Connector,
     Solution,
+)
+from jord.qgis_utilities.conversion.features import (
+    GeometryIsEmptyError,
+    feature_to_shapely,
 )
 from mi_companion import (
     AVOIDS_DESCRIPTOR,

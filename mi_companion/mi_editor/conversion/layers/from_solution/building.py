@@ -1,11 +1,10 @@
 import logging
 from typing import Any, Callable, Optional
 
-from jord.qgis_utilities.fields import make_field_unique
-from jord.qlive_utilities import add_shapely_layer
-
 from integration_system.mi import get_outside_building_admin_id
 from integration_system.model import Building, Solution, Venue
+from jord.qgis_utilities.fields import make_field_unique
+from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
     BUILDING_DESCRIPTOR,
     BUILDING_POLYGON_DESCRIPTOR,

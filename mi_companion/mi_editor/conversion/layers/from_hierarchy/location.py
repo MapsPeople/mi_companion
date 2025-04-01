@@ -2,8 +2,6 @@ import logging
 import uuid
 from typing import Any, Collection, List, Optional
 
-from jord.qgis_utilities.conversion.features import feature_to_shapely, parse_q_value
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
@@ -14,6 +12,7 @@ from qgis.PyQt.QtCore import QVariant
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.model import Category, LocationType, Solution
+from jord.qgis_utilities.conversion.features import feature_to_shapely
 from mi_companion import DEFAULT_CUSTOM_PROPERTIES, VERBOSE
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (

@@ -2,10 +2,10 @@ import logging
 import os
 from pathlib import Path
 
-from jord.qgis_utilities.helpers import signals
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets, uic
+
+from jord.qgis_utilities.helpers import signals
 
 FORM_CLASS, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "cad_area_dialog.ui")

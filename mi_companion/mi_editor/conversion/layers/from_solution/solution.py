@@ -1,14 +1,6 @@
 import logging
 from typing import Any, Optional
 
-from jord.qgis_utilities import (
-    make_enum_dropdown_widget,
-    make_iterable_dropdown_widget,
-    make_mapping_dropdown_widget,
-    make_value_relation_widget,
-)
-from jord.qlive_utilities import add_no_geom_layer, add_shapely_layer
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
@@ -27,6 +19,13 @@ from integration_system.model import (
     Solution,
     VenueType,
 )
+from jord.qgis_utilities import (
+    make_enum_dropdown_widget,
+    make_iterable_dropdown_widget,
+    make_mapping_dropdown_widget,
+    make_value_relation_widget,
+)
+from jord.qlive_utilities import add_no_geom_layer
 from mi_companion import (
     ADD_LOCATION_TYPE_LAYERS,
     DESCRIPTOR_BEFORE,

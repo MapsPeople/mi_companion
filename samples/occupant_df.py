@@ -1,12 +1,11 @@
 from itertools import tee
 from typing import Iterable, Mapping
 
-from jord.pandas_utilities import df_to_columns
-from jord.typing_utilities import solve_attribute_uri
-
 from integration_system.mi import get_remote_solution
 from integration_system.model import Venue
 from integration_system.pandas_serde import collection_to_df
+from jord.pandas_utilities import df_to_columns
+from jord.typing_utilities import solve_attribute_uri
 
 a = get_remote_solution(
     "fjordhaven7",

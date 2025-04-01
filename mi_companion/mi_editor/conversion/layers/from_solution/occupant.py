@@ -1,18 +1,15 @@
 import logging
 from typing import Any, List, Optional
 
+from integration_system.model import Solution
+from integration_system.pandas_serde import collection_to_df
 from jord.pandas_utilities import df_to_columns
 from jord.qgis_utilities import (
-    make_field_default,
     make_field_not_null,
     make_field_reuse_last_entered_value,
     make_field_unique,
-    set_field_widget,
 )
 from jord.qlive_utilities import add_no_geom_layer
-
-from integration_system.model import Solution
-from integration_system.pandas_serde import collection_to_df
 from .custom_props import process_custom_props_df
 
 BOOLEAN_OCCUPANT_ATTRS = ()

@@ -3,12 +3,12 @@ from typing import Optional
 
 import pyproj
 import shapely
-from jord.shapely_utilities import clean_shape
 from pandas import DataFrame
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
+from jord.shapely_utilities import clean_shape
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.constants import (
     GDS_EPSG_NUMBER,

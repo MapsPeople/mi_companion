@@ -1,5 +1,4 @@
 import shapely
-from jord.shapely_utilities import dilate
 
 from integration_system.model import (
     Area,
@@ -9,6 +8,7 @@ from integration_system.model import (
     Venue,
     VenueType,
 )
+from jord.shapely_utilities import dilate
 
 if __name__ == "__main__":
     venue = Venue(

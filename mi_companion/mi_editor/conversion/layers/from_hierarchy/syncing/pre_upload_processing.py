@@ -4,9 +4,9 @@ from itertools import chain
 from typing import Union
 
 import shapely
-from jord.shapely_utilities import is_multi
 
 from integration_system.model import Area, PointOfInterest, Room, Solution
+from jord.shapely_utilities import is_multi
 from mi_companion.configuration.options import read_bool_setting
 
 logger = logging.getLogger(__name__)

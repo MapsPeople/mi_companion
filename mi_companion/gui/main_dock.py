@@ -4,11 +4,6 @@ import os
 from collections import defaultdict
 from typing import Any, Callable, Optional
 
-from jord.qgis_utilities import read_plugin_setting
-from jord.qgis_utilities.helpers import InjectedProgressBar, signals
-from jord.qlive_utilities import add_shapely_layer
-from jord.qt_utilities import DockWidgetAreaFlag
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets, uic
 
@@ -38,6 +33,10 @@ from warg import get_submodules_by_path, reload_module
 
 from integration_system.config import MapsIndoors, Settings, set_settings
 from integration_system.mi import SolutionDepth, get_venue_key_mi_venue_map
+from jord.qgis_utilities import read_plugin_setting
+from jord.qgis_utilities.helpers import InjectedProgressBar, signals
+from jord.qlive_utilities import add_shapely_layer
+from jord.qt_utilities import DockWidgetAreaFlag
 from mi_companion.mi_editor import (
     layer_hierarchy_to_solution,
     revert_venues,

@@ -1,8 +1,6 @@
 import logging
 from typing import Any, List, Optional
 
-from jord.qgis_utilities.conversion.features import feature_to_shapely
-
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
@@ -11,6 +9,7 @@ from integration_system.mi import (
     get_outside_building_floor_name,
 )
 from integration_system.model import Solution
+from jord.qgis_utilities.conversion.features import feature_to_shapely
 from mi_companion import (
     BUILDING_POLYGON_DESCRIPTOR,
     DEFAULT_CUSTOM_PROPERTIES,

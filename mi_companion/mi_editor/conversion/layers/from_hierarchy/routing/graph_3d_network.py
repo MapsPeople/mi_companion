@@ -1,8 +1,6 @@
 import logging
 from typing import Any, List, Optional
 
-from jord.qgis_utilities.conversion.features import feature_to_shapely, parse_q_value
-
 # noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsGeometry,
@@ -15,6 +13,7 @@ from qgis.core import (
 
 from integration_system.graph_utilities.from_3d_lines import lines_3d_to_osm_xml
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
+from jord.qgis_utilities.conversion.features import feature_to_shapely, parse_q_value
 from mi_companion import (
     NAVIGATION_GRAPH_LINES_DESCRIPTOR,
 )

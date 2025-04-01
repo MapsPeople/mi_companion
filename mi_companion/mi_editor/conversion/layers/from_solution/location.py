@@ -3,6 +3,9 @@ import dataclasses
 import json
 import logging
 
+from pandas import DataFrame, json_normalize
+
+from integration_system.pandas_serde import collection_to_df
 from jord.qgis_utilities.constraints import set_geometry_constraints
 from jord.qgis_utilities.fields import (
     make_field_boolean,
@@ -17,9 +20,6 @@ from jord.qgis_utilities.styling import (
     set_label_styling,
     set_layer_rendering_scale,
 )
-from pandas import DataFrame, json_normalize
-
-from integration_system.pandas_serde import collection_to_df
 from mi_companion import REAL_NONE_JSON_VALUE
 from mi_companion.constants import (
     FLOOR_HEIGHT,

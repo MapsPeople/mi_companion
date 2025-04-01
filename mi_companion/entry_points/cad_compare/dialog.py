@@ -4,7 +4,6 @@ from pathlib import Path
 
 # noinspection PyUnresolvedReferences
 import qgis
-from jord.qgis_utilities.helpers import signals
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
@@ -12,6 +11,7 @@ from qgis.PyQt import uic
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
+from jord.qgis_utilities.helpers import signals
 from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
 
 FORM_CLASS, _ = uic.loadUiType(str(Path(__file__).parent / "dialog.ui"))
