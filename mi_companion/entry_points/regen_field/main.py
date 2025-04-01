@@ -2,6 +2,7 @@
 import logging
 
 logger = logging.getLogger(__name__)
+__all__ = []
 
 
 def run(*, field_name: str = "admin_id") -> None:

@@ -5,6 +5,7 @@ from integration_system.config import MapsIndoors, Settings, set_settings
 from integration_system.migration import migrate_venue
 
 logger = logging.getLogger(__name__)
+__all__ = []
 
 
 def run(

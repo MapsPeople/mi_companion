@@ -21,6 +21,7 @@ from qgis.utils import iface
 from mi_companion.mi_editor import convert_solution_layers_to_solution
 
 logger = logging.getLogger(__name__)
+__all__ = []
 
 
 def run() -> None:

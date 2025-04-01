@@ -8,6 +8,7 @@ from pathlib import Path
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 logger = logging.getLogger(__name__)
+__all__ = []
 
 
 def run(*, svg_file_path: Path) -> None:

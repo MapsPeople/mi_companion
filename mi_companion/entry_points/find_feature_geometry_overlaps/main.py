@@ -10,6 +10,7 @@ from qgis.core import QgsProject
 from qgis.utils import iface
 
 logger = logging.getLogger(__name__)
+__all__ = []
 
 
 def randomize_fields_selected_features(feature, field_name: str) -> Any:  # QgsFeature

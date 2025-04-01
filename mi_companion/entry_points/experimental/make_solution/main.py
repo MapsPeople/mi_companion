@@ -36,6 +36,7 @@ as%20OpenStreetMap%2C%20and%20GPS%20devices
 """
 
 logger = logging.getLogger(__name__)
+__all__ = []
 
 
 def run(

@@ -9,6 +9,7 @@ from qgis.core import QgsLayerTreeGroup
 from qgis.utils import iface
 
 logger = logging.getLogger(__name__)
+__all__ = []
 
 
 def run(*, new_name: str = "", randomize_field: Optional[str] = "external_id") -> None:

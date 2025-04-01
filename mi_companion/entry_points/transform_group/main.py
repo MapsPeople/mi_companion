@@ -30,6 +30,8 @@ if False:  # TODO: Transform if not the same as GCPs!
 # FORWARD_TRANSFORM = QgsCoordinateTransform(DEST_CRS, SOURCE_CRS, QgsProject.instance())
 # BACKWARD_TRANSFORM = QgsCoordinateTransform(DEST_CRS, SOURCE_CRS, QgsProject.instance())
 
+__all__ = []
+
 
 def run(
     *,

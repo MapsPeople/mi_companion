@@ -8,6 +8,8 @@ from qgis.core import QgsProject
 
 logger = logging.getLogger(__name__)
 
+__all__ = []
+
 
 def run(*, original_dxf_path: Path, new_dxf_path: Path) -> None:
     """

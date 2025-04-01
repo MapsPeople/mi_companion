@@ -1,24 +1,26 @@
 #!/usr/bin/python
 import logging
 
-logger = logging.getLogger(__name__)
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QInputDialog
 
 # noinspection PyUnresolvedReferences
-from qgis.utils import iface
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsApplication, QgsAuthManager, QgsAuthMethodConfig
-
 # noinspection PyUnresolvedReferences
 from qgis.core import (
-    QgsProject,
-    QgsCoordinateTransform,
-    QgsCoordinateReferenceSystem,
     Qgis,
+    QgsApplication,
+    QgsAuthManager,
+    QgsAuthMethodConfig,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsProject,
 )
+
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
+
+__all__ = []
+logger = logging.getLogger(__name__)
 
 
 def run(username: str, password: str) -> None:

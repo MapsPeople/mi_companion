@@ -1,8 +1,6 @@
 #!/usr/bin/python
 import logging
 
-from jord.qlive_utilities import add_no_geom_layer
-
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
@@ -24,6 +22,8 @@ def run() -> None:
     :param only_active_layer: Only apply to active layer
     :return:
     """
+
+    from jord.qlive_utilities import add_no_geom_layer
 
     columns = [{"a": "b", "c": "d"}, {"a": "c", "c": "d"}, {"a": "c", "c": "e"}]
 

@@ -10,6 +10,8 @@ from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 
 logger = logging.getLogger(__name__)
 
+__all__ = []
+
 
 def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> None:
     from integration_system.compatibilization import (

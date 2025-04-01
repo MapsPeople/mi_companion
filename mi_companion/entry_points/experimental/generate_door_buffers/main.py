@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 CRS = f"EPSG:3857"
 
+__all__ = []
+
 
 def run(*, buffer_distance: float = 0.01, only_active_layer: bool = True) -> None:
     if only_active_layer:

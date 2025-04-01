@@ -9,6 +9,7 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
 from qgis.utils import iface
 
 logger = logging.getLogger(__name__)
+__all__ = []
 
 
 def run(
@@ -31,7 +32,7 @@ def run(
         for group in selected_nodes:
             if isinstance(group, QgsLayerTreeLayer):
                 if new_name is ... or new_name == "" or new_name is None:
-                    new_name = group.name() + " (Copy)"
+                    new_name = f"{group.name()} (Copy)"
                 duplicate_tree_node(group.parent(), group, new_name=new_name)
             elif isinstance(group, QgsLayerTreeGroup):
                 new_group, group_items = duplicate_groups(group, new_name=new_name)
