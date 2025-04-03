@@ -8,6 +8,7 @@ from pandas import DataFrame, json_normalize
 from integration_system.pandas_serde import collection_to_df
 from jord.qgis_utilities.constraints import set_geometry_constraints
 from jord.qgis_utilities.fields import (
+    HIDDEN_WIDGET,
     make_field_boolean,
     make_field_default,
     make_field_not_null,
@@ -61,6 +62,9 @@ STR_LOCATION_ATTRS = ("description", "external_id", "name", "admin_id")
 FLOAT_LOCATION_ATTRS = ()
 INT_LOCATION_ATTRS = ()
 
+# FIELDS_HIDDEN_IN_FORM = ('is_searchable', 'is_active', 'admin_id')
+FORM_FIELDS = ("name", "location_type")
+
 LAYER_LABEL_VISIBLE_MIN_RATIO = 1 / 999
 LAYER_GEOM_VISIBLE_MIN_RATIO = 1 / 9999
 
@@ -72,6 +76,12 @@ class LocationGeometryType(StrEnum):
 
 
 def locations_to_df(collection_: CollectionMixin) -> DataFrame:
+    """
+
+    :param collection_:
+    :return:
+    """
+
     # noinspection PyTypeChecker
     converted_items = []
 
@@ -136,6 +146,20 @@ def add_location_layer(
     occupant_dropdown_widget: Optional[Any] = None,
     opacity: float = 1.0,
 ) -> Optional[List[Any]]:  # QgsVectorLayer
+    """
+
+    :param location_collection:
+    :param name:
+    :param geometry_column_name:
+    :param occupant_collection:
+    :param qgis_instance_handle:
+    :param floor_group:
+    :param floor:
+    :param location_type_dropdown_widget:
+    :param occupant_dropdown_widget:
+    :param opacity:
+    :return:
+    """
 
     shape_df = locations_to_df(location_collection)
 
@@ -286,6 +310,17 @@ def add_location_layer(
         )
 
     if False:
+        for qgs_field_name in layer.fields():
+            field_name = qgs_field_name.name()
+            hide = True
+            for visible_form_field_name in FORM_FIELDS:
+                if visible_form_field_name in field_name:
+                    hide = False
+
+            if hide:
+                set_field_widget(added_layers, field_name, HIDDEN_WIDGET)
+
+    if False:
         for field_name in BOOLEAN_LOCATION_ATTRS:
             make_field_boolean(added_layers, field_name=field_name)
 
@@ -304,6 +339,16 @@ def add_floor_content_layers(
     location_type_dropdown_widget: Optional[Any] = None,
     occupant_dropdown_widget: Optional[Any] = None,
 ) -> None:
+    """
+
+    :param qgis_instance_handle:
+    :param solution:
+    :param floor:
+    :param floor_group:
+    :param location_type_dropdown_widget:
+    :param occupant_dropdown_widget:
+    :return:
+    """
     room_layer = add_location_layer(
         location_collection=solution.rooms,
         occupant_collection=solution.occupants,
@@ -316,18 +361,22 @@ def add_floor_content_layers(
         occupant_dropdown_widget=occupant_dropdown_widget,
         opacity=0.8,
     )
+
     set_3d_view_settings(
         room_layer,
         offset=FLOOR_VERTICAL_SPACING
         + (FLOOR_HEIGHT + FLOOR_VERTICAL_SPACING) * floor.floor_index,
         extrusion=FLOOR_HEIGHT,
     )
+
     set_label_styling(room_layer, min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO)
+
     if LAYER_GEOM_VISIBLE_MIN_RATIO:
         set_layer_rendering_scale(
             room_layer,
             min_ratio=LAYER_GEOM_VISIBLE_MIN_RATIO,
         )
+
     set_geometry_constraints(room_layer)
 
     area_layer = add_location_layer(
@@ -343,11 +392,13 @@ def add_floor_content_layers(
         opacity=0.6,
     )
     set_label_styling(area_layer, min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO)
+
     if LAYER_GEOM_VISIBLE_MIN_RATIO:
         set_layer_rendering_scale(
             area_layer,
             min_ratio=LAYER_GEOM_VISIBLE_MIN_RATIO,
         )
+
     set_geometry_constraints(area_layer)
 
     poi_layer = add_location_layer(
@@ -361,12 +412,15 @@ def add_floor_content_layers(
         location_type_dropdown_widget=location_type_dropdown_widget,
         occupant_dropdown_widget=occupant_dropdown_widget,
     )
+
     set_label_styling(poi_layer, min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO)
+
     if LAYER_GEOM_VISIBLE_MIN_RATIO:
         set_layer_rendering_scale(
             poi_layer,
             min_ratio=LAYER_GEOM_VISIBLE_MIN_RATIO,
         )
+
     set_geometry_constraints(poi_layer)
 
 

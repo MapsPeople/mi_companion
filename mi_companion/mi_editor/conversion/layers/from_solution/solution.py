@@ -36,6 +36,7 @@ from mi_companion import (
     SOLUTION_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
+from .editor_widgets import make_value_map_widget
 from .location_type import add_location_type_layer
 from .venue import add_venue_layer
 
@@ -61,20 +62,68 @@ def add_solution_layers(
     :param progress_bar:
     :return:
     """
-    mi_group = layer_tree_root.findGroup(mi_hierarchy_group_name)
+    (
+        available_location_type_dropdown_widget,
+        connection_type_dropdown_widget,
+        door_type_dropdown_widget,
+        edge_context_type_dropdown_widget,
+        entry_point_type_dropdown_widget,
+        highway_type_dropdown_widget,
+        solution_group,
+        venue_type_dropdown_widget,
+    ) = add_solution_group(
+        layer_tree_root,
+        mi_hierarchy_group_name,
+        progress_bar,
+        qgis_instance_handle,
+        solution,
+    )
 
+    add_venue_layer(
+        progress_bar=progress_bar,
+        qgis_instance_handle=qgis_instance_handle,
+        solution=solution,
+        solution_group=solution_group,
+        location_type_dropdown_widget=available_location_type_dropdown_widget,
+        door_type_dropdown_widget=door_type_dropdown_widget,
+        highway_type_dropdown_widget=highway_type_dropdown_widget,
+        venue_type_dropdown_widget=venue_type_dropdown_widget,
+        connection_type_dropdown_widget=connection_type_dropdown_widget,
+        entry_point_type_dropdown_widget=entry_point_type_dropdown_widget,
+        edge_context_type_dropdown_widget=edge_context_type_dropdown_widget,
+    )
+
+
+def add_solution_group(
+    layer_tree_root,
+    mi_hierarchy_group_name,
+    progress_bar,
+    qgis_instance_handle,
+    solution,
+):
+    """
+
+    :param layer_tree_root:
+    :param mi_hierarchy_group_name:
+    :param progress_bar:
+    :param qgis_instance_handle:
+    :param solution:
+    :return:
+    """
+
+    mi_group = layer_tree_root.findGroup(mi_hierarchy_group_name)
     if not mi_group:  # add it if it does not exist
         mi_group = layer_tree_root.addGroup(mi_hierarchy_group_name)
 
     mi_group.setExpanded(True)
     # mi_group.setExpanded(False)
-
     if DESCRIPTOR_BEFORE:
         solution_name = f"{SOLUTION_DESCRIPTOR} {solution.name}"
     else:
         solution_name = f"{solution.name} {SOLUTION_DESCRIPTOR}"
 
     solution_group = layer_tree_root.findGroup(solution_name)
+
     if not solution_group:
         solution_group = mi_group.insertGroup(0, solution_name)
 
@@ -106,7 +155,6 @@ def add_solution_layers(
         edge_context_type_dropdown_widget = make_iterable_dropdown_widget(
             GraphEdgeContextTypes
         )
-
     # solution_layer_name = f"{solution.name}_solution_data"
     # solution_data_layers = QgsProject.instance().mapLayersByName(solution_layer_name)
     # logger.info(f"Found {solution_data_layers}")
@@ -116,35 +164,26 @@ def add_solution_layers(
         if SOLUTION_DATA_DESCRIPTOR in c.name():
             found_solution_data = True
 
-    if True:
-        assert len(solution.venues) > 0, "No venues found"
+    if not found_solution_data:
+        layer = add_no_geom_layer(
+            qgis_instance_handle=qgis_instance_handle,
+            name=SOLUTION_DATA_DESCRIPTOR,
+            group=solution_group,
+            columns=[
+                {
+                    "external_id": solution.external_id,
+                    "name": solution.name,
+                    "customer_id": solution.customer_id,
+                    "occupants_enabled": solution.occupants_enabled,
+                }
+            ],
+            visible=False,
+        )
 
-    for venue in solution.venues:
-        if not found_solution_data:
-            layer = add_no_geom_layer(
-                qgis_instance_handle=qgis_instance_handle,
-                name=SOLUTION_DATA_DESCRIPTOR,
-                group=solution_group,
-                columns=[
-                    {
-                        "external_id": solution.external_id,
-                        "name": solution.name,
-                        "customer_id": solution.customer_id,
-                        "occupants_enabled": solution.occupants_enabled,
-                    }
-                ],
-                visible=False,
-            )
-
-        if venue is None:
-            logger.warning("Venue was not found!")
-            return
-
-        if progress_bar:
-            progress_bar.setValue(10)
+    if progress_bar:
+        progress_bar.setValue(10)
 
     available_location_type_dropdown_widget = None
-
     location_type_layer = None
     if ADD_LOCATION_TYPE_LAYERS:
         for c in solution_group.children():
@@ -162,8 +201,6 @@ def add_solution_layers(
             )
             logger.info(f"Adding location type layer: {LOCATION_TYPE_DESCRIPTOR}")
 
-        assert len(location_type_layer) == 1
-
         location_type_layer = location_type_layer[0]
 
         available_location_type_dropdown_widget = make_value_relation_widget(
@@ -174,30 +211,15 @@ def add_solution_layers(
         if read_bool_setting("MAKE_LOCATION_TYPE_DROPDOWN"):
             available_location_type_dropdown_widget = make_value_map_widget(solution)
 
-    add_venue_layer(
-        progress_bar=progress_bar,
-        qgis_instance_handle=qgis_instance_handle,
-        solution=solution,
-        solution_group=solution_group,
-        location_type_dropdown_widget=available_location_type_dropdown_widget,
-        door_type_dropdown_widget=door_type_dropdown_widget,
-        highway_type_dropdown_widget=highway_type_dropdown_widget,
-        venue_type_dropdown_widget=venue_type_dropdown_widget,
-        connection_type_dropdown_widget=connection_type_dropdown_widget,
-        entry_point_type_dropdown_widget=entry_point_type_dropdown_widget,
-        edge_context_type_dropdown_widget=edge_context_type_dropdown_widget,
-    )
-
-
-def make_value_map_widget(solution):
-    return QgsEditorWidgetSetup(
-        "ValueMap",
-        {
-            "map": {
-                solution.location_types.get(k).name: solution.location_types.get(k).name
-                for k in sorted(solution.location_types.keys)
-            }
-        },
+    return (
+        available_location_type_dropdown_widget,
+        connection_type_dropdown_widget,
+        door_type_dropdown_widget,
+        edge_context_type_dropdown_widget,
+        entry_point_type_dropdown_widget,
+        highway_type_dropdown_widget,
+        solution_group,
+        venue_type_dropdown_widget,
     )
 
 
