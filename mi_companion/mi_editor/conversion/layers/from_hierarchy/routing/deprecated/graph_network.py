@@ -10,11 +10,11 @@ from integration_system.graph_utilities.deprecated.old_graph_format import (
 )
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
 from jord.qgis_utilities.conversion.features import feature_to_shapely, parse_q_value
-from mi_companion import (
+from mi_companion.configuration.options import read_bool_setting
+from mi_companion.layer_descriptors import (
     NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
     NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
 )
-from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)

@@ -20,7 +20,10 @@ from qgis.core import (
 from qgis.utils import iface
 
 __all__ = []
-logger = logging.getLogger(__name__)
+
+from mi_companion import RESOURCE_BASE_PATH
+
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 
 def run(username: str, password: str) -> None:

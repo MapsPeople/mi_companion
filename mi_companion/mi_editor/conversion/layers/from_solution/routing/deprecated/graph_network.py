@@ -13,11 +13,13 @@ from mi_companion import (
     GRAPH_EDGE_COLOR,
     GRAPH_EDGE_WIDTH,
     HALF_SIZE,
+)
+from mi_companion.configuration.options import read_bool_setting
+from mi_companion.layer_descriptors import (
     NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
     NAVIGATION_POINT_DESCRIPTOR,
     NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
 )
-from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.projection import (
     prepare_geom_for_qgis,
     solve_target_crs_authid,

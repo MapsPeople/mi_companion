@@ -11,7 +11,8 @@ from jord.qgis_utilities.fields import (
     set_field_widget,
 )
 from jord.qlive_utilities import add_dataframe_layer
-from mi_companion import DOORS_DESCRIPTOR, INSERT_INDEX, MAKE_FLOOR_WISE_LAYERS
+from mi_companion import INSERT_INDEX, MAKE_FLOOR_WISE_LAYERS
+from mi_companion.layer_descriptors import DOORS_GROUP_DESCRIPTOR
 from mi_companion.mi_editor.conversion.layers.from_solution.location import (
     locations_to_df,
 )
@@ -33,7 +34,7 @@ def add_linestring_route_element_layers(
     qgis_instance_handle: Any,
     doors: DoorCollection,
 ) -> List[Any]:
-    doors_name = f"{DOORS_DESCRIPTOR}"
+    doors_name = f"{DOORS_GROUP_DESCRIPTOR}"
 
     display_rules = None
 

@@ -2,7 +2,23 @@ import logging
 from typing import Any, List, Optional
 
 # noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
+
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtCore import QVariant
+
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtWidgets import QMessageBox, QTextEdit
+
+# noinspection PyUnresolvedReferences
+from qgis.core import (
+    QgsLayerTreeGroup,
+    QgsLayerTreeGroup,
+    QgsLayerTreeLayer,
+    QgsLayerTreeLayer,
+    QgsProject,
+    QgsProject,
+)
 
 from integration_system.mi import (
     MI_OUTSIDE_BUILDING_NAME,
@@ -11,15 +27,20 @@ from integration_system.mi import (
 from integration_system.model import Solution
 from jord.qgis_utilities.conversion.features import feature_to_shapely
 from mi_companion import (
-    BUILDING_POLYGON_DESCRIPTOR,
     DEFAULT_CUSTOM_PROPERTIES,
-    FLOOR_DESCRIPTOR,
-    GRAPH_DESCRIPTOR,
     HALF_SIZE,
     HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS,
 )
+from mi_companion.layer_descriptors import (
+    BUILDING_POLYGON_DESCRIPTOR,
+    FLOOR_GROUP_DESCRIPTOR,
+    GRAPH_GROUP_DESCRIPTOR,
+)
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.routing.graph import (
     add_venue_graph,
+)
+from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
+    make_hierarchy_validation_dialog,
 )
 from .custom_props import extract_custom_props
 from .extraction import special_extract_layer_data
@@ -84,10 +105,12 @@ def add_venue_level_hierarchy(
 
         if not isinstance(venue_group_item, QgsLayerTreeGroup):
             logger.debug(f"skipping {venue_group_item=}")
+        elif GRAPH_GROUP_DESCRIPTOR in venue_group_item.name():
+            continue
         else:
             if (
                 HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS
-                and FLOOR_DESCRIPTOR in venue_group_item.name()
+                and FLOOR_GROUP_DESCRIPTOR in venue_group_item.name()
                 and "Outside" in venue_group_item.name()
             ):  # HANDLE OUTSIDE FLOORS, TODO: right now only support a single floor
                 logger.error("Adding outside floor")
@@ -155,9 +178,22 @@ def add_venue_level_hierarchy(
                 )
 
                 if building_key is None:
-                    logger.error(
-                        f"did not find building in {venue_group_item.name()}, skipping"
+                    reply = make_hierarchy_validation_dialog(
+                        "Missing Required Building Polygon Layer",
+                        f"The Group {venue_group_item.name()} is missing a {BUILDING_POLYGON_DESCRIPTOR}, which is a "
+                        f"required layer. If you proceed, the Group {venue_group_item.name()} will be excluded from the "
+                        f"upload.",
+                        add_reject_option=True,
+                        reject_text="Cancel Upload",
+                        accept_text="Upload Anyway",
+                        level=QtWidgets.QMessageBox.Warning,
                     )
+
+                    if reply == QMessageBox.RejectRole:
+                        raise Exception("Upload cancelled")
+
+                    continue
+
                 else:
                     add_building_floors(
                         building_key=building_key,
@@ -196,7 +232,7 @@ def add_venue_level_hierarchy(
         if not isinstance(venue_group_item, QgsLayerTreeGroup):
             logger.debug(f"skipping {venue_group_item=}")
         else:
-            if GRAPH_DESCRIPTOR in venue_group_item.name():
+            if GRAPH_GROUP_DESCRIPTOR in venue_group_item.name():
                 graph_key = add_venue_graph(
                     solution=solution,
                     graph_group=venue_group_item,
@@ -245,16 +281,33 @@ def get_building_key(
                 name,
             ) = special_extract_layer_data(floor_group_items)
 
-            door_linestring = feature_to_shapely(layer_feature)
+            try:
+                building_polygon = feature_to_shapely(layer_feature)
+            except Exception as e:
+                reply = make_hierarchy_validation_dialog(
+                    "Invalid Building Polygon Detected",
+                    f"Building feature with admin_id {admin_id} in {floor_group_items.name()} has an invalid "
+                    f"geometry.\n\n"
+                    f"{e}\n\n"
+                    f"This most likely occur because the geometry vertices was entirely deleted while feature itself "
+                    f"remains. Please correct this issue before uploading.",
+                    add_reject_option=True,
+                    reject_text="Cancel Upload",
+                    accept_text="Upload Anyway",
+                    level=QtWidgets.QMessageBox.Warning,
+                )
 
-            if door_linestring is not None:
+                if reply == QMessageBox.RejectRole:
+                    raise Exception("Upload cancelled")
+
+            if building_polygon is not None:
                 custom_props = extract_custom_props(layer_attributes)
                 try:
                     building_key = solution.add_building(
                         admin_id=admin_id,
                         external_id=external_id,
                         name=name,
-                        polygon=prepare_geom_for_mi_db(door_linestring),
+                        polygon=prepare_geom_for_mi_db(building_polygon),
                         venue_key=venue_key,
                         custom_properties=(
                             custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES

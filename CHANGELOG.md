@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
+## 0.6.11 - 2025-04-08
+
+* [Bug-fix] DisplayString for layer URI is not translated any more, all system locales now supported.
+* [Validation] Proactive Layer Hierarchy Validation engine implemented
+* [Validation] Upload time validation of missing layer and geometries
+* [New Button] Toggle off/on labels for all layer
+* [Style Option] Labels on locations can be set to be location_type(s) instead with
+
 ## 0.6.10 - 2025-04-01
 
 * [New Layer] LocationType(s) is now an editable layer

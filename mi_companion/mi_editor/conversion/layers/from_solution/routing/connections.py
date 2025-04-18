@@ -12,7 +12,8 @@ from jord.qgis_utilities.fields import (
     set_field_widget,
 )
 from jord.qlive_utilities import add_dataframe_layer
-from mi_companion import CONNECTORS_DESCRIPTOR, INSERT_INDEX, MAKE_FLOOR_WISE_LAYERS
+from mi_companion import INSERT_INDEX, MAKE_FLOOR_WISE_LAYERS
+from mi_companion.layer_descriptors import CONNECTORS_GROUP_DESCRIPTOR
 from mi_companion.mi_editor.conversion.projection import (
     reproject_geometry_df,
     solve_target_crs_authid,
@@ -67,7 +68,7 @@ def add_connection_layers(
     df["floor_index"] = df["floor_index"].astype(str)
 
     if MAKE_FLOOR_WISE_LAYERS:
-        doors_group = graph_group.insertGroup(INSERT_INDEX, CONNECTORS_DESCRIPTOR)
+        doors_group = graph_group.insertGroup(INSERT_INDEX, CONNECTORS_GROUP_DESCRIPTOR)
 
         if not df.empty:
             floor_indices = df["floor_index"].unique()
@@ -125,7 +126,7 @@ def add_connection_layers(
             qgis_instance_handle=qgis_instance_handle,
             dataframe=df,
             geometry_column="point",
-            name=CONNECTORS_DESCRIPTOR,
+            name=CONNECTORS_GROUP_DESCRIPTOR,
             categorise_by_attribute="floor_index",
             group=graph_group,
             crs=solve_target_crs_authid(),

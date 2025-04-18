@@ -12,7 +12,7 @@ a = get_remote_solution(
     venue_keys=[Venue.compute_key(admin_id="4255def5cf69540d70620fb7f60a5530bb0a18af")],
 )
 
-ls = collection_to_df(a.rooms)
+ls = collection_to_df(a.rooms, pop_keys=["display_rule"])
 os = collection_to_df(a.occupants)
 
 ls["occupant"] = ls.index.map(lambda x: x if x in os.index else None)

@@ -9,17 +9,23 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 from qgis.utils import iface
 
 from jord.qgis_utilities.helpers import InjectedProgressBar
-from mi_companion import MI_HIERARCHY_GROUP_NAME
+from mi_companion import RESOURCE_BASE_PATH
+from mi_companion.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
 from mi_companion.mi_editor.conversion import add_solution_layers
 from midf.conversion import to_mi_solution
 from midf.linking import link_imdf
 from midf.loading import load_imdf
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = []
 
 
 def run(*, imdf_zip_file_path: Path) -> None:
+    """
+
+    :param imdf_zip_file_path:
+    :return:
+    """
     qgis_instance_handle = QgsProject.instance()
     layer_tree_root = QgsProject.instance().layerTreeRoot()
 
@@ -37,6 +43,6 @@ def run(*, imdf_zip_file_path: Path) -> None:
             qgis_instance_handle=qgis_instance_handle,
             solution=mi_solution,
             layer_tree_root=layer_tree_root,
-            mi_hierarchy_group_name=MI_HIERARCHY_GROUP_NAME,
+            mi_hierarchy_group_name=DATABASE_GROUP_DESCRIPTOR,
             progress_bar=progress_bar,
         )

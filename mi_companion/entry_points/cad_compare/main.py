@@ -6,7 +6,9 @@ from pathlib import Path
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
-logger = logging.getLogger(__name__)
+from mi_companion import RESOURCE_BASE_PATH
+
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = []
 

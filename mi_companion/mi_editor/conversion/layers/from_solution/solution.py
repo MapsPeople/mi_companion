@@ -7,6 +7,7 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup, QgsProject
 
+from integration_system.common_models import MIVenueType
 from integration_system.mi import (
     SolutionDepth,
     get_remote_solution,
@@ -17,7 +18,6 @@ from integration_system.model import (
     EntryPointType,
     GraphEdgeContextTypes,
     Solution,
-    VenueType,
 )
 from jord.qgis_utilities import (
     make_enum_dropdown_widget,
@@ -29,13 +29,15 @@ from jord.qlive_utilities import add_no_geom_layer
 from mi_companion import (
     ADD_LOCATION_TYPE_LAYERS,
     DESCRIPTOR_BEFORE,
-    LOCATION_TYPE_DESCRIPTOR,
-    MI_HIERARCHY_GROUP_NAME,
     OSM_HIGHWAY_TYPES,
-    SOLUTION_DATA_DESCRIPTOR,
-    SOLUTION_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
+from mi_companion.layer_descriptors import (
+    DATABASE_GROUP_DESCRIPTOR,
+    LOCATION_TYPE_DESCRIPTOR,
+    SOLUTION_DATA_DESCRIPTOR,
+    SOLUTION_GROUP_DESCRIPTOR,
+)
 from .editor_widgets import make_value_map_widget
 from .location_type import add_location_type_layer
 from .venue import add_venue_layer
@@ -50,7 +52,7 @@ def add_solution_layers(
     qgis_instance_handle: Any,
     solution: Solution,
     layer_tree_root: Any,
-    mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
+    mi_hierarchy_group_name: str = DATABASE_GROUP_DESCRIPTOR,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
 ) -> None:
     """
@@ -71,6 +73,7 @@ def add_solution_layers(
         highway_type_dropdown_widget,
         solution_group,
         venue_type_dropdown_widget,
+        location_type_ref_layer,
     ) = add_solution_group(
         layer_tree_root,
         mi_hierarchy_group_name,
@@ -84,6 +87,7 @@ def add_solution_layers(
         qgis_instance_handle=qgis_instance_handle,
         solution=solution,
         solution_group=solution_group,
+        location_type_ref_layer=location_type_ref_layer,
         location_type_dropdown_widget=available_location_type_dropdown_widget,
         door_type_dropdown_widget=door_type_dropdown_widget,
         highway_type_dropdown_widget=highway_type_dropdown_widget,
@@ -118,9 +122,9 @@ def add_solution_group(
     mi_group.setExpanded(True)
     # mi_group.setExpanded(False)
     if DESCRIPTOR_BEFORE:
-        solution_name = f"{SOLUTION_DESCRIPTOR} {solution.name}"
+        solution_name = f"{SOLUTION_GROUP_DESCRIPTOR} {solution.name}"
     else:
-        solution_name = f"{solution.name} {SOLUTION_DESCRIPTOR}"
+        solution_name = f"{solution.name} {SOLUTION_GROUP_DESCRIPTOR}"
 
     solution_group = layer_tree_root.findGroup(solution_name)
 
@@ -140,7 +144,7 @@ def add_solution_group(
 
     venue_type_dropdown_widget = None
     if read_bool_setting("MAKE_VENUE_TYPE_DROPDOWN"):
-        venue_type_dropdown_widget = make_enum_dropdown_widget(VenueType)
+        venue_type_dropdown_widget = make_enum_dropdown_widget(MIVenueType)
 
     entry_point_type_dropdown_widget = None
     if read_bool_setting("MAKE_ENTRY_POINT_TYPE_DROPDOWN"):
@@ -184,8 +188,10 @@ def add_solution_group(
         progress_bar.setValue(10)
 
     available_location_type_dropdown_widget = None
-    location_type_layer = None
+    location_type_ref_layer = None
+
     if ADD_LOCATION_TYPE_LAYERS:
+        location_type_layer = None
         for c in solution_group.children():
             if LOCATION_TYPE_DESCRIPTOR in c.name():
                 location_type_layer = [c.layer()]
@@ -206,10 +212,18 @@ def add_solution_group(
         available_location_type_dropdown_widget = make_value_relation_widget(
             location_type_layer.id(), target_key_field_name="admin_id"
         )
+        location_type_ref_layer = location_type_layer
 
     else:
         if read_bool_setting("MAKE_LOCATION_TYPE_DROPDOWN"):
-            available_location_type_dropdown_widget = make_value_map_widget(solution)
+            available_location_type_dropdown_widget = make_value_map_widget(
+                {
+                    solution.location_types.get(k)
+                    .name: solution.location_types.get(k)
+                    .name
+                    for k in sorted(solution.location_types.keys)
+                }
+            )
 
     return (
         available_location_type_dropdown_widget,
@@ -220,6 +234,7 @@ def add_solution_group(
         highway_type_dropdown_widget,
         solution_group,
         venue_type_dropdown_widget,
+        location_type_ref_layer,
     )
 
 
@@ -227,7 +242,7 @@ def solution_venue_to_layer_hierarchy(
     qgis_instance_handle: Any,
     solution_external_id: str,
     venue_external_id: str,
-    mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
+    mi_hierarchy_group_name: str = DATABASE_GROUP_DESCRIPTOR,
     *,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
     include_occupants: bool = True,

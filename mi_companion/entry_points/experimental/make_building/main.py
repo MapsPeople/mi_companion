@@ -13,7 +13,9 @@ from mi_companion.mi_editor.conversion import (
 
 __all__ = []
 
-logger = logging.getLogger(__name__)
+from mi_companion import RESOURCE_BASE_PATH
+
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 
 def run(*, name: str = "New Building (Building)") -> None:

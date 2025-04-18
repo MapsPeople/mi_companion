@@ -2,26 +2,40 @@ import copy
 import dataclasses
 import json
 import logging
+from typing import Any, Collection, Iterable, List, Optional
 
+import geopandas
+
+# noinspection PyUnresolvedReferences
+import qgis
 from pandas import DataFrame, json_normalize
 
+# noinspection PyUnresolvedReferences
+from qgis.core import QgsEditorWidgetSetup
+
+from integration_system.model import CollectionMixin, DisplayRule, Floor, Solution
 from integration_system.pandas_serde import collection_to_df
-from jord.qgis_utilities.constraints import set_geometry_constraints
-from jord.qgis_utilities.fields import (
+from jord.qgis_utilities import (
     HIDDEN_WIDGET,
     make_field_boolean,
     make_field_default,
     make_field_not_null,
     make_field_reuse_last_entered_value,
     make_field_unique,
-    set_field_widget,
-)
-from jord.qgis_utilities.styling import (
     set_3d_view_settings,
+    set_field_widget,
+    set_geometry_constraints,
     set_label_styling,
     set_layer_rendering_scale,
+    styled_field_value_categorised,
 )
-from mi_companion import REAL_NONE_JSON_VALUE
+from jord.qlive_utilities import add_dataframe_layer
+from mi_companion import (
+    LAYER_GEOM_VISIBLE_MIN_RATIO,
+    LAYER_LABEL_VISIBLE_MIN_RATIO,
+    REAL_NONE_JSON_VALUE,
+)
+from mi_companion.configuration.options import read_bool_setting
 from mi_companion.constants import (
     FLOOR_HEIGHT,
     FLOOR_VERTICAL_SPACING,
@@ -39,21 +53,7 @@ try:
 except ImportError:
     from strenum import StrEnum
 
-from typing import Any, Collection, Iterable, List, Optional
-
-import geopandas
-from jord.qlive_utilities import add_dataframe_layer
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsEditorWidgetSetup
-
-from integration_system.model import (
-    CollectionMixin,
-    Floor,
-    Solution,
-)
-
-__all__ = ["add_floor_content_layers"]
+__all__ = ["add_floor_content_layers", "locations_to_df", "LocationGeometryType"]
 
 logger = logging.getLogger(__name__)
 
@@ -64,9 +64,6 @@ INT_LOCATION_ATTRS = ()
 
 # FIELDS_HIDDEN_IN_FORM = ('is_searchable', 'is_active', 'admin_id')
 FORM_FIELDS = ("name", "location_type")
-
-LAYER_LABEL_VISIBLE_MIN_RATIO = 1 / 999
-LAYER_GEOM_VISIBLE_MIN_RATIO = 1 / 9999
 
 
 class LocationGeometryType(StrEnum):
@@ -122,11 +119,17 @@ def locations_to_df(collection_: CollectionMixin) -> DataFrame:
 
             item_as_dict["category_keys"] = keys
 
+        if "display_rule" in item_as_dict:
+            display_rule: DisplayRule = item_as_dict.pop("display_rule")
+            if display_rule is not None:
+                item_as_dict["display_rule"] = display_rule.model_dump()
+
         item_as_dict["key"] = item.key
 
         converted_items.append(item_as_dict)
 
     a = json_normalize(converted_items)
+
     if not a.empty:
         a.set_index("key", inplace=True)
 
@@ -142,12 +145,14 @@ def add_location_layer(
     qgis_instance_handle: Any,
     floor_group: Any,
     floor: Floor,
+    location_type_ref_layer: Optional[Any] = None,
     location_type_dropdown_widget: Optional[Any] = None,
     occupant_dropdown_widget: Optional[Any] = None,
     opacity: float = 1.0,
 ) -> Optional[List[Any]]:  # QgsVectorLayer
     """
 
+    :param location_type_ref_layer:
     :param location_collection:
     :param name:
     :param geometry_column_name:
@@ -190,8 +195,8 @@ def add_location_layer(
     column_selection = [
         c
         for c in shape_df.columns
-        if ("." not in c)
-        or ("location_type.admin_id" == c)
+        if ("." not in c) or ("location_type.admin_id" == c)
+        # or ('display_rule.' in c) # TODO: ENABLE FOR DISPLAY_RULE SUPPORT
         or (
             "custom_properties." in c
             and (".custom_properties" not in c)  # Only this objects custom_properties
@@ -259,7 +264,7 @@ def add_location_layer(
         geometry_column=geometry_column_name.value,
         name=name,
         group=floor_group,
-        categorise_by_attribute="location_type",
+        # categorise_by_attribute="location_type",
         crs=solve_target_crs_authid(),
         opacity=opacity,
     )
@@ -290,6 +295,11 @@ def add_location_layer(
             added_layers,
             "location_type",
             location_type_dropdown_widget,
+        )
+
+    for a in added_layers:
+        styled_field_value_categorised(
+            a, style_attributes_layer=location_type_ref_layer
         )
 
     if occupant_dropdown_widget:
@@ -336,6 +346,7 @@ def add_floor_content_layers(
     solution: Solution,
     floor: Floor,
     floor_group: Any,
+    location_type_ref_layer: Optional[Any] = None,
     location_type_dropdown_widget: Optional[Any] = None,
     occupant_dropdown_widget: Optional[Any] = None,
 ) -> None:
@@ -349,7 +360,7 @@ def add_floor_content_layers(
     :param occupant_dropdown_widget:
     :return:
     """
-    room_layer = add_location_layer(
+    room_layers = add_location_layer(
         location_collection=solution.rooms,
         occupant_collection=solution.occupants,
         name=BackendLocationTypeEnum.ROOM.value,
@@ -357,29 +368,39 @@ def add_floor_content_layers(
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
         floor=floor,
+        location_type_ref_layer=location_type_ref_layer,
         location_type_dropdown_widget=location_type_dropdown_widget,
         occupant_dropdown_widget=occupant_dropdown_widget,
         opacity=0.8,
     )
 
     set_3d_view_settings(
-        room_layer,
+        room_layers,
         offset=FLOOR_VERTICAL_SPACING
         + (FLOOR_HEIGHT + FLOOR_VERTICAL_SPACING) * floor.floor_index,
         extrusion=FLOOR_HEIGHT,
     )
 
-    set_label_styling(room_layer, min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO)
+    if read_bool_setting("USE_LOCATION_TYPE_FOR_LABEL"):  # TODO: STILL DOES NOT WORK...
+        label_field_name = 'represent_value("location_type")'
+    else:
+        label_field_name = "name"
+
+    set_label_styling(
+        room_layers,
+        field_name=label_field_name,
+        min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO,
+    )
 
     if LAYER_GEOM_VISIBLE_MIN_RATIO:
         set_layer_rendering_scale(
-            room_layer,
+            room_layers,
             min_ratio=LAYER_GEOM_VISIBLE_MIN_RATIO,
         )
 
-    set_geometry_constraints(room_layer)
+    set_geometry_constraints(room_layers)
 
-    area_layer = add_location_layer(
+    area_layers = add_location_layer(
         location_collection=solution.areas,
         occupant_collection=solution.occupants,
         name=BackendLocationTypeEnum.AREA.value,
@@ -387,21 +408,26 @@ def add_floor_content_layers(
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
         floor=floor,
+        location_type_ref_layer=location_type_ref_layer,
         location_type_dropdown_widget=location_type_dropdown_widget,
         occupant_dropdown_widget=occupant_dropdown_widget,
         opacity=0.6,
     )
-    set_label_styling(area_layer, min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO)
+    set_label_styling(
+        area_layers,
+        field_name=label_field_name,
+        min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO,
+    )
 
     if LAYER_GEOM_VISIBLE_MIN_RATIO:
         set_layer_rendering_scale(
-            area_layer,
+            area_layers,
             min_ratio=LAYER_GEOM_VISIBLE_MIN_RATIO,
         )
 
-    set_geometry_constraints(area_layer)
+    set_geometry_constraints(area_layers)
 
-    poi_layer = add_location_layer(
+    poi_layers = add_location_layer(
         location_collection=solution.points_of_interest,
         occupant_collection=solution.occupants,
         name=BackendLocationTypeEnum.POI.value,
@@ -409,19 +435,59 @@ def add_floor_content_layers(
         qgis_instance_handle=qgis_instance_handle,
         floor_group=floor_group,
         floor=floor,
+        location_type_ref_layer=location_type_ref_layer,
         location_type_dropdown_widget=location_type_dropdown_widget,
         occupant_dropdown_widget=occupant_dropdown_widget,
     )
 
-    set_label_styling(poi_layer, min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO)
+    set_label_styling(
+        poi_layers, field_name=label_field_name, min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO
+    )
 
     if LAYER_GEOM_VISIBLE_MIN_RATIO:
         set_layer_rendering_scale(
-            poi_layer,
+            poi_layers,
             min_ratio=LAYER_GEOM_VISIBLE_MIN_RATIO,
         )
 
-    set_geometry_constraints(poi_layer)
+    set_geometry_constraints(poi_layers)
+
+    if False:
+        added_layers = []
+        if poi_layers:
+            added_layers.extend(poi_layers)
+        if area_layers:
+            added_layers.extend(area_layers)
+        if room_layers:
+            added_layers.extend(room_layers)
+
+        for layer in added_layers:
+            if False:
+                # get the name of the source layer's current style
+                style_name = layer.styleManager().currentStyle()
+
+                # get the style by the name
+                style = layer.styleManager().style(style_name)
+
+                # add the style to the target layer with a custom name (in this case: 'copied')
+                layer.styleManager().addStyle("copied", style)
+
+                # set the added style as the current style
+                layer.styleManager().setCurrentStyle("copied")
+
+            layer.triggerRepaint()
+            layer.emitStyleChanged()
+
+            # src = qgis.utils.iface.setActiveLayer(layer)
+            # if src:
+            #  qgis.utils.iface.actionCopyLayerStyle().trigger()
+            #  qgis.utils.iface.actionPasteLayerStyle().trigger()
+
+        # actions = qgis.utils.iface.layerTreeView().defaultActions()
+        # actions.showFeatureCount()  # TODO: Twice?
+        # actions.showFeatureCount()
+        # qgis.utils.iface.actionCopyLayerStyle().trigger()
+        # qgis.utils.iface.actionPasteLayerStyle().trigger()
 
 
 if __name__ == "__main__":

@@ -6,7 +6,8 @@ from typing import Any, Callable, List, Mapping, Optional
 from PyQt5.QtCore import QDateTime
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt import QtWidgets
+# noinspection PyUnresolvedReferences
+from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
@@ -14,13 +15,19 @@ from qgis.PyQt.QtCore import QVariant
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
+from integration_system.common_models import MIVenueType
 from integration_system.mi import SolutionDepth
-from integration_system.model import PostalAddress, Solution, VenueType
+from integration_system.model import PostalAddress, Solution
 from mi_companion import (
     DEFAULT_CUSTOM_PROPERTIES,
     HALF_SIZE,
-    VENUE_DESCRIPTOR,
+)
+from mi_companion.layer_descriptors import (
+    VENUE_GROUP_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
+)
+from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
+    make_hierarchy_validation_dialog,
 )
 from .building import add_venue_level_hierarchy
 from .custom_props import extract_custom_props
@@ -37,9 +44,6 @@ from .syncing import post_process_solution, sync_build_venue_solution
 from ...projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtWidgets, QtCore
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import (
@@ -132,7 +136,7 @@ def convert_solution_venues(
         if not isinstance(solution_group_item, QgsLayerTreeGroup):
             continue  # Selected the solution_data object
 
-        if VENUE_DESCRIPTOR in solution_group_item.name():
+        if VENUE_GROUP_DESCRIPTOR in solution_group_item.name():
             venue_key = get_venue_key(
                 solution,
                 solution_group_item,
@@ -143,9 +147,21 @@ def convert_solution_venues(
             )
 
             if venue_key is None:
-                logger.warning(
-                    f"Did not find venue for {solution_group_item=}, skipping"
+                reply = make_hierarchy_validation_dialog(
+                    "Missing Required Venue Polygon Layer",
+                    f"The Group {solution_group_item.name()} is missing a {VENUE_POLYGON_DESCRIPTOR}, which is a "
+                    f"required layer. If you proceed, the Group {solution_group_item.name()} will be excluded from "
+                    f"the "
+                    f"upload.",
+                    add_reject_option=True,
+                    reject_text="Cancel Upload",
+                    accept_text="Upload Anyway",
+                    level=QtWidgets.QMessageBox.Warning,
                 )
+
+                if reply == QMessageBox.RejectRole:
+                    raise Exception("Upload cancelled")
+
                 continue
             try:
                 add_venue_level_hierarchy(
@@ -243,15 +259,33 @@ def get_venue_key(
                 name,
             ) = special_extract_layer_data(venue_level_item)
 
-            geom_shapely = feature_to_shapely(layer_feature)
-            if geom_shapely:
+            try:
+                venue_polygon = feature_to_shapely(layer_feature)
+
+            except Exception as e:
+                reply = make_hierarchy_validation_dialog(
+                    "Invalid Venue Polygon Detected",
+                    f"Venue feature with admin_id {admin_id} in {venue_level_item.name()} has an invalid geometry.\n\n"
+                    f"{e}\n\n"
+                    f"This most likely occur because the geometry vertices was entirely deleted while feature itself "
+                    f"remains. Please correct this issue before uploading.",
+                    add_reject_option=True,
+                    reject_text="Cancel Upload",
+                    accept_text="Upload Anyway",
+                    level=QtWidgets.QMessageBox.Warning,
+                )
+
+                if reply == QMessageBox.RejectRole:
+                    raise Exception("Upload cancelled")
+
+            if venue_polygon:
                 custom_props = extract_custom_props(layer_attributes)
                 try:
                     venue_key = solution.add_venue(
                         admin_id=admin_id,
                         external_id=external_id,
                         name=name,
-                        polygon=prepare_geom_for_mi_db(geom_shapely),
+                        polygon=prepare_geom_for_mi_db(venue_polygon),
                         venue_type=get_venue_type(layer_attributes),
                         last_verified=get_last_verified(layer_attributes),
                         custom_properties=(
@@ -325,7 +359,7 @@ def get_last_verified(layer_attributes: Mapping[str, Any]) -> datetime:
     return last_verified
 
 
-def get_venue_type(layer_attributes: Mapping[str, Any]) -> Optional[VenueType]:
+def get_venue_type(layer_attributes: Mapping[str, Any]) -> Optional[MIVenueType]:
     if "venue_type" in layer_attributes and layer_attributes["venue_type"]:
         venue_type_str = layer_attributes["venue_type"]
 
@@ -339,8 +373,8 @@ def get_venue_type(layer_attributes: Mapping[str, Any]) -> Optional[VenueType]:
                 venue_type_str = venue_type_str.value()
 
         # venue_type = VenueType.__getitem__(venue_type_str)
-        venue_type = VenueType(int(venue_type_str))
+        venue_type = MIVenueType(int(venue_type_str))
     else:
-        venue_type = VenueType.not_specified
+        venue_type = MIVenueType.not_specified
 
     return venue_type

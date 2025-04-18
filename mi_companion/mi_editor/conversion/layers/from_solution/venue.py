@@ -16,12 +16,14 @@ from mi_companion import (
     ADD_OCCUPANT_LAYERS,
     ALLOW_DUPLICATE_VENUES_IN_PROJECT,
     DESCRIPTOR_BEFORE,
-    VENUE_DESCRIPTOR,
-    VENUE_POLYGON_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.constants import (
     INSERT_INDEX,
+)
+from mi_companion.layer_descriptors import (
+    VENUE_GROUP_DESCRIPTOR,
+    VENUE_POLYGON_DESCRIPTOR,
 )
 from mi_companion.mi_editor.conversion.layers.from_solution.routing.graph import (
     add_graph_layers,
@@ -43,6 +45,7 @@ def add_venue_layer(
     qgis_instance_handle: Any,
     solution: Solution,
     solution_group: Any,
+    location_type_ref_layer: Optional[Any] = None,
     location_type_dropdown_widget: Optional[Any] = None,
     door_type_dropdown_widget: Optional[Any] = None,
     highway_type_dropdown_widget: Optional[Any] = None,
@@ -54,6 +57,7 @@ def add_venue_layer(
 ) -> None:
     """
 
+    :param location_type_ref_layer:
     :param qgis_instance_handle:
     :param solution:
     :param solution_group:
@@ -76,9 +80,9 @@ def add_venue_layer(
             continue
 
         if DESCRIPTOR_BEFORE:
-            venue_name = f"{VENUE_DESCRIPTOR} {venue.name}"
+            venue_name = f"{VENUE_GROUP_DESCRIPTOR} {venue.name}"
         else:
-            venue_name = f"{venue.name} {VENUE_DESCRIPTOR}"
+            venue_name = f"{venue.name} {VENUE_GROUP_DESCRIPTOR}"
 
         venue_group = solution_group.findGroup(venue_name)
         if (
@@ -133,6 +137,7 @@ def add_venue_layer(
             venue=venue,
             venue_group=venue_group,
             qgis_instance_handle=qgis_instance_handle,
+            location_type_ref_layer=location_type_ref_layer,
             location_type_dropdown_widget=location_type_dropdown_widget,
             occupant_dropdown_widget=occupant_dropdown_widget,
         )

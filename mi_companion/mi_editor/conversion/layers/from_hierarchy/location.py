@@ -3,22 +3,42 @@ import uuid
 from typing import Any, Collection, List, Optional
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt import QtWidgets
+# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences
+from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets, QtWidgets
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt.QtCore import QVariant
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtCore import QVariant, QVariant
 
 # noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from qgis.PyQt.QtWidgets import QMessageBox, QTextEdit
+
+# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences
+from qgis.core import (
+    QgsLayerTreeGroup,
+    QgsLayerTreeGroup,
+    QgsLayerTreeLayer,
+    QgsLayerTreeLayer,
+    QgsProject,
+    QgsProject,
+)
 
 from integration_system.model import Category, LocationType, Solution
 from jord.qgis_utilities.conversion.features import feature_to_shapely
-from mi_companion import DEFAULT_CUSTOM_PROPERTIES, VERBOSE
+from mi_companion import (
+    DEFAULT_CUSTOM_PROPERTIES,
+    VERBOSE,
+)
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (
     extract_custom_props,
 )
 from mi_companion.mi_editor.conversion.layers.type_enums import BackendLocationTypeEnum
+from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
+    make_hierarchy_validation_dialog,
+)
 from mi_companion.qgis_utilities import is_str_value_null_like
 from .extraction import extract_feature_attributes, extract_field_value, parse_field
 from ...projection import prepare_geom_for_mi_db
@@ -35,7 +55,7 @@ class MissingKeyValue(Exception): ...
 
 
 def add_floor_locations(
-    location_group_items: Any,
+    location_group_item: Any,
     solution: Solution,
     floor_key: str,
     backend_location_type: BackendLocationTypeEnum,
@@ -46,7 +66,7 @@ def add_floor_locations(
 ) -> None:
     """
 
-    :param location_group_items:
+    :param location_group_item:
     :param solution:
     :param floor_key:
     :param backend_location_type:
@@ -56,7 +76,7 @@ def add_floor_locations(
     :param issues:
     :return:
     """
-    layer = location_group_items.layer()
+    layer = location_group_item.layer()
     if layer:
         for layer_feature in layer.getFeatures():
             feature_attributes = extract_feature_attributes(layer_feature)
@@ -182,9 +202,26 @@ def add_floor_locations(
             if name is None:
                 raise ValueError(f"{layer_feature} is missing a valid name")
 
-            # TODO: IMPLEMENT POP UP CONFIRMATION OF DELETE FEATURE WHEN MISSING GEOMETRIES.
+            try:
+                location_geometry = feature_to_shapely(layer_feature)
+            except Exception as e:
+                reply = make_hierarchy_validation_dialog(
+                    "Invalid Location Feature Detected",
+                    f"Location feature with admin_id {admin_id} in {location_group_item.name()} has an invalid "
+                    f"geometry.\n\n"
+                    f"{e}\n\n"
+                    f"This most likely occur because the geometry vertices was entirely deleted while feature itself "
+                    f"remains. Please correct this issue before uploading.",
+                    add_reject_option=True,
+                    reject_text="Cancel Upload",
+                    accept_text="Upload Anyway",
+                    level=QtWidgets.QMessageBox.Warning,
+                )
 
-            location_geometry = feature_to_shapely(layer_feature)
+                if reply == QMessageBox.RejectRole:
+                    raise Exception("Upload cancelled")
+
+                continue  # TODO: IDEA IMPLEMENT POP UP CONFIRMATION OF DELETE FEATURE WHEN MISSING GEOMETRIES.
 
             if location_geometry is None:
                 logger.error(f"{location_geometry=}")

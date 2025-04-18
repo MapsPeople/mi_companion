@@ -12,7 +12,9 @@ from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
 
-logger = logging.getLogger(__name__)
+from mi_companion import RESOURCE_BASE_PATH
+
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["Dialog"]
 
@@ -28,7 +30,7 @@ class Dialog(QDialog, FORM_CLASS):
 
         # import required modules
         import inspect
-        from .main import run
+        from .assign_value_to_geometries import run
 
         self.parameter_lines = {}
         self.parameter_signature = inspect.signature(run).parameters
@@ -58,7 +60,7 @@ class Dialog(QDialog, FORM_CLASS):
         self.parameter_layout.insertWidget(0, QLabel(run.__doc__))
 
     def on_compute_clicked(self) -> None:
-        from .main import run
+        from .assign_value_to_geometries import run
 
         call_kwarg = {}
         for k, v in self.parameter_lines.items():

@@ -1,12 +1,12 @@
 import shapely
 
+from integration_system.common_models import MIVenueType
 from integration_system.model import (
     Area,
     Building,
     Floor,
     LocationType,
     Venue,
-    VenueType,
 )
 from jord.shapely_utilities import dilate
 
@@ -15,7 +15,7 @@ if __name__ == "__main__":
         admin_id="asda",
         name="asodj",
         polygon=dilate(shapely.Point((0, 0))),
-        venue_type=VenueType.business_campus,
+        venue_type=MIVenueType.business_campus,
     )
     building = Building(
         admin_id="ijsad",

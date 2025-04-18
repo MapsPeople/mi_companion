@@ -19,17 +19,19 @@ from jord.qgis_utilities.fields import (
 )
 from jord.qgis_utilities.styling import set_3d_view_settings
 from mi_companion import (
-    AVOIDS_DESCRIPTOR,
-    BARRIERS_DESCRIPTOR,
     DOOR_HEIGHT_FACTOR,
     DOOR_LINE_COLOR,
     DOOR_LINE_WIDTH,
-    ENTRY_POINTS_DESCRIPTOR,
     FLOOR_HEIGHT,
     FLOOR_VERTICAL_SPACING,
-    OBSTACLES_DESCRIPTOR,
-    PREFERS_DESCRIPTOR,
     SPLIT_LEVELS_INTO_INDIVIDUAL_GROUPS,
+)
+from mi_companion.layer_descriptors import (
+    AVOIDS_GROUP_DESCRIPTOR,
+    BARRIERS_GROUP_DESCRIPTOR,
+    ENTRY_POINTS_GROUP_DESCRIPTOR,
+    OBSTACLES_GROUP_DESCRIPTOR,
+    PREFERS_GROUP_DESCRIPTOR,
 )
 from .connections import add_connection_layers
 from .linestring_route_elements import add_linestring_route_element_layers
@@ -116,15 +118,15 @@ def add_route_element_layers(
             )
 
         for desc, col in {
-            AVOIDS_DESCRIPTOR: solution.avoids,
-            PREFERS_DESCRIPTOR: solution.prefers,
-            BARRIERS_DESCRIPTOR: solution.barriers,
-            ENTRY_POINTS_DESCRIPTOR: solution.entry_points,
+            AVOIDS_GROUP_DESCRIPTOR: solution.avoids,
+            PREFERS_GROUP_DESCRIPTOR: solution.prefers,
+            BARRIERS_GROUP_DESCRIPTOR: solution.barriers,
+            ENTRY_POINTS_GROUP_DESCRIPTOR: solution.entry_points,
         }.items():
             dropdown_widget = None
             route_element_type_column = None
 
-            if desc == ENTRY_POINTS_DESCRIPTOR:
+            if desc == ENTRY_POINTS_GROUP_DESCRIPTOR:
                 dropdown_widget = entry_point_type_dropdown_widget
                 route_element_type_column = "entry_point_type"
 
@@ -138,7 +140,7 @@ def add_route_element_layers(
                 route_element_type_column=route_element_type_column,
             )
 
-            if desc == ENTRY_POINTS_DESCRIPTOR:
+            if desc == ENTRY_POINTS_GROUP_DESCRIPTOR:
                 for field_name in ("entry_point_type",):
                     make_field_reuse_last_entered_value(
                         added_point_layers, field_name=field_name
@@ -149,7 +151,7 @@ def add_route_element_layers(
             graph_group=graph_group,
             qgis_instance_handle=qgis_instance_handle,
             route_element_collection=solution.obstacles,
-            layer_name=OBSTACLES_DESCRIPTOR,
+            layer_name=OBSTACLES_GROUP_DESCRIPTOR,
         )
 
         add_connection_layers(

@@ -9,18 +9,19 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.mi import SyncLevel, synchronize
 from integration_system.model import Solution
-from mi_companion import HALF_SIZE, MI_HIERARCHY_GROUP_NAME
+from mi_companion import HALF_SIZE
+from mi_companion.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
 
 __all__ = ["revert_venues"]
 
-from jord.qgis_utilities.conversion.features import parse_q_value
+from jord.qgis_utilities import parse_q_value
 
 logger = logging.getLogger(__name__)
 
 
 def revert_venues(
     original_solution_venues: Dict[str, Dict[str, Solution]],
-    mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
+    mi_hierarchy_group_name: str = DATABASE_GROUP_DESCRIPTOR,
     *,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
 ) -> None:

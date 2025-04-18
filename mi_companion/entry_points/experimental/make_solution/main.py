@@ -35,7 +35,9 @@ https://en.wikipedia.org/wiki/Decimal_degrees#:~:text=Decimal%20degrees%20(DD)%2
 as%20OpenStreetMap%2C%20and%20GPS%20devices
 """
 
-logger = logging.getLogger(__name__)
+from mi_companion import RESOURCE_BASE_PATH
+
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = []
 
 

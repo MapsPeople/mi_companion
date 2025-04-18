@@ -33,14 +33,17 @@ from warg import get_submodules_by_path, reload_module
 
 from integration_system.config import MapsIndoors, Settings, set_settings
 from integration_system.mi import SolutionDepth, get_venue_key_mi_venue_map
-from jord.qgis_utilities import read_plugin_setting
-from jord.qgis_utilities.helpers import InjectedProgressBar, signals
+from jord.qgis_utilities import InjectedProgressBar, read_plugin_setting, signals
 from jord.qlive_utilities import add_shapely_layer
 from jord.qt_utilities import DockWidgetAreaFlag
 from mi_companion.mi_editor import (
     layer_hierarchy_to_solution,
     revert_venues,
     solution_venue_to_layer_hierarchy,
+)
+from mi_companion.mi_editor.hierarchy.hierarchy_validation import (
+    add_solution_hierarchy_change_listener,
+    remove_solution_hierarchy_change_listener,
 )
 from .gui_utilities import clean_str
 from .make_solution_right_click import add_augmented_actions
@@ -156,6 +159,8 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         self.version_label.setText(f'<a href="{PLUGIN_REPOSITORY}">{VERSION}</a>')
         self.version_label.setOpenExternalLinks(False)
         signals.reconnect_signal(self.version_label.linkActivated, self.upgrade_clicked)
+
+        add_solution_hierarchy_change_listener()
 
         # self.plugin_status_label.setText(plugin_version.plugin_status(PROJECT_NAME))
 
@@ -541,5 +546,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
 
     # noinspection PyPep8Naming
     def closeEvent(self, event) -> None:  # pylint: disable=invalid-name
+        remove_solution_hierarchy_change_listener()
+
         self.plugin_closing.emit()
         event.accept()

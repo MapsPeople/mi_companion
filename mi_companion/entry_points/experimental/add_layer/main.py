@@ -7,7 +7,9 @@ from qgis.core import QgsProject
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
 
-logger = logging.getLogger(__name__)
+from mi_companion import RESOURCE_BASE_PATH
+
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = []
 

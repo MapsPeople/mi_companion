@@ -14,8 +14,8 @@ from mi_companion import (
     GRAPH_EDGE_COLOR,
     GRAPH_EDGE_WIDTH,
     HALF_SIZE,
-    NAVIGATION_GRAPH_LINES_DESCRIPTOR,
 )
+from mi_companion.layer_descriptors import GRAPH_LINES_DESCRIPTOR
 from mi_companion.mi_editor.conversion.layers.from_solution.routing.styling.graduated import (
     set_m_based_graduated_styling,
 )
@@ -120,7 +120,7 @@ def add_graph_3d_network_layers(
     graph_lines_layer = add_wkb_layer(
         qgis_instance_handle=qgis_instance_handle,
         wkbs=z_augment_lines,
-        name=NAVIGATION_GRAPH_LINES_DESCRIPTOR,
+        name=GRAPH_LINES_DESCRIPTOR,
         group=graph_group,
         columns=lines_meta_data,
         measurements=measurements,
