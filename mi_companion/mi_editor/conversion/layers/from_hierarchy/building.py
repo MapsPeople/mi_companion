@@ -42,6 +42,7 @@ from mi_companion.mi_editor.conversion.layers.from_hierarchy.routing.graph impor
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
+from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from .custom_props import extract_custom_props
 from .extraction import special_extract_layer_data
 from .floor import add_building_floors
@@ -180,12 +181,15 @@ def add_venue_level_hierarchy(
                 if building_key is None:
                     reply = make_hierarchy_validation_dialog(
                         "Missing Required Building Polygon Layer",
-                        f"The Group {venue_group_item.name()} is missing a {BUILDING_POLYGON_DESCRIPTOR}, which is a "
-                        f"required layer. If you proceed, the Group {venue_group_item.name()} will be excluded from the "
+                        f"The Group '{venue_group_item.name()}' is missing a {BUILDING_POLYGON_DESCRIPTOR}, "
+                        f"which is a "
+                        f"required layer. If you proceed, the Group '{venue_group_item.name()}' will be excluded from "
+                        f"the "
                         f"upload.",
                         add_reject_option=True,
                         reject_text="Cancel Upload",
                         accept_text="Upload Anyway",
+                        alternative_accept_text="Upload Anyway",
                         level=QtWidgets.QMessageBox.Warning,
                     )
 
@@ -286,14 +290,16 @@ def get_building_key(
             except Exception as e:
                 reply = make_hierarchy_validation_dialog(
                     "Invalid Building Polygon Detected",
-                    f"Building feature with admin_id {admin_id} in {floor_group_items.name()} has an invalid "
+                    f"The Building Polygon feature with Admin ID '{admin_id}' located in '"
+                    f"{floor_group_items.name()}' has an "
+                    f"invalid "
                     f"geometry.\n\n"
-                    f"{e}\n\n"
-                    f"This most likely occur because the geometry vertices was entirely deleted while feature itself "
-                    f"remains. Please correct this issue before uploading.",
+                    # f"\n__________________{e}\n__________________\n"
+                    + APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE,
                     add_reject_option=True,
                     reject_text="Cancel Upload",
                     accept_text="Upload Anyway",
+                    alternative_accept_text="Upload Anyway",
                     level=QtWidgets.QMessageBox.Warning,
                 )
 
@@ -323,3 +329,8 @@ def get_building_key(
                         raise e
 
                 return building_key
+
+    logger.error(
+        f"Did not find building polygon feature in  {building_group_items.children()=}"
+    )
+    return None

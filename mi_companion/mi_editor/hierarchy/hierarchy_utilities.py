@@ -75,7 +75,8 @@ def check_current_parent(
         reply = make_hierarchy_validation_dialog(
             "Invalid Layer Placement",
             f"You cannot move this {descriptor} element ({node_name}) into the group {current_parent_name}.\n"
-            f"It must exist within a {NODE_PARENT_MAPPING[descriptor]} group.",
+            f"It must exist within a {NODE_PARENT_MAPPING[descriptor]} group. Please select a valid destination "
+            f"group.",
             add_reject_option=ENABLE_UNDO,
         )
 
@@ -114,8 +115,9 @@ def check_children(
 
             reply = make_hierarchy_validation_dialog(
                 "Invalid Layer Placement",
-                f"This {child_descriptor} element ({child_name}) cannot exist within the group {node_name}.\n"
-                f"It must within a {NODE_PARENT_MAPPING[child_descriptor]} group.",
+                f"({child_name}) cannot exist within the group ({node_name}).\n"
+                f"This {child_descriptor} must exist within a {NODE_PARENT_MAPPING[child_descriptor]} group. "
+                f"Please select a valid destination group.",
                 add_reject_option=ENABLE_UNDO,
             )
 
@@ -149,7 +151,7 @@ def check_siblings_for_duplicates(
     if found_duplicates:
         reply = make_hierarchy_validation_dialog(
             "Duplicate Layer Type Detected",
-            f"This group {current_parent.name()} can contain only one instance of this element type "
+            f"This group ({current_parent.name()}) can contain only one instance of this element type "
             f"{descriptor}.\n"
             f"Please remove the duplicate {descriptor} elements or move them to another compatible "
             f"{NODE_PARENT_MAPPING[descriptor]} group.",

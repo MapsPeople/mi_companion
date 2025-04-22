@@ -30,6 +30,7 @@ from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
 from .building import add_venue_level_hierarchy
+from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from .custom_props import extract_custom_props
 
 __all__ = ["convert_solution_venues"]
@@ -149,13 +150,14 @@ def convert_solution_venues(
             if venue_key is None:
                 reply = make_hierarchy_validation_dialog(
                     "Missing Required Venue Polygon Layer",
-                    f"The Group {solution_group_item.name()} is missing a {VENUE_POLYGON_DESCRIPTOR}, which is a "
-                    f"required layer. If you proceed, the Group {solution_group_item.name()} will be excluded from "
+                    f"The Group '{solution_group_item.name()}' is missing a {VENUE_POLYGON_DESCRIPTOR}, which is a "
+                    f"required layer. If you proceed, the Group '{solution_group_item.name()}' will be excluded from "
                     f"the "
                     f"upload.",
                     add_reject_option=True,
                     reject_text="Cancel Upload",
                     accept_text="Upload Anyway",
+                    alternative_accept_text="Upload Anyway",
                     level=QtWidgets.QMessageBox.Warning,
                 )
 
@@ -265,13 +267,15 @@ def get_venue_key(
             except Exception as e:
                 reply = make_hierarchy_validation_dialog(
                     "Invalid Venue Polygon Detected",
-                    f"Venue feature with admin_id {admin_id} in {venue_level_item.name()} has an invalid geometry.\n\n"
-                    f"{e}\n\n"
-                    f"This most likely occur because the geometry vertices was entirely deleted while feature itself "
-                    f"remains. Please correct this issue before uploading.",
+                    f"The Venue Polygon feature with Admin ID '{admin_id}' located in '{venue_level_item.name()}' "
+                    f"has an invalid "
+                    f"geometry.\n\n"
+                    # f"\n__________________{e}\n__________________\n"
+                    + APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE,
                     add_reject_option=True,
                     reject_text="Cancel Upload",
                     accept_text="Upload Anyway",
+                    alternative_accept_text="Upload Anyway",
                     level=QtWidgets.QMessageBox.Warning,
                 )
 
@@ -305,6 +309,7 @@ def get_venue_key(
                 return venue_key
 
     logger.error(f"Did not find venue in {venue_group_items.children()=}")
+    return None
 
 
 def get_address(layer_attributes: Mapping[str, Any]) -> Optional[PostalAddress]:

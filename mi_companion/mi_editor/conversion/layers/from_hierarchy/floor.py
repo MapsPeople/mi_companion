@@ -33,6 +33,7 @@ from mi_companion.layer_descriptors import FLOOR_POLYGON_DESCRIPTOR
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
+from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from .custom_props import extract_custom_props
 from .extraction import special_extract_layer_data
 from .location import add_floor_contents
@@ -127,12 +128,14 @@ def add_building_floors(
         if floor_key is None:
             reply = make_hierarchy_validation_dialog(
                 "Missing Required Floor Polygon Layer",
-                f"The Group {building_group_item.name()} is missing a {FLOOR_POLYGON_DESCRIPTOR}, which is a "
-                f"required layer. If you proceed, the Group {building_group_item.name()} will be excluded from the "
+                f"The Group '{building_group_item.name()}' is missing a {FLOOR_POLYGON_DESCRIPTOR}, which is a "
+                f"required layer. If you proceed, the Group '{building_group_item.name()}' will be excluded from "
+                f"the "
                 f"upload.",
                 add_reject_option=True,
                 reject_text="Cancel Upload",
                 accept_text="Upload Anyway",
+                alternative_accept_text="Upload Anyway",
                 level=QtWidgets.QMessageBox.Warning,
             )
 
@@ -203,14 +206,15 @@ def get_floor_data(
             except Exception as e:
                 reply = make_hierarchy_validation_dialog(
                     "Invalid Floor Polygon Detected",
-                    f"Floor feature with admin_id {admin_id} in {floor_level_item.name()} has an invalid "
+                    f"The Floor Polygon feature with Admin ID '{admin_id}' located in {floor_level_item.name()} has "
+                    f"an invalid "
                     f"geometry.\n\n"
-                    f"{e}\n\n"
-                    f"This most likely occur because the geometry vertices was entirely deleted while feature itself "
-                    f"remains. Please correct this issue before uploading.",
+                    # f"\n__________________{e}\n__________________\n"
+                    + APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE,
                     add_reject_option=True,
                     reject_text="Cancel Upload",
                     accept_text="Upload Anyway",
+                    alternative_accept_text="Upload Anyway",
                     level=QtWidgets.QMessageBox.Warning,
                 )
 
@@ -244,4 +248,8 @@ def get_floor_data(
                         raise e
 
                 return floor_attributes, floor_key
+
+    logger.error(
+        f"Did not find floor polygon feature in {floor_group_items.children()=}"
+    )
     return None, None

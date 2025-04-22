@@ -40,6 +40,7 @@ from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
 from mi_companion.qgis_utilities import is_str_value_null_like
+from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from .extraction import extract_feature_attributes, extract_field_value, parse_field
 from ...projection import prepare_geom_for_mi_db
 
@@ -207,14 +208,15 @@ def add_floor_locations(
             except Exception as e:
                 reply = make_hierarchy_validation_dialog(
                     "Invalid Location Feature Detected",
-                    f"Location feature with admin_id {admin_id} in {location_group_item.name()} has an invalid "
+                    f"The Location feature with Admin ID '{admin_id}' located in '{location_group_item.name()}' has "
+                    f"an invalid "
                     f"geometry.\n\n"
-                    f"{e}\n\n"
-                    f"This most likely occur because the geometry vertices was entirely deleted while feature itself "
-                    f"remains. Please correct this issue before uploading.",
+                    # f"\n__________________{e}\n__________________\n"
+                    + APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE,
                     add_reject_option=True,
                     reject_text="Cancel Upload",
                     accept_text="Upload Anyway",
+                    alternative_accept_text="Upload Anyway",
                     level=QtWidgets.QMessageBox.Warning,
                 )
 

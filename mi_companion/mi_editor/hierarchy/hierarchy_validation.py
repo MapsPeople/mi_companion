@@ -100,7 +100,7 @@ def validate_hierarchy(node: Any, parent: Optional[str] = None) -> ValidationRes
     else:
         reply = make_hierarchy_validation_dialog(
             "Unknown Layer",
-            f"This element {node_name} is not recognized as part of a valid MapsIndoors hierarchy. Unknown "
+            f"This element ({node_name}) is not recognized as part of a valid MapsIndoors hierarchy. Unknown "
             f"layers will be excluded from the upload.",
         )
 
@@ -244,6 +244,9 @@ def remove_children():
                 child_layer_id = node.layerId()
 
             if child_layer_id is not None:
+                if False:
+                    pa.removeLayer(node.layer())
+
                 QgsProject.instance().removeMapLayer(child_layer_id)
 
     if False:
