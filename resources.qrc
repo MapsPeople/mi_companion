@@ -2,5 +2,6 @@
     <qresource>
         <file>mi_companion/icon.png</file>
         <file>mi_companion/icons/mp_notext.png</file>
+        <file>mi_companion/icons/mp-favicon-white.png</file>
     </qresource>
 </RCC>

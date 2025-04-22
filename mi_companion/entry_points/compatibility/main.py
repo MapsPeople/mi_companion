@@ -5,9 +5,9 @@ from typing import Optional
 
 from integration_system.config import MapsIndoors, Settings, set_settings
 from jord.qgis_utilities import read_plugin_setting
-from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
+from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = []
 

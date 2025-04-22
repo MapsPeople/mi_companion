@@ -6,10 +6,12 @@ from integration_system.model import Building, Solution, Venue
 from jord.qgis_utilities.fields import make_field_unique
 from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
-    BUILDING_DESCRIPTOR,
-    BUILDING_POLYGON_DESCRIPTOR,
     DESCRIPTOR_BEFORE,
     HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS,
+)
+from mi_companion.layer_descriptors import (
+    BUILDING_GROUP_DESCRIPTOR,
+    BUILDING_POLYGON_DESCRIPTOR,
 )
 from .floor import add_floor_layers
 
@@ -34,6 +36,7 @@ def add_building_layers(
     venue: Venue,
     venue_group: Any,
     qgis_instance_handle: Any,
+    location_type_ref_layer: Optional[Any] = None,
     location_type_dropdown_widget: Optional[Any] = None,
     occupant_dropdown_widget: Optional[Any] = None,
     progress_bar: Optional[Callable] = None,
@@ -58,6 +61,7 @@ def add_building_layers(
 
         if HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS and is_outside_building:
             add_floor_layers(
+                location_type_ref_layer=location_type_ref_layer,
                 location_type_dropdown_widget=location_type_dropdown_widget,
                 occupant_dropdown_widget=occupant_dropdown_widget,
                 building=building,
@@ -69,9 +73,9 @@ def add_building_layers(
 
         elif building.venue.key == venue.key:
             if DESCRIPTOR_BEFORE:
-                building_name = f"{BUILDING_DESCRIPTOR} {building.name}"
+                building_name = f"{BUILDING_GROUP_DESCRIPTOR} {building.name}"
             else:
-                building_name = f"{building.name} {BUILDING_DESCRIPTOR}"
+                building_name = f"{building.name} {BUILDING_GROUP_DESCRIPTOR}"
 
             building_group = venue_group.insertGroup(
                 INSERT_INDEX,
@@ -110,6 +114,7 @@ def add_building_layers(
             set_geometry_constraints(building_layer)
 
             add_floor_layers(
+                location_type_ref_layer=location_type_ref_layer,
                 location_type_dropdown_widget=location_type_dropdown_widget,
                 occupant_dropdown_widget=occupant_dropdown_widget,
                 building=building,

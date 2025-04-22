@@ -1,9 +1,11 @@
 #!/usr/bin/python
 import logging
 
-logger = logging.getLogger(__name__)
+from mi_companion import RESOURCE_BASE_PATH
+
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = []
 
 
-def run(*, only_selected_features: bool = True) -> None: ...
+def run() -> None: ...

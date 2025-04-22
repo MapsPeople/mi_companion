@@ -8,13 +8,17 @@ from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtCore import QVariant
 
 # noinspection PyUnresolvedReferences
+from qgis.PyQt.QtWidgets import (
+    QMessageBox,
+)
+
+# noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
 from jord.qgis_utilities.conversion.features import feature_to_shapely
-from mi_companion import (
-    GRAPH_BOUND_DESCRIPTOR,
-)
+from mi_companion import UPLOAD_ERROR_CONFIRMATION_TITLE
+from mi_companion.layer_descriptors import GRAPH_BOUND_DESCRIPTOR
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
     extract_layer_data_single,
 )
@@ -49,9 +53,23 @@ def get_graph_data(graph_group: Any, solution: Solution) -> Tuple:
             graph_id = (
                 layer_attributes["graph_id"] if "graph_id" in layer_attributes else None
             )
-            graph_bound_geom = prepare_geom_for_mi_db(
-                feature_to_shapely(layer_geom), clean=True
-            )
+
+            try:
+                graph_polygon = feature_to_shapely(layer_geom)
+
+            except Exception as e:
+                _error = str(e)
+                reply = QMessageBox.question(
+                    None,
+                    UPLOAD_ERROR_CONFIRMATION_TITLE,
+                    _error,
+                    QMessageBox.Ok,
+                    QMessageBox.Cancel,
+                )
+                # if reply == QMessageBox.Cancel:
+                raise Exception(_error)
+
+            graph_bound_geom = prepare_geom_for_mi_db(graph_polygon, clean=True)
 
             graph_key = solution.add_graph(
                 graph_id=graph_id,
@@ -83,6 +101,9 @@ def add_venue_graph(
     :return:
     """
     (graph_key,) = get_graph_data(graph_group, solution)
+
+    if graph_key is None:
+        ...
 
     if graph_key:
         # add_graph_edges(

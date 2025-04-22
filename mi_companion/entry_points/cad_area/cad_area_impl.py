@@ -5,9 +5,9 @@ import traceback
 from pathlib import Path
 from typing import Collection, Dict, Mapping, Optional
 
-from mi_companion import PROJECT_APP_PATH
+from mi_companion import PROJECT_APP_PATH, RESOURCE_BASE_PATH
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = []
 

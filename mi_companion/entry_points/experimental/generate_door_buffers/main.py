@@ -13,15 +13,27 @@ from jord.geometric_analysis import buffer_principal_axis
 from jord.qgis_utilities.conversion.features import feature_to_shapely
 from jord.qlive_utilities import add_shapely_layer
 from jord.shapely_utilities import dilate, is_multi
+from mi_companion import RESOURCE_BASE_PATH
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 CRS = f"EPSG:3857"
 
 __all__ = []
 
 
-def run(*, buffer_distance: float = 0.01, only_active_layer: bool = True) -> None:
+def run(
+    *,
+    buffer_distance: float = 0.01,
+    # only_active_layer: bool = True
+) -> None:
+    """
+
+    :param buffer_distance:
+    :param only_active_layer: DISABLED for now
+    :return:
+    """
+    only_active_layer = False
     if only_active_layer:
         if False:
             layers = list(iface.activeLayer())

@@ -11,7 +11,9 @@ FORM_CLASS, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "cad_area_dialog.ui")
 )
 
-logger = logging.getLogger(__name__)
+from mi_companion import RESOURCE_BASE_PATH
+
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["Dialog"]
 

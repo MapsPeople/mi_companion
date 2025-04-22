@@ -9,14 +9,16 @@ from jord.qgis_utilities.styling import set_3d_view_settings
 from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
     DESCRIPTOR_BEFORE,
-    FLOOR_DESCRIPTOR,
     FLOOR_HEIGHT,
-    FLOOR_POLYGON_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.constants import (
     FLOOR_VERTICAL_SPACING,
     INSERT_INDEX,
+)
+from mi_companion.layer_descriptors import (
+    FLOOR_GROUP_DESCRIPTOR,
+    FLOOR_POLYGON_DESCRIPTOR,
 )
 from .location import add_floor_content_layers
 from ...projection import (
@@ -31,6 +33,7 @@ __all__ = ["add_floor_layers"]
 
 def add_floor_layers(
     *,
+    location_type_ref_layer: Optional[Any] = None,
     location_type_dropdown_widget: Optional[Any] = None,
     occupant_dropdown_widget: Optional[Any] = None,
     building: Building,
@@ -44,7 +47,7 @@ def add_floor_layers(
     for floor in sorted(solution.floors, key=lambda floor: floor.floor_index):
         floor: Floor
         if floor.building.key == building.key:
-            descriptor = f"{FLOOR_DESCRIPTOR}:{floor.floor_index}"
+            descriptor = f"{FLOOR_GROUP_DESCRIPTOR}:{floor.floor_index}"
             if DESCRIPTOR_BEFORE:
                 floor_name = f"{descriptor} {floor.name}"
             else:
@@ -100,6 +103,7 @@ def add_floor_layers(
                 solution=solution,
                 floor=floor,
                 floor_group=floor_group,
+                location_type_ref_layer=location_type_ref_layer,
                 location_type_dropdown_widget=location_type_dropdown_widget,
                 occupant_dropdown_widget=occupant_dropdown_widget,
             )

@@ -7,7 +7,9 @@ from pathlib import Path
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-logger = logging.getLogger(__name__)
+from mi_companion import RESOURCE_BASE_PATH
+
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = []
 
 
@@ -20,6 +22,8 @@ def run(*, svg_file_path: Path) -> None:
 
     if isinstance(svg_file_path, str):
         svg_file_path = Path(svg_file_path)
+
+    logger.error(f"Loading svg file {svg_file_path}")
 
     svg_elements, _ = parse_svg(svg_file_path, output_space=1)
 

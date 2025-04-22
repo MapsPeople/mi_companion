@@ -28,6 +28,13 @@ def add_occupant_layer(
     qgis_instance_handle: Any,
     venue_group: Any,
 ) -> Optional[List[Any]]:  # QgsVectorLayer
+    """
+
+    :param solution:
+    :param qgis_instance_handle:
+    :param venue_group:
+    :return:
+    """
 
     # TODO: MAKE NO GEOMETRY LAYER WITH VALUE REFERENCES COLUMN TO LAYER
     # OR INVERT RELATION FROM OCCUPANT TO LOCATION, into LOCATION TO OCCUPANT LAYER

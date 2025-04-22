@@ -22,17 +22,19 @@ from jord.qgis_utilities.conversion.features import (
     feature_to_shapely,
 )
 from mi_companion import (
-    AVOIDS_DESCRIPTOR,
-    BARRIERS_DESCRIPTOR,
-    CONNECTORS_DESCRIPTOR,
-    DOORS_DESCRIPTOR,
-    ENTRY_POINTS_DESCRIPTOR,
     MAKE_FLOOR_WISE_LAYERS,
-    OBSTACLES_DESCRIPTOR,
-    PREFERS_DESCRIPTOR,
     VERBOSE,
 )
 from mi_companion.configuration.options import read_bool_setting
+from mi_companion.layer_descriptors import (
+    AVOIDS_GROUP_DESCRIPTOR,
+    BARRIERS_GROUP_DESCRIPTOR,
+    CONNECTORS_GROUP_DESCRIPTOR,
+    DOORS_GROUP_DESCRIPTOR,
+    ENTRY_POINTS_GROUP_DESCRIPTOR,
+    OBSTACLES_GROUP_DESCRIPTOR,
+    PREFERS_GROUP_DESCRIPTOR,
+)
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
     extract_feature_attributes,
 )
@@ -383,6 +385,14 @@ def get_connections(connections_layer_tree_node: Any) -> dict:  # TODO: FINISH!
     return connections
 
 
+def recurse_layers(group):
+    for layer in group.children():
+        if isinstance(layer, QgsLayerTreeGroup):
+            yield from recurse_layers(layer)
+        elif isinstance(layer, QgsLayerTreeLayer):
+            yield layer
+
+
 def add_route_elements(
     graph_key: str,
     graph_group: Any,
@@ -403,250 +413,279 @@ def add_route_elements(
     :param issues:
     :return:
     """
+
     if read_bool_setting("ADD_ROUTE_ELEMENTS") and graph_key is not None:
         for ith_graph_group_item, graph_group_item in enumerate(graph_group.children()):
             if MAKE_FLOOR_WISE_LAYERS:
-                if (
-                    isinstance(graph_group_item, QgsLayerTreeGroup)
-                    and DOORS_DESCRIPTOR in graph_group_item.name()
-                ):
-                    for sub_graph_group_item in graph_group_item.children():
-                        add_doors(
-                            graph_key=graph_key,
-                            door_layer_tree_node=sub_graph_group_item,
-                            solution=solution,
-                            issues=issues,
-                            collect_invalid=collect_invalid,
-                            collect_warnings=collect_warnings,
-                            collect_errors=collect_errors,
-                        )
-                else:
-                    logger.debug(f"Skipped adding {DOORS_DESCRIPTOR}")
-
-                if (
-                    isinstance(graph_group_item, QgsLayerTreeGroup)
-                    and BARRIERS_DESCRIPTOR in graph_group_item.name()
-                ):
-                    for sub_graph_group_item in graph_group_item.children():
-                        add_barriers(
-                            graph_key=graph_key,
-                            barrier_layer_tree_node=sub_graph_group_item,
-                            solution=solution,
-                            issues=issues,
-                            collect_invalid=collect_invalid,
-                            collect_warnings=collect_warnings,
-                            collect_errors=collect_errors,
-                        )
-                else:
-                    logger.debug(f"Skipped adding {BARRIERS_DESCRIPTOR}")
-
-                if (
-                    isinstance(graph_group_item, QgsLayerTreeGroup)
-                    and AVOIDS_DESCRIPTOR in graph_group_item.name()
-                ):
-                    for sub_graph_group_item in graph_group_item.children():
-                        add_avoids(
-                            graph_key=graph_key,
-                            avoid_layer_tree_node=sub_graph_group_item,
-                            solution=solution,
-                            issues=issues,
-                            collect_invalid=collect_invalid,
-                            collect_warnings=collect_warnings,
-                            collect_errors=collect_errors,
-                        )
-                else:
-                    logger.debug(f"Skipped adding {AVOIDS_DESCRIPTOR}")
-
-                if (
-                    isinstance(graph_group_item, QgsLayerTreeGroup)
-                    and PREFERS_DESCRIPTOR in graph_group_item.name()
-                ):
-                    for sub_graph_group_item in graph_group_item.children():
-                        add_prefers(
-                            graph_key=graph_key,
-                            prefer_layer_tree_node=sub_graph_group_item,
-                            solution=solution,
-                            issues=issues,
-                            collect_invalid=collect_invalid,
-                            collect_warnings=collect_warnings,
-                            collect_errors=collect_errors,
-                        )
-                else:
-                    logger.debug(f"Skipped adding {PREFERS_DESCRIPTOR}")
-
-                if (
-                    isinstance(graph_group_item, QgsLayerTreeGroup)
-                    and OBSTACLES_DESCRIPTOR in graph_group_item.name()
-                ):
-                    for sub_graph_group_item in graph_group_item.children():
-                        add_obstacles(
-                            graph_key=graph_key,
-                            obstacle_layer_tree_node=sub_graph_group_item,
-                            solution=solution,
-                            issues=issues,
-                            collect_invalid=collect_invalid,
-                            collect_warnings=collect_warnings,
-                            collect_errors=collect_errors,
-                        )
-                else:
-                    logger.debug(f"Skipped adding {OBSTACLES_DESCRIPTOR}")
-
-                if (
-                    isinstance(graph_group_item, QgsLayerTreeGroup)
-                    and ENTRY_POINTS_DESCRIPTOR in graph_group_item.name()
-                ):
-                    for sub_graph_group_item in graph_group_item.children():
-                        add_entry_points(
-                            graph_key=graph_key,
-                            entry_point_layer_tree_node=sub_graph_group_item,
-                            solution=solution,
-                            issues=issues,
-                            collect_invalid=collect_invalid,
-                            collect_warnings=collect_warnings,
-                            collect_errors=collect_errors,
-                        )
-                else:
-                    logger.debug(f"Skipped adding {ENTRY_POINTS_DESCRIPTOR}")
-
-                if (
-                    isinstance(graph_group_item, QgsLayerTreeGroup)
-                    and CONNECTORS_DESCRIPTOR in graph_group_item.name()
-                ):
-                    connections_agg = defaultdict(list)
-                    for sub_graph_group_item in graph_group_item.children():
-                        connections = get_connections(
-                            connections_layer_tree_node=sub_graph_group_item,
-                        )
-
-                        for k, v in connections.items():
-                            connections_agg[k].extend(v)
-
-                    assemble_connections(
-                        connections_agg,
-                        solution,
-                        graph_key,
-                        issues=issues,
-                        collect_invalid=collect_invalid,
-                        collect_warnings=collect_warnings,
-                        collect_errors=collect_errors,
-                    )
-                else:
-                    logger.debug(f"Skipped adding {CONNECTORS_DESCRIPTOR}")
+                add_route_element_groups(
+                    collect_errors,
+                    collect_invalid,
+                    collect_warnings,
+                    graph_group_item,
+                    graph_key,
+                    issues,
+                    solution,
+                )
             else:
-                if (
-                    isinstance(graph_group_item, QgsLayerTreeLayer)
-                    and DOORS_DESCRIPTOR in graph_group_item.name()
-                ):
-                    add_doors(
-                        graph_key=graph_key,
-                        door_layer_tree_node=graph_group_item,
-                        solution=solution,
-                        issues=issues,
-                        collect_invalid=collect_invalid,
-                        collect_warnings=collect_warnings,
-                        collect_errors=collect_errors,
-                    )
-                else:
-                    logger.debug(f"Skipped adding {DOORS_DESCRIPTOR}")
+                add_flat_route_element_layers(
+                    collect_errors,
+                    collect_invalid,
+                    collect_warnings,
+                    graph_group_item,
+                    graph_key,
+                    issues,
+                    solution,
+                )
 
-                if (
-                    isinstance(graph_group_item, QgsLayerTreeLayer)
-                    and BARRIERS_DESCRIPTOR in graph_group_item.name()
-                ):
-                    add_barriers(
-                        graph_key=graph_key,
-                        barrier_layer_tree_node=graph_group_item,
-                        solution=solution,
-                        issues=issues,
-                        collect_invalid=collect_invalid,
-                        collect_warnings=collect_warnings,
-                        collect_errors=collect_errors,
-                    )
-                else:
-                    logger.debug(f"Skipped adding {BARRIERS_DESCRIPTOR}")
 
-                if (
-                    isinstance(graph_group_item, QgsLayerTreeLayer)
-                    and AVOIDS_DESCRIPTOR in graph_group_item.name()
-                ):
-                    add_avoids(
-                        graph_key=graph_key,
-                        avoid_layer_tree_node=graph_group_item,
-                        solution=solution,
-                        issues=issues,
-                        collect_invalid=collect_invalid,
-                        collect_warnings=collect_warnings,
-                        collect_errors=collect_errors,
-                    )
-                else:
-                    logger.debug(f"Skipped adding {AVOIDS_DESCRIPTOR}")
+def add_route_element_groups(
+    collect_errors,
+    collect_invalid,
+    collect_warnings,
+    graph_group_item,
+    graph_key,
+    issues,
+    solution,
+):
+    if (
+        isinstance(graph_group_item, QgsLayerTreeGroup)
+        and DOORS_GROUP_DESCRIPTOR in graph_group_item.name()
+    ):
+        for sub_graph_group_item in recurse_layers(graph_group_item):
+            add_doors(
+                graph_key=graph_key,
+                door_layer_tree_node=sub_graph_group_item,
+                solution=solution,
+                issues=issues,
+                collect_invalid=collect_invalid,
+                collect_warnings=collect_warnings,
+                collect_errors=collect_errors,
+            )
+    else:
+        logger.debug(f"Skipped adding {DOORS_GROUP_DESCRIPTOR}")
+    if (
+        isinstance(graph_group_item, QgsLayerTreeGroup)
+        and BARRIERS_GROUP_DESCRIPTOR in graph_group_item.name()
+    ):
+        for sub_graph_group_item in recurse_layers(graph_group_item):
+            add_barriers(
+                graph_key=graph_key,
+                barrier_layer_tree_node=sub_graph_group_item,
+                solution=solution,
+                issues=issues,
+                collect_invalid=collect_invalid,
+                collect_warnings=collect_warnings,
+                collect_errors=collect_errors,
+            )
+    else:
+        logger.debug(f"Skipped adding {BARRIERS_GROUP_DESCRIPTOR}")
+    if (
+        isinstance(graph_group_item, QgsLayerTreeGroup)
+        and AVOIDS_GROUP_DESCRIPTOR in graph_group_item.name()
+    ):
+        for sub_graph_group_item in recurse_layers(graph_group_item):
+            add_avoids(
+                graph_key=graph_key,
+                avoid_layer_tree_node=sub_graph_group_item,
+                solution=solution,
+                issues=issues,
+                collect_invalid=collect_invalid,
+                collect_warnings=collect_warnings,
+                collect_errors=collect_errors,
+            )
+    else:
+        logger.debug(f"Skipped adding {AVOIDS_GROUP_DESCRIPTOR}")
+    if (
+        isinstance(graph_group_item, QgsLayerTreeGroup)
+        and PREFERS_GROUP_DESCRIPTOR in graph_group_item.name()
+    ):
+        for sub_graph_group_item in recurse_layers(graph_group_item):
+            add_prefers(
+                graph_key=graph_key,
+                prefer_layer_tree_node=sub_graph_group_item,
+                solution=solution,
+                issues=issues,
+                collect_invalid=collect_invalid,
+                collect_warnings=collect_warnings,
+                collect_errors=collect_errors,
+            )
+    else:
+        logger.debug(f"Skipped adding {PREFERS_GROUP_DESCRIPTOR}")
+    if (
+        isinstance(graph_group_item, QgsLayerTreeGroup)
+        and OBSTACLES_GROUP_DESCRIPTOR in graph_group_item.name()
+    ):
+        for sub_graph_group_item in recurse_layers(graph_group_item):
+            add_obstacles(
+                graph_key=graph_key,
+                obstacle_layer_tree_node=sub_graph_group_item,
+                solution=solution,
+                issues=issues,
+                collect_invalid=collect_invalid,
+                collect_warnings=collect_warnings,
+                collect_errors=collect_errors,
+            )
+    else:
+        logger.debug(f"Skipped adding {OBSTACLES_GROUP_DESCRIPTOR}")
+    if (
+        isinstance(graph_group_item, QgsLayerTreeGroup)
+        and ENTRY_POINTS_GROUP_DESCRIPTOR in graph_group_item.name()
+    ):
+        for sub_graph_group_item in recurse_layers(graph_group_item):
+            add_entry_points(
+                graph_key=graph_key,
+                entry_point_layer_tree_node=sub_graph_group_item,
+                solution=solution,
+                issues=issues,
+                collect_invalid=collect_invalid,
+                collect_warnings=collect_warnings,
+                collect_errors=collect_errors,
+            )
+    else:
+        logger.debug(f"Skipped adding {ENTRY_POINTS_GROUP_DESCRIPTOR}")
+    if (
+        isinstance(graph_group_item, QgsLayerTreeGroup)
+        and CONNECTORS_GROUP_DESCRIPTOR in graph_group_item.name()
+    ):
+        connections_agg = defaultdict(list)
+        for sub_graph_group_item in recurse_layers(graph_group_item):
+            connections = get_connections(
+                connections_layer_tree_node=sub_graph_group_item,
+            )
 
-                if (
-                    isinstance(graph_group_item, QgsLayerTreeLayer)
-                    and PREFERS_DESCRIPTOR in graph_group_item.name()
-                ):
-                    add_prefers(
-                        graph_key=graph_key,
-                        prefer_layer_tree_node=graph_group_item,
-                        solution=solution,
-                        issues=issues,
-                        collect_invalid=collect_invalid,
-                        collect_warnings=collect_warnings,
-                        collect_errors=collect_errors,
-                    )
-                else:
-                    logger.debug(f"Skipped adding {PREFERS_DESCRIPTOR}")
+            for k, v in connections.items():
+                connections_agg[k].extend(v)
 
-                if (
-                    isinstance(graph_group_item, QgsLayerTreeLayer)
-                    and OBSTACLES_DESCRIPTOR in graph_group_item.name()
-                ):
-                    add_obstacles(
-                        graph_key=graph_key,
-                        obstacle_layer_tree_node=graph_group_item,
-                        solution=solution,
-                        issues=issues,
-                        collect_invalid=collect_invalid,
-                        collect_warnings=collect_warnings,
-                        collect_errors=collect_errors,
-                    )
-                else:
-                    logger.debug(f"Skipped adding {OBSTACLES_DESCRIPTOR}")
+        assemble_connections(
+            connections_agg,
+            solution,
+            graph_key,
+            issues=issues,
+            collect_invalid=collect_invalid,
+            collect_warnings=collect_warnings,
+            collect_errors=collect_errors,
+        )
+    else:
+        logger.debug(f"Skipped adding {CONNECTORS_GROUP_DESCRIPTOR}")
 
-                if (
-                    isinstance(graph_group_item, QgsLayerTreeLayer)
-                    and ENTRY_POINTS_DESCRIPTOR in graph_group_item.name()
-                ):
-                    add_entry_points(
-                        graph_key=graph_key,
-                        entry_point_layer_tree_node=graph_group_item,
-                        solution=solution,
-                        issues=issues,
-                        collect_invalid=collect_invalid,
-                        collect_warnings=collect_warnings,
-                        collect_errors=collect_errors,
-                    )
-                else:
-                    logger.debug(f"Skipped adding {ENTRY_POINTS_DESCRIPTOR}")
 
-                if (
-                    isinstance(graph_group_item, QgsLayerTreeLayer)
-                    and CONNECTORS_DESCRIPTOR in graph_group_item.name()
-                ):
-                    connections = get_connections(
-                        connections_layer_tree_node=graph_group_item,
-                    )
-                    assemble_connections(
-                        connections,
-                        solution,
-                        graph_key,
-                        issues=issues,
-                        collect_invalid=collect_invalid,
-                        collect_warnings=collect_warnings,
-                        collect_errors=collect_errors,
-                    )
-                else:
-                    logger.debug(f"Skipped adding {CONNECTORS_DESCRIPTOR}")
+def add_flat_route_element_layers(
+    collect_errors,
+    collect_invalid,
+    collect_warnings,
+    graph_group_item,
+    graph_key,
+    issues,
+    solution,
+):
+    if (
+        isinstance(graph_group_item, QgsLayerTreeLayer)
+        and DOORS_GROUP_DESCRIPTOR in graph_group_item.name()
+    ):
+        add_doors(
+            graph_key=graph_key,
+            door_layer_tree_node=graph_group_item,
+            solution=solution,
+            issues=issues,
+            collect_invalid=collect_invalid,
+            collect_warnings=collect_warnings,
+            collect_errors=collect_errors,
+        )
+    else:
+        logger.debug(f"Skipped adding {DOORS_GROUP_DESCRIPTOR}")
+    if (
+        isinstance(graph_group_item, QgsLayerTreeLayer)
+        and BARRIERS_GROUP_DESCRIPTOR in graph_group_item.name()
+    ):
+        add_barriers(
+            graph_key=graph_key,
+            barrier_layer_tree_node=graph_group_item,
+            solution=solution,
+            issues=issues,
+            collect_invalid=collect_invalid,
+            collect_warnings=collect_warnings,
+            collect_errors=collect_errors,
+        )
+    else:
+        logger.debug(f"Skipped adding {BARRIERS_GROUP_DESCRIPTOR}")
+    if (
+        isinstance(graph_group_item, QgsLayerTreeLayer)
+        and AVOIDS_GROUP_DESCRIPTOR in graph_group_item.name()
+    ):
+        add_avoids(
+            graph_key=graph_key,
+            avoid_layer_tree_node=graph_group_item,
+            solution=solution,
+            issues=issues,
+            collect_invalid=collect_invalid,
+            collect_warnings=collect_warnings,
+            collect_errors=collect_errors,
+        )
+    else:
+        logger.debug(f"Skipped adding {AVOIDS_GROUP_DESCRIPTOR}")
+    if (
+        isinstance(graph_group_item, QgsLayerTreeLayer)
+        and PREFERS_GROUP_DESCRIPTOR in graph_group_item.name()
+    ):
+        add_prefers(
+            graph_key=graph_key,
+            prefer_layer_tree_node=graph_group_item,
+            solution=solution,
+            issues=issues,
+            collect_invalid=collect_invalid,
+            collect_warnings=collect_warnings,
+            collect_errors=collect_errors,
+        )
+    else:
+        logger.debug(f"Skipped adding {PREFERS_GROUP_DESCRIPTOR}")
+    if (
+        isinstance(graph_group_item, QgsLayerTreeLayer)
+        and OBSTACLES_GROUP_DESCRIPTOR in graph_group_item.name()
+    ):
+        add_obstacles(
+            graph_key=graph_key,
+            obstacle_layer_tree_node=graph_group_item,
+            solution=solution,
+            issues=issues,
+            collect_invalid=collect_invalid,
+            collect_warnings=collect_warnings,
+            collect_errors=collect_errors,
+        )
+    else:
+        logger.debug(f"Skipped adding {OBSTACLES_GROUP_DESCRIPTOR}")
+    if (
+        isinstance(graph_group_item, QgsLayerTreeLayer)
+        and ENTRY_POINTS_GROUP_DESCRIPTOR in graph_group_item.name()
+    ):
+        add_entry_points(
+            graph_key=graph_key,
+            entry_point_layer_tree_node=graph_group_item,
+            solution=solution,
+            issues=issues,
+            collect_invalid=collect_invalid,
+            collect_warnings=collect_warnings,
+            collect_errors=collect_errors,
+        )
+    else:
+        logger.debug(f"Skipped adding {ENTRY_POINTS_GROUP_DESCRIPTOR}")
+    if (
+        isinstance(graph_group_item, QgsLayerTreeLayer)
+        and CONNECTORS_GROUP_DESCRIPTOR in graph_group_item.name()
+    ):
+        connections = get_connections(
+            connections_layer_tree_node=graph_group_item,
+        )
+        assemble_connections(
+            connections,
+            solution,
+            graph_key,
+            issues=issues,
+            collect_invalid=collect_invalid,
+            collect_warnings=collect_warnings,
+            collect_errors=collect_errors,
+        )
+    else:
+        logger.debug(f"Skipped adding {CONNECTORS_GROUP_DESCRIPTOR}")
 
 
 def assemble_connections(

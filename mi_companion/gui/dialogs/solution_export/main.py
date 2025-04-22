@@ -21,13 +21,13 @@ def run(*, path: Path, open_folder_on_completion: bool = False) -> None:
     from mi_companion.mi_editor.conversion.layers.from_hierarchy.solution import (
         convert_solution_layers_to_solution,
     )
-    from mi_companion import MI_HIERARCHY_GROUP_NAME
+    from mi_companion.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
 
     qgis_instance_handle = QgsProject.instance()
 
     layer_tree_root = QgsProject.instance().layerTreeRoot()
 
-    mi_group = layer_tree_root.findGroup(MI_HIERARCHY_GROUP_NAME)
+    mi_group = layer_tree_root.findGroup(DATABASE_GROUP_DESCRIPTOR)
 
     if not mi_group:  # did not find the group
         logger.error("No Mi Hierarchy Group found")

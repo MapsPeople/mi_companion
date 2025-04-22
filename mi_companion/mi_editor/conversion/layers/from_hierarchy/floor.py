@@ -2,16 +2,38 @@ import logging
 from typing import Any, List, Optional, Tuple
 
 # noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences
+from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
+
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtCore import QVariant
+
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtWidgets import QMessageBox, QTextEdit
+
+# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsFeatureRequest,
     QgsLayerTreeGroup,
+    QgsLayerTreeGroup,
     QgsLayerTreeLayer,
+    QgsLayerTreeLayer,
+    QgsProject,
     QgsProject,
 )
 
 from integration_system.model import Solution
 from jord.qgis_utilities.conversion.features import feature_to_shapely
-from mi_companion import DEFAULT_CUSTOM_PROPERTIES, FLOOR_POLYGON_DESCRIPTOR, HALF_SIZE
+from mi_companion import (
+    DEFAULT_CUSTOM_PROPERTIES,
+    HALF_SIZE,
+)
+from mi_companion.layer_descriptors import FLOOR_POLYGON_DESCRIPTOR
+from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
+    make_hierarchy_validation_dialog,
+)
+from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from .custom_props import extract_custom_props
 from .extraction import special_extract_layer_data
 from .location import add_floor_contents
@@ -104,7 +126,22 @@ def add_building_floors(
         )
 
         if floor_key is None:
-            logger.error(f"Did not find floor in {building_group_item=}, skipping")
+            reply = make_hierarchy_validation_dialog(
+                "Missing Required Floor Polygon Layer",
+                f"The Group '{building_group_item.name()}' is missing a {FLOOR_POLYGON_DESCRIPTOR}, which is a "
+                f"required layer. If you proceed, the Group '{building_group_item.name()}' will be excluded from "
+                f"the "
+                f"upload.",
+                add_reject_option=True,
+                reject_text="Cancel Upload",
+                accept_text="Upload Anyway",
+                alternative_accept_text="Upload Anyway",
+                level=QtWidgets.QMessageBox.Warning,
+            )
+
+            if reply == QMessageBox.RejectRole:
+                raise Exception("Upload cancelled")
+
             continue
 
         assert "floor_index" in floor_attributes
@@ -164,13 +201,30 @@ def get_floor_data(
                 floor_feature,
                 name,
             ) = special_extract_layer_data(floor_level_item)
+            try:
+                floor_polygon = feature_to_shapely(floor_feature)
+            except Exception as e:
+                reply = make_hierarchy_validation_dialog(
+                    "Invalid Floor Polygon Detected",
+                    f"The Floor Polygon feature with Admin ID '{admin_id}' located in {floor_level_item.name()} has "
+                    f"an invalid "
+                    f"geometry.\n\n"
+                    # f"\n__________________{e}\n__________________\n"
+                    + APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE,
+                    add_reject_option=True,
+                    reject_text="Cancel Upload",
+                    accept_text="Upload Anyway",
+                    alternative_accept_text="Upload Anyway",
+                    level=QtWidgets.QMessageBox.Warning,
+                )
 
-            door_linestring = feature_to_shapely(floor_feature)
+                if reply == QMessageBox.RejectRole:
+                    raise Exception("Upload cancelled")
 
-            if door_linestring is None:
-                logger.error(f"{door_linestring=}")
+            if floor_polygon is None:
+                logger.error(f"{floor_polygon=}")
 
-            if door_linestring is not None:
+            if floor_polygon is not None:
                 custom_props = extract_custom_props(floor_attributes)
 
                 try:
@@ -178,7 +232,7 @@ def get_floor_data(
                         external_id=external_id,
                         name=name,
                         floor_index=floor_attributes["floor_index"],
-                        polygon=prepare_geom_for_mi_db(door_linestring),
+                        polygon=prepare_geom_for_mi_db(floor_polygon),
                         building_key=building_key,
                         custom_properties=(
                             custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
@@ -194,4 +248,8 @@ def get_floor_data(
                         raise e
 
                 return floor_attributes, floor_key
+
+    logger.error(
+        f"Did not find floor polygon feature in {floor_group_items.children()=}"
+    )
     return None, None

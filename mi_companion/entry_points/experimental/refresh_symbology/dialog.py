@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Any
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
@@ -7,20 +8,21 @@ from qgis.PyQt import uic
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
-from jord.qgis_utilities.helpers import signals
-from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
-
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
 
-logger = logging.getLogger(__name__)
-
 __all__ = ["Dialog"]
+
+from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
+from jord.qgis_utilities.helpers import signals
+
+from mi_companion import RESOURCE_BASE_PATH
+
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 
 class Dialog(QDialog, FORM_CLASS):
 
-    def __init__(self, parent=None):  #: QWidget
-
+    def __init__(self, parent: Any = None):
         super().__init__(parent)
         self.setupUi(self)
 
@@ -32,12 +34,8 @@ class Dialog(QDialog, FORM_CLASS):
 
         self.parameter_lines = {}
         self.parameter_signature = inspect.signature(run).parameters
-        self.ignore_keys = ["iface"]
 
         for k, v in reversed(self.parameter_signature.items()):
-            if k in self.ignore_keys:
-                continue
-            h_box = QHBoxLayout()
             label_text = f"{k}"
             default = None
             if v.annotation != v.empty:
@@ -47,8 +45,10 @@ class Dialog(QDialog, FORM_CLASS):
                 default = v.default
                 label_text += f" = ({default})"
 
-            h_box.addWidget(QLabel(label_text))
             line_edit = QLineEdit(str(default) if default is not None else None)
+
+            h_box = QHBoxLayout()
+            h_box.addWidget(QLabel(label_text))
             h_box.addWidget(line_edit)
             h_box_w = QWidget(self)
             h_box_w.setLayout(h_box)

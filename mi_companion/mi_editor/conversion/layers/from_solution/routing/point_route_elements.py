@@ -20,9 +20,9 @@ from mi_companion.mi_editor.conversion.projection import (
     solve_target_crs_authid,
 )
 
-logger = logging.getLogger(__name__)
-
 __all__ = ["add_point_route_element_layers"]
+
+logger = logging.getLogger(__name__)
 
 
 def add_point_route_element_layers(

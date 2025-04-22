@@ -8,6 +8,11 @@ from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtCore import QVariant
 
 # noinspection PyUnresolvedReferences
+from qgis.PyQt.QtWidgets import (
+    QMessageBox,
+)
+
+# noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.mi import (
@@ -17,10 +22,11 @@ from integration_system.mi import (
 )
 from integration_system.model import Solution
 from jord.qgis_utilities.conversion.features import parse_q_value
-from mi_companion import (
-    MI_HIERARCHY_GROUP_NAME,
+from mi_companion import UPLOAD_ERROR_CONFIRMATION_TITLE
+from mi_companion.layer_descriptors import (
+    DATABASE_GROUP_DESCRIPTOR,
     SOLUTION_DATA_DESCRIPTOR,
-    SOLUTION_DESCRIPTOR,
+    SOLUTION_GROUP_DESCRIPTOR,
 )
 from .venue import convert_solution_venues
 
@@ -64,10 +70,8 @@ def convert_solution_layers_to_solution(
     issues = []
 
     for ith_child, mi_group_child in enumerate(mi_group_children):
-        if SOLUTION_DESCRIPTOR not in str(mi_group_child.name()):
-            _warning = (
-                f"{mi_group_child=} was skipped, did not contain {SOLUTION_DESCRIPTOR}"
-            )
+        if SOLUTION_GROUP_DESCRIPTOR not in str(mi_group_child.name()):
+            _warning = f"{mi_group_child=} was skipped, did not contain {SOLUTION_GROUP_DESCRIPTOR}"
             logger.warning(_warning)
             if collect_warnings:
                 issues.append(_warning)
@@ -79,6 +83,7 @@ def convert_solution_layers_to_solution(
             )
         if not isinstance(mi_group_child, QgsLayerTreeGroup):
             _warning = f"{mi_group_child=} was skipped"
+
             logger.warning(_warning)
             if collect_warnings:
                 issues.append(_warning)
@@ -120,7 +125,19 @@ def convert_solution_layers_to_solution(
 
         if not solution_data:
             _error = f"Did not find solution_data layer, skipping {solution_layer_name}"
+
             logger.error(_error)
+
+            reply = QMessageBox.question(
+                None,
+                UPLOAD_ERROR_CONFIRMATION_TITLE,
+                _error,
+                QMessageBox.Ok,
+                QMessageBox.Cancel,
+            )
+            if reply == QMessageBox.Cancel:
+                raise Exception(_error)
+
             if collect_errors:
                 issues.append(_error)
             continue
@@ -180,7 +197,7 @@ def convert_solution_layers_to_solution(
 
 def layer_hierarchy_to_solution(
     qgis_instance_handle: Any,
-    mi_hierarchy_group_name: str = MI_HIERARCHY_GROUP_NAME,
+    mi_hierarchy_group_name: str = DATABASE_GROUP_DESCRIPTOR,
     *,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
     solution_depth: SolutionDepth = SolutionDepth.obstacles,

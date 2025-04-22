@@ -4,9 +4,9 @@ import logging
 from integration_system.config import MapsIndoors, Settings, set_settings
 from integration_system.migration import migrate_venue
 from jord.qgis_utilities import read_plugin_setting
-from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
+from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = []
 
 
@@ -15,7 +15,7 @@ def run(
     from_solution_id: str,
     to_solution_id: str,
     venue_admin_id: str,
-    remove_venue_in_from_solution: bool = False,
+    # remove_venue_in_from_solution: bool = False,
 ) -> None:
     """
 
@@ -64,5 +64,5 @@ def run(
         from_solution_id=from_solution_id,
         to_solution_id=to_solution_id,
         venue_admin_id=venue_admin_id,
-        remove_venue_in_from_solution=remove_venue_in_from_solution,
+        # remove_venue_in_from_solution=remove_venue_in_from_solution,
     )

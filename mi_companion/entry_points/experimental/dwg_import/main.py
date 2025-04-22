@@ -18,7 +18,9 @@ from qgis.core import (
     QgsVectorLayer,
 )
 
-logger = logging.getLogger(__name__)
+from mi_companion import RESOURCE_BASE_PATH
+
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = []
 
@@ -26,7 +28,7 @@ __all__ = []
 def run(
     *,
     dwg_path: Path,
-    auto_add_layers: bool = True,
+    # auto_add_layers: bool = True,
     oda_converter_path: Path = Path(
         r"C:\Program Files\ODA\ODAFileConverter 25.4.0\ODAFileConverter.exe"
     ),
@@ -64,6 +66,7 @@ Import/Export > Import Layers from DXF/DWG)
 
     logger.info(f"Emitted {new_dxf_path}")
 
+    auto_add_layers: bool = True
     if auto_add_layers:
         dfx_file = str(new_dxf_path)
         vector_layer = QgsVectorLayer(dfx_file, "layer_test", "ogr")

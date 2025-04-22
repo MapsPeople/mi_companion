@@ -18,53 +18,55 @@ def classFactory(iface):  # pylint: disable=invalid-name
     from jord.qgis_utilities import (
         read_plugin_setting,
         add_logging_handler_once,
-        setup_logger,
+        setup_qgs_logger,
     )
 
-    try:
-        logging_level = read_plugin_setting(
-            "LOGGING_LEVEL",
-            default_value=DEFAULT_PLUGIN_SETTINGS["LOGGING_LEVEL"],
-            project_name=PROJECT_NAME,
-        )
-
-        logger: logging.Logger = setup_logger(
-            __name__,
-            logger_level=logging_level,
-        )
-    except Exception as e:
-        if logger:
-            logger.error(f"{e}")
-
     ADD_SENTRY_LOGGER = False
-    if ADD_SENTRY_LOGGER:
-        try:
-            from sentry_sdk import init
-            from sentry_sdk.integrations.logging import (
-                LoggingIntegration,
-                EventHandler,
-                BreadcrumbHandler,
-            )  # I hate this interface!
 
-            init(
-                dsn="https://0d5b385b29467264d1f54f67318b1c52@o351128.ingest.us.sentry.io/4507175970996224",
-                # Set traces_sample_rate to 1.0 to capture 100%
-                # of transactions for performance monitoring.
-                traces_sample_rate=1.0,
-                # default_integrations=True,
-                integrations=[LoggingIntegration(event_level=None, level=None)],
-                # integrations=[
-                #    sentry_sdk.integrations.LoggingIntegration(
-                #        level=logging.INFO,  # Capture info and above as breadcrumbs
-                #        event_level=logging.INFO,  # Send records as events
-                #    ),
-                # ],
+    if False:
+        try:
+            logging_level = read_plugin_setting(
+                "LOGGING_LEVEL",
+                default_value=DEFAULT_PLUGIN_SETTINGS["LOGGING_LEVEL"],
+                project_name=PROJECT_NAME,
             )
 
+            logger: logging.Logger = setup_qgs_logger(
+                __name__,
+                logger_level=logging_level,
+            )
         except Exception as e:
             if logger:
                 logger.error(f"{e}")
 
+        if ADD_SENTRY_LOGGER:
+            try:
+                from sentry_sdk import init
+                from sentry_sdk.integrations.logging import (
+                    LoggingIntegration,
+                    EventHandler,
+                    BreadcrumbHandler,
+                )  # I hate this interface!
+
+                init(
+                    dsn="https://0d5b385b29467264d1f54f67318b1c52@o351128.ingest.us.sentry.io/4507175970996224",
+                    # Set traces_sample_rate to 1.0 to capture 100%
+                    # of transactions for performance monitoring.
+                    traces_sample_rate=1.0,
+                    # default_integrations=True,
+                    integrations=[LoggingIntegration(event_level=None, level=None)],
+                    # integrations=[
+                    #    sentry_sdk.integrations.LoggingIntegration(
+                    #        level=logging.INFO,  # Capture info and above as breadcrumbs
+                    #        event_level=logging.INFO,  # Send records as events
+                    #    ),
+                    # ],
+                )
+
+            except Exception as e:
+                if logger:
+                    logger.error(f"{e}")
+
     try:
         logging_level = read_plugin_setting(
             "LOGGING_LEVEL",
@@ -72,7 +74,13 @@ def classFactory(iface):  # pylint: disable=invalid-name
             project_name=PROJECT_NAME,
         )
 
-        logger: logging.Logger = setup_logger(
+        # sys.stdout = open(os.devnull, "w")
+        # sys.stderr = open(os.devnull, "w")
+
+        # sys.stdout = sys.__stdout__
+        # sys.stderr = sys.__stderr__
+
+        logger: logging.Logger = setup_qgs_logger(
             __name__,
             logger_level=logging_level,
         )
@@ -90,18 +98,27 @@ def classFactory(iface):  # pylint: disable=invalid-name
             except Exception:
                 ...
 
-        logger.debug(f"Setup {logger.name=}")
+        logger.error(f"Setup {logger.name=}, {logging_level=}")
         logger.debug(
-            f"Setup {setup_logger('svaguely', logger_level=logging_level).name=}"
+            f"Setup {setup_qgs_logger('svaguely', logger_level=logging_level).name=}"
         )
-        logger.debug(f"Setup {setup_logger('jord', logger_level=logging_level).name=}")
-        logger.debug(f"Setup {setup_logger('warg', logger_level=logging_level).name=}")
         logger.debug(
-            f"Setup {setup_logger('apppath', logger_level=logging_level).name=}"
+            f"Setup {setup_qgs_logger('jord', logger_level=logging_level).name=}"
         )
-        logger.debug(f"Setup {setup_logger('caddy', logger_level=logging_level).name=}")
         logger.debug(
-            f"Setup {setup_logger('integration_system', logger_level=logging_level).name=}"
+            f"Setup {setup_qgs_logger('warg', logger_level=logging_level).name=}"
+        )
+        logger.debug(
+            f"Setup {setup_qgs_logger('apppath', logger_level=logging_level).name=}"
+        )
+        logger.debug(
+            f"Setup {setup_qgs_logger('caddy', logger_level=logging_level).name=}"
+        )
+        from integration_system.constants import PRODUCTION
+
+        logger.error(
+            f"Setup {setup_qgs_logger('integration_system', logger_level=logging_level).name=}, "
+            f"{PRODUCTION=}"
         )
 
     except Exception as e:

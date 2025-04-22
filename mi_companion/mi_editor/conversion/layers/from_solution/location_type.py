@@ -31,18 +31,18 @@ def add_location_type_layer(
     qgis_instance_handle: Any,
     solution_group: Any
 ) -> Optional[List[Any]]:  # QgsVectorLayer
+    """
 
-    shape_df = collection_to_df(solution.location_types)
+    :param solution:
+    :param layer_name:
+    :param qgis_instance_handle:
+    :param solution_group:
+    :return:
+    """
 
-    column_selection = [
-        c
-        for c in shape_df.columns
-        if ("." not in c)
-        or (
-            "custom_properties." in c
-            and (".custom_properties" not in c)  # Only this objects custom_properties
-        )
-    ]
+    shape_df = collection_to_df(solution.location_types, pop_keys=["display_rule"])
+
+    column_selection = [c for c in shape_df.columns if "display_rule" not in c]
 
     if column_selection:
         selected = shape_df[column_selection]

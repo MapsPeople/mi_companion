@@ -9,10 +9,12 @@ from jord.qgis_utilities.fields import make_field_not_null
 from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
     DESCRIPTOR_BEFORE,
-    GRAPH_BOUND_DESCRIPTOR,
-    GRAPH_DESCRIPTOR,
 )
 from mi_companion.configuration.options import read_bool_setting
+from mi_companion.layer_descriptors import (
+    GRAPH_BOUND_DESCRIPTOR,
+    GRAPH_GROUP_DESCRIPTOR,
+)
 from mi_companion.mi_editor.conversion.layers.from_solution.routing.graph_3d_network import (
     add_graph_3d_network_layers,
 )
@@ -64,9 +66,9 @@ def add_graph_layers(
             ) = osm_xml_to_lines(graph.osm_xml)
 
             if DESCRIPTOR_BEFORE:
-                graph_name = f"{GRAPH_DESCRIPTOR} {graph.graph_id}"
+                graph_name = f"{GRAPH_GROUP_DESCRIPTOR} {graph.graph_id}"
             else:
-                graph_name = f"{graph.graph_id} {GRAPH_DESCRIPTOR}"
+                graph_name = f"{graph.graph_id} {GRAPH_GROUP_DESCRIPTOR}"
 
             graph_group = venue_group.insertGroup(0, graph_name)
             if not read_bool_setting("SHOW_GRAPH_ON_LOAD"):

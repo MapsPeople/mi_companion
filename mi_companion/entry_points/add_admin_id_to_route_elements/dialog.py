@@ -15,7 +15,9 @@ __all__ = ["Dialog"]
 from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
 from jord.qgis_utilities.helpers import signals
 
-logger = logging.getLogger(__name__)
+from mi_companion import RESOURCE_BASE_PATH
+
+logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 
 class Dialog(QDialog, FORM_CLASS):
