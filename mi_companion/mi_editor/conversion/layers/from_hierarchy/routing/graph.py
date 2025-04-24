@@ -16,7 +16,7 @@ from qgis.PyQt.QtWidgets import (
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
-from jord.qgis_utilities.conversion.features import feature_to_shapely
+from jord.qgis_utilities import feature_to_shapely
 from mi_companion import UPLOAD_ERROR_CONFIRMATION_TITLE
 from mi_companion.layer_descriptors import GRAPH_BOUND_DESCRIPTOR
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (

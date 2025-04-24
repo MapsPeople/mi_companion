@@ -17,7 +17,7 @@ from integration_system.model import (
     Connector,
     Solution,
 )
-from jord.qgis_utilities.conversion.features import (
+from jord.qgis_utilities import (
     GeometryIsEmptyError,
     feature_to_shapely,
 )

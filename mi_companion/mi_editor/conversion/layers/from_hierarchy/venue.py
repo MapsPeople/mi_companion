@@ -3,14 +3,11 @@ import logging
 from datetime import datetime
 from typing import Any, Callable, List, Mapping, Optional
 
-from PyQt5.QtCore import QDateTime
-
-# noinspection PyUnresolvedReferences
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt.QtCore import QDateTime, QVariant
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
@@ -36,7 +33,7 @@ from .custom_props import extract_custom_props
 __all__ = ["convert_solution_venues"]
 
 from .extraction import special_extract_layer_data
-from jord.qgis_utilities.conversion.features import feature_to_shapely
+from jord.qgis_utilities import feature_to_shapely
 
 from .location_type import get_location_type_data
 

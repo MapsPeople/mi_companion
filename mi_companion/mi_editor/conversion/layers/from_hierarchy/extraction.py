@@ -16,7 +16,7 @@ from qgis.core import (
     QgsProject,
 )
 
-from jord.qgis_utilities.conversion.features import MissingFeatureError, parse_q_value
+from jord.qgis_utilities import MissingFeatureError, parse_q_value
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.qgis_utilities import is_str_value_null_like
 

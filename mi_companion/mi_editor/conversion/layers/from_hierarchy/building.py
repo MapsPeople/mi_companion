@@ -25,7 +25,7 @@ from integration_system.mi import (
     get_outside_building_floor_name,
 )
 from integration_system.model import Solution
-from jord.qgis_utilities.conversion.features import feature_to_shapely
+from jord.qgis_utilities import feature_to_shapely
 from mi_companion import (
     DEFAULT_CUSTOM_PROPERTIES,
     HALF_SIZE,
@@ -36,10 +36,11 @@ from mi_companion.layer_descriptors import (
     FLOOR_GROUP_DESCRIPTOR,
     GRAPH_GROUP_DESCRIPTOR,
 )
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.routing.graph import (
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.routing import (
     add_venue_graph,
 )
-from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.hierarchy import (
     make_hierarchy_validation_dialog,
 )
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
@@ -47,7 +48,6 @@ from .custom_props import extract_custom_props
 from .extraction import special_extract_layer_data
 from .floor import add_building_floors
 from .location import add_floor_contents
-from ...projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
 

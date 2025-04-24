@@ -25,7 +25,8 @@ __copyright__ = (
 import logging
 from typing import List
 
-from PyQt5.QtCore import QObject, QSize, pyqtSignal, pyqtSlot
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtCore import QObject, QSize, pyqtSignal, pyqtSlot
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDockWidget

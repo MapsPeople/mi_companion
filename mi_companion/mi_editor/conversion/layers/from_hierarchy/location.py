@@ -26,7 +26,7 @@ from qgis.core import (
 )
 
 from integration_system.model import Category, LocationType, Solution
-from jord.qgis_utilities.conversion.features import feature_to_shapely
+from jord.qgis_utilities import feature_to_shapely
 from mi_companion import (
     DEFAULT_CUSTOM_PROPERTIES,
     VERBOSE,
