@@ -72,6 +72,20 @@ def process_custom_props_df(df: GeoDataFrame) -> None:
                 df[column_name] = df[column_name].fillna(NULL_VALUE)
 
     for column_name, series in df.items():
+        if "display_rule" in column_name:  # Drop custom properties
+            if all(series.isna()):
+                if False:
+                    df[column_name] = [None] * len(series)
+                else:  # Drop custom properties
+                    df.drop(columns=column_name, inplace=True)
+
+            elif True:
+                df[column_name] = series.astype(str)
+
+            elif False:
+                df[column_name] = df[column_name].fillna(NULL_VALUE)
+
+    for column_name, series in df.items():
         if len(series) > 0:
             if series.isna().iloc[0]:
                 if not all(series.isna()):

@@ -40,11 +40,17 @@ def add_location_type_layer(
     :return:
     """
 
-    shape_df = collection_to_df(solution.location_types, pop_keys=["display_rule"])
+    shape_df = collection_to_df(
+        solution.location_types
+        # , pop_keys=["display_rule"]
+    )
 
-    column_selection = [c for c in shape_df.columns if "display_rule" not in c]
+    if False:
+        column_selection = [c for c in shape_df.columns if "display_rule" not in c]
+    else:
+        column_selection = None
 
-    if column_selection:
+    if column_selection is not None and len(column_selection) > 0:
         selected = shape_df[column_selection]
     else:
         selected = shape_df

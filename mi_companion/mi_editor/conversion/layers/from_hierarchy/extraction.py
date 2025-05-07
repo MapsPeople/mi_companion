@@ -190,6 +190,7 @@ def parse_field(feature_attributes: Mapping[str, Any], field_name: str) -> Any:
     field_value = feature_attributes[field_name]
     if isinstance(field_value, str):
         ...
+
     elif isinstance(field_value, QVariant):
         # logger.warning(f"{typeToDisplayString(type(v))}")
         if field_value.isNull():
@@ -211,22 +212,29 @@ def extract_field_value(feature_attributes: Mapping[str, Any], field_name: str) 
 
     if field_value is None:
         ...
+
     elif isinstance(field_value, str):
         v = field_value
         v_str = v.lower().strip()
+
         if is_str_value_null_like(v_str):
             field_value = None
+
         else:
             field_value = v
+
     elif isinstance(field_value, QVariant):
         if field_value.isNull():
             field_value = None
+
         else:
             v = str(field_value.value())
 
             v_str = v.lower().strip()
+
             if is_str_value_null_like(v_str):
                 field_value = None
+
             else:
                 field_value = v
 

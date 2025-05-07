@@ -5,6 +5,9 @@ from typing import Any, List, Optional
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
 
 from integration_system.model import LocationType, Solution
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (
+    extract_display_rule,
+)
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
     extract_layer_attributes,
 )
@@ -55,8 +58,11 @@ def get_location_type_data(
                         LocationType.compute_key(admin_id=admin_id)
                     )
                     if lt is None:
+                        name = attribute["name"]
+
+                        display_rule = extract_display_rule(attribute)
                         solution.add_location_type(
-                            admin_id=admin_id, name=attribute["name"]
+                            admin_id=admin_id, name=name, display_rule=display_rule
                         )
                     else:
                         assert (
@@ -66,5 +72,6 @@ def get_location_type_data(
             except Exception as e:
                 _invalid = f"Invalid location_types: {e}"
                 logger.error(_invalid)
+
                 if collect_invalid:
                     issues.append(_invalid)

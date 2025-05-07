@@ -195,11 +195,12 @@ def add_location_layer(
     column_selection = [
         c
         for c in shape_df.columns
-        if ("." not in c) or ("location_type.admin_id" == c)
-        # or ('display_rule.' in c) # TODO: ENABLE FOR DISPLAY_RULE SUPPORT
+        if ("." not in c)
+        or ("location_type.admin_id" == c)
         or (
-            "custom_properties." in c
-            and (".custom_properties" not in c)  # Only this objects custom_properties
+            ("custom_properties." in c or "display_rule." in c)
+            and ((".custom_properties" not in c) and (".display_rule" not in c))
+            # Only this objects custom_properties
         )
     ]
 
