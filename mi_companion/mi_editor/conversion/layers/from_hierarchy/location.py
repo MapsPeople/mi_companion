@@ -32,8 +32,9 @@ from mi_companion import (
     VERBOSE,
 )
 from mi_companion.configuration.options import read_bool_setting
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (
-    extract_custom_props,
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
+    extract_display_rule,
+    extract_two_level_str_map,
 )
 from mi_companion.mi_editor.conversion.layers.type_enums import BackendLocationTypeEnum
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
@@ -111,7 +112,7 @@ def add_floor_locations(
                         f"{location_type_key} is not a location type that already exists"
                     )
 
-            custom_props = extract_custom_props(feature_attributes)
+            custom_props = extract_two_level_str_map(feature_attributes)
 
             if "admin_id" in feature_attributes:
                 admin_id = feature_attributes["admin_id"]
@@ -241,6 +242,7 @@ def add_floor_locations(
                     custom_properties=(
                         custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
                     ),
+                    display_rule=extract_display_rule(feature_attributes),
                 )
 
                 for k, v in feature_attributes.items():

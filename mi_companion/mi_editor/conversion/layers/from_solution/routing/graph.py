@@ -4,8 +4,7 @@ from xml.etree.ElementTree import ParseError
 
 from integration_system.graph_utilities import osm_xml_to_lines
 from integration_system.model import Graph, Solution, Venue
-from jord.qgis_utilities.constraints import set_geometry_constraints
-from jord.qgis_utilities.fields import make_field_not_null
+from jord.qgis_utilities import make_field_not_null, set_geometry_constraints
 from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
     DESCRIPTOR_BEFORE,

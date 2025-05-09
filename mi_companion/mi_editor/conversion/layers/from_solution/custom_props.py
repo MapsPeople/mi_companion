@@ -10,7 +10,61 @@ from integration_system.model import CollectionMixin
 from mi_companion import NULL_VALUE, REAL_NONE_JSON_VALUE
 
 logger = logging.getLogger(__name__)
-__all__ = ["process_custom_props_df"]
+__all__ = ["process_custom_props_df", "process_nested_str_map_df"]
+
+
+def process_nested_str_map_df(df: GeoDataFrame, *, nested_map_field_name: str) -> None:
+    """
+    UPDATE: Venue(s):
+      Updating
+        Venue: Amsterdam - Schiphol Airport (AMS):
+            custom_properties:
+              {'en': {'lastauditedtimestamp': 'None'}}
+            ->
+            {'en': {'lastauditedtimestamp': None}}
+
+    UPDATE: Area(s):
+      Updating
+        Area: Restroom, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
+            custom_properties:
+              {}
+            ->
+            {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
+        Area: Transfer Desk, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
+            custom_properties:
+              {'generic': {'transform': 'None', 'servicetype': 'Transfer Desk', 'markupjson': 'None'}}
+            ->
+            {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
+        Area: Restroom, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
+            custom_properties:
+              {}
+            ->
+            {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
+
+            :param df:
+            :return:
+    """
+
+    for column_name, series in df.items():
+        if nested_map_field_name in column_name:  # Drop custom properties
+            if all(series.isna()):
+                df.drop(columns=column_name, inplace=True)
+
+            elif True:
+                df[column_name] = series.astype(str)
+
+    for column_name, series in df.items():
+        if len(series) > 0:
+            if series.isna().iloc[0]:
+                if not all(series.isna()):
+                    # assert not any(series.isna())  # UNIFI TYPES!
+                    example = series.notna().infer_objects().dtypes
+                    df[column_name] = series.astype(example)
+
+    converted_df = df.convert_dtypes()
+
+    for column_name, series in converted_df.items():  # COPY OVER SERIES!
+        df[column_name] = series
 
 
 def process_custom_props_df(df: GeoDataFrame) -> None:

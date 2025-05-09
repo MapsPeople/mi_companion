@@ -43,8 +43,8 @@ from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
 from mi_companion.mi_editor.hierarchy import (
     make_hierarchy_validation_dialog,
 )
+from .common_attributes import extract_two_level_str_map
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
-from .custom_props import extract_custom_props
 from .extraction import special_extract_layer_data
 from .floor import add_building_floors
 from .location import add_floor_contents
@@ -307,7 +307,7 @@ def get_building_key(
                     raise Exception("Upload cancelled")
 
             if building_polygon is not None:
-                custom_props = extract_custom_props(layer_attributes)
+                custom_props = extract_two_level_str_map(layer_attributes)
                 try:
                     building_key = solution.add_building(
                         admin_id=admin_id,

@@ -3,10 +3,7 @@ from typing import Iterable, Mapping
 
 import shapely
 
-from jord.qgis_utilities.fields import (
-    make_field_not_null,
-)
-from jord.qgis_utilities.styling import set_3d_view_settings
+from jord.qgis_utilities import make_field_not_null, set_3d_view_settings
 from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
     FLOOR_HEIGHT,

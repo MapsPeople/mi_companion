@@ -4,7 +4,7 @@ from typing import Any, List, Optional
 import geopandas
 
 from integration_system.model import DoorCollection, Graph
-from jord.qgis_utilities.fields import (
+from jord.qgis_utilities import (
     make_field_not_null,
     make_field_reuse_last_entered_value,
     make_field_unique,
@@ -95,7 +95,6 @@ def add_linestring_route_element_layers(
                     make_field_reuse_last_entered_value(linestring_layer, field_name)
 
                 make_field_unique(linestring_layer, field_name="admin_id")
-                # apply_display_rule(linestring_layer, display_rules=display_rules)
 
                 if dropdown_widget:
                     set_field_widget(
@@ -133,7 +132,6 @@ def add_linestring_route_element_layers(
             make_field_reuse_last_entered_value(linestring_layer, field_name=field_name)
 
         make_field_unique(linestring_layer, field_name="admin_id")
-        # apply_display_rule(linestring_layer, display_rules=display_rules)
 
         if dropdown_widget:
             set_field_widget(

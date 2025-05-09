@@ -33,8 +33,8 @@ from mi_companion.layer_descriptors import FLOOR_POLYGON_DESCRIPTOR
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
+from .common_attributes import extract_two_level_str_map
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
-from .custom_props import extract_custom_props
 from .extraction import special_extract_layer_data
 from .location import add_floor_contents
 from ...projection import prepare_geom_for_mi_db
@@ -225,7 +225,7 @@ def get_floor_data(
                 logger.error(f"{floor_polygon=}")
 
             if floor_polygon is not None:
-                custom_props = extract_custom_props(floor_attributes)
+                custom_props = extract_two_level_str_map(floor_attributes)
 
                 try:
                     floor_key = solution.add_floor(

@@ -5,7 +5,7 @@ from typing import Any, List, Optional
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
 
 from integration_system.model import LocationType, Solution
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
     extract_display_rule,
 )
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (

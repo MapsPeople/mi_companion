@@ -7,15 +7,17 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup, QgsProject
 
-from integration_system.common_models import MIVenueType
+from integration_system.common_models import (
+    MIConnectionType,
+    MIDoorType,
+    MIEntryPointType,
+    MIVenueType,
+)
 from integration_system.mi import (
     SolutionDepth,
     get_remote_solution,
 )
 from integration_system.model import (
-    ConnectionType,
-    DoorType,
-    EntryPointType,
     GraphEdgeContextTypes,
     Solution,
 )
@@ -136,7 +138,7 @@ def add_solution_group(
 
     door_type_dropdown_widget = None
     if read_bool_setting("MAKE_DOOR_TYPE_DROPDOWN"):
-        door_type_dropdown_widget = make_enum_dropdown_widget(DoorType)
+        door_type_dropdown_widget = make_enum_dropdown_widget(MIDoorType)
 
     highway_type_dropdown_widget = None
     if read_bool_setting("MAKE_HIGHWAY_TYPE_DROPDOWN"):
@@ -148,11 +150,11 @@ def add_solution_group(
 
     entry_point_type_dropdown_widget = None
     if read_bool_setting("MAKE_ENTRY_POINT_TYPE_DROPDOWN"):
-        entry_point_type_dropdown_widget = make_enum_dropdown_widget(EntryPointType)
+        entry_point_type_dropdown_widget = make_enum_dropdown_widget(MIEntryPointType)
 
     connection_type_dropdown_widget = None
     if read_bool_setting("MAKE_CONNECTION_TYPE_DROPDOWN"):
-        connection_type_dropdown_widget = make_enum_dropdown_widget(ConnectionType)
+        connection_type_dropdown_widget = make_enum_dropdown_widget(MIConnectionType)
 
     edge_context_type_dropdown_widget = None
     if read_bool_setting("MAKE_EDGE_CONTEXT_TYPE_DROPDOWN"):

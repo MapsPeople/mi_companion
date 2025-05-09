@@ -4,7 +4,7 @@ from typing import Any, List, Optional
 import geopandas
 
 from integration_system.model import CollectionMixin, Graph
-from jord.qgis_utilities.fields import (
+from jord.qgis_utilities import (
     make_field_not_null,
     make_field_reuse_last_entered_value,
     make_field_unique,

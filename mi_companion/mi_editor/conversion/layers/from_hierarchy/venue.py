@@ -27,8 +27,8 @@ from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
 from .building import add_venue_level_hierarchy
+from .common_attributes import extract_two_level_str_map
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
-from .custom_props import extract_custom_props
 
 __all__ = ["convert_solution_venues"]
 
@@ -280,7 +280,7 @@ def get_venue_key(
                     raise Exception("Upload cancelled")
 
             if venue_polygon:
-                custom_props = extract_custom_props(layer_attributes)
+                custom_props = extract_two_level_str_map(layer_attributes)
                 try:
                     venue_key = solution.add_venue(
                         admin_id=admin_id,

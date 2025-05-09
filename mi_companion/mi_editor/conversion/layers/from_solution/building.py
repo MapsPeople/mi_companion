@@ -3,7 +3,7 @@ from typing import Any, Callable, Optional
 
 from integration_system.mi import get_outside_building_admin_id
 from integration_system.model import Building, Solution, Venue
-from jord.qgis_utilities.fields import make_field_unique
+from jord.qgis_utilities import make_field_unique, set_geometry_constraints
 from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
     DESCRIPTOR_BEFORE,
@@ -25,7 +25,6 @@ from mi_companion.constants import (
     INSERT_INDEX,
     SHOW_FLOOR_LAYERS_ON_LOAD,
 )
-from jord.qgis_utilities.constraints import set_geometry_constraints
 
 logger = logging.getLogger(__name__)
 

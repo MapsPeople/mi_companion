@@ -14,10 +14,10 @@ from integration_system.model import (
     RouteElementItem,
     Solution,
 )
-from jord.qgis_utilities.fields import (
+from jord.qgis_utilities import (
     make_field_reuse_last_entered_value,
+    set_3d_view_settings,
 )
-from jord.qgis_utilities.styling import set_3d_view_settings
 from mi_companion import (
     DOOR_HEIGHT_FACTOR,
     DOOR_LINE_COLOR,
