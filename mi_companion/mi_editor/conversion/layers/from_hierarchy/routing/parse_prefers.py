@@ -5,6 +5,9 @@ from integration_system.model import Solution
 from jord.qgis_utilities import GeometryIsEmptyError, feature_to_shapely
 from mi_companion import VERBOSE
 from mi_companion.configuration.options import read_bool_setting
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
+    extract_single_level_str_map,
+)
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
     extract_feature_attributes,
 )
@@ -46,8 +49,14 @@ def add_prefers(
                 )
                 continue
 
-            # ss_fields = extract_nested_str_map(, nested_str_map_field_name='fields')
-            fields = None
+            if prefer_attributes is not None:
+                fields = dict(
+                    extract_single_level_str_map(
+                        prefer_attributes, nested_str_map_field_name="fields"
+                    )
+                )
+            else:
+                fields = None
 
             prefer_key = solution.add_prefer(
                 prefer_attributes["admin_id"],

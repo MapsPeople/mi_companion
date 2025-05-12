@@ -54,14 +54,13 @@ def add_doors(
         if door_linestring is None:
             logger.error(f"{door_linestring=}")
 
-        if door_attributes is None:
-            fields = dict(
-                extract_single_level_str_map(
-                    door_attributes, nested_str_map_field_name="fields"
-                )
+        fields = None
+        if door_attributes is not None:
+            fields_ = extract_single_level_str_map(
+                door_attributes, nested_str_map_field_name="fields"
             )
-        else:
-            fields = None
+            if fields_ is not None:
+                fields = dict(fields_)
 
         door_key = solution.add_door(
             door_attributes["admin_id"],

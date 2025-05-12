@@ -44,6 +44,7 @@ def add_polygon_route_element_layers(
         return None
 
     df["floor_index"] = df["floor_index"].astype(str)
+    df.pop("fields")
 
     if MAKE_FLOOR_WISE_LAYERS:
         doors_group = graph_group.insertGroup(INSERT_INDEX, layer_name)
@@ -56,7 +57,13 @@ def add_polygon_route_element_layers(
                     & (df["graph.graph_id"] == graph.graph_id)
                 ]
                 obstacle_df = geopandas.GeoDataFrame(
-                    sub_df[[c for c in sub_df.columns if ("." not in c)]],
+                    sub_df[
+                        [
+                            c
+                            for c in sub_df.columns
+                            if ("." not in c) or ("fields." in c)
+                        ]
+                    ],
                     geometry="polygon",
                 )
 

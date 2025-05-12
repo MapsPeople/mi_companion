@@ -52,6 +52,7 @@ def add_connection_layers(
             a = {}
             if connector.fields is not None:
                 a = json_normalize(connector.fields)
+                # NO NEED TO POP FIELDS HERE
 
             connectors[connector.admin_id] = {
                 "floor_index": connector.floor_index,
@@ -84,7 +85,13 @@ def add_connection_layers(
                     & (df["graph.graph_id"] == graph.graph_id)
                 ]
                 door_df = geopandas.GeoDataFrame(
-                    sub_df[[c for c in sub_df.columns if ("." not in c)]],
+                    sub_df[
+                        [
+                            c
+                            for c in sub_df.columns
+                            if ("." not in c) or ("fields." in c)
+                        ]
+                    ],
                     geometry="point",
                 )
 

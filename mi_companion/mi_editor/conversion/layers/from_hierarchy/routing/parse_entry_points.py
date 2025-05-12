@@ -8,6 +8,9 @@ from integration_system.common_models import MIEntryPointType
 from integration_system.model import Solution
 from jord.qgis_utilities import feature_to_shapely
 from mi_companion import VERBOSE
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
+    extract_single_level_str_map,
+)
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
     extract_feature_attributes,
 )
@@ -49,8 +52,13 @@ def add_entry_points(
                 )
                 continue
 
-            # ss_fields = extract_nested_str_map(, nested_str_map_field_name='fields')
             fields = None
+            if entry_point_attributes is not None:
+                fields_ = extract_single_level_str_map(
+                    entry_point_attributes, nested_str_map_field_name="fields"
+                )
+                if fields_ is not None:
+                    fields = dict(fields_)
 
             entry_point_key = solution.add_entry_point(
                 entry_point_attributes["admin_id"],

@@ -124,16 +124,15 @@ def locations_to_df(collection_: CollectionMixin) -> DataFrame:
             if display_rule is not None:
                 item_as_dict["display_rule"] = display_rule.model_dump()
 
-        if "fields" in item_as_dict:
-            fields = item_as_dict.pop("fields")
-            if fields is not None:
-                item_as_dict["fields"] = fields.model_dump()
-
         item_as_dict["key"] = item.key
 
         converted_items.append(item_as_dict)
 
+    # logger.warning(f"converted {(converted_items)} items")
+
     a = json_normalize(converted_items)
+
+    # logger.warning(f"normalized {(a)} items")
 
     if not a.empty:
         a.set_index("key", inplace=True)

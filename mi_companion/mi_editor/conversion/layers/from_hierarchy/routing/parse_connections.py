@@ -11,6 +11,9 @@ from integration_system.model import Connection, Connector, Solution
 from jord.qgis_utilities import GeometryIsEmptyError, feature_to_shapely
 from mi_companion import VERBOSE
 from mi_companion.configuration.options import read_bool_setting
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
+    extract_single_level_str_map,
+)
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
     extract_feature_attributes,
 )
@@ -54,8 +57,16 @@ def assemble_connections(
         connector_list.sort(key=operator.itemgetter(1))
         connectors = []
         for geom, floor_index, external_id in connector_list:
-            # ss_fields = extract_nested_str_map(, nested_str_map_field_name='fields')
+            connector_attributes = None  # TODO: GET THESE!
+
             fields = None
+            if connector_attributes is not None:
+                fields_ = extract_single_level_str_map(
+                    connector_attributes, nested_str_map_field_name="fields"
+                )
+                if fields_ is not None:
+                    fields = dict(fields_)
+
             connectors.append(
                 Connector(
                     admin_id=external_id,

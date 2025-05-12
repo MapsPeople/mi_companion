@@ -49,6 +49,7 @@ def add_point_route_element_layers(
         return []
 
     df["floor_index"] = df["floor_index"].astype(str)
+    df.pop("fields")
 
     added_layers = []
 
@@ -63,7 +64,13 @@ def add_point_route_element_layers(
                     & (df["graph.graph_id"] == graph.graph_id)
                 ]
                 door_df = geopandas.GeoDataFrame(
-                    sub_df[[c for c in sub_df.columns if ("." not in c)]],
+                    sub_df[
+                        [
+                            c
+                            for c in sub_df.columns
+                            if ("." not in c) or ("fields." in c)
+                        ]
+                    ],
                     geometry="point",
                 )
 

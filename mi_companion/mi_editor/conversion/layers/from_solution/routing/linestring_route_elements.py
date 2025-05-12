@@ -36,8 +36,6 @@ def add_linestring_route_element_layers(
 ) -> List[Any]:
     doors_name = f"{DOORS_GROUP_DESCRIPTOR}"
 
-    display_rules = None
-
     added_layers = []
 
     if len(doors) == 0:
@@ -52,6 +50,7 @@ def add_linestring_route_element_layers(
         return []
 
     df["floor_index"] = df["floor_index"].astype(str)
+    df.pop("fields")
 
     if MAKE_FLOOR_WISE_LAYERS:
         doors_group = graph_group.insertGroup(INSERT_INDEX, doors_name)
@@ -63,8 +62,15 @@ def add_linestring_route_element_layers(
                     (df["floor_index"] == floor_index)
                     & (df["graph.graph_id"] == graph.graph_id)
                 ]
+
                 linestring_df = geopandas.GeoDataFrame(
-                    sub_df[[c for c in sub_df.columns if ("." not in c)]],
+                    sub_df[
+                        [
+                            c
+                            for c in sub_df.columns
+                            if ("." not in c) or ("fields." in c)
+                        ]
+                    ],
                     geometry="linestring",
                 )
 
