@@ -13,7 +13,7 @@ __all__ = []
 
 
 def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> None:
-    from integration_system.compatibilization import (
+    from integration_system.tools.compatibilization import (
         make_solution_compatible,
     )
 

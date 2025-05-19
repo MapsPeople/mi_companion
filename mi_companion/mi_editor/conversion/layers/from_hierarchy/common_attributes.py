@@ -10,7 +10,7 @@ import numpy
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
 
-from integration_system.common_models import (
+from integration_system.tools.common_models import (
     MIIconPlacementRuleEnum,
     MILabelTypeOptionEnum,
 )
@@ -23,6 +23,7 @@ from integration_system.model import (
     LabelDisplayRule,
     Model2d,
     Model3d,
+    OptionalDisplayRule,
 )
 from mi_companion import (
     ADD_FLOAT_NAN_CUSTOM_PROPERTY_VALUES,
@@ -34,7 +35,11 @@ from mi_companion.qgis_utilities import is_str_value_null_like
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["extract_two_level_str_map", "extract_single_level_str_map"]
+__all__ = [
+    "extract_two_level_str_map",
+    "extract_single_level_str_map",
+    "extract_display_rule",
+]
 
 
 def extract_two_level_str_map(
@@ -201,7 +206,7 @@ def extract_single_level_str_map(
 
 def extract_display_rule(
     layer_attributes: Mapping[str, Any],
-) -> Optional[DisplayRule]:
+) -> OptionalDisplayRule:
     """Extract display rule from layer attributes.
 
     Args:

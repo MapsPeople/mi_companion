@@ -1,5 +1,5 @@
 from .building import *
-from .custom_props import *
+from .parsing import *
 from .floor import *
 from .location import *
 from .routing import *

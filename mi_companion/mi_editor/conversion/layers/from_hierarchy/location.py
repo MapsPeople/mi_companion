@@ -1,6 +1,10 @@
+import ast
 import logging
 import uuid
 from typing import Any, Collection, List, Optional
+
+# noinspection PyUnresolvedReferences
+import datetime
 
 # noinspection PyUnresolvedReferences
 # noinspection PyUnresolvedReferences
@@ -25,7 +29,14 @@ from qgis.core import (
     QgsProject,
 )
 
-from integration_system.model import Category, LocationType, Solution
+from integration_system.tools.serialisation import standard_opening_hours_from_dict
+from integration_system.model import (
+    Category,
+    LocationType,
+    OpeningHoursDetail,
+    Solution,
+    StrToDetailTypeMap,
+)
 from jord.qgis_utilities import feature_to_shapely
 from mi_companion import (
     DEFAULT_CUSTOM_PROPERTIES,
@@ -250,6 +261,7 @@ def add_floor_locations(
                         if k == "category_keys":
                             cat_keys = []
                             a = extract_field_value(feature_attributes, "category_keys")
+
                             if not isinstance(a, Collection):
                                 logger.warning(f"Skipping {a} for {k}")
                                 continue
@@ -290,6 +302,59 @@ def add_floor_locations(
                                     )
 
                             common_kvs["category_keys"] = cat_keys
+                        elif k == "details":
+                            details = []
+                            a = extract_field_value(feature_attributes, "details")
+
+                            if not isinstance(a, Collection):
+                                logger.warning(f"Skipping {a} for {k}")
+                                continue
+
+                            for detail_entry in a:
+                                if isinstance(detail_entry, str):
+                                    detail_entry_key = detail_entry.lower().strip()
+                                    if detail_entry_key == "":
+                                        continue
+
+                                    if False:
+                                        ddd = ast.literal_eval(
+                                            detail_entry
+                                        )  # TODO: MAKE SAFE?
+                                    else:
+                                        ddd = eval(detail_entry)
+
+                                    if "type" in ddd:
+                                        detail_type = ddd.pop("type")
+
+                                        assert isinstance(
+                                            detail_type, str
+                                        ), f"{type(detail_type)} is not a supported detail type, ({StrToDetailTypeMap.keys()})"
+                                        detail_type = StrToDetailTypeMap[
+                                            detail_type.strip()
+                                        ]
+
+                                        if detail_type == OpeningHoursDetail:
+                                            opening_hours = (
+                                                standard_opening_hours_from_dict(
+                                                    ddd.pop("opening_hours")
+                                                )
+                                            )
+
+                                            details.append(
+                                                OpeningHoursDetail(
+                                                    **ddd, opening_hours=opening_hours
+                                                )
+                                            )
+                                        else:
+                                            details.append(detail_type(**ddd))
+                                    else:
+                                        logger.error(
+                                            f'Did not find a "type" in {ddd}, skipping it'
+                                        )
+
+                            if details:
+                                common_kvs["details"] = details
+
                     else:
                         common_kvs[k] = extract_field_value(feature_attributes, k)
 

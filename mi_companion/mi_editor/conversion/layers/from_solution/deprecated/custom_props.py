@@ -1,73 +1,14 @@
-import copy
-import dataclasses
 import logging
-from typing import Mapping
 
 from geopandas import GeoDataFrame
-from pandas import DataFrame, json_normalize
 
-from integration_system.model import CollectionMixin
-from mi_companion import NULL_VALUE, REAL_NONE_JSON_VALUE
+from mi_companion import NULL_VALUE
 
 logger = logging.getLogger(__name__)
-__all__ = ["process_custom_props_df", "process_nested_str_map_df"]
+__all__ = ["process_custom_props_df32423"]
 
 
-def process_nested_str_map_df(df: GeoDataFrame, *, nested_map_field_name: str) -> None:
-    """
-    UPDATE: Venue(s):
-      Updating
-        Venue: Amsterdam - Schiphol Airport (AMS):
-            custom_properties:
-              {'en': {'lastauditedtimestamp': 'None'}}
-            ->
-            {'en': {'lastauditedtimestamp': None}}
-
-    UPDATE: Area(s):
-      Updating
-        Area: Restroom, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
-            custom_properties:
-              {}
-            ->
-            {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
-        Area: Transfer Desk, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
-            custom_properties:
-              {'generic': {'transform': 'None', 'servicetype': 'Transfer Desk', 'markupjson': 'None'}}
-            ->
-            {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
-        Area: Restroom, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
-            custom_properties:
-              {}
-            ->
-            {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
-
-            :param df:
-            :return:
-    """
-
-    for column_name, series in df.items():
-        if nested_map_field_name in column_name:  # Drop custom properties
-            if all(series.isna()):
-                df.drop(columns=column_name, inplace=True)
-
-            elif True:
-                df[column_name] = series.astype(str)
-
-    for column_name, series in df.items():
-        if len(series) > 0:
-            if series.isna().iloc[0]:
-                if not all(series.isna()):
-                    # assert not any(series.isna())  # UNIFI TYPES!
-                    example = series.notna().infer_objects().dtypes
-                    df[column_name] = series.astype(example)
-
-    converted_df = df.convert_dtypes()
-
-    for column_name, series in converted_df.items():  # COPY OVER SERIES!
-        df[column_name] = series
-
-
-def process_custom_props_df(df: GeoDataFrame) -> None:
+def process_custom_props_df32423(df: GeoDataFrame) -> None:
     """
     UPDATE: Venue(s):
       Updating
@@ -140,6 +81,35 @@ def process_custom_props_df(df: GeoDataFrame) -> None:
                 df[column_name] = df[column_name].fillna(NULL_VALUE)
 
     for column_name, series in df.items():
+        if "media" in column_name:  # Drop custom properties
+            if all(series.isna()):
+                if False:
+                    df[column_name] = [None] * len(series)
+                else:  # Drop custom properties
+                    df.drop(columns=column_name, inplace=True)
+
+            elif True:
+                df[column_name] = series.astype(str)
+
+            elif False:
+                df[column_name] = df[column_name].fillna(NULL_VALUE)
+
+    if False:
+        for column_name, series in df.items():
+            if "details" in column_name:  # Drop custom properties
+                if all(series.isna()):
+                    if False:
+                        df[column_name] = [None] * len(series)
+                    else:  # Drop custom properties
+                        df.drop(columns=column_name, inplace=True)
+
+                elif True:
+                    df[column_name] = series.astype(str)
+
+                elif False:
+                    df[column_name] = df[column_name].fillna(NULL_VALUE)
+
+    for column_name, series in df.items():
         if len(series) > 0:
             if series.isna().iloc[0]:
                 if not all(series.isna()):
@@ -173,26 +143,3 @@ def process_custom_props_df(df: GeoDataFrame) -> None:
     if False:
         for column_name, series in df.items():
             assert not all(series.isna()), f"{column_name}:\n{series}"
-
-
-def to_df_2(coll_mix: CollectionMixin) -> DataFrame:
-    # noinspection PyTypeChecker
-    cs = []
-    for c in coll_mix:
-        if c and hasattr(c, "custom_properties"):
-            cps = getattr(c, "custom_properties")
-            if cps is not None:
-                if isinstance(cps, Mapping) and len(cps):
-                    for language, translations in copy.deepcopy(cps).items():
-                        for cp, cpv in translations.items():
-                            if cpv is None:
-                                cps[language][cp] = REAL_NONE_JSON_VALUE
-
-                    setattr(c, "custom_properties", cps)
-
-                else:
-                    setattr(c, "custom_properties", None)
-
-        cs.append(dataclasses.asdict(c))
-
-    return json_normalize(cs)

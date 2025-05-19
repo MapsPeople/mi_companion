@@ -5,7 +5,7 @@ from typing import Any, List, Optional
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.graph_utilities.deprecated.old_graph_format import (
+from integration_system.tools.graph_utilities import (
     lines_and_points_to_osm_xml,
 )
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution

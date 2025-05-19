@@ -2,7 +2,7 @@
 import logging
 from typing import Optional
 
-from integration_system.compatibilization import get_or_set_solution_external_id
+from integration_system.tools.compatibilization import get_or_set_solution_external_id
 from integration_system.config import MapsIndoors, Settings, set_settings
 from jord.qgis_utilities import read_plugin_setting
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH

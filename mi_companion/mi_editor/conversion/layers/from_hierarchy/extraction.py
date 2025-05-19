@@ -188,6 +188,7 @@ def parse_field(feature_attributes: Mapping[str, Any], field_name: str) -> Any:
     :return:
     """
     field_value = feature_attributes[field_name]
+
     if isinstance(field_value, str):
         ...
 

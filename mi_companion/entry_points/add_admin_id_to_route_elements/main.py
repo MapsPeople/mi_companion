@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import logging
 
-from integration_system.compatibilization import make_route_elements_compatible
+from integration_system.tools.compatibilization import make_route_elements_compatible
 from integration_system.config import MapsIndoors, Settings, set_settings
 from jord.qgis_utilities import read_plugin_setting
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH

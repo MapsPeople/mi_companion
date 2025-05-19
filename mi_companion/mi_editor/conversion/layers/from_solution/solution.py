@@ -7,7 +7,7 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup, QgsProject
 
-from integration_system.common_models import (
+from integration_system.tools.common_models import (
     MIConnectionType,
     MIDoorType,
     MIEntryPointType,
@@ -24,8 +24,9 @@ from integration_system.model import (
 from jord.qgis_utilities import (
     make_enum_dropdown_widget,
     make_iterable_dropdown_widget,
-    make_mapping_dropdown_widget,
+    make_sorted_mapping_dropdown_widget,
     make_value_relation_widget,
+    make_value_map_widget,
 )
 from jord.qlive_utilities import add_no_geom_layer
 from mi_companion import (
@@ -40,7 +41,6 @@ from mi_companion.layer_descriptors import (
     SOLUTION_DATA_DESCRIPTOR,
     SOLUTION_GROUP_DESCRIPTOR,
 )
-from .editor_widgets import make_value_map_widget
 from .location_type import add_location_type_layer
 from .venue import add_venue_layer
 
@@ -142,7 +142,9 @@ def add_solution_group(
 
     highway_type_dropdown_widget = None
     if read_bool_setting("MAKE_HIGHWAY_TYPE_DROPDOWN"):
-        highway_type_dropdown_widget = make_mapping_dropdown_widget(OSM_HIGHWAY_TYPES)
+        highway_type_dropdown_widget = make_sorted_mapping_dropdown_widget(
+            OSM_HIGHWAY_TYPES
+        )
 
     venue_type_dropdown_widget = None
     if read_bool_setting("MAKE_VENUE_TYPE_DROPDOWN"):

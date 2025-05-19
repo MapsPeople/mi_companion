@@ -13,8 +13,17 @@ from pandas import DataFrame, json_normalize
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
 
-from integration_system.model import CollectionMixin, DisplayRule, Floor, Solution
-from integration_system.pandas_serde import collection_to_df
+from integration_system.model import (
+    CollectionMixin,
+    DisplayRule,
+    Floor,
+    Media,
+    Solution,
+)
+from integration_system.tools.serialisation import (
+    collection_to_df,
+)
+from integration_system.tools.serialisation import to_dict_with_dataclass_type
 from jord.qgis_utilities import (
     HIDDEN_WIDGET,
     make_field_boolean,
@@ -41,7 +50,7 @@ from mi_companion.constants import (
     FLOOR_VERTICAL_SPACING,
     USE_EXTERNAL_ID_FLOOR_SELECTION,
 )
-from .custom_props import process_custom_props_df
+from .parsing import process_nested_fields_df
 from ..type_enums import BackendLocationTypeEnum
 from ...projection import (
     reproject_geometry_df,
@@ -98,7 +107,33 @@ def locations_to_df(collection_: CollectionMixin) -> DataFrame:
 
                     setattr(item, "custom_properties", custom_properties)
 
-        item_as_dict = dataclasses.asdict(item)
+        item_as_dict = dataclasses.asdict(
+            item, dict_factory=to_dict_with_dataclass_type
+        )
+
+        if "details" in item_as_dict:
+            list_of_details = item_as_dict.pop("details")
+
+            deets = []
+            if list_of_details:
+                for d in list_of_details:
+                    deets.append(repr(d))
+
+            item_as_dict["details"] = deets
+
+        if "display_rule" in item_as_dict:
+            display_rule: DisplayRule = item_as_dict.pop("display_rule")
+            if display_rule is not None:
+                item_as_dict["display_rule"] = display_rule.model_dump()
+
+        if "media" in item_as_dict:
+            media = item_as_dict.pop("media")
+            if media is not None:
+                if isinstance(media, Media):
+                    item_as_dict["media_key"] = media.key
+                else:
+                    assert isinstance(media, str)
+                    item_as_dict["media_key"] = media
 
         if "categories" in item_as_dict:
             list_of_category_dicts = item_as_dict.pop("categories")
@@ -118,11 +153,6 @@ def locations_to_df(collection_: CollectionMixin) -> DataFrame:
                         keys.append(cat["name"])
 
             item_as_dict["category_keys"] = keys
-
-        if "display_rule" in item_as_dict:
-            display_rule: DisplayRule = item_as_dict.pop("display_rule")
-            if display_rule is not None:
-                item_as_dict["display_rule"] = display_rule.model_dump()
 
         item_as_dict["key"] = item.key
 
@@ -218,7 +248,7 @@ def add_location_layer(
         locations_df
     ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
 
-    process_custom_props_df(locations_df)
+    process_nested_fields_df(locations_df)
     assert len(shape_df) == len(
         locations_df
     ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
@@ -357,6 +387,7 @@ def add_floor_content_layers(
 ) -> None:
     """
 
+    :param location_type_ref_layer:
     :param qgis_instance_handle:
     :param solution:
     :param floor:

@@ -12,9 +12,9 @@ from qgis.PyQt.QtCore import QDateTime, QVariant
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.common_models import MIVenueType
+from integration_system.tools.common_models import MIVenueType
 from integration_system.mi import SolutionDepth
-from integration_system.model import PostalAddress, Solution
+from integration_system.model import PostalAddress, Solution, OptionalPostalAddress
 from mi_companion import (
     DEFAULT_CUSTOM_PROPERTIES,
     HALF_SIZE,
@@ -309,7 +309,7 @@ def get_venue_key(
     return None
 
 
-def get_address(layer_attributes: Mapping[str, Any]) -> Optional[PostalAddress]:
+def get_address(layer_attributes: Mapping[str, Any]) -> OptionalPostalAddress:
     if "address.city" in layer_attributes and layer_attributes["address.city"]:
         address = PostalAddress(
             city=layer_attributes["address.city"],
