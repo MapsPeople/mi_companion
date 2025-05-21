@@ -156,6 +156,9 @@ def locations_to_df(collection_: CollectionMixin) -> DataFrame:
 
         item_as_dict["key"] = item.key
 
+        if "type" in item_as_dict:
+            item_as_dict.pop("type")
+
         converted_items.append(item_as_dict)
 
     # logger.warning(f"converted {(converted_items)} items")

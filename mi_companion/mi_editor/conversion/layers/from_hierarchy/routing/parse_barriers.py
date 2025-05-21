@@ -2,15 +2,17 @@ import logging
 from typing import Any, List, Optional
 
 from integration_system.model import Solution
-from jord.qgis_utilities import GeometryIsEmptyError, feature_to_shapely
+from jord.qgis_utilities import (
+    GeometryIsEmptyError,
+    feature_to_shapely,
+    extract_feature_attributes,
+)
 from mi_companion import VERBOSE
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
     extract_single_level_str_map,
 )
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
-    extract_feature_attributes,
-)
+
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)

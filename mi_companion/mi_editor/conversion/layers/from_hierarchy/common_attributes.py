@@ -25,13 +25,13 @@ from integration_system.model import (
     Model3d,
     OptionalDisplayRule,
 )
+from jord.qgis_utilities import REAL_NONE_JSON_VALUE, is_str_value_null_like
 from mi_companion import (
     ADD_FLOAT_NAN_CUSTOM_PROPERTY_VALUES,
     ADD_REAL_NONE_CUSTOM_PROPERTY_VALUES,
     ADD_STRING_NAN_CUSTOM_PROPERTY_VALUES,
-    REAL_NONE_JSON_VALUE,
 )
-from mi_companion.qgis_utilities import is_str_value_null_like
+
 
 logger = logging.getLogger(__name__)
 

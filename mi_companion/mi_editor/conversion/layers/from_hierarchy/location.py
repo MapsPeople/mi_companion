@@ -37,7 +37,13 @@ from integration_system.model import (
     Solution,
     StrToDetailTypeMap,
 )
-from jord.qgis_utilities import feature_to_shapely
+from jord.qgis_utilities import (
+    feature_to_shapely,
+    extract_feature_attributes,
+    is_str_value_null_like,
+    extract_field_value,
+    parse_field,
+)
 from mi_companion import (
     DEFAULT_CUSTOM_PROPERTIES,
     VERBOSE,
@@ -51,9 +57,9 @@ from mi_companion.mi_editor.conversion.layers.type_enums import BackendLocationT
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
-from mi_companion.qgis_utilities import is_str_value_null_like
+
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
-from .extraction import extract_feature_attributes, extract_field_value, parse_field
+
 from ...projection import prepare_geom_for_mi_db
 
 __all__ = ["add_floor_contents"]
