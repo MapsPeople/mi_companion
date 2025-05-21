@@ -2,7 +2,6 @@ import logging
 
 from geopandas import GeoDataFrame
 
-from mi_companion import NULL_VALUE
 
 logger = logging.getLogger(__name__)
 __all__ = ["process_nested_fields_df"]

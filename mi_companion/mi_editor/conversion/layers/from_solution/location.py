@@ -42,7 +42,6 @@ from jord.qlive_utilities import add_dataframe_layer
 from mi_companion import (
     LAYER_GEOM_VISIBLE_MIN_RATIO,
     LAYER_LABEL_VISIBLE_MIN_RATIO,
-    REAL_NONE_JSON_VALUE,
 )
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.constants import (
@@ -92,20 +91,6 @@ def locations_to_df(collection_: CollectionMixin) -> DataFrame:
     converted_items = []
 
     for item in collection_:
-        if False:
-            if hasattr(item, "custom_properties"):
-                custom_properties = getattr(item, "custom_properties")
-                if custom_properties is not None:
-                    for language, translations in copy.deepcopy(
-                        custom_properties
-                    ).items():
-                        for custom_property, value in translations.items():
-                            if value is None:
-                                custom_properties[language][
-                                    custom_property
-                                ] = REAL_NONE_JSON_VALUE
-
-                    setattr(item, "custom_properties", custom_properties)
 
         item_as_dict = dataclasses.asdict(
             item, dict_factory=to_dict_with_dataclass_type
