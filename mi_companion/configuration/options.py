@@ -135,7 +135,7 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         # self.import_settings_button
         # self.settings_file_widget
 
-    def setting_item_changed(self, item: Any) -> None:  #: PyQt5.QtGui.QStandardItem
+    def setting_item_changed(self, item: Any) -> None:  #: qgis.PyQt.QtGui.QStandardItem
         try:
             key = self.settings_list_model.item(item.row(), 0).text()
             item_value = item.text()

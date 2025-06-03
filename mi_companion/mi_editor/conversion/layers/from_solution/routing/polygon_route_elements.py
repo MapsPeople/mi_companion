@@ -3,8 +3,9 @@ from typing import Any, List, Optional
 
 import geopandas
 
-from integration_system.model import CollectionMixin, Graph
-from jord.qgis_utilities.fields import (
+from integration_system.model import Graph
+from integration_system.model.solution_item import CollectionMixin
+from jord.qgis_utilities import (
     make_field_not_null,
     make_field_reuse_last_entered_value,
     make_field_unique,
@@ -45,6 +46,9 @@ def add_polygon_route_element_layers(
 
     df["floor_index"] = df["floor_index"].astype(str)
 
+    if "fields" in df:  # TODO: Is this right?
+        df.pop("fields")
+
     if MAKE_FLOOR_WISE_LAYERS:
         doors_group = graph_group.insertGroup(INSERT_INDEX, layer_name)
 
@@ -56,7 +60,13 @@ def add_polygon_route_element_layers(
                     & (df["graph.graph_id"] == graph.graph_id)
                 ]
                 obstacle_df = geopandas.GeoDataFrame(
-                    sub_df[[c for c in sub_df.columns if ("." not in c)]],
+                    sub_df[
+                        [
+                            c
+                            for c in sub_df.columns
+                            if ("." not in c) or ("fields." in c)
+                        ]
+                    ],
                     geometry="polygon",
                 )
 

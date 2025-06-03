@@ -1,9 +1,7 @@
 import os
 from pathlib import Path
-from typing import Mapping, Optional
+from typing import Any, Mapping, Optional
 
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtGui import QIcon
 from warg import passes_kws_to
 
 from ..constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
@@ -53,13 +51,16 @@ def get_icon_path(
 
 
 @passes_kws_to(get_icon_path)
-def load_icon(*args, **kwargs) -> QIcon:
+def load_icon(*args, **kwargs) -> Any:  # QIcon:
     """
 
     :param args:
     :param kwargs:
     :return:
     """
+    # noinspection PyUnresolvedReferences
+    from qgis.PyQt.QtGui import QIcon
+
     icon = QIcon(get_icon_path(*args, **kwargs))
 
     if icon.isNull():

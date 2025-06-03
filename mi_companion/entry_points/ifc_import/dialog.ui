@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>dialog_base</class>
+    <widget class="QDialog" name="dialog_base">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>259</width>
+                <height>157</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>Svg Importer</string>
+        </property>
+        <layout class="QVBoxLayout" name="parameter_layout">
+            <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                    <item>
+                        <widget class="QPushButton" name="compute_button">
+                            <property name="text">
+                                <string>Compute</string>
+                            </property>
+                        </widget>
+                    </item>
+                </layout>
+            </item>
+        </layout>
+    </widget>
+    <customwidgets>
+        <customwidget>
+            <class>QgsFileWidget</class>
+            <extends>QWidget</extends>
+            <header>qgsfilewidget.h</header>
+        </customwidget>
+    </customwidgets>
+    <resources/>
+    <connections/>
+</ui>

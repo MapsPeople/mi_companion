@@ -2,7 +2,7 @@ import logging
 from typing import Any, List, Optional
 
 from integration_system.model import Solution
-from integration_system.pandas_serde import collection_to_df
+from integration_system.tools.serialisation import collection_to_df
 from jord.pandas_utilities import df_to_columns
 from jord.qgis_utilities import (
     make_field_not_null,
@@ -10,10 +10,10 @@ from jord.qgis_utilities import (
     make_field_unique,
 )
 from jord.qlive_utilities import add_no_geom_layer
-from .custom_props import process_custom_props_df
+from .parsing import process_nested_fields_df
 
 BOOLEAN_OCCUPANT_ATTRS = ()
-STR_OCCUPANT_ATTRS = ("name",)
+STR_OCCUPANT_ATTRS = ()  # ("name",)
 FLOAT_OCCUPANT_ATTRS = ()
 INT_OCCUPANT_ATTRS = ()
 
@@ -46,8 +46,8 @@ def add_occupant_layer(
         for c in shape_df.columns
         if ("." not in c)
         or (
-            "custom_properties." in c
-            and (".custom_properties" not in c)  # Only this objects custom_properties
+            "translations." in c
+            and (".translations" not in c)  # Only this objects translations
         )
     ]
 
@@ -56,7 +56,7 @@ def add_occupant_layer(
     else:
         selected = shape_df
 
-    process_custom_props_df(selected)
+    process_nested_fields_df(selected)
 
     if not len(shape_df):
         logger.warning(f"Nothing to be added, skipping occupants layer")
@@ -85,10 +85,11 @@ def add_occupant_layer(
 
     make_field_unique(added_layers, field_name="key")
 
-    for field_name in ("name",):
-        make_field_not_null(added_layers, field_name=field_name)
+    if False:
+        for field_name in ("name",):
+            make_field_not_null(added_layers, field_name=field_name)
 
-    for field_name in ("name",):
-        make_field_reuse_last_entered_value(added_layers, field_name=field_name)
+        for field_name in ("name",):
+            make_field_reuse_last_entered_value(added_layers, field_name=field_name)
 
     return added_layers

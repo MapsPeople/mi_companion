@@ -25,7 +25,7 @@ from qgis.gui import QgsMapLayerAction, QgsMapToolIdentify
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
 
-from jord.qgis_utilities.conversion.features import feature_to_shapely
+from jord.qgis_utilities import feature_to_shapely
 from jord.qgis_utilities.helpers import reconnect_signal
 from jord.shapely_utilities import clean_shape
 

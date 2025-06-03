@@ -14,7 +14,7 @@
       "name": "Fjordhaven 7",
       "polygon": "0103000000020000000E000000E630CE9A2F732440EAB9B4D4587C4C4086B22874347324403DF0BA0F5B7C4C409B7D31AF357324400C13BF985B7C4C40A17EC1FC3E732440C4588BA45F7C4C407C49EF5554732440DD502E52617C4C404BC0D40758732440162021CA607C4C40F5401E8E60732440497FDC695F7C4C40A4E56BFF6A73244061CA24655E7C4C40728E0C3378732440A0FD7EF75D7C4C403C359AEC86732440FB622C8D5D7C4C40B3C32F3175732440A2BB4AB6557C4C4021F998B96F7324407BBDDDE8557C4C40B766C00B63732440BC01FE6F567C4C40E630CE9A2F732440EAB9B4D4587C4C40040000000473F04F77732440F0C41E75597C4C40908B185077732440B8843175597C4C404B73F04F7773244012C51E75597C4C400473F04F77732440F0C41E75597C4C40",
       "venue_type": 0,
-      "custom_properties": null,
+      "translations": null,
       "external_id": "0515727397f53978a128ef2ba0823dbe",
       "graph": "empty_graph",
       "last_verified": null,
@@ -86,7 +86,7 @@
       "polygon": "0103000000020000000E000000E630CE9A2F732440EAB9B4D4587C4C4086B22874347324403DF0BA0F5B7C4C409B7D31AF357324400C13BF985B7C4C40A17EC1FC3E732440C4588BA45F7C4C407C49EF5554732440DD502E52617C4C404BC0D40758732440162021CA607C4C40F5401E8E60732440497FDC695F7C4C40A4E56BFF6A73244061CA24655E7C4C40728E0C3378732440A0FD7EF75D7C4C403C359AEC86732440FB622C8D5D7C4C40B3C32F3175732440A2BB4AB6557C4C4021F998B96F7324407BBDDDE8557C4C40B766C00B63732440BC01FE6F567C4C40E630CE9A2F732440EAB9B4D4587C4C40040000000473F04F77732440F0C41E75597C4C40908B185077732440B8843175597C4C404B73F04F7773244012C51E75597C4C400473F04F77732440F0C41E75597C4C40",
       "venue": "4255def5cf69540d70620fb7f60a5530bb0a18af",
       "name": "Outside",
-      "custom_properties": null,
+      "translations": null,
       "external_id": "Outside"
     },
     {
@@ -94,7 +94,7 @@
       "polygon": "01030000000100000035000000CC8A0E496F73244087FA9B655C7C4C407EFC40706F7324406B1C3F6B5C7C4C405C49D6976F732440C467B6705C7C4C400061CBBF6F732440417001765C7C4C40A12B1DE86F732440FDCC1F7B5C7C4C404A8AC810707324408A1811805C7C4C400D57CA3970732440F6F0D4845C7C4C4056651F6370732440DAF76A895C7C4C401982C48C7073244050D2D28D5C7C4C401A74B6B67073244009290C925C7C4C402BFCF1E07073244058A816965C7C4C406AD5730B717324402700F2995C7C4C4087B538367173244003E49D9D5C7C4C40FA4C3D6171732440310B1AA15C7C4C405A477E8C71732440A23066A45C7C4C40814BF8B771732440FD1282A75C7C4C40EAFBA7E371732440A6746DAA5C7C4C40E5F6890F72732440C61B28AD5C7C4C40DED69A3B7273244046D2B1AF5C7C4C40A032D76772732440DB650AB25C7C4C40979D3B947273244005A831B45C7C4C4016A8C4C072732440216E27B65C7C4C409ADF6EED727324405391EBB75C7C4C400FCF361A737324409AEE7DB95C7C4C405A4146267373244042A4DCB95C7C4C40BB1CD475737324406B8AA5E15C7C4C40BC84D46C7D732440DE93EE825C7C4C408CE1D0207C7324409985E4DC5B7C4C407EA2C8DE7B732440F8BFDEBB5B7C4C40A896A51B7B7324405E61485A5B7C4C40981D3B8277732440DD1D7C8D597C4C40F8749B46777324408ECAAA6F597C4C4056E7A8216A732440824A9AEC597C4C40EC8AB68F67732440409690A3587C4C40E168831B5A7324409C647123597C4C40F3536CAD5C732440D1697B6C5A7C4C40265F8BE4527324406F037CC95A7C4C40F1499FB4517324403F647E315A7C4C40EC10D830447324404B3DF3B15A7C4C409E95C16045732440788FEF495B7C4C409FEF470E477324406B6CBD205C7C4C40B592F93A4A732440A3552AB75D7C4C4087F2F1E250732440A74EE6775D7C4C40D2A6C0BE57732440CF92B5365D7C4C40F694608A5673244075E47D9C5C7C4C4072F35753607324405489883F5C7C4C40226AD5A460732440F43A49685C7C4C40BE37335967732440555E8F285C7C4C4086FD11196E732440422968E85B7C4C40D47039D16E732440FE7480445C7C4C40E853DEFB6E73244046F5D3595C7C4C40FCFC41226F732440C771CD5F5C7C4C40CC8A0E496F73244087FA9B655C7C4C40",
       "venue": "4255def5cf69540d70620fb7f60a5530bb0a18af",
       "name": "Fjordhaven 7",
-      "custom_properties": null,
+      "translations": null,
       "external_id": "e4c0fcd1ed1143cb92a21070a56ffa2c"
     }
   ],
@@ -105,7 +105,7 @@
       "name": "Outside level 0",
       "polygon": "0103000000020000000E000000E630CE9A2F732440EAB9B4D4587C4C4086B22874347324403DF0BA0F5B7C4C409B7D31AF357324400C13BF985B7C4C40A17EC1FC3E732440C4588BA45F7C4C407C49EF5554732440DD502E52617C4C404BC0D40758732440162021CA607C4C40F5401E8E60732440497FDC695F7C4C40A4E56BFF6A73244061CA24655E7C4C40728E0C3378732440A0FD7EF75D7C4C403C359AEC86732440FB622C8D5D7C4C40B3C32F3175732440A2BB4AB6557C4C4021F998B96F7324407BBDDDE8557C4C40B766C00B63732440BC01FE6F567C4C40E630CE9A2F732440EAB9B4D4587C4C40040000000473F04F77732440F0C41E75597C4C40908B185077732440B8843175597C4C404B73F04F7773244012C51E75597C4C400473F04F77732440F0C41E75597C4C40",
       "external_id": "Outside level 0",
-      "custom_properties": null
+      "translations": null
     },
     {
       "floor_index": 1,
@@ -113,7 +113,7 @@
       "name": "1",
       "polygon": "01030000000100000013000000E168831B5A7324409C647123597C4C40F3536CAD5C732440D1697B6C5A7C4C40265F8BE4527324406F037CC95A7C4C40F1499FB4517324403F647E315A7C4C40EC10D830447324404B3DF3B15A7C4C40B0C9D41347732440984C82205C7C4C40B592F93A4A732440A3552AB75D7C4C40D2A6C0BE57732440CF92B5365D7C4C40F694608A5673244075E47D9C5C7C4C4072F35753607324405489883F5C7C4C40226AD5A460732440F43A49685C7C4C4086FD11196E732440422968E85B7C4C40E853DEFB6E73244046F5D3595C7C4C408979D02972732440727F9B3B5C7C4C408CE1D0207C7324409985E4DC5B7C4C40F8749B46777324408ECAAA6F597C4C4056E7A8216A732440824A9AEC597C4C40EC8AB68F67732440409690A3587C4C40E168831B5A7324409C647123597C4C40",
       "external_id": "9716ae5f8ae14b8faefc5fb0c96fe0b2",
-      "custom_properties": null
+      "translations": null
     },
     {
       "floor_index": 0,
@@ -121,7 +121,7 @@
       "name": "0",
       "polygon": "01030000000100000013000000EC8AB68F67732440409690A3587C4C40E168831B5A7324409C647123597C4C40F3536CAD5C732440D1697B6C5A7C4C40265F8BE4527324406F037CC95A7C4C40F1499FB4517324403F647E315A7C4C40EC10D830447324404B3DF3B15A7C4C40B592F93A4A732440A3552AB75D7C4C40D2A6C0BE57732440CF92B5365D7C4C40F694608A5673244075E47D9C5C7C4C40C489415360732440F1537D3F5C7C4C40226AD5A460732440F43A49685C7C4C4078FD11196E732440452968E85B7C4C40E853DEFB6E73244046F5D3595C7C4C4083B0BB1872732440DD45483C5C7C4C40BB1CD475737324406B8AA5E15C7C4C40BC84D46C7D732440DE93EE825C7C4C40F8749B46777324408ECAAA6F597C4C4056E7A8216A732440824A9AEC597C4C40EC8AB68F67732440409690A3587C4C40",
       "external_id": "b827f6727c51424d9060f2706ed7ca0a",
-      "custom_properties": null
+      "translations": null
     }
   ],
   "points_of_interest": [
@@ -135,7 +135,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "949b0eeb86ab4818a8ea4cd933079d42"
     },
     {
@@ -148,7 +148,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "bf6619b0ad9b410393dee1df53574a7d"
     },
     {
@@ -161,7 +161,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "e773825f807944e5a345f1b155890c92"
     },
     {
@@ -174,7 +174,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "6a997416c767455596cdbf87d7ed5e50"
     },
     {
@@ -187,7 +187,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -200,7 +200,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -213,7 +213,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -226,7 +226,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -239,7 +239,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -252,7 +252,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -265,7 +265,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -278,7 +278,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -291,7 +291,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -304,7 +304,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -317,7 +317,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -330,7 +330,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -343,7 +343,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -356,7 +356,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -369,7 +369,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null
     },
     {
@@ -382,7 +382,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "{6e0d52cd-f41e-4b87-bac1-a1559bcc9543}"
     }
   ],
@@ -397,7 +397,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "57826d98a8c846b79ed420ad47736285"
     },
     {
@@ -410,7 +410,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "e87083ee71ac4629ad0f6ebe28da1663"
     },
     {
@@ -423,7 +423,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "c8309a4818e540789cd6930537ddee79"
     },
     {
@@ -436,7 +436,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "922b10ca969d467ca2d25f2912e4d33f"
     },
     {
@@ -449,7 +449,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "b624565fa95c49aab4659002889e0e79"
     },
     {
@@ -462,7 +462,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "dc62c185730b4a09a0521e0e2c3f9b20"
     },
     {
@@ -475,7 +475,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "335f78d7ceb84b0882de08bb7c7f1962"
     },
     {
@@ -488,7 +488,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "48e31ebfea064695a0fc1381df7336ea"
     },
     {
@@ -501,7 +501,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "0a6180fd222a4d4e92b4ad952a72281f"
     },
     {
@@ -514,7 +514,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "b4949cf037374fa18aee721df8ff4503"
     },
     {
@@ -527,7 +527,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "3f3de2fee92445e8b1b09cfde595a580"
     },
     {
@@ -540,7 +540,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "a0dced82c0de4050994cc5eaa9201d0f"
     },
     {
@@ -553,7 +553,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "46ef3cface7c475ab5aabcd42ef38e09"
     },
     {
@@ -566,7 +566,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "790a3a48ed1a444981d49af168622992"
     },
     {
@@ -579,7 +579,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "a310260c4f174460b1d28552c901db2f"
     },
     {
@@ -592,7 +592,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "74fbe582505849e6bb387bf0a5bc0e70"
     },
     {
@@ -605,7 +605,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "c295c3111dd44528a7226196e12b0219"
     },
     {
@@ -618,7 +618,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "7e78874c718b4b0795ab5e1594729cb0"
     },
     {
@@ -631,7 +631,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "ad7b70ddd404439ab08a9e1830b8292d"
     },
     {
@@ -644,7 +644,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "4d1f51961c604fa78133e0e5a589d10b"
     },
     {
@@ -657,7 +657,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "6e75c2ce6b2f42958ab9163b5775cfdd"
     },
     {
@@ -670,7 +670,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "0ac8eef3b91c4943b9dfb515928145c1"
     },
     {
@@ -683,7 +683,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "1542ab1a67f14cccb90869c364c66a8b"
     },
     {
@@ -696,7 +696,7 @@
       "is_active": true,
       "is_searchable": true,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "0ac8eef3b91c4943b9dfb515928145c1_1"
     }
   ],
@@ -711,7 +711,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null,
       "media": null
     },
@@ -725,7 +725,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null,
       "media": null
     },
@@ -739,7 +739,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null,
       "media": null
     },
@@ -753,7 +753,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null,
       "media": null
     },
@@ -767,7 +767,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null,
       "media": null
     },
@@ -781,7 +781,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null,
       "media": null
     },
@@ -795,7 +795,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "3361e927b8844997b54aeef9c12fb167",
       "media": null
     },
@@ -809,7 +809,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "312496da187246d7a1eec7dc559862d7",
       "media": null
     },
@@ -823,7 +823,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "b26b0ff0557746a295b4b8f89e810b68",
       "media": null
     },
@@ -837,7 +837,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "276f601e40c14750a0c041a5cd8abfb5",
       "media": null
     },
@@ -851,7 +851,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "77b7b24c7aa347cd83bb5cb018307d48",
       "media": null
     },
@@ -865,7 +865,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "f9f3e99e2405457d8ad881dbfc4636fc",
       "media": null
     },
@@ -879,7 +879,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "5a1bfd01abe04d86b8c951bf384c6f75",
       "media": null
     },
@@ -893,7 +893,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "obstacle",
       "media": null
     },
@@ -907,7 +907,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": null,
       "media": null
     },
@@ -921,7 +921,7 @@
       "is_searchable": true,
       "description": null,
       "categories": [],
-      "custom_properties": null,
+      "translations": null,
       "external_id": "skab2",
       "media": null
     }
@@ -1145,7 +1145,7 @@
   "categories": [
     {
       "name": "Nabo",
-      "custom_properties": null,
+      "translations": null,
       "logo": null
     }
   ],

@@ -33,7 +33,7 @@ repos:
         types: [yaml]
 
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.23
+    rev: v0.24.1
     hooks:
       - id: validate-pyproject
 
@@ -54,7 +54,7 @@ repos:
         #args: [ --strict ]
 
   - repo: https://github.com/pycqa/flake8
-    rev: 7.1.1 # pick a git hash / tag to point to
+    rev: 7.2.0 # pick a git hash / tag to point to
     hooks:
       - id: flake8 # stop the build if there are Python syntax errors or undefined names
         additional_dependencies: [flake8-docstrings]

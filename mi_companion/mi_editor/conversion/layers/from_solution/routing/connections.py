@@ -3,9 +3,10 @@ from typing import Any, List, Optional
 
 import geopandas
 from geopandas import GeoDataFrame
+from pandas import json_normalize
 
 from integration_system.model import ConnectionCollection, Graph
-from jord.qgis_utilities.fields import (
+from jord.qgis_utilities import (
     make_field_not_null,
     make_field_reuse_last_entered_value,
     make_field_unique,
@@ -48,12 +49,18 @@ def add_connection_layers(
     connectors = {}
     for c in connections:
         for connector_key, connector in c.connectors.items():
+            a = {}
+            if connector.fields is not None:
+                a = json_normalize(connector.fields)
+                # NO NEED TO POP FIELDS HERE
+
             connectors[connector.admin_id] = {
                 "floor_index": connector.floor_index,
                 "point": connector.point,
                 "connection_id": c.connection_id,
                 "connection_type": c.connection_type.value,
                 "graph.graph_id": c.graph.graph_id,
+                **a,
             }
 
     if len(connectors) == 0:
@@ -78,7 +85,13 @@ def add_connection_layers(
                     & (df["graph.graph_id"] == graph.graph_id)
                 ]
                 door_df = geopandas.GeoDataFrame(
-                    sub_df[[c for c in sub_df.columns if ("." not in c)]],
+                    sub_df[
+                        [
+                            c
+                            for c in sub_df.columns
+                            if ("." not in c) or ("fields." in c)
+                        ]
+                    ],
                     geometry="point",
                 )
 

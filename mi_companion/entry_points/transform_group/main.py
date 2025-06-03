@@ -6,10 +6,9 @@ from jord.qgis_utilities import (
     get_gcp_transformer_from_file,
     transform_sub_tree_features,
 )
-
+from mi_companion import RESOURCE_BASE_PATH
 from mi_companion.constants import MI_EPSG_NUMBER
 from mi_companion.mi_editor import get_target_crs_srsid
-from mi_companion import RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
 

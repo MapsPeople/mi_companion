@@ -4,7 +4,7 @@ from typing import Any, List, Optional
 import geopandas
 
 from integration_system.model import DoorCollection, Graph
-from jord.qgis_utilities.fields import (
+from jord.qgis_utilities import (
     make_field_not_null,
     make_field_reuse_last_entered_value,
     make_field_unique,
@@ -36,8 +36,6 @@ def add_linestring_route_element_layers(
 ) -> List[Any]:
     doors_name = f"{DOORS_GROUP_DESCRIPTOR}"
 
-    display_rules = None
-
     added_layers = []
 
     if len(doors) == 0:
@@ -53,6 +51,9 @@ def add_linestring_route_element_layers(
 
     df["floor_index"] = df["floor_index"].astype(str)
 
+    if "fields" in df:  # TODO: Is this right?
+        df.pop("fields")
+
     if MAKE_FLOOR_WISE_LAYERS:
         doors_group = graph_group.insertGroup(INSERT_INDEX, doors_name)
 
@@ -63,8 +64,15 @@ def add_linestring_route_element_layers(
                     (df["floor_index"] == floor_index)
                     & (df["graph.graph_id"] == graph.graph_id)
                 ]
+
                 linestring_df = geopandas.GeoDataFrame(
-                    sub_df[[c for c in sub_df.columns if ("." not in c)]],
+                    sub_df[
+                        [
+                            c
+                            for c in sub_df.columns
+                            if ("." not in c) or ("fields." in c)
+                        ]
+                    ],
                     geometry="linestring",
                 )
 
@@ -95,7 +103,6 @@ def add_linestring_route_element_layers(
                     make_field_reuse_last_entered_value(linestring_layer, field_name)
 
                 make_field_unique(linestring_layer, field_name="admin_id")
-                # apply_display_rule(linestring_layer, display_rules=display_rules)
 
                 if dropdown_widget:
                     set_field_widget(
@@ -133,7 +140,6 @@ def add_linestring_route_element_layers(
             make_field_reuse_last_entered_value(linestring_layer, field_name=field_name)
 
         make_field_unique(linestring_layer, field_name="admin_id")
-        # apply_display_rule(linestring_layer, display_rules=display_rules)
 
         if dropdown_widget:
             set_field_widget(

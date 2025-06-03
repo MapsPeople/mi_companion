@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from integration_system.json_serde import from_json
+from integration_system.tools.serialisation import from_json
 
 
 def test_load_solution_to_layers():

@@ -5,12 +5,13 @@ from typing import Any, List, Optional
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
 
 from integration_system.model import LocationType, Solution
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.extraction import (
+from jord.qgis_utilities import (
     extract_layer_attributes,
 )
+from .common_attributes import extract_display_rule, extract_translations
 
 BOOLEAN_LOCATION_TYPE_ATTRS = ()
-STR_LOCATION_TYPE_ATTRS = ("name", "admin_id")
+STR_LOCATION_TYPE_ATTRS = ("translations.en.name", "admin_id")
 FLOAT_LOCATION_TYPE_ATTRS = ()
 INTEGER_LOCATION_TYPE_ATTRS = ()
 
@@ -49,22 +50,25 @@ def get_location_type_data(
             floor_attributes = extract_layer_attributes(solution_level_item)
 
             try:
-                for attribute in floor_attributes:
-                    admin_id = attribute["admin_id"]
+
+                for attributes in floor_attributes:
+                    admin_id = attributes["admin_id"]
                     lt = solution.location_types.get(
                         LocationType.compute_key(admin_id=admin_id)
                     )
                     if lt is None:
+                        display_rule = extract_display_rule(attributes)
+                        translations = extract_translations(attributes)
+
                         solution.add_location_type(
-                            admin_id=admin_id, name=attribute["name"]
+                            admin_id=admin_id,
+                            display_rule=display_rule,
+                            translations=translations,
                         )
-                    else:
-                        assert (
-                            lt.name == attribute["name"]
-                        ), f'{lt.name} != {attribute["name"]}'
 
             except Exception as e:
                 _invalid = f"Invalid location_types: {e}"
                 logger.error(_invalid)
+
                 if collect_invalid:
                     issues.append(_invalid)

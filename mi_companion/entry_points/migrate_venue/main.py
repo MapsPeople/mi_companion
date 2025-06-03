@@ -2,7 +2,7 @@
 import logging
 
 from integration_system.config import MapsIndoors, Settings, set_settings
-from integration_system.migration import migrate_venue
+from integration_system.tools.migration import migrate_venue
 from jord.qgis_utilities import read_plugin_setting
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH
 

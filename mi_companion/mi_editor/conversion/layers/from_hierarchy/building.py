@@ -25,9 +25,8 @@ from integration_system.mi import (
     get_outside_building_floor_name,
 )
 from integration_system.model import Solution
-from jord.qgis_utilities.conversion.features import feature_to_shapely
+from jord.qgis_utilities import feature_to_shapely
 from mi_companion import (
-    DEFAULT_CUSTOM_PROPERTIES,
     HALF_SIZE,
     HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS,
 )
@@ -36,18 +35,18 @@ from mi_companion.layer_descriptors import (
     FLOOR_GROUP_DESCRIPTOR,
     GRAPH_GROUP_DESCRIPTOR,
 )
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.routing.graph import (
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.routing import (
     add_venue_graph,
 )
-from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.hierarchy import (
     make_hierarchy_validation_dialog,
 )
+from .common_attributes import extract_translations
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
-from .custom_props import extract_custom_props
 from .extraction import special_extract_layer_data
 from .floor import add_building_floors
 from .location import add_floor_contents
-from ...projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
 
@@ -282,7 +281,6 @@ def get_building_key(
                 external_id,
                 layer_attributes,
                 layer_feature,
-                name,
             ) = special_extract_layer_data(floor_group_items)
 
             try:
@@ -307,17 +305,14 @@ def get_building_key(
                     raise Exception("Upload cancelled")
 
             if building_polygon is not None:
-                custom_props = extract_custom_props(layer_attributes)
+                translations = extract_translations(layer_attributes)
                 try:
                     building_key = solution.add_building(
                         admin_id=admin_id,
                         external_id=external_id,
-                        name=name,
                         polygon=prepare_geom_for_mi_db(building_polygon),
                         venue_key=venue_key,
-                        custom_properties=(
-                            custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
-                        ),
+                        translations=(translations),
                     )
                 except Exception as e:
                     _invalid = f"Invalid building: {e}"

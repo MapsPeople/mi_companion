@@ -1,5 +1,5 @@
-import copy
 import dataclasses
+import functools
 import json
 import logging
 from typing import Any, Collection, Iterable, List, Optional
@@ -13,8 +13,17 @@ from pandas import DataFrame, json_normalize
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
 
-from integration_system.model import CollectionMixin, DisplayRule, Floor, Solution
-from integration_system.pandas_serde import collection_to_df
+from integration_system.model import (
+    Detail,
+    DisplayRule,
+    Floor,
+    Solution,
+)
+from integration_system.model.solution_item import CollectionMixin, Media
+from integration_system.tools.serialisation import (
+    collection_to_df,
+    to_dict_with_dataclass_type,
+)
 from jord.qgis_utilities import (
     HIDDEN_WIDGET,
     make_field_boolean,
@@ -33,7 +42,6 @@ from jord.qlive_utilities import add_dataframe_layer
 from mi_companion import (
     LAYER_GEOM_VISIBLE_MIN_RATIO,
     LAYER_LABEL_VISIBLE_MIN_RATIO,
-    REAL_NONE_JSON_VALUE,
 )
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.constants import (
@@ -41,7 +49,7 @@ from mi_companion.constants import (
     FLOOR_VERTICAL_SPACING,
     USE_EXTERNAL_ID_FLOOR_SELECTION,
 )
-from .custom_props import process_custom_props_df
+from .parsing import process_nested_fields_df
 from ..type_enums import BackendLocationTypeEnum
 from ...projection import (
     reproject_geometry_df,
@@ -58,12 +66,12 @@ __all__ = ["add_floor_content_layers", "locations_to_df", "LocationGeometryType"
 logger = logging.getLogger(__name__)
 
 BOOLEAN_LOCATION_ATTRS = ("is_searchable", "is_active")
-STR_LOCATION_ATTRS = ("description", "external_id", "name", "admin_id")
+STR_LOCATION_ATTRS = ("external_id", "translations.en.name", "admin_id")
 FLOAT_LOCATION_ATTRS = ()
 INT_LOCATION_ATTRS = ()
 
 # FIELDS_HIDDEN_IN_FORM = ('is_searchable', 'is_active', 'admin_id')
-FORM_FIELDS = ("name", "location_type")
+FORM_FIELDS = ("translations.en.name", "location_type")
 
 
 class LocationGeometryType(StrEnum):
@@ -72,7 +80,10 @@ class LocationGeometryType(StrEnum):
     polygon = "polygon"
 
 
-def locations_to_df(collection_: CollectionMixin) -> DataFrame:
+def locations_to_df(
+    collection_: CollectionMixin,
+    keep_class_name_instances_of: Optional[Collection[type]] = (Detail,),
+) -> DataFrame:
     """
 
     :param collection_:
@@ -82,23 +93,38 @@ def locations_to_df(collection_: CollectionMixin) -> DataFrame:
     # noinspection PyTypeChecker
     converted_items = []
 
+    to_dict_factory = functools.partial(
+        to_dict_with_dataclass_type,
+        keep_class_name_instances_of=keep_class_name_instances_of,
+    )
+
     for item in collection_:
-        if False:
-            if hasattr(item, "custom_properties"):
-                custom_properties = getattr(item, "custom_properties")
-                if custom_properties is not None:
-                    for language, translations in copy.deepcopy(
-                        custom_properties
-                    ).items():
-                        for custom_property, value in translations.items():
-                            if value is None:
-                                custom_properties[language][
-                                    custom_property
-                                ] = REAL_NONE_JSON_VALUE
 
-                    setattr(item, "custom_properties", custom_properties)
+        item_as_dict = dataclasses.asdict(item, dict_factory=to_dict_factory)
 
-        item_as_dict = dataclasses.asdict(item)
+        if "details" in item_as_dict:
+            list_of_details = item_as_dict.pop("details")
+
+            deets = []
+            if list_of_details:
+                for d in list_of_details:
+                    deets.append(repr(d))
+
+            item_as_dict["details"] = deets
+
+        if "display_rule" in item_as_dict:
+            display_rule: DisplayRule = item_as_dict.pop("display_rule")
+            if display_rule is not None:
+                item_as_dict["display_rule"] = display_rule.model_dump()
+
+        if "media" in item_as_dict:
+            media = item_as_dict.pop("media")
+            if media is not None:
+                if isinstance(media, Media):
+                    item_as_dict["media_key"] = media.key
+                else:
+                    assert isinstance(media, str)
+                    item_as_dict["media_key"] = media
 
         if "categories" in item_as_dict:
             list_of_category_dicts = item_as_dict.pop("categories")
@@ -115,20 +141,22 @@ def locations_to_df(collection_: CollectionMixin) -> DataFrame:
                         else:
                             raise NotImplementedError(f"{type(a)} is not supported")
                     else:
-                        keys.append(cat["name"])
+                        keys.append(cat["ckey"])
 
             item_as_dict["category_keys"] = keys
 
-        if "display_rule" in item_as_dict:
-            display_rule: DisplayRule = item_as_dict.pop("display_rule")
-            if display_rule is not None:
-                item_as_dict["display_rule"] = display_rule.model_dump()
-
         item_as_dict["key"] = item.key
+
+        if "__class__.__name__" in item_as_dict:
+            item_as_dict.pop("__class__.__name__")
 
         converted_items.append(item_as_dict)
 
+    # logger.warning(f"converted {(converted_items)} items")
+
     a = json_normalize(converted_items)
+
+    # logger.warning(f"normalized {(a)} items")
 
     if not a.empty:
         a.set_index("key", inplace=True)
@@ -195,11 +223,12 @@ def add_location_layer(
     column_selection = [
         c
         for c in shape_df.columns
-        if ("." not in c) or ("location_type.admin_id" == c)
-        # or ('display_rule.' in c) # TODO: ENABLE FOR DISPLAY_RULE SUPPORT
+        if ("." not in c)
+        or ("location_type.admin_id" == c)
         or (
-            "custom_properties." in c
-            and (".custom_properties" not in c)  # Only this objects custom_properties
+            ("translations." in c or "display_rule." in c)
+            and ((".translations" not in c) and (".display_rule" not in c))
+            # Only this objects translations
         )
     ]
 
@@ -213,7 +242,7 @@ def add_location_layer(
         locations_df
     ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
 
-    process_custom_props_df(locations_df)
+    process_nested_fields_df(locations_df)
     assert len(shape_df) == len(
         locations_df
     ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
@@ -311,7 +340,12 @@ def add_location_layer(
 
     make_field_unique(added_layers, field_name="admin_id")
 
-    for field_name in ("name", "location_type", "is_searchable", "is_active"):
+    for field_name in (
+        "translations.en.name",
+        "location_type",
+        "is_searchable",
+        "is_active",
+    ):
         make_field_not_null(added_layers, field_name=field_name)
 
     for field_name, field_default in {"is_searchable": True, "is_active": True}.items():
@@ -334,7 +368,12 @@ def add_location_layer(
         for field_name in BOOLEAN_LOCATION_ATTRS:
             make_field_boolean(added_layers, field_name=field_name)
 
-    for field_name in ("name", "location_type", "is_searchable", "is_active"):
+    for field_name in (
+        "translations.en.name",
+        "location_type",
+        "is_searchable",
+        "is_active",
+    ):
         make_field_reuse_last_entered_value(added_layers, field_name=field_name)
 
     return added_layers
@@ -352,6 +391,7 @@ def add_floor_content_layers(
 ) -> None:
     """
 
+    :param location_type_ref_layer:
     :param qgis_instance_handle:
     :param solution:
     :param floor:

@@ -1,13 +1,13 @@
 import logging
-from typing import Iterable
+from typing import Any, Iterable
 
 import shapely
 
-from jord.qgis_utilities.fields import (
+from jord.qgis_utilities import (
     make_field_not_null,
     make_field_reuse_last_entered_value,
+    set_3d_view_settings,
 )
-from jord.qgis_utilities.styling import set_3d_view_settings
 from jord.qlive_utilities import add_wkb_layer
 from mi_companion import (
     FLOOR_HEIGHT,
@@ -33,14 +33,14 @@ EDGE_BASED_LEVELS = False  # OSM EXPORTER FROM MI SUCKS
 
 def add_graph_3d_network_layers(
     *,
-    edge_context_type_dropdown_widget,
-    graph_group,
-    highway_type_dropdown_widget,
-    lines,
-    lines_meta_data,
-    points,
-    points_meta_data,
-    qgis_instance_handle,
+    edge_context_type_dropdown_widget: Any,
+    graph_group: Any,
+    highway_type_dropdown_widget: Any,
+    lines: Any,
+    lines_meta_data: Any,
+    points: Any,
+    points_meta_data: Any,
+    qgis_instance_handle: Any,
 ) -> None:
     """
 

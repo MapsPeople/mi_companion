@@ -53,7 +53,7 @@ def show_differences(
         solution_difference_group = mi_db_difference_group.insertGroup(0, solution_name)
 
     venue = next(iter(solution.venues))
-    venue_diff_name = venue.name
+    venue_diff_name = venue.translations[solution.default_language].name
 
     venue_difference_group = solution_difference_group.findGroup(venue_diff_name)
 

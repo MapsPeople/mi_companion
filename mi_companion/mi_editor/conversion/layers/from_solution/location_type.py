@@ -2,17 +2,17 @@ import logging
 from typing import Any, List, Optional
 
 from integration_system.model import Solution
-from integration_system.pandas_serde import collection_to_df
+from integration_system.tools.serialisation import collection_to_df
 from jord.pandas_utilities import df_to_columns
 from jord.qgis_utilities import (
     make_field_not_null,
     make_field_unique,
 )
 from jord.qlive_utilities import add_no_geom_layer
-from .custom_props import process_custom_props_df
+from .parsing import process_nested_fields_df
 
 BOOLEAN_LOCATION_TYPE_ATTRS = ()
-STR_LOCATION_TYPE_ATTRS = ("name", "admin_id")
+STR_LOCATION_TYPE_ATTRS = ("translations.en.name", "admin_id")
 FLOAT_LOCATION_TYPE_ATTRS = ()
 INTEGER_LOCATION_TYPE_ATTRS = ()
 
@@ -40,16 +40,22 @@ def add_location_type_layer(
     :return:
     """
 
-    shape_df = collection_to_df(solution.location_types, pop_keys=["display_rule"])
+    shape_df = collection_to_df(
+        solution.location_types
+        # , pop_keys=["display_rule"]
+    )
 
-    column_selection = [c for c in shape_df.columns if "display_rule" not in c]
+    if False:
+        column_selection = [c for c in shape_df.columns if "display_rule" not in c]
+    else:
+        column_selection = None
 
-    if column_selection:
+    if column_selection is not None and len(column_selection) > 0:
         selected = shape_df[column_selection]
     else:
         selected = shape_df
 
-    process_custom_props_df(selected)
+    process_nested_fields_df(selected)
 
     if not len(shape_df):
         # logger.warning(f"Nothing to be added, skipping {name}")
@@ -79,7 +85,7 @@ def add_location_type_layer(
 
     make_field_unique(added_layers, field_name="admin_id")
 
-    for field_name in ("name",):
+    for field_name in ("translations.en.name",):
         make_field_not_null(added_layers, field_name=field_name)
 
     return added_layers

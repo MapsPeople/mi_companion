@@ -17,7 +17,7 @@ SERIALISED_SOLUTION_EXTENSION = ".json"
 def run(*, path: Path, open_folder_on_completion: bool = False) -> None:
     from jord.qgis_utilities.helpers import InjectedProgressBar
 
-    from integration_system.json_serde import to_json
+    from integration_system.tools.serialisation import to_json
     from mi_companion.mi_editor.conversion.layers.from_hierarchy.solution import (
         convert_solution_layers_to_solution,
     )

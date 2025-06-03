@@ -24,17 +24,16 @@ from qgis.core import (
 )
 
 from integration_system.model import Solution
-from jord.qgis_utilities.conversion.features import feature_to_shapely
+from jord.qgis_utilities import feature_to_shapely
 from mi_companion import (
-    DEFAULT_CUSTOM_PROPERTIES,
     HALF_SIZE,
 )
 from mi_companion.layer_descriptors import FLOOR_POLYGON_DESCRIPTOR
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
+from .common_attributes import extract_translations
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
-from .custom_props import extract_custom_props
 from .extraction import special_extract_layer_data
 from .location import add_floor_contents
 from ...projection import prepare_geom_for_mi_db
@@ -194,13 +193,9 @@ def get_floor_data(
             and FLOOR_POLYGON_DESCRIPTOR.lower().strip()
             in str(floor_level_item.name()).lower().strip()
         ):
-            (
-                admin_id,
-                external_id,
-                floor_attributes,
-                floor_feature,
-                name,
-            ) = special_extract_layer_data(floor_level_item)
+            (admin_id, external_id, floor_attributes, floor_feature) = (
+                special_extract_layer_data(floor_level_item)
+            )
             try:
                 floor_polygon = feature_to_shapely(floor_feature)
             except Exception as e:
@@ -225,18 +220,15 @@ def get_floor_data(
                 logger.error(f"{floor_polygon=}")
 
             if floor_polygon is not None:
-                custom_props = extract_custom_props(floor_attributes)
+                translations = extract_translations(floor_attributes)
 
                 try:
                     floor_key = solution.add_floor(
                         external_id=external_id,
-                        name=name,
                         floor_index=floor_attributes["floor_index"],
                         polygon=prepare_geom_for_mi_db(floor_polygon),
                         building_key=building_key,
-                        custom_properties=(
-                            custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
-                        ),
+                        translations=translations,
                     )
                 except Exception as e:
                     _invalid = f"Invalid floor: {e}"

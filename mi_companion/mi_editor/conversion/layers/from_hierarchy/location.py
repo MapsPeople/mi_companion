@@ -1,3 +1,7 @@
+import ast
+
+# noinspection PyUnresolvedReferences
+import datetime
 import logging
 import uuid
 from typing import Any, Collection, List, Optional
@@ -25,23 +29,36 @@ from qgis.core import (
     QgsProject,
 )
 
-from integration_system.model import Category, LocationType, Solution
-from jord.qgis_utilities.conversion.features import feature_to_shapely
+from integration_system.model import (
+    Category,
+    LocationType,
+    OpeningHoursDetail,
+    Solution,
+    StrToDetailTypeMap,
+)
+from integration_system.model.solution_item import Media
+from integration_system.model.typings import LanguageBundle
+from integration_system.tools.serialisation import standard_opening_hours_from_dict
+from jord.qgis_utilities import (
+    extract_feature_attributes,
+    extract_field_value,
+    feature_to_shapely,
+    is_str_value_null_like,
+    parse_field,
+)
 from mi_companion import (
-    DEFAULT_CUSTOM_PROPERTIES,
     VERBOSE,
 )
 from mi_companion.configuration.options import read_bool_setting
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.custom_props import (
-    extract_custom_props,
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
+    extract_display_rule,
+    extract_translations,
 )
 from mi_companion.mi_editor.conversion.layers.type_enums import BackendLocationTypeEnum
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
-from mi_companion.qgis_utilities import is_str_value_null_like
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
-from .extraction import extract_feature_attributes, extract_field_value, parse_field
 from ...projection import prepare_geom_for_mi_db
 
 __all__ = ["add_floor_contents"]
@@ -96,7 +113,10 @@ def add_floor_locations(
 
                     try:
                         location_type_key = solution.add_location_type(
-                            admin_id=location_type_admin_id, name=location_type_admin_id
+                            admin_id=location_type_admin_id,
+                            translations={
+                                "en": LanguageBundle(name=location_type_admin_id)
+                            },
                         )
                     except Exception as e:
                         _invalid = f"{location_type_admin_id=} is invalid {e}"
@@ -111,7 +131,7 @@ def add_floor_locations(
                         f"{location_type_key} is not a location type that already exists"
                     )
 
-            custom_props = extract_custom_props(feature_attributes)
+            translations = extract_translations(feature_attributes)
 
             if "admin_id" in feature_attributes:
                 admin_id = feature_attributes["admin_id"]
@@ -169,14 +189,6 @@ def add_floor_locations(
                         else:
                             external_id = v
 
-            name = None
-            if "name" in feature_attributes:
-                name = extract_field_value(feature_attributes, "name")
-
-            description = None
-            if "description" in feature_attributes:
-                description = extract_field_value(feature_attributes, "description")
-
             is_active = None
             if "is_active" in feature_attributes:
                 is_active = extract_field_value(feature_attributes, "is_active")
@@ -196,12 +208,6 @@ def add_floor_locations(
                     else:
                         is_searchable = True
                 assert isinstance(is_searchable, bool), f"{type(is_searchable)}"
-
-            if name is None:  # Fallback
-                name = external_id
-
-            if name is None:
-                raise ValueError(f"{layer_feature} is missing a valid name")
 
             try:
                 location_geometry = feature_to_shapely(layer_feature)
@@ -225,6 +231,11 @@ def add_floor_locations(
 
                 continue  # TODO: IDEA IMPLEMENT POP UP CONFIRMATION OF DELETE FEATURE WHEN MISSING GEOMETRIES.
 
+            media_key = None
+
+            if "media_key" in feature_attributes:
+                media_key = parse_field(feature_attributes, field_name="media_key")
+
             if location_geometry is None:
                 logger.error(f"{location_geometry=}")
 
@@ -232,15 +243,13 @@ def add_floor_locations(
                 common_kvs = dict(
                     admin_id=admin_id,
                     external_id=external_id,
-                    name=name,
                     floor_key=floor_key,
                     is_active=is_active,
                     is_searchable=is_searchable,
                     location_type_key=location_type_key,
-                    description=description,
-                    custom_properties=(
-                        custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
-                    ),
+                    translations=(translations),
+                    display_rule=extract_display_rule(feature_attributes),
+                    media_key=media_key,
                 )
 
                 for k, v in feature_attributes.items():
@@ -248,6 +257,7 @@ def add_floor_locations(
                         if k == "category_keys":
                             cat_keys = []
                             a = extract_field_value(feature_attributes, "category_keys")
+
                             if not isinstance(a, Collection):
                                 logger.warning(f"Skipping {a} for {k}")
                                 continue
@@ -258,7 +268,7 @@ def add_floor_locations(
                                         continue
 
                                     category_key = Category.compute_key(
-                                        name=category_name
+                                        ckey=category_name
                                     )
                                     if solution.categories.get(category_key) is None:
                                         if read_bool_setting(
@@ -266,7 +276,12 @@ def add_floor_locations(
                                         ):  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
                                             try:
                                                 category_key = solution.add_category(
-                                                    category_name
+                                                    ckey=category_name,
+                                                    translations={
+                                                        "en": LanguageBundle(
+                                                            name=category_name
+                                                        )
+                                                    },
                                                 )
                                             except Exception as e:
                                                 _invalid = (
@@ -288,6 +303,59 @@ def add_floor_locations(
                                     )
 
                             common_kvs["category_keys"] = cat_keys
+                        elif k == "details":
+                            details = []
+                            a = extract_field_value(feature_attributes, "details")
+
+                            if not isinstance(a, Collection):
+                                logger.warning(f"Skipping {a} for {k}")
+                                continue
+
+                            for detail_entry in a:
+                                if isinstance(detail_entry, str):
+                                    detail_entry_key = detail_entry.lower().strip()
+                                    if detail_entry_key == "":
+                                        continue
+
+                                    if False:
+                                        ddd = ast.literal_eval(
+                                            detail_entry
+                                        )  # TODO: MAKE SAFE?
+                                    else:
+                                        ddd = eval(detail_entry)
+
+                                    if "__class__.__name__" in ddd:
+                                        detail_type = ddd.pop("__class__.__name__")
+
+                                        assert isinstance(
+                                            detail_type, str
+                                        ), f"{type(detail_type)} is not a supported detail type, ({StrToDetailTypeMap.keys()})"
+                                        detail_type = StrToDetailTypeMap[
+                                            detail_type.strip()
+                                        ]
+
+                                        if detail_type == OpeningHoursDetail:
+                                            opening_hours = (
+                                                standard_opening_hours_from_dict(
+                                                    ddd.pop("opening_hours")
+                                                )
+                                            )
+
+                                            details.append(
+                                                OpeningHoursDetail(
+                                                    **ddd, opening_hours=opening_hours
+                                                )
+                                            )
+                                        else:
+                                            details.append(detail_type(**ddd))
+                                    else:
+                                        logger.error(
+                                            f'Did not find a "__class__.__name__" in {ddd}, skipping it'
+                                        )
+
+                            if details:
+                                common_kvs["details"] = details
+
                     else:
                         common_kvs[k] = extract_field_value(feature_attributes, k)
 
