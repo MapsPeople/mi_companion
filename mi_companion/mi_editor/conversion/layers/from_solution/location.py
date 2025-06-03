@@ -1,5 +1,5 @@
-import copy
 import dataclasses
+import functools
 import json
 import logging
 from typing import Any, Collection, Iterable, List, Optional
@@ -14,16 +14,16 @@ from pandas import DataFrame, json_normalize
 from qgis.core import QgsEditorWidgetSetup
 
 from integration_system.model import (
-    CollectionMixin,
+    Detail,
     DisplayRule,
     Floor,
-    Media,
     Solution,
 )
+from integration_system.model.solution_item import CollectionMixin, Media
 from integration_system.tools.serialisation import (
     collection_to_df,
+    to_dict_with_dataclass_type,
 )
-from integration_system.tools.serialisation import to_dict_with_dataclass_type
 from jord.qgis_utilities import (
     HIDDEN_WIDGET,
     make_field_boolean,
@@ -66,12 +66,12 @@ __all__ = ["add_floor_content_layers", "locations_to_df", "LocationGeometryType"
 logger = logging.getLogger(__name__)
 
 BOOLEAN_LOCATION_ATTRS = ("is_searchable", "is_active")
-STR_LOCATION_ATTRS = ("description", "external_id", "name", "admin_id")
+STR_LOCATION_ATTRS = ("external_id", "translations.en.name", "admin_id")
 FLOAT_LOCATION_ATTRS = ()
 INT_LOCATION_ATTRS = ()
 
 # FIELDS_HIDDEN_IN_FORM = ('is_searchable', 'is_active', 'admin_id')
-FORM_FIELDS = ("name", "location_type")
+FORM_FIELDS = ("translations.en.name", "location_type")
 
 
 class LocationGeometryType(StrEnum):
@@ -80,7 +80,10 @@ class LocationGeometryType(StrEnum):
     polygon = "polygon"
 
 
-def locations_to_df(collection_: CollectionMixin) -> DataFrame:
+def locations_to_df(
+    collection_: CollectionMixin,
+    keep_class_name_instances_of: Optional[Collection[type]] = (Detail,),
+) -> DataFrame:
     """
 
     :param collection_:
@@ -90,11 +93,14 @@ def locations_to_df(collection_: CollectionMixin) -> DataFrame:
     # noinspection PyTypeChecker
     converted_items = []
 
+    to_dict_factory = functools.partial(
+        to_dict_with_dataclass_type,
+        keep_class_name_instances_of=keep_class_name_instances_of,
+    )
+
     for item in collection_:
 
-        item_as_dict = dataclasses.asdict(
-            item, dict_factory=to_dict_with_dataclass_type
-        )
+        item_as_dict = dataclasses.asdict(item, dict_factory=to_dict_factory)
 
         if "details" in item_as_dict:
             list_of_details = item_as_dict.pop("details")
@@ -135,14 +141,14 @@ def locations_to_df(collection_: CollectionMixin) -> DataFrame:
                         else:
                             raise NotImplementedError(f"{type(a)} is not supported")
                     else:
-                        keys.append(cat["name"])
+                        keys.append(cat["ckey"])
 
             item_as_dict["category_keys"] = keys
 
         item_as_dict["key"] = item.key
 
-        if "type" in item_as_dict:
-            item_as_dict.pop("type")
+        if "__class__.__name__" in item_as_dict:
+            item_as_dict.pop("__class__.__name__")
 
         converted_items.append(item_as_dict)
 
@@ -220,9 +226,9 @@ def add_location_layer(
         if ("." not in c)
         or ("location_type.admin_id" == c)
         or (
-            ("custom_properties." in c or "display_rule." in c)
-            and ((".custom_properties" not in c) and (".display_rule" not in c))
-            # Only this objects custom_properties
+            ("translations." in c or "display_rule." in c)
+            and ((".translations" not in c) and (".display_rule" not in c))
+            # Only this objects translations
         )
     ]
 
@@ -334,7 +340,12 @@ def add_location_layer(
 
     make_field_unique(added_layers, field_name="admin_id")
 
-    for field_name in ("name", "location_type", "is_searchable", "is_active"):
+    for field_name in (
+        "translations.en.name",
+        "location_type",
+        "is_searchable",
+        "is_active",
+    ):
         make_field_not_null(added_layers, field_name=field_name)
 
     for field_name, field_default in {"is_searchable": True, "is_active": True}.items():
@@ -357,7 +368,12 @@ def add_location_layer(
         for field_name in BOOLEAN_LOCATION_ATTRS:
             make_field_boolean(added_layers, field_name=field_name)
 
-    for field_name in ("name", "location_type", "is_searchable", "is_active"):
+    for field_name in (
+        "translations.en.name",
+        "location_type",
+        "is_searchable",
+        "is_active",
+    ):
         make_field_reuse_last_entered_value(added_layers, field_name=field_name)
 
     return added_layers

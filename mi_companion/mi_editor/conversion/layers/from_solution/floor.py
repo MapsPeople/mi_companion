@@ -24,6 +24,7 @@ from mi_companion.layer_descriptors import (
     FLOOR_POLYGON_DESCRIPTOR,
 )
 from .location import add_floor_content_layers
+from .parsing import translations_to_flattened_dict
 from ...projection import (
     prepare_geom_for_qgis,
     solve_target_crs_authid,
@@ -52,9 +53,13 @@ def add_floor_layers(
         if floor.building.key == building.key:
             descriptor = f"{FLOOR_GROUP_DESCRIPTOR}:{floor.floor_index}"
             if DESCRIPTOR_BEFORE:
-                floor_name = f"{descriptor} {floor.name}"
+                floor_name = (
+                    f"{descriptor} {floor.translations[solution.default_language].name}"
+                )
             else:
-                floor_name = f"{floor.name} {descriptor}"
+                floor_name = (
+                    f"{floor.translations[solution.default_language].name} {descriptor}"
+                )
 
             floor_group = building_group.insertGroup(
                 INSERT_INDEX, floor_name
@@ -83,17 +88,8 @@ def add_floor_layers(
                     columns=[
                         {
                             "external_id": floor.external_id,
-                            "name": floor.name,
                             "floor_index": floor.floor_index,
-                            **(
-                                {
-                                    f"custom_properties.{lang}.{prop}": str(v)
-                                    for lang, props_map in floor.custom_properties.items()
-                                    for prop, v in props_map.items()
-                                }
-                                if floor.custom_properties
-                                else {}
-                            ),
+                            **translations_to_flattened_dict(floor.translations),
                         }
                     ],
                     group=floor_group,
@@ -119,17 +115,8 @@ def add_floor_layers(
                     columns=[
                         {
                             "external_id": floor.external_id,
-                            "name": floor.name,
                             "floor_index": floor.floor_index,
-                            **(
-                                {
-                                    f"custom_properties.{lang}.{prop}": str(v)
-                                    for lang, props_map in floor.custom_properties.items()
-                                    for prop, v in props_map.items()
-                                }
-                                if floor.custom_properties
-                                else {}
-                            ),
+                            **translations_to_flattened_dict(floor.translations),
                         }
                     ],
                     group=floor_group,

@@ -1,7 +1,5 @@
 import shapely.wkt
 
-from mi_companion.qgis_utilities import extract_wkt_elements
-
 
 def test_parsing_duplicate_point_str() -> None:
     source = (
@@ -48,6 +46,7 @@ def test_parsing_duplicate_point_str() -> None:
             "POINT (-122.200493 47.617871)",
         ]
     ]
+    from mi_companion.qgis_utilities import extract_wkt_elements
 
     parsed = [e for c, e in extract_wkt_elements(source)]
 
@@ -59,6 +58,7 @@ def test_self_intersection_str() -> None:
         'HTTP response body: b\'{"message":"Object with id 67288225d29f4b998f47c4e8 is invalid: Geometry '
         "is invalid: 'Self-intersection occured at POINT (-122.20231413590133 47.61731151709477)'\"}"
     )
+    from mi_companion.qgis_utilities import extract_wkt_elements
 
     parsed = [e for c, e in extract_wkt_elements(source)]
     assert parsed == [
@@ -82,6 +82,8 @@ def testsuh_iajsd() -> None:
   -122.200935 47.617599)\\\'\\\\nObject with id 7b7869a73d964a2e94632550 is invalid: Geometry is invalid:
   \\\'duplicate points at index 1: POINT (-122.200493 47.617871)\\\'"}'
 """
+    from mi_companion.qgis_utilities import extract_wkt_elements
+
     contexts, parsed = zip(*extract_wkt_elements(source))
     print(contexts)
     print(parsed)

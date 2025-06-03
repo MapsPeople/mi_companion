@@ -379,7 +379,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             bar.setValue(90)
 
             self.venue_name_id_map = {
-                next(iter(v.venueInfo))["name"]: k for k, v in self.venues.items()
+                next(iter(v.venueInfo)).name: k for k, v in self.venues.items()
             }
 
             self.venue_combo_box.clear()

@@ -4,19 +4,18 @@ from typing import Any, List, Mapping, Optional
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
 
-from integration_system.tools.common_models import MIDoorType
+from integration_system.common_models import MIDoorType
 from integration_system.model import Solution
 from jord.qgis_utilities import (
     GeometryIsEmptyError,
-    feature_to_shapely,
     extract_feature_attributes,
+    feature_to_shapely,
 )
-from mi_companion import DEFAULT_FIELDS, VERBOSE
+from mi_companion import VERBOSE
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
     extract_single_level_str_map,
 )
-
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
@@ -70,7 +69,7 @@ def add_doors(
             door_type=get_door_type(door_attributes),
             floor_index=int(door_attributes["floor_index"]),
             graph_key=graph_key,
-            fields=fields if fields is not None else DEFAULT_FIELDS,
+            fields=fields,
         )
         if VERBOSE:
             logger.info("added door", door_key)

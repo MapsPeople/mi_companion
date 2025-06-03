@@ -1,7 +1,7 @@
 import copy
 import logging
 from datetime import datetime
-from typing import Any, Callable, List, Mapping, Optional
+from typing import Any, Callable, Collection, List, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
@@ -12,11 +12,10 @@ from qgis.PyQt.QtCore import QDateTime, QVariant
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.tools.common_models import MIVenueType
+from integration_system.common_models import MIVenueType
 from integration_system.mi import SolutionDepth
-from integration_system.model import PostalAddress, Solution, OptionalPostalAddress
+from integration_system.model import OptionalPostalAddress, PostalAddress, Solution
 from mi_companion import (
-    DEFAULT_CUSTOM_PROPERTIES,
     HALF_SIZE,
 )
 from mi_companion.layer_descriptors import (
@@ -27,7 +26,7 @@ from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
 from .building import add_venue_level_hierarchy
-from .common_attributes import extract_two_level_str_map
+from .common_attributes import extract_translations
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 
 __all__ = ["convert_solution_venues"]
@@ -59,6 +58,9 @@ def convert_solution_venues(
     solution_name: str,
     solution_customer_id: str,
     solution_occupants_enabled: bool,
+    solution_available_languages: Collection[str],
+    solution_implementation_type: str,
+    solution_default_language: str,
     ith_solution: int,
     num_solution_elements: int,
     solution_depth: SolutionDepth = SolutionDepth.obstacles,
@@ -74,6 +76,9 @@ def convert_solution_venues(
 ) -> List[Solution]:
     """
 
+    :param solution_available_languages:
+    :param solution_implementation_type:
+    :param solution_default_language:
     :param qgis_instance_handle:
     :param mi_group_child:
     :param existing_solution:
@@ -106,12 +111,16 @@ def convert_solution_venues(
             external_id=solution_external_id,
             name=solution_name,
             customer_id=solution_customer_id,
-            occupants_enabled=solution_occupants_enabled,
-            # occupants_enabled =...
-            # default_language = ...
         )
     else:
         solution = copy.deepcopy(existing_solution)
+
+    solution.name = solution_name
+    solution.customer_id = solution_customer_id
+    solution.default_language = solution_default_language
+    solution.implementation_type = solution_implementation_type
+    solution.occupants_enabled = solution_occupants_enabled
+    solution.available_languages = solution_available_languages
 
     get_location_type_data(solution_group_children, solution)
 
@@ -255,7 +264,6 @@ def get_venue_key(
                 external_id,
                 layer_attributes,
                 layer_feature,
-                name,
             ) = special_extract_layer_data(venue_level_item)
 
             try:
@@ -280,18 +288,15 @@ def get_venue_key(
                     raise Exception("Upload cancelled")
 
             if venue_polygon:
-                custom_props = extract_two_level_str_map(layer_attributes)
+                translations = extract_translations(layer_attributes)
                 try:
                     venue_key = solution.add_venue(
                         admin_id=admin_id,
                         external_id=external_id,
-                        name=name,
                         polygon=prepare_geom_for_mi_db(venue_polygon),
                         venue_type=get_venue_type(layer_attributes),
                         last_verified=get_last_verified(layer_attributes),
-                        custom_properties=(
-                            custom_props if custom_props else DEFAULT_CUSTOM_PROPERTIES
-                        ),
+                        translations=(translations),
                         address=get_address(layer_attributes),
                     )
                 except Exception as e:

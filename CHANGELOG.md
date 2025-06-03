@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
+## 0.7.0 - 2025-05-22
+
+* [Workaround] Ignore OSM related issue in the ManagerAPI at the moment.
+* [Feature] Details added to locations.
+* [Feature] Fields on route-elements are now available.
+* [Feature] Multi language solutions now supported. "name" -> "translations.en.name"
+* [Feature] Displayrules are now editable through attributes table.
+* [Bug-fix] Displayrules with labelSize set now works.
+* [Simplification] custom_properties -> fields
+
 ## 0.6.11 - 2025-04-08
 
 * [Bug-fix] DisplayString for layer URI is not translated any more, all system locales now supported.

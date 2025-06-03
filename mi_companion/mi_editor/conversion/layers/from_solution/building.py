@@ -17,6 +17,8 @@ from .floor import add_floor_layers
 
 __all__ = ["add_building_layers"]
 
+from .parsing import translations_to_flattened_dict
+
 from ...projection import (
     prepare_geom_for_qgis,
     solve_target_crs_authid,
@@ -43,7 +45,12 @@ def add_building_layers(
     num_buildings = float(len(solution.buildings))
 
     for ith, building in enumerate(
-        sorted(solution.buildings, key=lambda building_: building_.name)
+        sorted(
+            solution.buildings,
+            key=lambda building_: building_.translations[
+                solution.default_language
+            ].name,
+        )
     ):
         building: Building
 
@@ -72,9 +79,9 @@ def add_building_layers(
 
         elif building.venue.key == venue.key:
             if DESCRIPTOR_BEFORE:
-                building_name = f"{BUILDING_GROUP_DESCRIPTOR} {building.name}"
+                building_name = f"{BUILDING_GROUP_DESCRIPTOR} {building.translations[solution.default_language].name}"
             else:
-                building_name = f"{building.name} {BUILDING_GROUP_DESCRIPTOR}"
+                building_name = f"{building.translations[solution.default_language].name} {BUILDING_GROUP_DESCRIPTOR}"
 
             building_group = venue_group.insertGroup(
                 INSERT_INDEX,
@@ -92,16 +99,7 @@ def add_building_layers(
                     {
                         "admin_id": building.admin_id,
                         "external_id": building.external_id,
-                        "name": building.name,
-                        **(
-                            {
-                                f"custom_properties.{lang}.{prop}": str(v)
-                                for lang, props_map in building.custom_properties.items()
-                                for prop, v in props_map.items()
-                            }
-                            if building.custom_properties
-                            else {}
-                        ),
+                        **translations_to_flattened_dict(building.translations),
                     }
                 ],
                 group=building_group,

@@ -5,7 +5,7 @@ from typing import Mapping
 from geopandas import GeoDataFrame
 from pandas import DataFrame, json_normalize
 
-from integration_system.model import CollectionMixin
+from integration_system.model.solution_item import CollectionMixin
 from jord.qgis_utilities import REAL_NONE_JSON_VALUE
 
 
@@ -14,7 +14,7 @@ def process_nested_str_map_df(df: GeoDataFrame, *, nested_map_field_name: str) -
     UPDATE: Venue(s):
       Updating
         Venue: Amsterdam - Schiphol Airport (AMS):
-            custom_properties:
+            translations:
               {'en': {'lastauditedtimestamp': 'None'}}
             ->
             {'en': {'lastauditedtimestamp': None}}
@@ -22,17 +22,17 @@ def process_nested_str_map_df(df: GeoDataFrame, *, nested_map_field_name: str) -
     UPDATE: Area(s):
       Updating
         Area: Restroom, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
-            custom_properties:
+            translations:
               {}
             ->
             {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
         Area: Transfer Desk, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
-            custom_properties:
+            translations:
               {'generic': {'transform': 'None', 'servicetype': 'Transfer Desk', 'markupjson': 'None'}}
             ->
             {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
         Area: Restroom, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
-            custom_properties:
+            translations:
               {}
             ->
             {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
@@ -68,8 +68,8 @@ def to_df_2(coll_mix: CollectionMixin) -> DataFrame:
     # noinspection PyTypeChecker
     cs = []
     for c in coll_mix:
-        if c and hasattr(c, "custom_properties"):
-            cps = getattr(c, "custom_properties")
+        if c and hasattr(c, "translations"):
+            cps = getattr(c, "translations")
             if cps is not None:
                 if isinstance(cps, Mapping) and len(cps):
                     for language, translations in copy.deepcopy(cps).items():
@@ -77,10 +77,10 @@ def to_df_2(coll_mix: CollectionMixin) -> DataFrame:
                             if cpv is None:
                                 cps[language][cp] = REAL_NONE_JSON_VALUE
 
-                    setattr(c, "custom_properties", cps)
+                    setattr(c, "translations", cps)
 
                 else:
-                    setattr(c, "custom_properties", None)
+                    setattr(c, "translations", None)
 
         cs.append(dataclasses.asdict(c))
 

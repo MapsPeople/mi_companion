@@ -1,6 +1,6 @@
 import logging
 import uuid
-from typing import Any, Mapping, Tuple
+from typing import Any, Tuple
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets, uic
@@ -18,7 +18,6 @@ from qgis.core import (
 
 from jord.qgis_utilities import extract_layer_data_single
 from mi_companion.configuration.options import read_bool_setting
-
 
 logger = logging.getLogger(__name__)
 
@@ -65,30 +64,4 @@ def special_extract_layer_data(
         else:
             external_id = str(external_id.value())
 
-    name = layer_attributes["name"] if "name" in layer_attributes else None
-
-    if isinstance(name, QVariant):
-        if name.isNull():
-            name = None
-        else:
-            name = str(name.value())
-
-    if name is None:
-        name = external_id
-
-    if name is None:
-        raise ValueError(f"{layer_feature} is missing a valid name")
-
-    for k in layer_attributes.keys():
-        if (
-            isinstance(layer_attributes[k], str)
-            and layer_attributes[k].lower().strip() == "none"
-        ):
-            layer_attributes[k] = None
-        elif isinstance(layer_attributes[k], QVariant):
-            if layer_attributes[k].isNull():
-                layer_attributes[k] = None
-            else:
-                layer_attributes[k] = str(layer_attributes[k].value())
-
-    return admin_id, external_id, layer_attributes, layer_feature, name
+    return admin_id, external_id, layer_attributes, layer_feature

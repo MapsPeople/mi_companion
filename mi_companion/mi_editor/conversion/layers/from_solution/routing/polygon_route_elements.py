@@ -3,7 +3,8 @@ from typing import Any, List, Optional
 
 import geopandas
 
-from integration_system.model import CollectionMixin, Graph
+from integration_system.model import Graph
+from integration_system.model.solution_item import CollectionMixin
 from jord.qgis_utilities import (
     make_field_not_null,
     make_field_reuse_last_entered_value,
@@ -44,7 +45,9 @@ def add_polygon_route_element_layers(
         return None
 
     df["floor_index"] = df["floor_index"].astype(str)
-    df.pop("fields")
+
+    if "fields" in df:  # TODO: Is this right?
+        df.pop("fields")
 
     if MAKE_FLOOR_WISE_LAYERS:
         doors_group = graph_group.insertGroup(INSERT_INDEX, layer_name)

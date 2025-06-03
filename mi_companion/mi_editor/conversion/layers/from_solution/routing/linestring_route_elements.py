@@ -50,7 +50,9 @@ def add_linestring_route_element_layers(
         return []
 
     df["floor_index"] = df["floor_index"].astype(str)
-    df.pop("fields")
+
+    if "fields" in df:  # TODO: Is this right?
+        df.pop("fields")
 
     if MAKE_FLOOR_WISE_LAYERS:
         doors_group = graph_group.insertGroup(INSERT_INDEX, doors_name)

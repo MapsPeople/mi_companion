@@ -24,6 +24,7 @@ from mi_companion import VERBOSE
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.gui.message_box import ResizableMessageBox
 from .operation_visualisation import show_differences
+from ..constants import DISABLE_GRAPH_EDIT
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +80,9 @@ def sync_build_venue_solution(
     if VERBOSE:
         logger.info("Synchronising")
 
-    venue_name = next(iter(solution.venues)).name
+    venue_name = (
+        next(iter(solution.venues)).translations[solution.default_language].name
+    )
     window_title = f"Sync {solution_name}:{venue_name} venue"
 
     def solving_progress_bar_callable(ith: int, total: int) -> None:
@@ -121,8 +124,10 @@ def sync_build_venue_solution(
         msg_box.setIcon(QtWidgets.QMessageBox.Information)
         msg_box.setWindowTitle(window_title)
         text_msg = f"The {solution_name}:{venue_name} venue has been modified."
+
         if read_bool_setting("UPLOAD_OSM_GRAPH"):
             text_msg += "\nNote: Graph will always update ATM"
+
         msg_box.setText(text_msg)
         msg_box.setInformativeText(
             f"Do you want to sync following changes?\n\n{aggregate_operation_description(operations)}"
@@ -153,8 +158,11 @@ def sync_build_venue_solution(
     sync_level = SyncLevel.venue
 
     strategy = dict(default_strategy())
-    if not (
-        read_bool_setting("UPDATE_GRAPH") and read_bool_setting("UPLOAD_OSM_GRAPH")
+    if (
+        not (
+            read_bool_setting("UPDATE_GRAPH") and read_bool_setting("UPLOAD_OSM_GRAPH")
+        )
+        or DISABLE_GRAPH_EDIT
     ):
         strategy[Graph] = default_matcher, None  # Do not update graph
 

@@ -1,6 +1,5 @@
 import logging
 import math
-from collections import defaultdict
 from typing import Any, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
@@ -9,8 +8,9 @@ import numpy
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
+from warg import nested_dict
 
-from integration_system.tools.common_models import (
+from integration_system.common_models import (
     MIIconPlacementRuleEnum,
     MILabelTypeOptionEnum,
 )
@@ -25,28 +25,32 @@ from integration_system.model import (
     Model3d,
     OptionalDisplayRule,
 )
+from integration_system.model.typings import LanguageBundle
 from jord.qgis_utilities import REAL_NONE_JSON_VALUE, is_str_value_null_like
 from mi_companion import (
-    ADD_FLOAT_NAN_CUSTOM_PROPERTY_VALUES,
-    ADD_REAL_NONE_CUSTOM_PROPERTY_VALUES,
-    ADD_STRING_NAN_CUSTOM_PROPERTY_VALUES,
+    ADD_FLOAT_NAN_translation_VALUES,
+    ADD_REAL_NONE_translation_VALUES,
+    ADD_STRING_NAN_translation_VALUES,
 )
-
 
 logger = logging.getLogger(__name__)
 
 __all__ = [
-    "extract_two_level_str_map",
+    "extract_translations",
     "extract_single_level_str_map",
     "extract_display_rule",
+    "parse_q_value_field",
 ]
 
 
-def extract_two_level_str_map(
+RETURN_EMPTY_DISPLAY_RULE = False
+
+
+def extract_translations(
     layer_attributes: Mapping[str, Any],
     *,
-    nested_str_map_field_name: str = "custom_properties",
-) -> Optional[Mapping[str, Mapping[str, Any]]]:
+    nested_str_map_field_name: str = "translations",
+) -> Optional[Mapping[str, LanguageBundle]]:
     """
     THIS IS THE DIRTIEST function ever written; null is a hell of a concept
 
@@ -54,73 +58,144 @@ def extract_two_level_str_map(
     :param layer_attributes:
     :return:
     """
-    custom_props = defaultdict(dict)
+    translations = nested_dict()
     for k, v in layer_attributes.items():
         if nested_str_map_field_name in k:
             split_res = k.split(".")
-            if len(split_res) >= 2:
+            if len(split_res) == 3:
                 lang, cname = split_res[-2:]
 
-                if isinstance(v, str):
-                    v_str = v.lower().strip()
-                    if is_str_value_null_like(v_str):
-                        # logger.warning("Was PANDAS NULL STRING VALUE")
-                        if ADD_STRING_NAN_CUSTOM_PROPERTY_VALUES:
-                            custom_props[lang][cname] = None
-                    else:
-                        if v_str == REAL_NONE_JSON_VALUE.lower():
-                            # logger.warning("Was REAL_NULL Value")
-                            if ADD_REAL_NONE_CUSTOM_PROPERTY_VALUES:
-                                custom_props[lang][cname] = None
-                        else:
-                            # logger.warning(f"Was str Value")
-                            custom_props[lang][cname] = v
-                elif isinstance(v, float):
-                    if math.isnan(v) or numpy.isnan(v):
-                        logger.warning(f"Was float Nan Value")
-                        if ADD_FLOAT_NAN_CUSTOM_PROPERTY_VALUES:
-                            custom_props[lang][cname] = None
-                    else:
-                        logger.warning(f"Was float Value")
-                        custom_props[lang][cname] = v
-                elif v is None:
-                    logger.warning(f"{lang}.{cname} Was None Value")
-                    custom_props[lang][cname] = None
-                elif isinstance(v, QVariant):  # Handle this (qgis.core.NULL) aswell? #
-                    # logger.warning(f"{typeToDisplayString(type(v))}")
-                    if v.isNull():  # isNull(v):
-                        logger.warning("Was null QVariant Value")
-                        custom_props[lang][cname] = None
-                    else:
-                        logger.warning("Was QVariant Value")
-                        vs = v.value()
-                        if isinstance(vs, str):
-                            v_str_ = vs.lower().strip()
-                            if is_str_value_null_like(v_str_):
-                                # logger.warning("Was PANDAS NULL STRING VALUE")
-                                if ADD_STRING_NAN_CUSTOM_PROPERTY_VALUES:
-                                    custom_props[lang][cname] = None
-                            else:
-                                if v_str_ == REAL_NONE_JSON_VALUE.lower():
-                                    # logger.warning("Was REAL_NULL Value")
-                                    if ADD_REAL_NONE_CUSTOM_PROPERTY_VALUES:
-                                        custom_props[lang][cname] = None
-                                else:
-                                    # logger.warning(f"Was str Value")
-                                    custom_props[lang][cname] = vs
-                        else:
-                            logger.warning(f"Was ({type(vs)}) Value")
-                            custom_props[lang][cname] = vs
-                else:
-                    logger.warning(f"Was ({type(v)}) Value")
-                    custom_props[lang][cname] = v
+                parse_q_value(cname, lang, translations, v)
+            elif len(split_res) == 4:
+                lang, cname, f_name = split_res[-3:]
+                parse_q_value_field(cname, f_name, lang, translations, v)
             else:
                 logger.error(f"IGNORING {split_res}")
 
-    if len(custom_props) == 0:
+    if len(translations) == 0:
         return None
 
-    return custom_props
+    out = {}
+    for language, v in translations.items():
+        out[language] = LanguageBundle(
+            name=v["name"] if "name" in v else None,
+            description=v["description"] if "description" in v else None,
+            fields=v["fields"] if "fields" in v else None,
+        )
+
+    return out
+
+
+def parse_q_value_field(cname, f_name, lang, translations, v):
+    if isinstance(v, str):
+        v_str = v.lower().strip()
+        if is_str_value_null_like(v_str):
+            # logger.debug("Was PANDAS NULL STRING VALUE")
+            if ADD_STRING_NAN_translation_VALUES:
+                translations[lang][cname][f_name] = None
+        else:
+            if v_str == REAL_NONE_JSON_VALUE.lower():
+                # logger.debug("Was REAL_NULL Value")
+                if ADD_REAL_NONE_translation_VALUES:
+                    translations[lang][cname][f_name] = None
+            else:
+                # logger.debug(f"Was str Value")
+                translations[lang][cname][f_name] = v
+    elif isinstance(v, float):
+        if math.isnan(v) or numpy.isnan(v):
+            logger.debug(f"Was float Nan Value")
+            if ADD_FLOAT_NAN_translation_VALUES:
+                translations[lang][cname][f_name] = None
+        else:
+            logger.debug(f"Was float Value")
+            translations[lang][cname][f_name] = v
+    elif v is None:
+        logger.debug(f"{lang}.{cname} Was None Value")
+        translations[lang][cname][f_name] = None
+    elif isinstance(v, QVariant):  # Handle this (qgis.core.NULL) aswell? #
+        # logger.debug(f"{typeToDisplayString(type(v))}")
+        if v.isNull():  # isNull(v):
+            logger.debug("Was null QVariant Value")
+            translations[lang][cname][f_name] = None
+        else:
+            logger.debug("Was QVariant Value")
+            vs = v.value()
+            if isinstance(vs, str):
+                v_str_ = vs.lower().strip()
+                if is_str_value_null_like(v_str_):
+                    # logger.debug("Was PANDAS NULL STRING VALUE")
+                    if ADD_STRING_NAN_translation_VALUES:
+                        translations[lang][cname][f_name] = None
+                else:
+                    if v_str_ == REAL_NONE_JSON_VALUE.lower():
+                        # logger.debug("Was REAL_NULL Value")
+                        if ADD_REAL_NONE_translation_VALUES:
+                            translations[lang][cname][f_name] = None
+                    else:
+                        # logger.debug(f"Was str Value")
+                        translations[lang][cname][f_name] = vs
+            else:
+                logger.debug(f"Was ({type(vs)}) Value")
+                translations[lang][cname][f_name] = vs
+    else:
+        logger.debug(f"Was ({type(v)}) Value")
+        translations[lang][cname][f_name] = v
+
+
+def parse_q_value(cname, lang, translations, v):
+    if isinstance(v, str):
+        v_str = v.lower().strip()
+        if is_str_value_null_like(v_str):
+            # logger.debug("Was PANDAS NULL STRING VALUE")
+            if ADD_STRING_NAN_translation_VALUES:
+                translations[lang][cname] = None
+        else:
+            if v_str == REAL_NONE_JSON_VALUE.lower():
+                # logger.debug("Was REAL_NULL Value")
+                if ADD_REAL_NONE_translation_VALUES:
+                    translations[lang][cname] = None
+            else:
+                # logger.debug(f"Was str Value")
+                translations[lang][cname] = v
+    elif isinstance(v, float):
+        if math.isnan(v) or numpy.isnan(v):
+            logger.debug(f"Was float Nan Value")
+            if ADD_FLOAT_NAN_translation_VALUES:
+                translations[lang][cname] = None
+        else:
+            logger.debug(f"Was float Value")
+            translations[lang][cname] = v
+    elif v is None:
+        logger.debug(f"{lang}.{cname} Was None Value")
+        translations[lang][cname] = None
+    elif isinstance(v, QVariant):  # Handle this (qgis.core.NULL) aswell? #
+        # logger.debug(f"{typeToDisplayString(type(v))}")
+        if v.isNull():  # isNull(v):
+            logger.debug("Was null QVariant Value")
+            translations[lang][cname] = None
+        else:
+            logger.debug("Was QVariant Value")
+            vs = v.value()
+            if isinstance(vs, str):
+                v_str_ = vs.lower().strip()
+                if is_str_value_null_like(v_str_):
+                    # logger.debug("Was PANDAS NULL STRING VALUE")
+                    if ADD_STRING_NAN_translation_VALUES:
+                        translations[lang][cname] = None
+                else:
+                    if v_str_ == REAL_NONE_JSON_VALUE.lower():
+                        # logger.debug("Was REAL_NULL Value")
+                        if ADD_REAL_NONE_translation_VALUES:
+                            translations[lang][cname] = None
+                    else:
+                        # logger.debug(f"Was str Value")
+                        translations[lang][cname] = vs
+            else:
+                logger.debug(f"Was ({type(vs)}) Value")
+                translations[lang][cname] = vs
+    else:
+        logger.debug(f"Was ({type(v)}) Value")
+        translations[lang][cname] = v
 
 
 def extract_single_level_str_map(
@@ -145,55 +220,55 @@ def extract_single_level_str_map(
                 if isinstance(v, str):
                     v_str = v.lower().strip()
                     if is_str_value_null_like(v_str):
-                        # logger.warning("Was PANDAS NULL STRING VALUE")
-                        if ADD_STRING_NAN_CUSTOM_PROPERTY_VALUES:
+                        # logger.debug("Was PANDAS NULL STRING VALUE")
+                        if ADD_STRING_NAN_translation_VALUES:
                             custom_props[cname] = None
                     else:
                         if v_str == REAL_NONE_JSON_VALUE.lower():
-                            # logger.warning("Was REAL_NULL Value")
-                            if ADD_REAL_NONE_CUSTOM_PROPERTY_VALUES:
+                            # logger.debug("Was REAL_NULL Value")
+                            if ADD_REAL_NONE_translation_VALUES:
                                 custom_props[cname] = None
                         else:
-                            # logger.warning(f"Was str Value")
+                            # logger.debug(f"Was str Value")
                             custom_props[cname] = v
                 elif isinstance(v, float):
                     if math.isnan(v) or numpy.isnan(v):
-                        logger.warning(f"Was float Nan Value")
-                        if ADD_FLOAT_NAN_CUSTOM_PROPERTY_VALUES:
+                        logger.debug(f"Was float Nan Value")
+                        if ADD_FLOAT_NAN_translation_VALUES:
                             custom_props[cname] = None
                     else:
-                        logger.warning(f"Was float Value")
+                        logger.debug(f"Was float Value")
                         custom_props[cname] = v
                 elif v is None:
-                    logger.warning(f"{cname} Was None Value")
+                    logger.debug(f"{cname} Was None Value")
                     custom_props[cname] = None
                 elif isinstance(v, QVariant):  # Handle this (qgis.core.NULL) aswell? #
-                    # logger.warning(f"{typeToDisplayString(type(v))}")
+                    # logger.debug(f"{typeToDisplayString(type(v))}")
                     if v.isNull():  # isNull(v):
-                        logger.warning("Was null QVariant Value")
+                        logger.debug("Was null QVariant Value")
                         custom_props[cname] = None
                     else:
-                        logger.warning("Was QVariant Value")
+                        logger.debug("Was QVariant Value")
                         vs = v.value()
                         if isinstance(vs, str):
                             v_str_ = vs.lower().strip()
                             if is_str_value_null_like(v_str_):
-                                # logger.warning("Was PANDAS NULL STRING VALUE")
-                                if ADD_STRING_NAN_CUSTOM_PROPERTY_VALUES:
+                                # logger.debug("Was PANDAS NULL STRING VALUE")
+                                if ADD_STRING_NAN_translation_VALUES:
                                     custom_props[cname] = None
                             else:
                                 if v_str_ == REAL_NONE_JSON_VALUE.lower():
-                                    # logger.warning("Was REAL_NULL Value")
-                                    if ADD_REAL_NONE_CUSTOM_PROPERTY_VALUES:
+                                    # logger.debug("Was REAL_NULL Value")
+                                    if ADD_REAL_NONE_translation_VALUES:
                                         custom_props[cname] = None
                                 else:
-                                    # logger.warning(f"Was str Value")
+                                    # logger.debug(f"Was str Value")
                                     custom_props[cname] = vs
                         else:
-                            logger.warning(f"Was ({type(vs)}) Value")
+                            logger.debug(f"Was ({type(vs)}) Value")
                             custom_props[cname] = vs
                 else:
-                    logger.warning(f"Was ({type(v)}) Value")
+                    logger.debug(f"Was ({type(v)}) Value")
                     custom_props[cname] = v
             else:
                 logger.error(f"IGNORING {split_res}")
@@ -216,6 +291,9 @@ def extract_display_rule(
         DisplayRule if valid display attributes found, None otherwise
     """
     if not layer_attributes:
+        if RETURN_EMPTY_DISPLAY_RULE:
+            return DisplayRule()
+
         return None
 
     display_rule_attrs = {}
@@ -297,7 +375,7 @@ def extract_display_rule(
                             display_rule_attrs[field_name][nested_field] = attr_value
                         else:
                             if True:
-                                logger.warning(
+                                logger.debug(
                                     f"Ignoring {attr_name}={attr_value} for {field_name}={field_type}"
                                 )
                                 continue
@@ -322,10 +400,16 @@ def extract_display_rule(
                     continue
 
     if not display_rule_attrs:
+        if RETURN_EMPTY_DISPLAY_RULE:
+            return DisplayRule()
+
         return None
 
     try:
         return DisplayRule(**display_rule_attrs)
     except Exception as e:
         logger.error(f"Failed to create DisplayRule: {e}")
+        if RETURN_EMPTY_DISPLAY_RULE:
+            return DisplayRule()
+
         return None

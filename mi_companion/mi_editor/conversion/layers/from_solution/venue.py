@@ -30,6 +30,7 @@ from mi_companion.mi_editor.conversion.layers.from_solution.routing.graph import
 )
 from .building import add_building_layers
 from .occupant import add_occupant_layer
+from .parsing import translations_to_flattened_dict
 from ...projection import (
     prepare_geom_for_qgis,
     solve_target_crs_authid,
@@ -80,20 +81,22 @@ def add_venue_layer(
             continue
 
         if DESCRIPTOR_BEFORE:
-            venue_name = f"{VENUE_GROUP_DESCRIPTOR} {venue.name}"
+            venue_name = f"{VENUE_GROUP_DESCRIPTOR} {venue.translations[solution.default_language].name}"
         else:
-            venue_name = f"{venue.name} {VENUE_GROUP_DESCRIPTOR}"
+            venue_name = f"{venue.translations[solution.default_language].name} {VENUE_GROUP_DESCRIPTOR}"
 
         venue_group = solution_group.findGroup(venue_name)
         if (
             not ALLOW_DUPLICATE_VENUES_IN_PROJECT
         ):  # TODO: base this in external ids rather than group name
             if venue_group:
-                logger.error(f"Venue {venue.name} already loaded!")
+                logger.error(
+                    f"Venue {venue.translations[solution.default_language].name} already loaded!"
+                )
                 reply = QtWidgets.QMessageBox.question(
                     None,
-                    f'f"Venue {venue.name} already loaded!"',
-                    f"Would you like to reload the {venue.name} venue from the MI Database?",
+                    f"Venue {venue.translations[solution.default_language].name} already loaded!",
+                    f"Would you like to reload the {venue.translations[solution.default_language].name} venue from the MI Database?",
                 )
 
                 if reply == QtWidgets.QMessageBox.Yes:
@@ -177,6 +180,7 @@ def add_venue_polygon_layer(
     :param venue_type_dropdown_widget:
     :return:
     """
+
     venue_layer = add_shapely_layer(
         qgis_instance_handle=qgis_instance_handle,
         geoms=[prepare_geom_for_qgis(venue.polygon)],
@@ -185,7 +189,6 @@ def add_venue_polygon_layer(
             {
                 "admin_id": venue.admin_id,
                 "external_id": venue.external_id,
-                "name": venue.name,
                 "last_verified": venue.last_verified,
                 "venue_type": venue.venue_type.value,
                 **(
@@ -200,15 +203,7 @@ def add_venue_polygon_layer(
                     if venue.address
                     else {}
                 ),
-                **(
-                    {
-                        f"custom_properties.{lang}.{prop}": str(v)
-                        for lang, props_map in venue.custom_properties.items()
-                        for prop, v in props_map.items()
-                    }
-                    if venue.custom_properties
-                    else {}
-                ),
+                **translations_to_flattened_dict(venue.translations),
             }
         ],
         group=venue_group,

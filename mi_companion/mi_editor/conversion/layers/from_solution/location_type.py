@@ -12,7 +12,7 @@ from jord.qlive_utilities import add_no_geom_layer
 from .parsing import process_nested_fields_df
 
 BOOLEAN_LOCATION_TYPE_ATTRS = ()
-STR_LOCATION_TYPE_ATTRS = ("name", "admin_id")
+STR_LOCATION_TYPE_ATTRS = ("translations.en.name", "admin_id")
 FLOAT_LOCATION_TYPE_ATTRS = ()
 INTEGER_LOCATION_TYPE_ATTRS = ()
 
@@ -85,7 +85,7 @@ def add_location_type_layer(
 
     make_field_unique(added_layers, field_name="admin_id")
 
-    for field_name in ("name",):
+    for field_name in ("translations.en.name",):
         make_field_not_null(added_layers, field_name=field_name)
 
     return added_layers

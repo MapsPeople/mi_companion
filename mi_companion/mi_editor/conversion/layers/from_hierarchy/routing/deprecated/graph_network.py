@@ -5,15 +5,18 @@ from typing import Any, List, Optional
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
+from integration_system.model import FALLBACK_OSM_GRAPH, Solution
 from integration_system.tools.graph_utilities import (
     lines_and_points_to_osm_xml,
 )
-from integration_system.model import FALLBACK_OSM_GRAPH, Solution
 from jord.qgis_utilities import feature_to_shapely, parse_q_value
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.layer_descriptors import (
     NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
     NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
+)
+from mi_companion.mi_editor.conversion.layers.from_hierarchy.constants import (
+    DISABLE_GRAPH_EDIT,
 )
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
 
@@ -42,7 +45,7 @@ def add_graph_edges(
     :param issues:
     :return:
     """
-    if not read_bool_setting("UPLOAD_OSM_GRAPH"):
+    if not read_bool_setting("UPLOAD_OSM_GRAPH") or DISABLE_GRAPH_EDIT:
         logger.warning("OSM graph upload is disabled")
         return
 

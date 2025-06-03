@@ -3,7 +3,7 @@ name=MapsIndoors Beta
 
 qgisMinimumVersion=3.36
 qgisMaximumVersion=3.99
-version=0.6.11
+version=0.7.0
 
 author=MapsPeople A/S
 email=chen@mapspeople.com
@@ -26,7 +26,7 @@ deprecated=False
 experimental=False
 # hasProcessingProvider=no
 # hasProcessingProvider=yes
-# supportsQt6=yes
+supportsQt6=yes
 # class_name=MICompanion
 
 plugin_dependencies=Memory Layer Saver,First Aid

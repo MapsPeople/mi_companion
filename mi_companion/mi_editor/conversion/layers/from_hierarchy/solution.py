@@ -1,3 +1,4 @@
+import ast
 import logging
 from typing import Any, Callable, Dict, List, Optional
 
@@ -146,6 +147,12 @@ def convert_solution_layers_to_solution(
         solution_customer_id = solution_data["customer_id"]
         solution_occupants_enabled = solution_data["occupants_enabled"]
         solution_name = solution_data["name"]
+        solution_available_languages = ast.literal_eval(
+            solution_data["available_languages"]
+        )
+        solution_implementation_type = solution_data["implementation_type"]
+        solution_default_language = solution_data["default_language"]
+
         # cached_solution_object =solution_data['cached_solution_object'] # TODO: Store a string to cached
         #  Solution object pickle
 
@@ -177,6 +184,9 @@ def convert_solution_layers_to_solution(
                 solution_name=solution_name,
                 solution_customer_id=solution_customer_id,
                 solution_occupants_enabled=solution_occupants_enabled,
+                solution_available_languages=solution_available_languages,
+                solution_implementation_type=solution_implementation_type,
+                solution_default_language=solution_default_language,
                 ith_solution=ith_child,
                 num_solution_elements=num_mi_group_elements,
                 solution_depth=solution_depth,

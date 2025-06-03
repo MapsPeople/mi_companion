@@ -13,7 +13,7 @@ def process_custom_props_df32423(df: GeoDataFrame) -> None:
     UPDATE: Venue(s):
       Updating
         Venue: Amsterdam - Schiphol Airport (AMS):
-            custom_properties:
+            translations:
               {'en': {'lastauditedtimestamp': 'None'}}
             ->
             {'en': {'lastauditedtimestamp': None}}
@@ -21,17 +21,17 @@ def process_custom_props_df32423(df: GeoDataFrame) -> None:
     UPDATE: Area(s):
       Updating
         Area: Restroom, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
-            custom_properties:
+            translations:
               {}
             ->
             {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
         Area: Transfer Desk, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
-            custom_properties:
+            translations:
               {'generic': {'transform': 'None', 'servicetype': 'Transfer Desk', 'markupjson': 'None'}}
             ->
             {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
         Area: Restroom, Floor: 1, Building: Building 0, Venue: Amsterdam - Schiphol Airport (AMS):
-            custom_properties:
+            translations:
               {}
             ->
             {'generic': {'transform': 'True', 'servicetype': 'True', 'markupjson': 'True'}}
@@ -48,12 +48,12 @@ def process_custom_props_df32423(df: GeoDataFrame) -> None:
 
     if False:
         for column_name, series in df.items():
-            if "custom_properties" in column_name:
+            if "translations" in column_name:
                 if series.apply(type).nunique() > 1:
                     logger.error(series.dtypes)
 
     for column_name, series in df.items():
-        if "custom_properties" in column_name:  # Drop custom properties
+        if "translations" in column_name:  # Drop custom properties
             if all(series.isna()):
                 if False:
                     df[column_name] = [None] * len(series)
@@ -124,7 +124,7 @@ def process_custom_props_df32423(df: GeoDataFrame) -> None:
 
     if False:
         for column_name, series in df.items():
-            if "custom_properties" in column_name:
+            if "translations" in column_name:
                 if series.apply(type).nunique() > 1:
                     logger.error(series.dtypes)
                     logger.error(series.apply(lambda a: str(type(a))))
@@ -137,7 +137,7 @@ def process_custom_props_df32423(df: GeoDataFrame) -> None:
 
     if False:
         for column_name, series in df.items():
-            if "custom_properties" in column_name:
+            if "translations" in column_name:
                 df[column_name] = df[column_name].astype(str)
 
     if False:

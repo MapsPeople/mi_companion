@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, Tuple
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -7,7 +7,7 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup, QgsProject
 
-from integration_system.tools.common_models import (
+from integration_system.common_models import (
     MIConnectionType,
     MIDoorType,
     MIEntryPointType,
@@ -25,8 +25,8 @@ from jord.qgis_utilities import (
     make_enum_dropdown_widget,
     make_iterable_dropdown_widget,
     make_sorted_mapping_dropdown_widget,
-    make_value_relation_widget,
     make_value_map_widget,
+    make_value_relation_widget,
 )
 from jord.qlive_utilities import add_no_geom_layer
 from mi_companion import (
@@ -101,12 +101,12 @@ def add_solution_layers(
 
 
 def add_solution_group(
-    layer_tree_root,
-    mi_hierarchy_group_name,
-    progress_bar,
-    qgis_instance_handle,
-    solution,
-):
+    layer_tree_root: Any,
+    mi_hierarchy_group_name: str,
+    progress_bar: callable,
+    qgis_instance_handle: Any,
+    solution: Solution,
+) -> Tuple:
     """
 
     :param layer_tree_root:
@@ -163,16 +163,31 @@ def add_solution_group(
         edge_context_type_dropdown_widget = make_iterable_dropdown_widget(
             GraphEdgeContextTypes
         )
+
     # solution_layer_name = f"{solution.name}_solution_data"
     # solution_data_layers = QgsProject.instance().mapLayersByName(solution_layer_name)
     # logger.info(f"Found {solution_data_layers}")
-    found_solution_data = False
+    found_solution_data = None
     # found_solution_data = len(solution_data_layers)>0
     for c in solution_group.children():
         if SOLUTION_DATA_DESCRIPTOR in c.name():
-            found_solution_data = True
+            found_solution_data = c
 
-    if not found_solution_data:
+    if found_solution_data is not None:
+        reply = QtWidgets.QMessageBox.question(
+            None,
+            f"Solution Data layer for ({found_solution_data.name()}) was already found",
+            f"Solution data ({found_solution_data.name()}) will be reloaded with the most recent data from th MapsIndoors database!\n"
+            f"Accept?",
+        )
+
+        if reply == QtWidgets.QMessageBox.Yes:
+            solution_group.removeChildNode(found_solution_data)
+            found_solution_data = None
+        else:
+            ...
+
+    if found_solution_data is None:
         layer = add_no_geom_layer(
             qgis_instance_handle=qgis_instance_handle,
             name=SOLUTION_DATA_DESCRIPTOR,
@@ -183,6 +198,9 @@ def add_solution_group(
                     "name": solution.name,
                     "customer_id": solution.customer_id,
                     "occupants_enabled": solution.occupants_enabled,
+                    "available_languages": str(solution.available_languages),
+                    "implementation_type": solution.implementation_type,
+                    "default_language": solution.default_language,
                 }
             ],
             visible=False,
@@ -194,6 +212,18 @@ def add_solution_group(
     available_location_type_dropdown_widget = None
     location_type_ref_layer = None
 
+    if False:  # TODO: RELOAD LOCATION_TYPE LAYER AND REFERENCES
+        for c in solution_group.children():
+            if LOCATION_TYPE_DESCRIPTOR in c.name():
+                found_location_type_data = c
+
+        if found_location_type_data is not None:
+            reply = QtWidgets.QMessageBox.question(
+                None,
+                f"LocationType data ({found_solution_data.name()}) will be reloaded with the newest data!",
+                f"Accept?",
+            )
+
     if ADD_LOCATION_TYPE_LAYERS:
         location_type_layer = None
         for c in solution_group.children():
@@ -202,7 +232,9 @@ def add_solution_group(
                 logger.info(f"Found location type layer: {LOCATION_TYPE_DESCRIPTOR}")
                 break
 
-        if location_type_layer is None:
+        if (
+            location_type_layer is None
+        ):  # TODO: RELOAD LOCATION_TYPE LAYER AND REFERENCES
             location_type_layer = add_location_type_layer(
                 solution,
                 qgis_instance_handle=qgis_instance_handle,
@@ -214,7 +246,9 @@ def add_solution_group(
         location_type_layer = location_type_layer[0]
 
         available_location_type_dropdown_widget = make_value_relation_widget(
-            location_type_layer.id(), target_key_field_name="admin_id"
+            location_type_layer.id(),
+            target_key_field_name="admin_id",
+            target_value_field_name=f"translations.{solution.default_language}.name",
         )
         location_type_ref_layer = location_type_layer
 
@@ -223,7 +257,9 @@ def add_solution_group(
             available_location_type_dropdown_widget = make_value_map_widget(
                 {
                     solution.location_types.get(k)
+                    .translations[solution.default_language]
                     .name: solution.location_types.get(k)
+                    .translations[solution.default_language]
                     .name
                     for k in sorted(solution.location_types.keys)
                 }
