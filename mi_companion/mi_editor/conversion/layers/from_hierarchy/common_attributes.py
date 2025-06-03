@@ -8,7 +8,7 @@ import numpy
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
-from warg import nested_dict
+from warg import nested_dict, str_to_bool
 
 from integration_system.common_models import (
     MIIconPlacementRuleEnum,
@@ -302,8 +302,6 @@ def extract_display_rule(
     field_types = {
         "zoom_from": int,
         "zoom_to": int,
-        "label_zoom_from": int,
-        "label_zoom_to": int,
         "visible": bool,
         "icon": str,
         "icon_visible": bool,
@@ -317,7 +315,10 @@ def extract_display_rule(
         "label": str,
         "label_visible": bool,
         "label_style": LabelDisplayRule,
+        "label_zoom_from": int,
+        "label_zoom_to": int,
         "label_type": MILabelTypeOptionEnum,
+        "label_max_width": int,
         "image_scale": float,
         "image_size": ImageSize,
         "marker_elevation": float,
@@ -372,6 +373,10 @@ def extract_display_rule(
                                 continue
 
                             nested_field = rest[0]
+
+                            # if nested_field == 'label_visible':
+                            #  attr_value = str_to_bool(attr_value)
+
                             display_rule_attrs[field_name][nested_field] = attr_value
                         else:
                             if True:
@@ -390,6 +395,8 @@ def extract_display_rule(
                             display_rule_attrs[field_name] = int(float(attr_value))
                         elif field_type is float:
                             display_rule_attrs[field_name] = float(attr_value)
+                        elif field_type is bool:
+                            display_rule_attrs[field_name] = str_to_bool(attr_value)
                         else:
                             display_rule_attrs[field_name] = field_type(attr_value)
 

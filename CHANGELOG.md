@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
-## 0.7.0 - 2025-05-22
+## 0.7.0 - 2025-06-03
 
 * [Workaround] Ignore OSM related issue in the ManagerAPI at the moment.
 * [Feature] Details added to locations.
