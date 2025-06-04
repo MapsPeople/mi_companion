@@ -53,17 +53,24 @@ def get_location_type_data(
 
                 for attributes in floor_attributes:
                     admin_id = attributes["admin_id"]
+
+                    display_rule = extract_display_rule(attributes)
+                    translations = extract_translations(attributes)
+
                     lt = solution.location_types.get(
                         LocationType.compute_key(admin_id=admin_id)
                     )
                     if lt is None:
-                        display_rule = extract_display_rule(attributes)
-                        translations = extract_translations(attributes)
 
                         solution.add_location_type(
                             admin_id=admin_id,
                             display_rule=display_rule,
                             translations=translations,
+                        )
+                    else:
+                        # logger.error(f'{lt} with {admin_id} already exists, updating')
+                        solution.update_location_type(
+                            lt.key, display_rule=display_rule, translations=translations
                         )
 
             except Exception as e:
@@ -72,3 +79,5 @@ def get_location_type_data(
 
                 if collect_invalid:
                     issues.append(_invalid)
+        else:
+            logger.error(f"{solution_level_item.name()} was not a location_type layer")
