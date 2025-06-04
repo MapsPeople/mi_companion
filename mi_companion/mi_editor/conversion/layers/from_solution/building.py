@@ -47,9 +47,11 @@ def add_building_layers(
     for ith, building in enumerate(
         sorted(
             solution.buildings,
-            key=lambda building_: building_.translations[
-                solution.default_language
-            ].name,
+            key=lambda building_: (
+                building_.translations[solution.default_language].name
+                if solution.default_language in building_.translations
+                else building_.translations["en"].name
+            ),
         )
     ):
         building: Building
@@ -78,10 +80,18 @@ def add_building_layers(
             )
 
         elif building.venue.key == venue.key:
-            if DESCRIPTOR_BEFORE:
-                building_name = f"{BUILDING_GROUP_DESCRIPTOR} {building.translations[solution.default_language].name}"
+
+            if (
+                solution.default_language in building.translations
+            ):  # SPECIAL CASE HANDLING FOR OUTSIDE BUILDING
+                building_name__ = building.translations[solution.default_language].name
             else:
-                building_name = f"{building.translations[solution.default_language].name} {BUILDING_GROUP_DESCRIPTOR}"
+                building_name__ = building.translations["en"].name
+
+            if DESCRIPTOR_BEFORE:
+                building_name = f"{BUILDING_GROUP_DESCRIPTOR} {building_name__}"
+            else:
+                building_name = f"{building_name__} {BUILDING_GROUP_DESCRIPTOR}"
 
             building_group = venue_group.insertGroup(
                 INSERT_INDEX,

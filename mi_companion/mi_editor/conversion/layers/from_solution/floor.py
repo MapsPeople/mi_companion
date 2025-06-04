@@ -52,14 +52,18 @@ def add_floor_layers(
         floor: Floor
         if floor.building.key == building.key:
             descriptor = f"{FLOOR_GROUP_DESCRIPTOR}:{floor.floor_index}"
-            if DESCRIPTOR_BEFORE:
-                floor_name = (
-                    f"{descriptor} {floor.translations[solution.default_language].name}"
-                )
+
+            if (
+                solution.default_language in floor.translations
+            ):  # SPECIAL CASE HANDLING FOR OUTSIDE BUILDING
+                floor_name__ = floor.translations[solution.default_language].name
             else:
-                floor_name = (
-                    f"{floor.translations[solution.default_language].name} {descriptor}"
-                )
+                floor_name__ = floor.translations["en"].name
+
+            if DESCRIPTOR_BEFORE:
+                floor_name = f"{descriptor} {floor_name__}"
+            else:
+                floor_name = f"{floor_name__} {descriptor}"
 
             floor_group = building_group.insertGroup(
                 INSERT_INDEX, floor_name
