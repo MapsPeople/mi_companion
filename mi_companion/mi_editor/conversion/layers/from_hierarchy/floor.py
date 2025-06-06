@@ -196,6 +196,9 @@ def get_floor_data(
             (admin_id, external_id, floor_attributes, floor_feature) = (
                 special_extract_layer_data(floor_level_item)
             )
+
+            floor_polygon = None
+
             try:
                 floor_polygon = feature_to_shapely(floor_feature)
             except Exception as e:
