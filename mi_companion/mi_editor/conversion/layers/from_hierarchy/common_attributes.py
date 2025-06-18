@@ -8,7 +8,6 @@ import numpy
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
-from warg import nested_dict, str_to_bool
 
 from integration_system.common_models import (
     MIIconPlacementRuleEnum,
@@ -32,6 +31,7 @@ from mi_companion import (
     ADD_REAL_NONE_translation_VALUES,
     ADD_STRING_NAN_translation_VALUES,
 )
+from warg import nested_dict, str_to_bool
 
 logger = logging.getLogger(__name__)
 

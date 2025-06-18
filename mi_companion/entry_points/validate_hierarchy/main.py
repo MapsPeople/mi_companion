@@ -18,7 +18,6 @@ from qgis.utils import iface
 
 from jord.qgis_utilities.helpers import InjectedProgressBar
 from mi_companion import RESOURCE_BASE_PATH
-from mi_companion.mi_editor import convert_solution_layers_to_solution
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = []
@@ -29,6 +28,7 @@ def run() -> None:
     Validate the hierarchy of the solution layers.
     """
 
+    from mi_companion.mi_editor import convert_solution_layers_to_solution
     from mi_companion.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
 
     qgis_instance_handle = QgsProject.instance()

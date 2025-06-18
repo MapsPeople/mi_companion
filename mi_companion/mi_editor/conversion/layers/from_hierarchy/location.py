@@ -36,7 +36,6 @@ from integration_system.model import (
     Solution,
     StrToDetailTypeMap,
 )
-from integration_system.model.solution_item import Media
 from integration_system.model.typings import LanguageBundle
 from integration_system.tools.serialisation import standard_opening_hours_from_dict
 from jord.qgis_utilities import (

@@ -1,10 +1,9 @@
 import logging
 from pathlib import Path
 
-from warg import is_mac, is_windows
-
 from mi_companion.constants import VERSION
 from plugin_config import PROFILE, QGIS_APP_PATH
+from warg import is_mac, is_windows
 
 logger = logging.getLogger(__name__)
 

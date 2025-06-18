@@ -1,9 +1,6 @@
 #!/usr/bin/python
 import logging
 
-from integration_system.config import MapsIndoors, Settings, set_settings
-from integration_system.tools.migration import migrate_venue
-from jord.qgis_utilities import read_plugin_setting
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
@@ -27,6 +24,10 @@ def run(
     :param remove_venue_in_from_solution: DISABLED FOR NOW!
     :return:
     """
+
+    from integration_system.config import MapsIndoors, Settings, set_settings
+    from integration_system.tools.migration import migrate_venue
+    from jord.qgis_utilities import read_plugin_setting
 
     sync_module_settings = Settings(
         mapsindoors=MapsIndoors(

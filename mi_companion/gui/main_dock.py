@@ -29,7 +29,6 @@ from qgis.core import (
 
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsDockWidget
-from warg import get_submodules_by_path, reload_module
 
 from integration_system.config import MapsIndoors, Settings, set_settings
 from integration_system.mi import SolutionDepth, get_venue_key_mi_venue_map
@@ -45,6 +44,7 @@ from mi_companion.mi_editor.hierarchy.hierarchy_validation import (
     add_solution_hierarchy_change_listener,
     remove_solution_hierarchy_change_listener,
 )
+from warg import get_submodules_by_path, reload_module
 from .gui_utilities import clean_str
 from .make_solution_right_click import add_augmented_actions
 from ..configuration.options import read_bool_setting
@@ -501,7 +501,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                 raise e
             self.changes_label.setText(f"Reverted venues")
 
-    def display_geometry_in_exception(self, e) -> None:
+    def display_geometry_in_exception(self, e: Exception) -> None:
         # string_exception = "\n".join(e.args)
 
         string_exception = str(e)
@@ -545,7 +545,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             )
 
     # noinspection PyPep8Naming
-    def closeEvent(self, event) -> None:  # pylint: disable=invalid-name
+    def closeEvent(self, event: Any) -> None:  # pylint: disable=invalid-name
         remove_solution_hierarchy_change_listener()
 
         self.plugin_closing.emit()

@@ -2,10 +2,6 @@
 import logging
 from pathlib import Path
 
-from jord.qgis_utilities import (
-    get_gcp_transformer_from_file,
-    transform_sub_tree_features,
-)
 from mi_companion import RESOURCE_BASE_PATH
 from mi_companion.constants import MI_EPSG_NUMBER
 from mi_companion.mi_editor import get_target_crs_srsid
@@ -58,6 +54,11 @@ def run(
     :param method: Which method to use for the transformation
     :return:
     """
+
+    from jord.qgis_utilities import (
+        get_gcp_transformer_from_file,
+        transform_sub_tree_features,
+    )
 
     # noinspection PyUnresolvedReferences
     from qgis.utils import iface

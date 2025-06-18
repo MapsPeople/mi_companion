@@ -1,7 +1,9 @@
 #!/usr/bin/python
 import logging
-from typing import Optional
 
+from integration_system.config import MapsIndoors, Settings, set_settings
+from integration_system.mi import call_manager_api
+from jord.qgis_utilities import read_plugin_setting
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
@@ -9,19 +11,7 @@ logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = []
 
 
-def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> None:
-    """
-
-    :param solution_id:
-    :param new_solution_external_id:
-    :return:
-    """
-    from integration_system.config import MapsIndoors, Settings, set_settings
-    from integration_system.tools.compatibilization import (
-        get_or_set_solution_external_id,
-    )
-    from jord.qgis_utilities import read_plugin_setting
-
+def run(*, solution_id: str) -> None:
     sync_module_settings = Settings(
         mapsindoors=MapsIndoors(
             username=read_plugin_setting(
@@ -54,9 +44,9 @@ def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> 
 
     set_settings(sync_module_settings)
 
-    get_or_set_solution_external_id(
-        solution_id, new_external_id=new_solution_external_id
-    )
+    solution_id = solution_id.strip()
+
+    data_issues = call_manager_api("GET", f"/api/dataissues/details/{solution_id}")
 
     # noinspection PyUnresolvedReferences
     from qgis.PyQt.QtWidgets import (
@@ -68,8 +58,8 @@ def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> 
 
     QtWidgets.QMessageBox.information(
         None,
-        "Assigned external ID",
-        f"Solution {solution_id} now has an external ID of {new_solution_external_id}",
+        "Derived Geometry",
+        f"Derived is now being recomputed for solution {solution_id}",
     )
 
 

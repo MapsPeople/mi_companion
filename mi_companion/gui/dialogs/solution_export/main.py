@@ -8,6 +8,7 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+
 from warg import system_open_path
 
 logger = logging.getLogger(__name__)
