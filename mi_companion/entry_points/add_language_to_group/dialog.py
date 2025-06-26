@@ -64,7 +64,7 @@ class Dialog(QDialog, FORM_CLASS):
         call_kwarg = {}
         for k, v in self.parameter_lines.items():
             value = v.text()
-            if value and value != "None":
+            if value is not None and value != "None":
                 ano = self.parameter_signature[k].annotation
                 if ano != self.parameter_signature[k].empty:
                     if is_optional(ano) or is_union(ano):
@@ -85,6 +85,11 @@ class Dialog(QDialog, FORM_CLASS):
                     value = type(self.parameter_signature[k].default)(value)
                 call_kwarg[k] = value
 
-        run(**call_kwarg)
+        if run(**call_kwarg):
+            self.close()
 
-        self.close()
+        # return_value = run(**call_kwarg)
+        # if return_value == 'rerun':
+        #     run(**call_kwarg)
+        # else:
+        #     self.close()

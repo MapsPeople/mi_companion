@@ -147,9 +147,8 @@ def convert_solution_layers_to_solution(
         solution_customer_id = solution_data["customer_id"]
         solution_occupants_enabled = solution_data["occupants_enabled"]
         solution_name = solution_data["name"]
-        solution_available_languages = ast.literal_eval(
-            solution_data["available_languages"]
-        )
+        solution_available_languages = solution_data["available_languages"]
+
         solution_implementation_type = solution_data["implementation_type"]
         solution_default_language = solution_data["default_language"]
 
