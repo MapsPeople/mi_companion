@@ -11,7 +11,7 @@
             </rect>
         </property>
         <property name="windowTitle">
-            <string>Compatibility</string>
+            <string>Add language</string>
         </property>
         <layout class="QVBoxLayout" name="parameter_layout">
             <item>
@@ -19,7 +19,7 @@
                     <item>
                         <widget class="QPushButton" name="compute_button">
                             <property name="text">
-                                <string>Compute</string>
+                                <string>Add language</string>
                             </property>
                         </widget>
                     </item>
