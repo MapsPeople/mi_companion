@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   download.
 * [New Button] Added a button for forcefully recomputing "DerivedGeometry" for solutions with 3d walls based on
   a solutionId.
-* [Bug-fix] Property is_obstacle and is_selectable is now tracked and persisted. 
+* [Bug-fix] Property is_obstacle and is_selectable is now tracked and persisted.
 
 ## 0.7.5 - 2025-06-04
 

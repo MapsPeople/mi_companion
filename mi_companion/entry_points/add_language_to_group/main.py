@@ -8,27 +8,39 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
 from qgis.utils import iface
 
 from mi_companion import RESOURCE_BASE_PATH
+
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
+
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsField, QgsProject
+
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
+
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets, uic
 
-from mi_companion.layer_descriptors import LAYER_DESCRIPTORS_WITH_TRANSLATIONS, SOLUTION_DATA_DESCRIPTOR
+from mi_companion.layer_descriptors import (
+    LAYER_DESCRIPTORS_WITH_TRANSLATIONS,
+    SOLUTION_DATA_DESCRIPTOR,
+)
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = []
 TRANSLATIONS_FIELD_NAME = "translations"
 
-def run(*, language_code: str, copy_from_language: str= 'en', fallback_value: str= 'NoName'
-        #, auto_translate: bool=False
-        ) -> None:
+
+def run(
+    *,
+    language_code: str,
+    copy_from_language: str = "en",
+    fallback_value: str = "NoName",
+    # , auto_translate: bool=False
+) -> None:
     """
     Create a new language column.
 
@@ -45,7 +57,7 @@ def run(*, language_code: str, copy_from_language: str= 'en', fallback_value: st
             "Please specify a different language_code than copy_from_language.",
         )
         return False
-    if language_code == '':
+    if language_code == "":
         QtWidgets.QMessageBox.warning(
             None,
             "No language_code",
@@ -53,12 +65,13 @@ def run(*, language_code: str, copy_from_language: str= 'en', fallback_value: st
         )
         return False
 
-
     selected_nodes = iface.layerTreeView().selectedNodes()
 
     if len(selected_nodes) == 1:  # TODO: SHOULD WE ALLOW MORE?
         for node in selected_nodes:
-            recursive_add_language_to_group(node, language_code, fallback_value, copy_from_language)
+            recursive_add_language_to_group(
+                node, language_code, fallback_value, copy_from_language
+            )
 
     else:
         QtWidgets.QMessageBox.warning(
@@ -68,15 +81,17 @@ def run(*, language_code: str, copy_from_language: str= 'en', fallback_value: st
         )
         return
 
-
     QtWidgets.QMessageBox.information(
         None,
         "Success",
         f"We added language {TRANSLATIONS_FIELD_NAME}.{language_code}.name to the selected layer/group",
     )
 
-def add_translation_language_field_to_layer(node, language_code: str, fallback_value: str, copy_from_language: str):
-    current_layer:QgsVectorLayer = node.layer()
+
+def add_translation_language_field_to_layer(
+    node, language_code: str, fallback_value: str, copy_from_language: str
+):
+    current_layer = node.layer()  # QgisVectorLayer
     should_add_translation = False
     layername = node.name()
     for descriptor in LAYER_DESCRIPTORS_WITH_TRANSLATIONS:
@@ -85,7 +100,6 @@ def add_translation_language_field_to_layer(node, language_code: str, fallback_v
             break
     if not should_add_translation:
         return
-
 
     layer_fields = current_layer.fields()
     layer_names = layer_fields.names()
@@ -135,7 +149,9 @@ def add_translation_language_field_to_layer(node, language_code: str, fallback_v
     current_layer.addAttribute(new_field)
     if default_language_exists:
         for feature in current_layer.getFeatures():
-            feature[field_name] = feature[f"{TRANSLATIONS_FIELD_NAME}.{copy_from_language}.name"]
+            feature[field_name] = feature[
+                f"{TRANSLATIONS_FIELD_NAME}.{copy_from_language}.name"
+            ]
             current_layer.updateFeature(feature)
     elif fallback_value_exists:
         for feature in current_layer.getFeatures():
@@ -144,22 +160,29 @@ def add_translation_language_field_to_layer(node, language_code: str, fallback_v
     # Commit the changes
     current_layer.commitChanges()
 
-def recursive_add_language_to_group(node, language_code: str, fallback_value: str, copy_from_language: str):
+
+def recursive_add_language_to_group(
+    node, language_code: str, fallback_value: str, copy_from_language: str
+):
     if isinstance(node, QgsLayerTreeLayer):
         add_translation_language_field_to_layer(
-            node, language_code, fallback_value, copy_from_language)
+            node, language_code, fallback_value, copy_from_language
+        )
         add_language_code_to_solutiondata(node, language_code)
 
     elif isinstance(node, QgsLayerTreeGroup):
         for child in node.children():
-            recursive_add_language_to_group(child, language_code, fallback_value, copy_from_language)
+            recursive_add_language_to_group(
+                child, language_code, fallback_value, copy_from_language
+            )
     else:
         logging.error(
             f"This should not happen as node must either be a QgsLayerTreeLayer or a QgsLayerTreeGroup."
         )
 
+
 def add_language_code_to_solutiondata(node, language_code: str):
-    layer: QgsVectorLayer = node.layer()
+    layer = node.layer()  # QgisVectorLayer
 
     layername = node.name()
 
@@ -191,8 +214,6 @@ def add_language_code_to_solutiondata(node, language_code: str):
 
         # Commit changes
         layer.commitChanges()
-
-
 
 
 if __name__ == "__main__":
