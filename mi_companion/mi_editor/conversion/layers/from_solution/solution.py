@@ -198,8 +198,8 @@ def add_solution_group(
                     "name": solution.name,
                     "customer_id": solution.customer_id,
                     "occupants_enabled": solution.occupants_enabled,
-                    "available_languages": str(solution.available_languages),
-                    "implementation_type": solution.implementation_type,
+                    "available_languages": solution.available_languages,
+                    "implementation_type": str(solution.implementation_type),
                     "default_language": solution.default_language,
                 }
             ],

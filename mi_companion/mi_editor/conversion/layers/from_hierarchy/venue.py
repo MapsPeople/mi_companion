@@ -15,6 +15,7 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 from integration_system.common_models import MIVenueType
 from integration_system.mi import SolutionDepth
 from integration_system.model import OptionalPostalAddress, PostalAddress, Solution
+from integration_system.model.solution import ImplementationStatus
 from mi_companion import (
     HALF_SIZE,
 )
@@ -59,7 +60,7 @@ def convert_solution_venues(
     solution_customer_id: str,
     solution_occupants_enabled: bool,
     solution_available_languages: Collection[str],
-    solution_implementation_type: str,
+    solution_implementation_type: ImplementationStatus,
     solution_default_language: str,
     ith_solution: int,
     num_solution_elements: int,
@@ -108,9 +109,9 @@ def convert_solution_venues(
 
     if existing_solution is None:
         solution = Solution(
-            external_id=solution_external_id,
-            name=solution_name,
-            customer_id=solution_customer_id,
+            _external_id=solution_external_id,
+            _name=solution_name,
+            _customer_id=solution_customer_id,
         )
     else:
         solution = copy.deepcopy(existing_solution)

@@ -66,7 +66,7 @@ def run(
 
     from integration_system.model import Solution
 
-    s = Solution(uuid.uuid4().hex, name, customer_id=customer_id)
+    s = Solution(uuid.uuid4().hex, name, _customer_id=customer_id)
     venue_name = "Empty Venue"
     venue_polygon = dilate(
         shapely.Point(wgs84_degree_lat, wgs84_degree_long),

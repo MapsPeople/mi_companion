@@ -22,6 +22,7 @@ from integration_system.mi import (
     get_solution_name_external_id_map,
 )
 from integration_system.model import Solution
+from integration_system.model.solution import ImplementationStatus
 from jord.qgis_utilities import parse_q_value
 from mi_companion import UPLOAD_ERROR_CONFIRMATION_TITLE
 from mi_companion.layer_descriptors import (
@@ -147,10 +148,11 @@ def convert_solution_layers_to_solution(
         solution_customer_id = solution_data["customer_id"]
         solution_occupants_enabled = solution_data["occupants_enabled"]
         solution_name = solution_data["name"]
-        solution_available_languages = ast.literal_eval(
-            solution_data["available_languages"]
+        solution_available_languages = solution_data["available_languages"]
+
+        solution_implementation_type = ImplementationStatus(
+            solution_data["implementation_type"]
         )
-        solution_implementation_type = solution_data["implementation_type"]
         solution_default_language = solution_data["default_language"]
 
         # cached_solution_object =solution_data['cached_solution_object'] # TODO: Store a string to cached
