@@ -206,6 +206,20 @@ def add_solution_group(
             visible=False,
         )
 
+    implementation_type_dropdown_widget = None
+    if read_bool_setting("MAKE_ENTRY_POINT_TYPE_DROPDOWN"):
+        implementation_type_dropdown_widget = make_enum_dropdown_widget(
+            MIEntryPointType
+        )
+
+    default_language_dropdown_widget = None
+    if read_bool_setting("MAKE_ENTRY_POINT_TYPE_DROPDOWN"):
+        default_language_dropdown_widget = make_enum_dropdown_widget(MIEntryPointType)
+
+    occupants_enabled_widget = None  # BOOL
+    if read_bool_setting("MAKE_ENTRY_POINT_TYPE_DROPDOWN"):
+        occupants_enabled_widget = make_enum_dropdown_widget(MIEntryPointType)
+
     if progress_bar:
         progress_bar.setValue(10)
 
