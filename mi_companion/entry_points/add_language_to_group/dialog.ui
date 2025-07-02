@@ -11,7 +11,7 @@
             </rect>
         </property>
         <property name="windowTitle">
-            <string>Add language</string>
+            <string>Add language to selected group/layer</string>
         </property>
         <layout class="QVBoxLayout" name="parameter_layout">
             <item>

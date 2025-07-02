@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Bug-fix] "." is now allowed in admin_id's by the SyncModule
 * [Bug-fix] If a field erroneously has a non-lowercase (Dictated by upload to the ManagerAPI) is lowered on
   download.
-* [New Button] Added a button for forcefully recomputing "DerivedGeometry" for solutions with 3d walls based on
+* [New Button] Added a button "Recalculate 3d Walls" for forcefully recomputing 3D walls aka "DerivedGeometry" for solutions based on
   a solutionId.
 * [Bug-fix] Property is_obstacle and is_selectable is now tracked and persisted.
 

@@ -53,24 +53,21 @@ TRANSLATIONS_FIELD_NAME = "translations"
 def run(
     *,
     language_code: str,
-    copy_from_language: str = "en",
-    fallback_value: str = "NoName",
+    # copy_from_language: str = "en",
+    # fallback_value: str = "NoName",
     # , auto_translate: bool=False
-) -> None:
+) -> bool:
     """
-    Create a new language column.
+    language_code field below: Add language, e.g. en, da, de, fr
+    """
+    copy_from_language: str = "en"
+    fallback_value: str = "NoName"
 
-    :param language_code: Add language as languagecode, e.g. de for German or da for Danish.
-    :param copy_from_language: Other language to use attribute values from.
-    :param fallback_value: Default value for the attributes. If empty, attributes are populated with copy_from_language.
-    if copy_from_language is empty, or 'en' does not exist, an error is returned, asking you to specify a fallback_value (e.g. NoName).
-    :return:
-    """
     if language_code == copy_from_language:
         QtWidgets.QMessageBox.warning(
             None,
-            "language_code same as copy_from_language",
-            "Please specify a different language_code than copy_from_language.",
+            "'en' already exists",
+            "'en' already exists. Please specify a different language_code",
         )
         return False
     if language_code == "":
@@ -83,9 +80,10 @@ def run(
 
     selected_nodes = iface.layerTreeView().selectedNodes()
 
+    responses = {}
     if len(selected_nodes) == 1:  # TODO: SHOULD WE ALLOW MORE?
         for node in selected_nodes:
-            recursive_add_language_to_group(
+            responses = recursive_add_language_to_group(
                 node, language_code, fallback_value, copy_from_language
             )
 
@@ -95,27 +93,38 @@ def run(
             "Select only one item",
             "Make sure to select exactly one group or layer (not multiple or none)",
         )
-        return
+        return False
 
-    QtWidgets.QMessageBox.information(
-        None,
-        "Success",
-        f"We added language {TRANSLATIONS_FIELD_NAME}.{language_code}.name to the selected layer/group",
-    )
+    if True in responses.values():
+        true_items = [key for key, value in responses.items() if value]
+
+        QtWidgets.QMessageBox.information(
+            None,
+            "Success",
+            f"We added language {TRANSLATIONS_FIELD_NAME}.{language_code}.name to {len(true_items)} layers.",
+        )
+    else:
+        QtWidgets.QMessageBox.warning(
+            None,
+            "No update",
+            f"Nothing was added to the selected layer/group.",
+        )
+    return True
 
 
 def add_translation_language_field_to_layer(
     node, language_code: str, fallback_value: str, copy_from_language: str
-):
-    current_layer: QgsVectorLayer = node.layer()
+) -> dict[str, bool]:
+    current_layer = node.layer()  # QgisVectorLayer
     should_add_translation = False
     layername = node.name()
     for descriptor in LAYER_DESCRIPTORS_WITH_TRANSLATIONS:
         if descriptor in layername:
             should_add_translation = True
             break
+
     if not should_add_translation:
-        return
+        return {}
 
     layer_fields = current_layer.fields()
     layer_names = layer_fields.names()
@@ -128,7 +137,7 @@ def add_translation_language_field_to_layer(
         )
 
         if reply == QMessageBox.Cancel:
-            return
+            return {layername: False}
 
     ### Check if inputvalues are provided and change booleans accordingly.
     default_language_exists = False
@@ -146,7 +155,7 @@ def add_translation_language_field_to_layer(
         )
 
         if reply == QMessageBox.Cancel:
-            return
+            return {layername: False}
 
     else:
         QtWidgets.QMessageBox.warning(
@@ -154,7 +163,8 @@ def add_translation_language_field_to_layer(
             "Missing attribute",
             f"The layer {layername} does not have a {TRANSLATIONS_FIELD_NAME}.{copy_from_language}.name attribute. Please specify a fallback_value (e.g. NoName).",
         )
-        return
+        return {layername: False}
+
     # Start editing the layer
     current_layer.startEditing()
     field_name = f"{TRANSLATIONS_FIELD_NAME}.{language_code}.name"
@@ -175,36 +185,41 @@ def add_translation_language_field_to_layer(
             current_layer.updateFeature(feature)
     # Commit the changes
     current_layer.commitChanges()
+    return {layername: True}
 
 
 def recursive_add_language_to_group(
     node, language_code: str, fallback_value: str, copy_from_language: str
-):
+) -> dict[str, bool]:
+    responses = {}
     if isinstance(node, QgsLayerTreeLayer):
-        add_translation_language_field_to_layer(
+        response = add_translation_language_field_to_layer(
             node, language_code, fallback_value, copy_from_language
         )
-        add_language_code_to_solutiondata(node, language_code)
+        solution_response = add_language_code_to_solutiondata(node, language_code)
+        responses.update(response)
+        responses.update(solution_response)
 
     elif isinstance(node, QgsLayerTreeGroup):
         for child in node.children():
-            recursive_add_language_to_group(
+            response = recursive_add_language_to_group(
                 child, language_code, fallback_value, copy_from_language
             )
+            responses.update(response)
+
     else:
         logging.error(
             f"This should not happen as node must either be a QgsLayerTreeLayer or a QgsLayerTreeGroup."
         )
+    return responses
 
 
-def add_language_code_to_solutiondata(node, language_code: str):
+def add_language_code_to_solutiondata(node, language_code: str) -> dict[str, bool]:
     layer = node.layer()  # QgisVectorLayer
 
     layername = node.name()
 
     if SOLUTION_DATA_DESCRIPTOR in layername:
-        # Start editing
-        layer.startEditing()
 
         # Get the first feature (assuming there's only one)
         feature = next(layer.getFeatures())
@@ -223,13 +238,18 @@ def add_language_code_to_solutiondata(node, language_code: str):
             languages.append(language_code)
 
             # Update the feature
+            layer.startEditing()
             layer.changeAttributeValue(feature.id(), field_index, languages)
             print(f"Added {language_code} to languages list")
         else:
             print(f"{language_code} already in languages list")
+            return {layername: False}
 
         # Commit changes
         layer.commitChanges()
+        return {layername: True}
+
+    return {}
 
 
 if __name__ == "__main__":
