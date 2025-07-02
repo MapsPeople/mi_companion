@@ -43,7 +43,7 @@ logger = logging.getLogger(RESOURCE_BASE_PATH)
 VERBOSE = False
 
 ensure_in_sys_path(Path(__file__).parent.parent)
-__all__ = []
+__all__ = ["LevelSelectorWidget"]
 
 
 class LevelSelectorWidget(QgsDockWidget, FORM_CLASS):

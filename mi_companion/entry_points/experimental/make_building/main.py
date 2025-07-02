@@ -11,7 +11,7 @@ from mi_companion.mi_editor.conversion import (
     add_building_layers,
 )
 
-__all__ = []
+__all__ = ["run"]
 
 from mi_companion import RESOURCE_BASE_PATH
 

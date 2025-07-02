@@ -19,7 +19,7 @@ logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 CRS = f"EPSG:3857"
 
-__all__ = []
+__all__ = ["run"]
 
 
 def run(

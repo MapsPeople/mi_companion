@@ -5,7 +5,7 @@ from typing import Optional
 from mi_companion import RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
-__all__ = []
+__all__ = ["run"]
 
 
 def run(*, a, b: Optional[str] = None, c: int = 1) -> None:

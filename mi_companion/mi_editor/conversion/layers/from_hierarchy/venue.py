@@ -14,8 +14,12 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.common_models import MIVenueType
 from integration_system.mi import SolutionDepth
-from integration_system.model import OptionalPostalAddress, PostalAddress, Solution
-from integration_system.model.solution import ImplementationStatus
+from integration_system.model import (
+    ImplementationStatus,
+    OptionalPostalAddress,
+    PostalAddress,
+    Solution,
+)
 from mi_companion import (
     HALF_SIZE,
 )

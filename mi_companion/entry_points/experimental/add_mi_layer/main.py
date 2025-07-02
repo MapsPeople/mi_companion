@@ -10,7 +10,7 @@ from qgis.core import (
     QgsProject,
 )
 
-__all__ = []
+__all__ = ["run"]
 
 from mi_companion import RESOURCE_BASE_PATH
 

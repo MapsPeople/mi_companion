@@ -8,7 +8,7 @@ from mi_companion import LAYER_LABEL_VISIBLE_MIN_RATIO, RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
 
-__all__ = []
+__all__ = ["run"]
 
 
 def run(

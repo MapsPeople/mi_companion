@@ -38,7 +38,7 @@ as%20OpenStreetMap%2C%20and%20GPS%20devices
 from mi_companion import RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
-__all__ = []
+__all__ = ["run"]
 
 
 def run(

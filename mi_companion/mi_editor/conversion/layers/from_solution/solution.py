@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional, Tuple
+from typing import Any, Iterable, Optional, Tuple
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -19,6 +19,8 @@ from integration_system.mi import (
 )
 from integration_system.model import (
     GraphEdgeContextTypes,
+    IMPLEMENTATION_STATUS,
+    ImplementationStatus,
     Solution,
 )
 from jord.qgis_utilities import (
@@ -188,7 +190,7 @@ def add_solution_group(
             ...
 
     if found_solution_data is None:
-        layer = add_no_geom_layer(
+        solution_data_layers = add_no_geom_layer(
             qgis_instance_handle=qgis_instance_handle,
             name=SOLUTION_DATA_DESCRIPTOR,
             group=solution_group,
@@ -206,19 +208,33 @@ def add_solution_group(
             visible=False,
         )
 
-    implementation_type_dropdown_widget = None
-    if read_bool_setting("MAKE_ENTRY_POINT_TYPE_DROPDOWN"):
-        implementation_type_dropdown_widget = make_enum_dropdown_widget(
-            MIEntryPointType
+        implementation_type_dropdown_widget = make_sorted_mapping_dropdown_widget(
+            IMPLEMENTATION_STATUS
         )
 
-    default_language_dropdown_widget = None
-    if read_bool_setting("MAKE_ENTRY_POINT_TYPE_DROPDOWN"):
-        default_language_dropdown_widget = make_enum_dropdown_widget(MIEntryPointType)
+        for layers_inner in solution_data_layers:
+            if layers_inner:
+                if isinstance(layers_inner, Iterable):
+                    for solution_data_layer in layers_inner:
+                        if solution_data_layer:
+                            solution_data_layer.setEditorWidgetSetup(
+                                solution_data_layers.fields().indexFromName(
+                                    "implementation_type"
+                                ),
+                                implementation_type_dropdown_widget,
+                            )
+                else:
+                    layers_inner.setEditorWidgetSetup(
+                        layers_inner.fields().indexFromName("implementation_type"),
+                        implementation_type_dropdown_widget,
+                    )
 
-    occupants_enabled_widget = None  # BOOL
-    if read_bool_setting("MAKE_ENTRY_POINT_TYPE_DROPDOWN"):
-        occupants_enabled_widget = make_enum_dropdown_widget(MIEntryPointType)
+    if False:
+        default_language_dropdown_widget = None
+        if read_bool_setting("MAKE_ENTRY_POINT_TYPE_DROPDOWN"):
+            default_language_dropdown_widget = make_enum_dropdown_widget(
+                MIEntryPointType
+            )
 
     if progress_bar:
         progress_bar.setValue(10)
@@ -240,6 +256,23 @@ def add_solution_group(
 
     if ADD_LOCATION_TYPE_LAYERS:
         location_type_layer = None
+
+        for c in solution_group.children():
+            if LOCATION_TYPE_DESCRIPTOR in c.name():
+                if location_type_layer is not None:
+                    reply = QtWidgets.QMessageBox.question(
+                        None,
+                        f"Solution Data layer for ({c.name()}) was already found",
+                        f"Solution data ({c.name()}) will be reloaded with the most recent data from th MapsIndoors database!\n"
+                        f"Accept?",
+                    )
+
+                    if reply == QtWidgets.QMessageBox.Yes:
+                        solution_group.removeChildNode(c)
+                        location_type_layer = None
+                    else:
+                        ...
+
         for c in solution_group.children():
             if LOCATION_TYPE_DESCRIPTOR in c.name():
                 location_type_layer = [c.layer()]
