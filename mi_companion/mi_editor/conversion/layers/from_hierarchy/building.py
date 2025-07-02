@@ -24,7 +24,7 @@ from integration_system.mi import (
     MI_OUTSIDE_BUILDING_NAME,
     get_outside_building_floor_name,
 )
-from integration_system.model import Solution
+from integration_system.model import LanguageBundle, Solution
 from jord.qgis_utilities import feature_to_shapely
 from mi_companion import (
     HALF_SIZE,
@@ -121,8 +121,10 @@ def add_venue_level_hierarchy(
                 if outside_building is None:
                     try:
                         outside_building_key = solution.add_building(
-                            outside_building_admin_id,
-                            MI_OUTSIDE_BUILDING_NAME,
+                            admin_id=outside_building_admin_id,
+                            translations={
+                                "en": LanguageBundle(name=MI_OUTSIDE_BUILDING_NAME)
+                            },
                             polygon=venue.polygon,
                             venue_key=venue_key,
                         )
@@ -142,7 +144,11 @@ def add_venue_level_hierarchy(
                 try:
                     outside_floor_key = solution.add_floor(
                         0,
-                        name=get_outside_building_floor_name(0),
+                        translations={
+                            "en": LanguageBundle(
+                                name=get_outside_building_floor_name(0)
+                            )
+                        },
                         building_key=outside_building_key,
                         polygon=venue.polygon,
                     )
