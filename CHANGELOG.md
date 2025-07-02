@@ -12,18 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
-## 0.7.7 - 2025-06-19
+## 0.7.6 - 2025-06-19
 * [Deprecation] Removed Compatibility button
 * [Feature] Add language to group/layer button
 * [Bug-fix] "." is now allowed in admin_id's by the SyncModule
-
-## 0.7.6 - 2025-06-11
-
-
 * [Bug-fix] If a field erroneously has a non-lowercase (Dictated by upload to the ManagerAPI) is lowered on
   download.
 * [New Button] Added a button for forcefully recomputing "DerivedGeometry" for solutions with 3d walls based on
   a solutionId.
+* [Bug-fix] Property is_obstacle and is_selectable is now tracked and persisted.
 
 ## 0.7.5 - 2025-06-04
 

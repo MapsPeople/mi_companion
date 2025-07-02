@@ -198,7 +198,7 @@ def recursive_add_language_to_group(
 
 
 def add_language_code_to_solutiondata(node, language_code: str):
-    layer: QgsVectorLayer = node.layer()
+    layer = node.layer()  # QgisVectorLayer
 
     layername = node.name()
 
