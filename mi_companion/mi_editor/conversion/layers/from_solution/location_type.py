@@ -1,20 +1,38 @@
 import logging
 from typing import Any, List, Optional
 
+# noinspection PyUnresolvedReferences
+from qgis.core import (
+    QgsDefaultValue,
+    QgsDefaultValue,
+    QgsEditorWidgetSetup,
+    QgsEditorWidgetSetup,
+    QgsFieldConstraints,
+    QgsFieldConstraints,
+    QgsMapLayer,
+)
+
 from integration_system.model import Solution
 from integration_system.tools.serialisation import collection_to_df
 from jord.pandas_utilities import df_to_columns
 from jord.qgis_utilities import (
+    make_field_boolean,
+    make_field_default,
     make_field_not_null,
+    make_field_reuse_last_entered_value,
     make_field_unique,
 )
 from jord.qlive_utilities import add_no_geom_layer
 from .parsing import process_nested_fields_df
 
-BOOLEAN_LOCATION_TYPE_ATTRS = ()
-STR_LOCATION_TYPE_ATTRS = ("translations.en.name", "admin_id")
-FLOAT_LOCATION_TYPE_ATTRS = ()
+BOOLEAN_LOCATION_TYPE_ATTRS = (
+    # "is_obstacle", "is_selectable"
+)
+STR_LOCATION_TYPE_ATTRS = ("translations.en.name", "admin_id", "color")
+FLOAT_LOCATION_TYPE_ATTRS = ("settings_3d_margin", "settings_3d_width")
 INTEGER_LOCATION_TYPE_ATTRS = ()
+
+LIST_LOCATION_TYPE_ATTRS = ("restrictions",)
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +47,7 @@ def add_location_type_layer(
     *,
     layer_name: str,
     qgis_instance_handle: Any,
-    solution_group: Any
+    solution_group: Any,
 ) -> Optional[List[Any]]:  # QgsVectorLayer
     """
 
@@ -57,23 +75,35 @@ def add_location_type_layer(
 
     process_nested_fields_df(selected)
 
-    if not len(shape_df):
+    if not len(selected):
         # logger.warning(f"Nothing to be added, skipping {name}")
         return None
 
     for attr_name in BOOLEAN_LOCATION_TYPE_ATTRS:
-        selected[attr_name] = shape_df[attr_name].astype(bool)
+        if attr_name in selected:
+            selected[attr_name] = selected[attr_name].astype(bool)
 
     for attr_name in STR_LOCATION_TYPE_ATTRS:
-        selected[attr_name] = shape_df[attr_name].astype(str)
+        if attr_name in selected:
+            selected[attr_name] = selected[attr_name].astype(str)
 
     for attr_name in FLOAT_LOCATION_TYPE_ATTRS:
-        selected[attr_name] = shape_df[attr_name].astype(float)
+        if attr_name in selected:
+            selected[attr_name] = selected[attr_name].astype(float)
 
     for attr_name in INTEGER_LOCATION_TYPE_ATTRS:
-        selected[attr_name] = shape_df[attr_name].astype(int)
+        if attr_name in selected:
+            selected[attr_name] = selected[attr_name].astype(int)
 
-    columns = df_to_columns(shape_df, ["key"])
+    selected.sort_values(f"translations.{solution.default_language}.name", inplace=True)
+
+    columns = df_to_columns(selected, ["key"])
+
+    if False:
+        for r in columns:
+            for attr_name in LIST_LOCATION_TYPE_ATTRS:
+                if r[attr_name] is None:
+                    r[attr_name] = []
 
     added_layers = add_no_geom_layer(
         qgis_instance_handle=qgis_instance_handle,
@@ -85,7 +115,14 @@ def add_location_type_layer(
 
     make_field_unique(added_layers, field_name="admin_id")
 
-    for field_name in ("translations.en.name",):
+    for field_name in ("translations.en.name",):  # TODO: ADD OTHER LANGUAGES
         make_field_not_null(added_layers, field_name=field_name)
+
+    for field_name in ("is_selectable", "is_obstacle"):
+        make_field_reuse_last_entered_value(added_layers, field_name=field_name)
+        make_field_boolean(added_layers, field_name=field_name, nullable=True)
+        make_field_default(
+            added_layers, field_name=field_name, default_expression=f"null"
+        )
 
     return added_layers

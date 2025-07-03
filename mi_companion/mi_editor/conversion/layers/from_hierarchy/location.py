@@ -208,6 +208,44 @@ def add_floor_locations(
                         is_searchable = True
                 assert isinstance(is_searchable, bool), f"{type(is_searchable)}"
 
+            restrictions = None
+            if "restrictions" in feature_attributes:
+                restrictions = extract_field_value(feature_attributes, "restrictions")
+
+            is_obstacle = None
+            if "is_obstacle" in feature_attributes:
+                is_obstacle = extract_field_value(feature_attributes, "is_obstacle")
+
+            is_selectable = None
+            if "is_selectable" in feature_attributes:
+                is_selectable = extract_field_value(feature_attributes, "is_selectable")
+
+            settings_3d_width = None
+            if "settings_3d_width" in feature_attributes:
+                settings_3d_width = extract_field_value(
+                    feature_attributes, "settings_3d_width"
+                )
+
+            settings_3d_margin = None
+            if "settings_3d_margin" in feature_attributes:
+                settings_3d_margin = extract_field_value(
+                    feature_attributes, "settings_3d_margin"
+                )
+
+            active_to = None
+            if "active_to" in feature_attributes:
+                active_to = extract_field_value(feature_attributes, "active_to")
+
+            active_from = None
+            if "active_from" in feature_attributes:
+                active_from = extract_field_value(feature_attributes, "active_from")
+
+            street_view_config = None
+            if "street_view_config" in feature_attributes:
+                street_view_config = extract_field_value(
+                    feature_attributes, "street_view_config"
+                )
+
             try:
                 location_geometry = feature_to_shapely(layer_feature)
             except Exception as e:
@@ -249,6 +287,13 @@ def add_floor_locations(
                     translations=(translations),
                     display_rule=extract_display_rule(feature_attributes),
                     media_key=media_key,
+                    restrictions=restrictions,
+                    is_selectable=is_selectable,
+                    settings_3d_margin=settings_3d_margin,
+                    settings_3d_width=settings_3d_width,
+                    active_from=active_from,
+                    active_to=active_to,
+                    street_view_config=street_view_config,
                 )
 
                 for k, v in feature_attributes.items():
@@ -369,6 +414,7 @@ def add_floor_locations(
                     elif backend_location_type == BackendLocationTypeEnum.AREA:
                         location_key = solution.add_area(
                             polygon=shapely_geom,
+                            is_obstacle=is_obstacle,
                             **common_kvs,
                         )
                     elif backend_location_type == BackendLocationTypeEnum.POI:

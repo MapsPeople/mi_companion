@@ -65,10 +65,16 @@ __all__ = ["add_floor_content_layers", "locations_to_df", "LocationGeometryType"
 
 logger = logging.getLogger(__name__)
 
-BOOLEAN_LOCATION_ATTRS = ("is_searchable", "is_active")
+BOOLEAN_LOCATION_ATTRS = (
+    "is_searchable",
+    "is_active",
+    # "is_obstacle", "is_selectable"
+)
 STR_LOCATION_ATTRS = ("external_id", "translations.en.name", "admin_id")
 FLOAT_LOCATION_ATTRS = ()
 INT_LOCATION_ATTRS = ()
+
+LIST_LOCATION_TYPE_ATTRS = ("restrictions",)
 
 # FIELDS_HIDDEN_IN_FORM = ('is_searchable', 'is_active', 'admin_id')
 FORM_FIELDS = ("translations.en.name", "location_type")
@@ -86,6 +92,7 @@ def locations_to_df(
 ) -> DataFrame:
     """
 
+    :param keep_class_name_instances_of:
     :param collection_:
     :return:
     """
@@ -144,6 +151,14 @@ def locations_to_df(
                         keys.append(cat["ckey"])
 
             item_as_dict["category_keys"] = keys
+
+        if "restrictions" in item_as_dict:
+            restrictions = item_as_dict.pop("restrictions")
+            if not isinstance(restrictions, list):
+                logger.warning(f"restrictions was not a list, {restrictions}")
+                restrictions = []
+
+            item_as_dict["restrictions"] = restrictions
 
         item_as_dict["key"] = item.key
 
@@ -263,16 +278,20 @@ def add_location_layer(
         return
 
     for attr_name in BOOLEAN_LOCATION_ATTRS:
-        locations_df[attr_name] = shape_df[attr_name].astype(bool)
+        if attr_name in locations_df:
+            locations_df[attr_name] = shape_df[attr_name].astype(bool)
 
     for attr_name in STR_LOCATION_ATTRS:
-        locations_df[attr_name] = shape_df[attr_name].astype(str)
+        if attr_name in locations_df:
+            locations_df[attr_name] = shape_df[attr_name].astype(str)
 
     for attr_name in FLOAT_LOCATION_ATTRS:
-        locations_df[attr_name] = shape_df[attr_name].astype(float)
+        if attr_name in locations_df:
+            locations_df[attr_name] = shape_df[attr_name].astype(float)
 
     for attr_name in INT_LOCATION_ATTRS:
-        locations_df[attr_name] = shape_df[attr_name].astype(int)
+        if attr_name in locations_df:
+            locations_df[attr_name] = shape_df[attr_name].astype(int)
 
     locations_df.rename(
         columns={"location_type.admin_id": "location_type"}, inplace=True
@@ -352,6 +371,7 @@ def add_location_layer(
         make_field_default(
             added_layers, field_name=field_name, default_expression=f"'{field_default}'"
         )
+        make_field_boolean(added_layers, field_name=field_name, nullable=False)
 
     if False:
         for qgs_field_name in layer.fields():
@@ -373,8 +393,16 @@ def add_location_layer(
         "location_type",
         "is_searchable",
         "is_active",
+        "is_selectable",
+        "is_obstacle",
     ):
         make_field_reuse_last_entered_value(added_layers, field_name=field_name)
+
+    for field_name in ("is_selectable", "is_obstacle"):
+        make_field_boolean(added_layers, field_name=field_name, nullable=True)
+        make_field_default(
+            added_layers, field_name=field_name, default_expression=f"null"
+        )
 
     return added_layers
 

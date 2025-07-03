@@ -259,19 +259,18 @@ def add_solution_group(
 
         for c in solution_group.children():
             if LOCATION_TYPE_DESCRIPTOR in c.name():
-                if location_type_layer is not None:
-                    reply = QtWidgets.QMessageBox.question(
-                        None,
-                        f"Solution Data layer for ({c.name()}) was already found",
-                        f"Solution data ({c.name()}) will be reloaded with the most recent data from th MapsIndoors database!\n"
-                        f"Accept?",
-                    )
+                reply = QtWidgets.QMessageBox.question(
+                    None,
+                    f"Location Type layer for ({c.name()}) was already found",
+                    f"Location Type ({c.name()}) will be reloaded with the most recent data from th MapsIndoors database!\n"
+                    f"Accept?",
+                )
 
-                    if reply == QtWidgets.QMessageBox.Yes:
-                        solution_group.removeChildNode(c)
-                        location_type_layer = None
-                    else:
-                        ...
+                if reply == QtWidgets.QMessageBox.Yes:
+                    solution_group.removeChildNode(c)
+                    location_type_layer = None
+                else:
+                    ...
 
         for c in solution_group.children():
             if LOCATION_TYPE_DESCRIPTOR in c.name():
