@@ -74,14 +74,6 @@ def get_location_type_data(
                         is_selectable = str_to_bool(is_selectable)
 
                     restrictions = attributes["restrictions"]
-                    if isinstance(restrictions, bool):  # MAYBE BOOL?
-                        logger.error(
-                            f"Unexpected type of {restrictions}, should be a list"
-                        )
-                        restrictions = None
-
-                    elif len(restrictions) == 0:
-                        restrictions = None
 
                     settings_3d_margin = attributes["settings_3d_margin"]
                     if settings_3d_margin == "nan":
