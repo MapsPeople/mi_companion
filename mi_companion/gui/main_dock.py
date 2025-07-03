@@ -56,6 +56,9 @@ from ..constants import (
     VERSION,
 )
 from ..qgis_utilities import extract_wkt_elements, get_icon_path, resolve_path
+from mi_companion.entry_points.add_language_to_group import (
+    ENTRY_POINT_NAME as ADD_LANGUAGE_BUTTON_NAME,
+)
 
 FORM_CLASS, _ = uic.loadUiType(resolve_path("main_dock.ui", __file__))
 
@@ -224,6 +227,16 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             for d in entry_point_modules
             if hasattr(d, "ENTRY_POINT_NAME")
         }
+
+        if not read_bool_setting("ADD_LANGUAGE_BUTTON"):
+            # If add_language_button in the constants is set to False, then we pop the language button from the entry_point_definitions
+
+            if ADD_LANGUAGE_BUTTON_NAME in self.entry_point_definitions:
+                self.entry_point_definitions.pop(ADD_LANGUAGE_BUTTON_NAME)
+                # del self.entry_point_definitions[ADD_LANGUAGE_BUTTON_NAME]
+                logger.warning(
+                    f"Removed '{ADD_LANGUAGE_BUTTON_NAME}'-button from entry_point_definitions"
+                )
 
         if False:
             assert len(self.entry_point_definitions) == len(entry_point_modules), (
