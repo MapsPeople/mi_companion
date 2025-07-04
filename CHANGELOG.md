@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [New Button] Added a button "Recalculate 3d Walls" for forcefully recomputing 3D walls aka "DerivedGeometry" for solutions based on
   a solutionId.
 * [Bug-fix] Property is_obstacle and is_selectable is now tracked and persisted.
-* [QOL] Location-Types dropdown are now sorted by translations.[default-language].name
+* [QOL] Location-Types dropdown are now sorted by translations.[default-language].name. Duplicate locationtype names are grouped together. Admin-id's are displayed when hovered over the locationtype.
 
 ## 0.7.5 - 2025-06-04
 
