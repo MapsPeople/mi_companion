@@ -36,10 +36,40 @@ LIST_LOCATION_TYPE_ATTRS = ("restrictions",)
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["add_location_type_layer"]
+__all__ = ["add_location_type_layer", "make_location_type_dropdown_widget"]
 
 
 def set_display_rule_conditional_formatting(): ...
+
+
+def make_location_type_dropdown_widget(
+    target_layer_id: str,
+    *,
+    target_key_field_name: str = "admin_id",
+    target_value_field_name: str = "translation.en.name",
+):
+    return QgsEditorWidgetSetup(
+        "ValueRelation",
+        {
+            "AllowMulti": False,
+            "AllowNull": False,
+            "Description": target_key_field_name,
+            "DisplayGroupName": False,
+            "FilterExpression": "",
+            "Group": target_value_field_name,
+            "Key": target_key_field_name,
+            "Layer": target_layer_id,
+            "Value": target_value_field_name,
+            "OrderByDescending": False,
+            "OrderByField": False,
+            "OrderByFieldName": "",
+            "OrderByKey": False,
+            "OrderByValue": True,
+            "UseCompleter": False,
+            "NofColumns": 1,
+            "CompleterMatchFlags": 2,
+        },
+    )
 
 
 def add_location_type_layer(

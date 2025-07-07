@@ -43,7 +43,7 @@ from mi_companion.layer_descriptors import (
     SOLUTION_DATA_DESCRIPTOR,
     SOLUTION_GROUP_DESCRIPTOR,
 )
-from .location_type import add_location_type_layer
+from .location_type import add_location_type_layer, make_location_type_dropdown_widget
 from .venue import add_venue_layer
 
 __all__ = ["solution_venue_to_layer_hierarchy", "add_solution_layers"]
@@ -291,7 +291,7 @@ def add_solution_group(
 
         location_type_layer = location_type_layer[0]
 
-        available_location_type_dropdown_widget = make_value_relation_widget(
+        available_location_type_dropdown_widget = make_location_type_dropdown_widget(
             location_type_layer.id(),
             target_key_field_name="admin_id",
             target_value_field_name=f"translations.{solution.default_language}.name",
