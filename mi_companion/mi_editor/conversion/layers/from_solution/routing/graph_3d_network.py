@@ -20,7 +20,7 @@ from mi_companion.mi_editor.conversion.layers.from_solution.routing.styling.grad
     set_m_based_graduated_styling,
 )
 from mi_companion.mi_editor.conversion.projection import (
-    prepare_geom_for_qgis,
+    prepare_geom_for_editing_qgis,
     solve_target_crs_authid,
 )
 
@@ -54,7 +54,7 @@ def add_graph_3d_network_layers(
     :param qgis_instance_handle:
     :return:
     """
-    lines = [prepare_geom_for_qgis(l, clean=False) for l in lines]
+    lines = [prepare_geom_for_editing_qgis(l, clean=False) for l in lines]
 
     logger.info(f"{len(lines)=} loaded!")
 

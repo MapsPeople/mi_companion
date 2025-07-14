@@ -43,7 +43,7 @@ from .location_type import get_location_type_data
 
 # from .graph import add_venue_graph
 from .syncing import post_process_solution, sync_build_venue_solution
-from ...projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 logger = logging.getLogger(__name__)
 
@@ -298,7 +298,7 @@ def get_venue_key(
                     venue_key = solution.add_venue(
                         admin_id=admin_id,
                         external_id=external_id,
-                        polygon=prepare_geom_for_mi_db(venue_polygon),
+                        polygon=prepare_geom_for_mi_db_qgis(venue_polygon),
                         venue_type=get_venue_type(layer_attributes),
                         last_verified=get_last_verified(layer_attributes),
                         translations=(translations),

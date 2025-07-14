@@ -289,14 +289,15 @@ def add_solution_group(
             )
             logger.info(f"Adding location type layer: {LOCATION_TYPE_DESCRIPTOR}")
 
-        location_type_layer = location_type_layer[0]
+        if len(location_type_layer):
+            location_type_layer = location_type_layer[0]
 
-        available_location_type_dropdown_widget = make_location_type_dropdown_widget(
-            location_type_layer.id(),
-            target_key_field_name="admin_id",
-            target_value_field_name=f"translations.{solution.default_language}.name",
-        )
-        location_type_ref_layer = location_type_layer
+            available_location_type_dropdown_widget = make_location_type_dropdown_widget(
+                location_type_layer.id(),
+                target_key_field_name="admin_id",
+                target_value_field_name=f"translations.{solution.default_language}.name",
+            )
+            location_type_ref_layer = location_type_layer
 
     else:
         if read_bool_setting("MAKE_LOCATION_TYPE_DROPDOWN"):

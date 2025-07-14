@@ -18,7 +18,7 @@ from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
     extract_single_level_str_map,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ def assemble_connections(
                 Connector(
                     admin_id=external_id,
                     floor_index=floor_index,
-                    point=prepare_geom_for_mi_db(geom),
+                    point=prepare_geom_for_mi_db_qgis(geom),
                     fields=fields,
                 )
             )

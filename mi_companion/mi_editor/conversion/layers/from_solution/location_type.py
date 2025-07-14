@@ -26,11 +26,21 @@ from jord.qlive_utilities import add_no_geom_layer
 from .parsing import process_nested_fields_df
 
 BOOLEAN_LOCATION_TYPE_ATTRS = (
-    # "is_obstacle", "is_selectable"
+    # "is_obstacle",
+    # "is_selectable",
+    "display_rule.model3d.visible",
 )
-STR_LOCATION_TYPE_ATTRS = ("translations.en.name", "admin_id", "color")
+STR_LOCATION_TYPE_ATTRS = (
+    "translations.en.name",
+    "display_rule.model3d.model",
+    "admin_id",
+    "color",
+)
 FLOAT_LOCATION_TYPE_ATTRS = ("settings_3d_margin", "settings_3d_width")
-INTEGER_LOCATION_TYPE_ATTRS = ()
+INTEGER_LOCATION_TYPE_ATTRS = (
+    "display_rule.label_zoom_from",
+    "display_rule.label_zoom_to",
+)
 
 LIST_LOCATION_TYPE_ATTRS = ("restrictions",)
 
@@ -72,6 +82,10 @@ def make_location_type_dropdown_widget(
     )
 
 
+def make_range_widget():  # TODO: for rotation 0-360, step size 0.5
+    ...
+
+
 def add_location_type_layer(
     solution: Solution,
     *,
@@ -111,19 +125,19 @@ def add_location_type_layer(
 
     for attr_name in BOOLEAN_LOCATION_TYPE_ATTRS:
         if attr_name in selected:
-            selected[attr_name] = selected[attr_name].astype(bool)
+            selected[attr_name] = selected[attr_name].astype(bool, errors="ignore")
 
     for attr_name in STR_LOCATION_TYPE_ATTRS:
         if attr_name in selected:
-            selected[attr_name] = selected[attr_name].astype(str)
+            selected[attr_name] = selected[attr_name].astype(str, errors="ignore")
 
     for attr_name in FLOAT_LOCATION_TYPE_ATTRS:
         if attr_name in selected:
-            selected[attr_name] = selected[attr_name].astype(float)
+            selected[attr_name] = selected[attr_name].astype(float, errors="ignore")
 
     for attr_name in INTEGER_LOCATION_TYPE_ATTRS:
         if attr_name in selected:
-            selected[attr_name] = selected[attr_name].astype(int)
+            selected[attr_name] = selected[attr_name].astype(int, errors="ignore")
 
     selected.sort_values(f"translations.{solution.default_language}.name", inplace=True)
 

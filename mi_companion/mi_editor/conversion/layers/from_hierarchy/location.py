@@ -6,6 +6,8 @@ import logging
 import uuid
 from typing import Any, Collection, List, Optional
 
+import shapely
+
 # noinspection PyUnresolvedReferences
 # noinspection PyUnresolvedReferences
 # noinspection PyUnresolvedReferences
@@ -44,21 +46,25 @@ from jord.qgis_utilities import (
     feature_to_shapely,
     is_str_value_null_like,
     parse_field,
+    qgs_geometry_to_shapely,
 )
 from mi_companion import (
+    ANCHOR_AS_INDIVIDUAL_FIELDS,
     VERBOSE,
 )
 from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
     extract_display_rule,
+    extract_street_view_config,
     extract_translations,
 )
 from mi_companion.mi_editor.conversion.layers.type_enums import BackendLocationTypeEnum
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
+from warg import str_to_bool
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
-from ...projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 __all__ = ["add_floor_contents"]
 
@@ -212,39 +218,52 @@ def add_floor_locations(
             if "restrictions" in feature_attributes:
                 restrictions = extract_field_value(feature_attributes, "restrictions")
 
+                if not restrictions:
+                    restrictions = None
+
             is_obstacle = None
             if "is_obstacle" in feature_attributes:
                 is_obstacle = extract_field_value(feature_attributes, "is_obstacle")
+                feature_attributes.pop("is_obstacle")
+
+                if is_obstacle is not None:
+                    if not isinstance(is_obstacle, bool):
+                        is_obstacle = str_to_bool(is_obstacle)
 
             is_selectable = None
             if "is_selectable" in feature_attributes:
                 is_selectable = extract_field_value(feature_attributes, "is_selectable")
+                feature_attributes.pop("is_selectable")
+
+                if is_selectable is not None:
+                    if not isinstance(is_selectable, bool):
+                        is_selectable = str_to_bool(is_selectable)
 
             settings_3d_width = None
             if "settings_3d_width" in feature_attributes:
                 settings_3d_width = extract_field_value(
                     feature_attributes, "settings_3d_width"
                 )
+                feature_attributes.pop("settings_3d_width")
 
             settings_3d_margin = None
             if "settings_3d_margin" in feature_attributes:
                 settings_3d_margin = extract_field_value(
                     feature_attributes, "settings_3d_margin"
                 )
+                feature_attributes.pop("settings_3d_margin")
 
             active_to = None
-            if "active_to" in feature_attributes:
+            if "active_to" in feature_attributes:  # TODO: CONVERT THIS
                 active_to = extract_field_value(feature_attributes, "active_to")
+                feature_attributes.pop("active_to")
 
             active_from = None
-            if "active_from" in feature_attributes:
+            if "active_from" in feature_attributes:  # TODO: CONVERT THIS
                 active_from = extract_field_value(feature_attributes, "active_from")
+                feature_attributes.pop("active_from")
 
-            street_view_config = None
-            if "street_view_config" in feature_attributes:
-                street_view_config = extract_field_value(
-                    feature_attributes, "street_view_config"
-                )
+            street_view_config = extract_street_view_config(feature_attributes)
 
             try:
                 location_geometry = feature_to_shapely(layer_feature)
@@ -295,6 +314,27 @@ def add_floor_locations(
                     active_to=active_to,
                     street_view_config=street_view_config,
                 )
+
+                anchor = location_geometry.representative_point()
+
+                if ANCHOR_AS_INDIVIDUAL_FIELDS:
+                    if "anchor_x" in feature_attributes:
+                        ax = extract_field_value(feature_attributes, "anchor_x")
+                        feature_attributes.pop("anchor_x")
+                        ay = extract_field_value(feature_attributes, "anchor_y")
+                        feature_attributes.pop("anchor_y")
+                        anchor = shapely.Point([ax, ay])
+
+                else:
+
+                    if "anchor" in feature_attributes:
+                        a = extract_field_value(feature_attributes, "anchor")
+                        if a is not None and not (a.isNull() or a.isEmpty()):
+                            can = qgs_geometry_to_shapely(a)
+                            if can:
+                                anchor = can
+
+                        feature_attributes.pop("anchor")
 
                 for k, v in feature_attributes.items():
                     if k not in common_kvs:
@@ -399,22 +439,28 @@ def add_floor_locations(
 
                             if details:
                                 common_kvs["details"] = details
-
+                        else:
+                            ...
+                            # logger.debug(f'Unknown {k}')
+                            # common_kvs[k] = extract_field_value(feature_attributes, k)
                     else:
-                        common_kvs[k] = extract_field_value(feature_attributes, k)
+                        # logger.debug("Already in kvs")
+                        ...
 
-                shapely_geom = prepare_geom_for_mi_db(location_geometry)
+                shapely_geom = prepare_geom_for_mi_db_qgis(location_geometry)
 
                 try:
                     if backend_location_type == BackendLocationTypeEnum.ROOM:
                         location_key = solution.add_room(
                             polygon=shapely_geom,
+                            anchor=prepare_geom_for_mi_db_qgis(anchor),
                             **common_kvs,
                         )
                     elif backend_location_type == BackendLocationTypeEnum.AREA:
                         location_key = solution.add_area(
                             polygon=shapely_geom,
                             is_obstacle=is_obstacle,
+                            anchor=prepare_geom_for_mi_db_qgis(anchor),
                             **common_kvs,
                         )
                     elif backend_location_type == BackendLocationTypeEnum.POI:
@@ -433,6 +479,8 @@ def add_floor_locations(
                         issues.append(_invalid)
                     else:
                         raise e
+            else:
+                logger.error(f"{location_geometry=}")
 
 
 def add_floor_contents(

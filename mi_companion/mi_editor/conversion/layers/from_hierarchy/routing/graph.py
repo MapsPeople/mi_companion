@@ -19,7 +19,7 @@ from integration_system.model import FALLBACK_OSM_GRAPH, Solution
 from jord.qgis_utilities import extract_layer_data_single, feature_to_shapely
 from mi_companion import UPLOAD_ERROR_CONFIRMATION_TITLE
 from mi_companion.layer_descriptors import GRAPH_BOUND_DESCRIPTOR
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from .graph_3d_network import add_3d_graph_edges
 from .route_elements import (
     add_route_elements,
@@ -66,7 +66,7 @@ def get_graph_data(graph_group: Any, solution: Solution) -> Tuple:
                 # if reply == QMessageBox.Cancel:
                 raise Exception(_error)
 
-            graph_bound_geom = prepare_geom_for_mi_db(graph_polygon, clean=True)
+            graph_bound_geom = prepare_geom_for_mi_db_qgis(graph_polygon, clean=True)
 
             graph_key = solution.add_graph(
                 graph_id=graph_id,

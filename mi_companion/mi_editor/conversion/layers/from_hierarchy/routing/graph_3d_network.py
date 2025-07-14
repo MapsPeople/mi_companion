@@ -19,7 +19,7 @@ from mi_companion.layer_descriptors import GRAPH_LINES_DESCRIPTOR
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.constants import (
     DISABLE_GRAPH_EDIT,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 logger = logging.getLogger(__name__)
 
@@ -140,7 +140,7 @@ def add_3d_graph_edges(
 
                     layer_feature = set_z_from_m(layer_feature)
 
-                    graph_line = prepare_geom_for_mi_db(
+                    graph_line = prepare_geom_for_mi_db_qgis(
                         feature_to_shapely(layer_feature, validate=False), clean=False
                     )
 

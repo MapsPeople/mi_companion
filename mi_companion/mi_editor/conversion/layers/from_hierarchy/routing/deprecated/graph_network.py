@@ -18,7 +18,7 @@ from mi_companion.layer_descriptors import (
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.constants import (
     DISABLE_GRAPH_EDIT,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 logger = logging.getLogger(__name__)
 __all__ = ["add_graph_edges"]
@@ -69,7 +69,7 @@ def add_graph_edges(
                         )
                     }
 
-                    location_geometry = prepare_geom_for_mi_db(
+                    location_geometry = prepare_geom_for_mi_db_qgis(
                         feature_to_shapely(layer_feature), clean=False
                     )
 
@@ -95,7 +95,7 @@ def add_graph_edges(
                     vert_id = feature_attributes.pop("vertical_id")
                     v_type = feature_attributes.pop("highway")
                     level = feature_attributes.pop("level")
-                    location_geometry = prepare_geom_for_mi_db(
+                    location_geometry = prepare_geom_for_mi_db_qgis(
                         feature_to_shapely(layer_feature), clean=False
                     )
 

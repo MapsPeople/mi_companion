@@ -6,16 +6,19 @@ from jord.qgis_utilities import (
     Qgis3dCullingMode,
     Qgis3dFacade,
     make_field_unique,
+    read_plugin_setting,
     set_3d_view_settings,
     set_geometry_constraints,
+    set_layer_rendering_scale,
 )
 from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
     DESCRIPTOR_BEFORE,
     FLOOR_HEIGHT,
 )
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration.options import read_bool_setting, read_float_setting
 from mi_companion.constants import (
+    ANCHOR_AS_INDIVIDUAL_FIELDS,
     FLOOR_VERTICAL_SPACING,
     INSERT_INDEX,
 )
@@ -25,8 +28,8 @@ from mi_companion.layer_descriptors import (
 )
 from .location import add_floor_content_layers
 from .parsing import translations_to_flattened_dict
-from ...projection import (
-    prepare_geom_for_qgis,
+from mi_companion.mi_editor.conversion.projection import (
+    prepare_geom_for_editing_qgis,
     solve_target_crs_authid,
 )
 
@@ -84,15 +87,26 @@ def add_floor_layers(
                     )
 
             floor_layer = None
+
+            anchor_fields = {}
+            anch = prepare_geom_for_editing_qgis(floor.anchor)
+            if ANCHOR_AS_INDIVIDUAL_FIELDS:
+                anchor_fields["anchor_x"] = anch.x
+                anchor_fields["anchor_y"] = anch.y
+
+            else:
+                anchor_fields["anchor"] = anch
+
             if INSERT_INDEX == 0:
                 floor_layer = add_shapely_layer(
                     qgis_instance_handle=qgis_instance_handle,
-                    geoms=[prepare_geom_for_qgis(floor.polygon)],
+                    geoms=[prepare_geom_for_editing_qgis(floor.polygon)],
                     name=FLOOR_POLYGON_DESCRIPTOR,
                     columns=[
                         {
                             "external_id": floor.external_id,
                             "floor_index": floor.floor_index,
+                            **anchor_fields,
                             **translations_to_flattened_dict(floor.translations),
                         }
                     ],
@@ -114,12 +128,13 @@ def add_floor_layers(
             if INSERT_INDEX > 0:
                 floor_layer = add_shapely_layer(
                     qgis_instance_handle=qgis_instance_handle,
-                    geoms=[prepare_geom_for_qgis(floor.polygon)],
+                    geoms=[prepare_geom_for_editing_qgis(floor.polygon)],
                     name=FLOOR_POLYGON_DESCRIPTOR,
                     columns=[
                         {
                             "external_id": floor.external_id,
                             "floor_index": floor.floor_index,
+                            "anchor": prepare_geom_for_editing_qgis(floor.anchor),
                             **translations_to_flattened_dict(floor.translations),
                         }
                     ],
@@ -140,3 +155,8 @@ def add_floor_layers(
             )
             set_geometry_constraints(floor_layer)
             # TODO: Use SolutionItem Annotations for field constraints
+
+            set_layer_rendering_scale(
+                floor_layer,
+                min_ratio=read_float_setting("LAYER_GEOM_VISIBLE_MIN_RATIO"),
+            )

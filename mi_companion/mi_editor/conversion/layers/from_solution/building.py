@@ -3,12 +3,18 @@ from typing import Any, Callable, Optional
 
 from integration_system.mi import get_outside_building_admin_id
 from integration_system.model import Building, Solution, Venue
-from jord.qgis_utilities import make_field_unique, set_geometry_constraints
+from jord.qgis_utilities import (
+    make_field_unique,
+    read_plugin_setting,
+    set_geometry_constraints,
+    set_layer_rendering_scale,
+)
 from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
     DESCRIPTOR_BEFORE,
     HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS,
 )
+from mi_companion.configuration.options import read_bool_setting, read_float_setting
 from mi_companion.layer_descriptors import (
     BUILDING_GROUP_DESCRIPTOR,
     BUILDING_POLYGON_DESCRIPTOR,
@@ -19,11 +25,12 @@ __all__ = ["add_building_layers"]
 
 from .parsing import translations_to_flattened_dict
 
-from ...projection import (
-    prepare_geom_for_qgis,
+from mi_companion.mi_editor.conversion.projection import (
+    prepare_geom_for_editing_qgis,
     solve_target_crs_authid,
 )
 from mi_companion.constants import (
+    ANCHOR_AS_INDIVIDUAL_FIELDS,
     INSERT_INDEX,
     SHOW_FLOOR_LAYERS_ON_LOAD,
 )
@@ -101,14 +108,23 @@ def add_building_layers(
             building_group.setExpanded(True)
             building_group.setExpanded(False)
 
+            anchor_fields = {}
+            anch = prepare_geom_for_editing_qgis(building.anchor)
+            if ANCHOR_AS_INDIVIDUAL_FIELDS:
+                anchor_fields["anchor_x"] = anch.x
+                anchor_fields["anchor_y"] = anch.y
+            else:
+                anchor_fields["anchor"] = anch
+
             building_layer = add_shapely_layer(
                 qgis_instance_handle=qgis_instance_handle,
-                geoms=[prepare_geom_for_qgis(building.polygon)],
+                geoms=[prepare_geom_for_editing_qgis(building.polygon)],
                 name=BUILDING_POLYGON_DESCRIPTOR,
                 columns=[
                     {
                         "admin_id": building.admin_id,
                         "external_id": building.external_id,
+                        **anchor_fields,
                         **translations_to_flattened_dict(building.translations),
                     }
                 ],
@@ -119,6 +135,11 @@ def add_building_layers(
 
             make_field_unique(building_layer, field_name="admin_id")
             set_geometry_constraints(building_layer)
+
+            set_layer_rendering_scale(
+                building_layer,
+                min_ratio=read_float_setting("LAYER_GEOM_VISIBLE_MIN_RATIO"),
+            )
 
             add_floor_layers(
                 location_type_ref_layer=location_type_ref_layer,

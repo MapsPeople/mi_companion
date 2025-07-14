@@ -11,7 +11,7 @@ from mi_companion import VERBOSE
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
     extract_single_level_str_map,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +59,7 @@ def add_entry_points(
 
             entry_point_key = solution.add_entry_point(
                 entry_point_attributes["admin_id"],
-                point=prepare_geom_for_mi_db(entry_point_geom),
+                point=prepare_geom_for_mi_db_qgis(entry_point_geom),
                 entry_point_type=get_entry_point_type(entry_point_attributes),
                 floor_index=int(entry_point_attributes["floor_index"]),
                 graph_key=graph_key,

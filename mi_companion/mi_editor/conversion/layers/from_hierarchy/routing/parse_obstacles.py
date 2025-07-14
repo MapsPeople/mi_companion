@@ -12,7 +12,7 @@ from mi_companion.configuration.options import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
     extract_single_level_str_map,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ def add_obstacles(
 
             obstacle_key = solution.add_obstacle(
                 obstacle_attributes["admin_id"],
-                polygon=prepare_geom_for_mi_db(obstacle_poly),
+                polygon=prepare_geom_for_mi_db_qgis(obstacle_poly),
                 floor_index=int(obstacle_attributes["floor_index"]),
                 graph_key=graph_key,
                 fields=fields,

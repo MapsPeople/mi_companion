@@ -1,28 +1,23 @@
-import dataclasses
-import functools
-import json
 import logging
-from typing import Any, Collection, Iterable, List, Optional
+from typing import Any, Iterable, List, Optional
 
 import geopandas
+import pandas
 
 # noinspection PyUnresolvedReferences
 import qgis
-from pandas import DataFrame, json_normalize
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
 
 from integration_system.model import (
-    Detail,
-    DisplayRule,
     Floor,
     Solution,
 )
-from integration_system.model.solution_item import CollectionMixin, Media
+from integration_system.model.solution_item import CollectionMixin
+from integration_system.pandas_utilities import locations_to_df
 from integration_system.tools.serialisation import (
     collection_to_df,
-    to_dict_with_dataclass_type,
 )
 from jord.qgis_utilities import (
     HIDDEN_WIDGET,
@@ -31,6 +26,7 @@ from jord.qgis_utilities import (
     make_field_not_null,
     make_field_reuse_last_entered_value,
     make_field_unique,
+    read_plugin_setting,
     set_3d_view_settings,
     set_field_widget,
     set_geometry_constraints,
@@ -39,40 +35,58 @@ from jord.qgis_utilities import (
     styled_field_value_categorised,
 )
 from jord.qlive_utilities import add_dataframe_layer
-from mi_companion import (
-    LAYER_GEOM_VISIBLE_MIN_RATIO,
-    LAYER_LABEL_VISIBLE_MIN_RATIO,
-)
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion import ANCHOR_AS_INDIVIDUAL_FIELDS
+from mi_companion.configuration.options import read_bool_setting, read_float_setting
 from mi_companion.constants import (
     FLOOR_HEIGHT,
     FLOOR_VERTICAL_SPACING,
     USE_EXTERNAL_ID_FLOOR_SELECTION,
 )
-from .parsing import process_nested_fields_df
-from ..type_enums import BackendLocationTypeEnum
-from ...projection import (
-    reproject_geometry_df,
+from mi_companion.mi_editor.conversion.projection import (
+    forward_project_qgis,
+    reproject_geometry_df_qgis,
+    should_reproject_qgis,
     solve_target_crs_authid,
 )
+from .parsing import process_nested_fields_df
+from ..type_enums import BackendLocationTypeEnum
 
 try:
     from enum import StrEnum
 except ImportError:
     from strenum import StrEnum
 
-__all__ = ["add_floor_content_layers", "locations_to_df", "LocationGeometryType"]
+__all__ = ["add_floor_content_layers", "LocationGeometryType"]
 
 logger = logging.getLogger(__name__)
 
 BOOLEAN_LOCATION_ATTRS = (
     "is_searchable",
     "is_active",
-    # "is_obstacle", "is_selectable"
+    # "is_obstacle",
+    # "is_selectable"
+    "display_rule.model3d.visible",
 )
-STR_LOCATION_ATTRS = ("external_id", "translations.en.name", "admin_id")
-FLOAT_LOCATION_ATTRS = ()
-INT_LOCATION_ATTRS = ()
+STR_LOCATION_ATTRS = (
+    "external_id",
+    "translations.en.name",
+    "display_rule.model3d.model",
+    "admin_id",
+)
+FLOAT_LOCATION_ATTRS = (
+    "settings_3d_width",
+    "settings_3d_margin",
+    "display_rule.model3d.scale",
+    "display_rule.model3d.rotation_x",
+    "display_rule.model3d.rotation_y",
+    "display_rule.model3d.rotation_z",
+)
+INT_LOCATION_ATTRS = (
+    "display_rule.label_zoom_from",
+    "display_rule.label_zoom_to",
+)
+DATETIME_LOCATION_ATTRS = ("active_from", "active_to")
+
 
 LIST_LOCATION_TYPE_ATTRS = ("restrictions",)
 
@@ -84,99 +98,6 @@ class LocationGeometryType(StrEnum):
     point = "point"
     # linestring = "linestring"
     polygon = "polygon"
-
-
-def locations_to_df(
-    collection_: CollectionMixin,
-    keep_class_name_instances_of: Optional[Collection[type]] = (Detail,),
-) -> DataFrame:
-    """
-
-    :param keep_class_name_instances_of:
-    :param collection_:
-    :return:
-    """
-
-    # noinspection PyTypeChecker
-    converted_items = []
-
-    to_dict_factory = functools.partial(
-        to_dict_with_dataclass_type,
-        keep_class_name_instances_of=keep_class_name_instances_of,
-    )
-
-    for item in collection_:
-
-        item_as_dict = dataclasses.asdict(item, dict_factory=to_dict_factory)
-
-        if "details" in item_as_dict:
-            list_of_details = item_as_dict.pop("details")
-
-            deets = []
-            if list_of_details:
-                for d in list_of_details:
-                    deets.append(repr(d))
-
-            item_as_dict["details"] = deets
-
-        if "display_rule" in item_as_dict:
-            display_rule: DisplayRule = item_as_dict.pop("display_rule")
-            if display_rule is not None:
-                item_as_dict["display_rule"] = display_rule.model_dump()
-
-        if "media" in item_as_dict:
-            media = item_as_dict.pop("media")
-            if media is not None:
-                if isinstance(media, Media):
-                    item_as_dict["media_key"] = media.key
-                else:
-                    assert isinstance(media, str)
-                    item_as_dict["media_key"] = media
-
-        if "categories" in item_as_dict:
-            list_of_category_dicts = item_as_dict.pop("categories")
-
-            keys = []
-            if list_of_category_dicts:
-                for cat in list_of_category_dicts:
-                    if False:
-                        a = json.loads(cat["name"])
-                        if isinstance(a, str):
-                            keys.append(a)
-                        elif isinstance(a, Collection):
-                            keys.extend(a)
-                        else:
-                            raise NotImplementedError(f"{type(a)} is not supported")
-                    else:
-                        keys.append(cat["ckey"])
-
-            item_as_dict["category_keys"] = keys
-
-        if "restrictions" in item_as_dict:
-            restrictions = item_as_dict.pop("restrictions")
-            if not isinstance(restrictions, list):
-                logger.warning(f"restrictions was not a list, {restrictions}")
-                restrictions = []
-
-            item_as_dict["restrictions"] = restrictions
-
-        item_as_dict["key"] = item.key
-
-        if "__class__.__name__" in item_as_dict:
-            item_as_dict.pop("__class__.__name__")
-
-        converted_items.append(item_as_dict)
-
-    # logger.warning(f"converted {(converted_items)} items")
-
-    a = json_normalize(converted_items)
-
-    # logger.warning(f"normalized {(a)} items")
-
-    if not a.empty:
-        a.set_index("key", inplace=True)
-
-    return a
 
 
 def add_location_layer(
@@ -241,8 +162,12 @@ def add_location_layer(
         if ("." not in c)
         or ("location_type.admin_id" == c)
         or (
-            ("translations." in c or "display_rule." in c)
-            and ((".translations" not in c) and (".display_rule" not in c))
+            ("translations." in c or "display_rule." in c or "street_view_config." in c)
+            and (
+                (".translations" not in c)
+                and (".display_rule" not in c)
+                and (".street_view_config" not in c)
+            )
             # Only this objects translations
         )
     ]
@@ -268,7 +193,17 @@ def add_location_layer(
 
     locations_df = locations_df[~locations_df.is_empty]
 
-    reproject_geometry_df(locations_df)
+    reproject_geometry_df_qgis(locations_df)
+
+    if "anchor" in locations_df:
+        if should_reproject_qgis():
+            locations_df["anchor"] = locations_df["anchor"].apply(forward_project_qgis)
+
+            if ANCHOR_AS_INDIVIDUAL_FIELDS:
+                locations_df["anchor_x"] = locations_df["anchor"].apply(lambda p: p.x)
+                locations_df["anchor_y"] = locations_df["anchor"].apply(lambda p: p.y)
+                locations_df.pop("anchor")
+
     assert len(shape_df) == len(
         locations_df
     ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
@@ -279,19 +214,24 @@ def add_location_layer(
 
     for attr_name in BOOLEAN_LOCATION_ATTRS:
         if attr_name in locations_df:
-            locations_df[attr_name] = shape_df[attr_name].astype(bool)
+            locations_df[attr_name] = shape_df[attr_name].astype(bool, errors="ignore")
 
     for attr_name in STR_LOCATION_ATTRS:
         if attr_name in locations_df:
-            locations_df[attr_name] = shape_df[attr_name].astype(str)
+            locations_df[attr_name] = shape_df[attr_name].astype(str, errors="ignore")
 
     for attr_name in FLOAT_LOCATION_ATTRS:
         if attr_name in locations_df:
-            locations_df[attr_name] = shape_df[attr_name].astype(float)
+            locations_df[attr_name] = shape_df[attr_name].astype(float, errors="ignore")
 
     for attr_name in INT_LOCATION_ATTRS:
         if attr_name in locations_df:
-            locations_df[attr_name] = shape_df[attr_name].astype(int)
+            locations_df[attr_name] = shape_df[attr_name].astype(int, errors="ignore")
+
+    for attr_name in DATETIME_LOCATION_ATTRS:
+        if attr_name in locations_df:
+            # locations_df[attr_name] = shape_df[attr_name].astype(datetime)
+            locations_df[attr_name] = pandas.to_datetime(locations_df[attr_name])
 
     locations_df.rename(
         columns={"location_type.admin_id": "location_type"}, inplace=True
@@ -305,6 +245,8 @@ def add_location_layer(
             )
         else:
             locations_df["occupant"] = locations_df.index
+
+    # locations_df.replace({numpy.nan: None}, inplace=True)
 
     added_layers = add_dataframe_layer(
         qgis_instance_handle=qgis_instance_handle,
@@ -359,7 +301,7 @@ def add_location_layer(
 
     make_field_unique(added_layers, field_name="admin_id")
 
-    for field_name in (
+    for field_name in (  # MARK all tranlation names as required "not_null"
         "translations.en.name",
         "location_type",
         "is_searchable",
@@ -457,14 +399,13 @@ def add_floor_content_layers(
     set_label_styling(
         room_layers,
         field_name=label_field_name,
-        min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO,
+        min_ratio=read_float_setting("LAYER_LABEL_VISIBLE_MIN_RATIO"),
     )
 
-    if LAYER_GEOM_VISIBLE_MIN_RATIO:
-        set_layer_rendering_scale(
-            room_layers,
-            min_ratio=LAYER_GEOM_VISIBLE_MIN_RATIO,
-        )
+    set_layer_rendering_scale(
+        room_layers,
+        min_ratio=read_float_setting("LAYER_GEOM_VISIBLE_MIN_RATIO"),
+    )
 
     set_geometry_constraints(room_layers)
 
@@ -481,17 +422,17 @@ def add_floor_content_layers(
         occupant_dropdown_widget=occupant_dropdown_widget,
         opacity=0.6,
     )
+
     set_label_styling(
         area_layers,
         field_name=label_field_name,
-        min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO,
+        min_ratio=read_float_setting("LAYER_LABEL_VISIBLE_MIN_RATIO"),
     )
 
-    if LAYER_GEOM_VISIBLE_MIN_RATIO:
-        set_layer_rendering_scale(
-            area_layers,
-            min_ratio=LAYER_GEOM_VISIBLE_MIN_RATIO,
-        )
+    set_layer_rendering_scale(
+        area_layers,
+        min_ratio=read_float_setting("LAYER_GEOM_VISIBLE_MIN_RATIO"),
+    )
 
     set_geometry_constraints(area_layers)
 
@@ -509,14 +450,15 @@ def add_floor_content_layers(
     )
 
     set_label_styling(
-        poi_layers, field_name=label_field_name, min_ratio=LAYER_LABEL_VISIBLE_MIN_RATIO
+        poi_layers,
+        field_name=label_field_name,
+        min_ratio=read_float_setting("LAYER_LABEL_VISIBLE_MIN_RATIO"),
     )
 
-    if LAYER_GEOM_VISIBLE_MIN_RATIO:
-        set_layer_rendering_scale(
-            poi_layers,
-            min_ratio=LAYER_GEOM_VISIBLE_MIN_RATIO,
-        )
+    set_layer_rendering_scale(
+        poi_layers,
+        min_ratio=read_float_setting("LAYER_GEOM_VISIBLE_MIN_RATIO"),
+    )
 
     set_geometry_constraints(poi_layers)
 

@@ -23,9 +23,14 @@ from integration_system.model import (
     Model2d,
     Model3d,
     OptionalDisplayRule,
+    StreetViewConfig,
 )
 from integration_system.model.typings import LanguageBundle
-from jord.qgis_utilities import REAL_NONE_JSON_VALUE, is_str_value_null_like
+from jord.qgis_utilities import (
+    REAL_NONE_JSON_VALUE,
+    is_str_value_null_like,
+    parse_q_value,
+)
 from mi_companion import (
     ADD_FLOAT_NAN_translation_VALUES,
     ADD_REAL_NONE_translation_VALUES,
@@ -39,7 +44,7 @@ __all__ = [
     "extract_translations",
     "extract_single_level_str_map",
     "extract_display_rule",
-    "parse_q_value_field",
+    "parse_q_value_field_translations",
 ]
 
 
@@ -65,10 +70,10 @@ def extract_translations(
             if len(split_res) == 3:
                 lang, cname = split_res[-2:]
 
-                parse_q_value(cname, lang, translations, v)
+                parse_q_value_translations(cname, lang, translations, v)
             elif len(split_res) == 4:
                 lang, cname, f_name = split_res[-3:]
-                parse_q_value_field(cname, f_name, lang, translations, v)
+                parse_q_value_field_translations(cname, f_name, lang, translations, v)
             else:
                 logger.error(f"IGNORING {split_res}")
 
@@ -86,7 +91,42 @@ def extract_translations(
     return out
 
 
-def parse_q_value_field(cname, f_name, lang, translations, v):
+def extract_street_view_config(
+    layer_attributes: Mapping[str, Any],
+    *,
+    nested_str_map_field_name: str = "street_view_config",
+) -> Optional[StreetViewConfig]:
+    """
+    THIS IS THE DIRTIEST function ever written; null is a hell of a concept
+
+    :param nested_str_map_field_name:
+    :param layer_attributes:
+    :return:
+    """
+
+    args = {}
+    for k, v in layer_attributes.items():
+        if nested_str_map_field_name in k:
+            split_res = k.split(".")
+            if len(split_res) == 2:
+                field_name = split_res[-1]
+
+                val = parse_q_value(v)
+
+                if val is None:
+                    continue
+
+                args[field_name] = val
+            else:
+                logger.error(f"IGNORING {split_res}")
+
+    if len(args) == 0:
+        return None
+
+    return StreetViewConfig(**args)
+
+
+def parse_q_value_field_translations(cname, f_name, lang, translations, v):
     if isinstance(v, str):
         v_str = v.lower().strip()
         if is_str_value_null_like(v_str):
@@ -142,7 +182,7 @@ def parse_q_value_field(cname, f_name, lang, translations, v):
         translations[lang][cname][f_name] = v
 
 
-def parse_q_value(cname, lang, translations, v):
+def parse_q_value_translations(cname, lang, translations, v):
     if isinstance(v, str):
         v_str = v.lower().strip()
         if is_str_value_null_like(v_str):
@@ -350,6 +390,9 @@ def extract_display_rule(
                         continue
 
                     attr_value = attr_value.value()
+
+                if attr_value is None:
+                    continue
 
                 # Skip null-like strings
                 if isinstance(attr_value, str) and is_str_value_null_like(

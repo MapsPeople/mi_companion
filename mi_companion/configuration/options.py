@@ -11,6 +11,7 @@ __all__ = [
     "DeploymentCompanionOptionsPage",
     "DeploymentOptionsPageFactory",
     "read_bool_setting",
+    "read_float_setting",
 ]
 
 import logging
@@ -176,6 +177,18 @@ def read_bool_setting(key: str) -> bool:
             return True
     else:
         raise Exception(f"{v=} was invalid for bool setting")
+
+
+def read_float_setting(key: str) -> float:
+    v = read_plugin_setting(
+        key,
+        default_value=DEFAULT_PLUGIN_SETTINGS[key],
+        project_name=PROJECT_NAME,
+    )
+    if isinstance(v, float):
+        return v
+
+    return float(v)
 
 
 class DeploymentCompanionOptionsPage(QgsOptionsPageWidget):

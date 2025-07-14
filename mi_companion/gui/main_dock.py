@@ -50,11 +50,11 @@ from .make_solution_right_click import add_augmented_actions
 from ..configuration.options import read_bool_setting
 from ..constants import (
     DEFAULT_PLUGIN_SETTINGS,
-    MI_EPSG_NUMBER,
     PLUGIN_REPOSITORY,
     PROJECT_NAME,
     VERSION,
 )
+from integration_system.mi_sync_constants import MI_EPSG_NUMBER
 from ..qgis_utilities import extract_wkt_elements, get_icon_path, resolve_path
 from mi_companion.entry_points.add_language_to_group import (
     ENTRY_POINT_NAME as ADD_LANGUAGE_BUTTON_NAME,

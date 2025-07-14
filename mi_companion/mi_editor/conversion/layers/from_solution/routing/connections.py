@@ -16,7 +16,7 @@ from jord.qlive_utilities import add_dataframe_layer
 from mi_companion import INSERT_INDEX, MAKE_FLOOR_WISE_LAYERS
 from mi_companion.layer_descriptors import CONNECTORS_GROUP_DESCRIPTOR
 from mi_companion.mi_editor.conversion.projection import (
-    reproject_geometry_df,
+    reproject_geometry_df_qgis,
     solve_target_crs_authid,
 )
 
@@ -101,7 +101,7 @@ def add_connection_layers(
 
                 df = df[~df.is_empty]
 
-                reproject_geometry_df(door_df)
+                reproject_geometry_df_qgis(door_df)
 
                 connectors_layer = add_dataframe_layer(
                     qgis_instance_handle=qgis_instance_handle,
@@ -133,7 +133,7 @@ def add_connection_layers(
 
         df = df[~df.is_empty]
 
-        reproject_geometry_df(df)
+        reproject_geometry_df_qgis(df)
 
         connectors_layer = add_dataframe_layer(
             qgis_instance_handle=qgis_instance_handle,

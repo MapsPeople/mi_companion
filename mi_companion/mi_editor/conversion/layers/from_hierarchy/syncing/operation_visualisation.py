@@ -16,7 +16,7 @@ from integration_system.model import (
     SHAPELY_DIFFERENCE_DESCRIPTION,
     Solution,
 )
-from mi_companion import MI_EPSG_NUMBER
+from integration_system.mi_sync_constants import MI_EPSG_NUMBER
 
 __all__ = ["show_differences", "extract_operation_difference_geometry"]
 

@@ -19,6 +19,8 @@ ls["occupant"] = ls.index.map(lambda x: x if x in os.index else None)
 
 columns = df_to_columns(ls)
 
+# print(columns)
+
 if isinstance(columns, Mapping):
     attr_generator, attr_type_sampler = tee(iter(columns.values()))
 elif isinstance(columns, Iterable):
