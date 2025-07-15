@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
+
+
+## 0.7.7 - 2025-07-03
+* [Deprecation] Removed AUTO_REGENERATE_EXTERNAL_ID_IF_MISSING functionality
+* [Bug-fix] Anchor points of Locations (Room, Area and POI) as well as floor and building are now tracked in the attributes tables of features
+* [QOL] Geometry comparison is now tolerance based to avoid reprojection errors producing unnecessary update to geometries
+* [Validation] All result lon and lat coordinates are now range validation (-90 to 90) and (-180 to 180)
+
 ## 0.7.6 - 2025-07-03
 * [Deprecation] Removed Compatibility button
 * [Feature] Add language to group/layer button
