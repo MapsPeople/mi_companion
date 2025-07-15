@@ -168,12 +168,7 @@ def add_floor_locations(
             if "external_id" in feature_attributes:
                 external_id = feature_attributes["external_id"]
                 if external_id is None:
-                    if read_bool_setting("GENERATE_MISSING_EXTERNAL_IDS"):
-                        external_id = uuid.uuid4().hex
-                    else:
-                        raise ValueError(
-                            f"{layer_feature} is missing a valid external id"
-                        )
+                    ...
                 elif isinstance(external_id, str):
                     v = external_id
                     v_str = v.lower().strip()

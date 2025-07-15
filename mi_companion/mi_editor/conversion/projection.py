@@ -1,6 +1,8 @@
+import logging
 import typing
 from typing import Optional
 
+import numpy
 import pyproj
 import shapely
 from geopandas import GeoDataFrame
@@ -31,10 +33,15 @@ __all__ = [
     "back_project_qgis",
 ]
 
+from mi_companion.qgis_utilities.exceptions import InvalidReprojection
+
 # GOOD RESOURCE FOR THIS IMPLEMENTATION: https://qgis.org/pyqgis/3.34/core/QgsCoordinateReferenceSystem.html
 # ANOTHER: https://docs.qgis.org/3.34/en/docs/pyqgis_developer_cookbook/crs.html
 
 # TODO: HONESTLY THIS FILE IS MESS; SHOULD BE REWORKED!
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_back_projection_qgis() -> typing.Callable:
@@ -62,11 +69,21 @@ def get_forward_projection_qgis() -> typing.Callable:
 
 
 def back_project_qgis(geom: BaseGeometry) -> BaseGeometry:
-    return shapely.ops.transform(get_back_projection_qgis(), geom)
+    back = get_back_projection_qgis()
+    if back is not None:
+        return shapely.ops.transform(back, geom)
+
+    return geom
 
 
 def forward_project_qgis(geom: BaseGeometry) -> BaseGeometry:
-    return shapely.ops.transform(get_forward_projection_qgis(), geom)
+    forward = get_forward_projection_qgis()
+
+    if forward is not None:
+
+        return shapely.ops.transform(forward, geom)
+
+    return geom
 
 
 def should_reproject_qgis() -> bool:
@@ -91,6 +108,81 @@ def should_reproject_to_project_qgis() -> bool:
     return read_bool_setting("REPROJECT_TO_PROJECT_CRS")
 
 
+def any_infinite_coords(geom_shapely: BaseGeometry) -> bool:
+    """
+
+    # Check for infinity in coordinates
+
+    :param geom_shapely:
+    :return:
+    """
+    coords = numpy.array(shapely.get_coordinates(geom_shapely))
+    if any(not numpy.isfinite(coord) for coord in coords.flatten()):
+
+        logger.warning("Reprojection resulted in infinite coordinates")
+        return True
+
+    return False
+
+
+def is_valid_lon_lat(geom_shapely: BaseGeometry) -> bool:
+    """Check if all coordinates are within valid longitude/latitude ranges.
+
+    :param geom_shapely: Shapely geometry to check
+    :return: True if all coordinates are within valid ranges
+    """
+    coords = list(shapely.get_coordinates(geom_shapely))
+    for coord in coords:
+        lon, lat = coord[0], coord[1]
+        # Check longitude (-180 to 180) and latitude (-90 to 90) ranges
+        if not (-180 <= lon <= 180) or not (-90 <= lat <= 90):
+            logger.warning(f"Invalid coordinates found: lon={lon}, lat={lat}")
+            return False
+
+    return True
+
+
+def is_valid_lon_lat_fast(geom_shapely: BaseGeometry) -> bool:  # Faster?
+    """Check if all coordinates are within valid longitude/latitude ranges.
+
+    This function checks if coordinates are within the valid range:
+    longitude: -180 to 180
+    latitude: -90 to 90
+
+    :param geom_shapely: Shapely geometry to check
+    :return: True if all coordinates are within valid ranges
+    """
+    coords = shapely.get_coordinates(geom_shapely)
+
+    # Use numpy for faster validation
+    if coords.size == 0:
+        return True
+
+    # Get min and max values for quick check
+    min_x, min_y = numpy.min(coords, axis=0)
+    max_x, max_y = numpy.max(coords, axis=0)
+
+    # Quick check - if all bounds are within range, all coords are valid
+    if -180 <= min_x <= max_x <= 180 and -90 <= min_y <= max_y <= 90:
+        return True
+
+    # Detailed check if the quick check fails
+    valid_x = numpy.logical_and(coords[:, 0] >= -180, coords[:, 0] <= 180)
+    valid_y = numpy.logical_and(coords[:, 1] >= -90, coords[:, 1] <= 90)
+
+    if not numpy.all(valid_x):
+        invalid_x = coords[~valid_x, 0]
+        logger.warning(f"Invalid longitude values found: {invalid_x}")
+        return False
+
+    if not numpy.all(valid_y):
+        invalid_y = coords[~valid_y, 1]
+        logger.warning(f"Invalid latitude values found: {invalid_y}")
+        return False
+
+    return True
+
+
 def prepare_geom_for_mi_db_qgis(
     geom_shapely: shapely.geometry.base.BaseGeometry,
     clean: bool = True,
@@ -108,6 +200,17 @@ def prepare_geom_for_mi_db_qgis(
 
     if should_reproject_qgis() and back_projection is not None:
         geom_shapely = shapely.ops.transform(back_projection, geom_shapely)
+
+    if any_infinite_coords(geom_shapely):
+        raise InvalidReprojection(
+            f"Reproject of {geom_shapely} resulted in some coordinates becoming infinity, please check you coordinate systems"
+        )
+
+    # Check if reprojected coordinates are within valid ranges
+    if not is_valid_lon_lat_fast(geom_shapely):
+        raise InvalidReprojection(
+            f"Reprojection of {geom_shapely} resulted in coordinates outside valid longitude/latitude range"
+        )
 
     if clean:
         return clean_shape(geom_shapely)
@@ -132,6 +235,11 @@ def prepare_geom_for_editing_qgis(
 
     if should_reproject_qgis() and forward_projection is not None:
         geom_shapely = shapely.ops.transform(forward_projection, geom_shapely)
+
+    if any_infinite_coords(geom_shapely):
+        raise InvalidReprojection(
+            f"Reproject of {geom_shapely} resulted in some coordinates becoming infinity, please check you coordinate systems"
+        )
 
     if clean:
         return clean_shape(geom_shapely)

@@ -53,11 +53,7 @@ def special_extract_layer_data(
         layer_attributes["external_id"] if "external_id" in layer_attributes else None
     )
     if external_id is None:
-        if read_bool_setting("GENERATE_MISSING_EXTERNAL_IDS"):
-            external_id = uuid.uuid4().hex
-        else:
-            if require_external_id:
-                raise ValueError(f"{layer_feature} is missing a valid external id")
+        ...
     elif isinstance(external_id, QVariant):
         if external_id.isNull():
             external_id = None
