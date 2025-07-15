@@ -18,6 +18,8 @@ from integration_system.mi_sync_constants import (
     MI_EPSG_NUMBER,
 )
 
+from mi_companion.qgis_utilities.exceptions import InvalidReprojection
+
 __all__ = [
     "prepare_geom_for_mi_db_qgis",
     "prepare_geom_for_editing_qgis",
@@ -33,7 +35,6 @@ __all__ = [
     "back_project_qgis",
 ]
 
-from mi_companion.qgis_utilities.exceptions import InvalidReprojection
 
 # GOOD RESOURCE FOR THIS IMPLEMENTATION: https://qgis.org/pyqgis/3.34/core/QgsCoordinateReferenceSystem.html
 # ANOTHER: https://docs.qgis.org/3.34/en/docs/pyqgis_developer_cookbook/crs.html
