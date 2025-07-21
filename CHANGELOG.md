@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Validation] All result lon and lat coordinates are now range validation (-90 to 90) and (-180 to 180)
 * [Feature] Anchor and 3d-rotation is now visualised in every polygon, can be disabled by setting,
   ADD_ANCHOR_AND_3DROTSCL_STYLING.
+* [Feature] Adds support for 2D model styling and visualisation (SVG and raster symbols) on location level, location-type level is still missing
 
 ## 0.7.6 - 2025-07-03
 
