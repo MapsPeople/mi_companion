@@ -17,7 +17,7 @@ from qgis.core import (
 )
 
 from jord.qgis_utilities import extract_layer_data_single
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 
 logger = logging.getLogger(__name__)
 
@@ -53,11 +53,7 @@ def special_extract_layer_data(
         layer_attributes["external_id"] if "external_id" in layer_attributes else None
     )
     if external_id is None:
-        if read_bool_setting("GENERATE_MISSING_EXTERNAL_IDS"):
-            external_id = uuid.uuid4().hex
-        else:
-            if require_external_id:
-                raise ValueError(f"{layer_feature} is missing a valid external id")
+        ...
     elif isinstance(external_id, QVariant):
         if external_id.isNull():
             external_id = None

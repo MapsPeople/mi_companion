@@ -1,6 +1,8 @@
 import logging
 from typing import Any, List, Optional
 
+import shapely
+
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
 
@@ -24,9 +26,14 @@ from integration_system.mi import (
     MI_OUTSIDE_BUILDING_NAME,
     get_outside_building_floor_name,
 )
-from integration_system.model import Solution
-from jord.qgis_utilities import feature_to_shapely
+from integration_system.model import LanguageBundle, Solution
+from jord.qgis_utilities import (
+    extract_field_value,
+    feature_to_shapely,
+    qgs_geometry_to_shapely,
+)
 from mi_companion import (
+    ANCHOR_AS_INDIVIDUAL_FIELDS,
     HALF_SIZE,
     HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS,
 )
@@ -38,7 +45,7 @@ from mi_companion.layer_descriptors import (
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.routing import (
     add_venue_graph,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from mi_companion.mi_editor.hierarchy import (
     make_hierarchy_validation_dialog,
 )
@@ -121,8 +128,10 @@ def add_venue_level_hierarchy(
                 if outside_building is None:
                     try:
                         outside_building_key = solution.add_building(
-                            outside_building_admin_id,
-                            MI_OUTSIDE_BUILDING_NAME,
+                            admin_id=outside_building_admin_id,
+                            translations={
+                                "en": LanguageBundle(name=MI_OUTSIDE_BUILDING_NAME)
+                            },
                             polygon=venue.polygon,
                             venue_key=venue_key,
                         )
@@ -142,7 +151,11 @@ def add_venue_level_hierarchy(
                 try:
                     outside_floor_key = solution.add_floor(
                         0,
-                        name=get_outside_building_floor_name(0),
+                        translations={
+                            "en": LanguageBundle(
+                                name=get_outside_building_floor_name(0)
+                            )
+                        },
                         building_key=outside_building_key,
                         polygon=venue.polygon,
                     )
@@ -306,13 +319,35 @@ def get_building_key(
 
             if building_polygon is not None:
                 translations = extract_translations(layer_attributes)
+
+                anchor = building_polygon.representative_point()
+
+                if ANCHOR_AS_INDIVIDUAL_FIELDS:
+                    if "anchor_x" in layer_attributes:
+                        ax = extract_field_value(layer_attributes, "anchor_x")
+                        layer_attributes.pop("anchor_x")
+                        ay = extract_field_value(layer_attributes, "anchor_y")
+                        layer_attributes.pop("anchor_y")
+                        anchor = shapely.Point([ax, ay])
+
+                else:
+
+                    if "anchor" in layer_attributes:
+                        a = extract_field_value(layer_attributes, "anchor")
+                        if a is not None and not (a.isNull() or a.isEmpty()):
+                            can = qgs_geometry_to_shapely(a)
+                            if can:
+                                anchor = can
+                        layer_attributes.pop("anchor")
+
                 try:
                     building_key = solution.add_building(
                         admin_id=admin_id,
                         external_id=external_id,
-                        polygon=prepare_geom_for_mi_db(building_polygon),
+                        polygon=prepare_geom_for_mi_db_qgis(building_polygon),
                         venue_key=venue_key,
                         translations=(translations),
+                        anchor=prepare_geom_for_mi_db_qgis(anchor),
                     )
                 except Exception as e:
                     _invalid = f"Invalid building: {e}"

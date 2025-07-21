@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Any, Mapping, Optional
 
 from warg import passes_kws_to
-
 from ..constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 
 __all__ = ["resolve_path", "load_icon", "get_icon_path"]

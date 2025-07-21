@@ -10,6 +10,7 @@ from jord.qgis_utilities import (
     make_field_unique,
     make_value_relation_widget,
     set_geometry_constraints,
+    set_layer_rendering_scale,
 )
 from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
@@ -17,7 +18,7 @@ from mi_companion import (
     ALLOW_DUPLICATE_VENUES_IN_PROJECT,
     DESCRIPTOR_BEFORE,
 )
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting, read_float_setting
 from mi_companion.constants import (
     INSERT_INDEX,
 )
@@ -28,13 +29,13 @@ from mi_companion.layer_descriptors import (
 from mi_companion.mi_editor.conversion.layers.from_solution.routing.graph import (
     add_graph_layers,
 )
+from mi_companion.mi_editor.conversion.projection import (
+    prepare_geom_for_editing_qgis,
+    solve_target_crs_authid,
+)
 from .building import add_building_layers
 from .occupant import add_occupant_layer
 from .parsing import translations_to_flattened_dict
-from ...projection import (
-    prepare_geom_for_qgis,
-    solve_target_crs_authid,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -183,7 +184,7 @@ def add_venue_polygon_layer(
 
     venue_layer = add_shapely_layer(
         qgis_instance_handle=qgis_instance_handle,
-        geoms=[prepare_geom_for_qgis(venue.polygon)],
+        geoms=[prepare_geom_for_editing_qgis(venue.polygon)],
         name=VENUE_POLYGON_DESCRIPTOR,
         columns=[
             {
@@ -230,3 +231,8 @@ def add_venue_polygon_layer(
     make_field_unique(venue_layer, field_name="admin_id")
     for field_name in ("name",):
         make_field_not_null(venue_layer, field_name=field_name)
+
+    set_layer_rendering_scale(
+        venue_layer,
+        min_ratio=read_float_setting("LAYER_GEOM_VISIBLE_MIN_RATIO"),
+    )

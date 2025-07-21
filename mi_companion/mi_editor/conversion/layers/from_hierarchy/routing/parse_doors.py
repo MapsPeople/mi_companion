@@ -12,11 +12,11 @@ from jord.qgis_utilities import (
     feature_to_shapely,
 )
 from mi_companion import VERBOSE
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
     extract_single_level_str_map,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +65,7 @@ def add_doors(
 
         door_key = solution.add_door(
             door_attributes["admin_id"],
-            linestring=prepare_geom_for_mi_db(door_linestring, clean=False),
+            linestring=prepare_geom_for_mi_db_qgis(door_linestring, clean=False),
             door_type=get_door_type(door_attributes),
             floor_index=int(door_attributes["floor_index"]),
             graph_key=graph_key,

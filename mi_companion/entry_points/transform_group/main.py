@@ -2,13 +2,9 @@
 import logging
 from pathlib import Path
 
-from jord.qgis_utilities import (
-    get_gcp_transformer_from_file,
-    transform_sub_tree_features,
-)
+from integration_system.mi_sync_constants import MI_EPSG_NUMBER
 from mi_companion import RESOURCE_BASE_PATH
-from mi_companion.constants import MI_EPSG_NUMBER
-from mi_companion.mi_editor import get_target_crs_srsid
+from mi_companion.mi_editor.conversion.projection import get_target_crs_srsid
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
 
@@ -30,7 +26,7 @@ if False:  # TODO: Transform if not the same as GCPs!
 # FORWARD_TRANSFORM = QgsCoordinateTransform(DEST_CRS, SOURCE_CRS, QgsProject.instance())
 # BACKWARD_TRANSFORM = QgsCoordinateTransform(DEST_CRS, SOURCE_CRS, QgsProject.instance())
 
-__all__ = []
+__all__ = ["run"]
 
 
 def run(
@@ -58,6 +54,11 @@ def run(
     :param method: Which method to use for the transformation
     :return:
     """
+
+    from jord.qgis_utilities import (
+        get_gcp_transformer_from_file,
+        transform_sub_tree_features,
+    )
 
     # noinspection PyUnresolvedReferences
     from qgis.utils import iface

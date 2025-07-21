@@ -10,7 +10,7 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 from mi_companion import RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
-__all__ = []
+__all__ = ["run"]
 
 
 def run(*, svg_file_path: Path) -> None:

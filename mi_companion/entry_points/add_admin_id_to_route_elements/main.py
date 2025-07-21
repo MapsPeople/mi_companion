@@ -1,14 +1,11 @@
 #!/usr/bin/python
 import logging
 
-from integration_system.config import MapsIndoors, Settings, set_settings
-from integration_system.tools.compatibilization import make_route_elements_compatible
-from jord.qgis_utilities import read_plugin_setting
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
 
-__all__ = []
+__all__ = ["run"]
 
 
 def run(*, solution_id: str) -> None:
@@ -17,6 +14,13 @@ def run(*, solution_id: str) -> None:
     :param solution_id:
     :return:
     """
+
+    from integration_system.config import MapsIndoors, Settings, set_settings
+    from integration_system.tools.compatibilization import (
+        make_route_elements_compatible,
+    )
+    from jord.qgis_utilities import read_plugin_setting
+
     sync_module_settings = Settings(
         mapsindoors=MapsIndoors(
             username=read_plugin_setting(

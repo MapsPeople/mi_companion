@@ -1,18 +1,18 @@
 #!/usr/bin/python
 import logging
 import uuid
-from typing import Any
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+from typing import Any
 
 from mi_companion import RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
-__all__ = []
+__all__ = ["run"]
 
 
 def randomize_fields_selected_features(feature, field_name: str) -> Any:  # QgsFeature

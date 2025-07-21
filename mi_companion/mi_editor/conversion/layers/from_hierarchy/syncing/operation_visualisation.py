@@ -10,13 +10,13 @@ from qgis.PyQt import QtCore, QtWidgets
 from qgis.core import QgsProject
 
 from integration_system.mi import MIOperation
+from integration_system.mi_sync_constants import MI_EPSG_NUMBER
 from integration_system.model import (
     DIFFERENCE_GROUP_NAME,
     NEXT_DIFF_ITEM_INDICATOR,
     SHAPELY_DIFFERENCE_DESCRIPTION,
     Solution,
 )
-from mi_companion import MI_EPSG_NUMBER
 
 __all__ = ["show_differences", "extract_operation_difference_geometry"]
 

@@ -1,0 +1,2 @@
+class InvalidReprojection(Exception):
+    pass

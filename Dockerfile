@@ -1,7 +1,7 @@
 FROM qgis/qgis:latest AS base
 LABEL authors="chen"
 
-RUN apt-get update && apt-get install -y python3 python3-pip python3-numpy  python3-pyproj python3-pandas python3-pydantic xvfb wget unzip
+RUN apt update && apt install -y python3 python3-pip python3-numpy python3-pyproj python3-pandas python3-pydantic xvfb wget unzip && apt remove -y python3-typing-extensions
 
 ENV QGIS_PREFIX_PATH=/usr
 ENV QT_QPA_PLATFORM=offscreen
@@ -26,7 +26,6 @@ RUN Xvfb :1 -screen 0 1024x768x16 &> xvfb.log  &
 RUN ps aux | grep X
 RUN DISPLAY=:1.0
 RUN export DISPLAY
-
 
 FROM setup AS run
 

@@ -204,7 +204,7 @@
                     </layout>
                 </item>
                 <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_6">
+                    <layout class="QHBoxLayout" name="status_layout">
                         <item>
                             <widget class="QLabel" name="changes_label">
                                 <property name="sizePolicy">
@@ -216,7 +216,6 @@
                                 <property name="font">
                                     <font>
                                         <pointsize>12</pointsize>
-                                        <weight>75</weight>
                                         <bold>true</bold>
                                     </font>
                                 </property>

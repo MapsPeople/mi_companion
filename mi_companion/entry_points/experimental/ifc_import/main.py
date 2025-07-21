@@ -1,8 +1,7 @@
 #!/usr/bin/python
+import ifcopenshell
 import logging
 from pathlib import Path
-
-import ifcopenshell
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
@@ -16,7 +15,7 @@ from mi_companion.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
 from mi_companion.mi_editor.conversion import add_solution_layers
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
-__all__ = []
+__all__ = ["run"]
 
 
 def load_ifc(file_path: Path) -> ifcopenshell.entity_instance:

@@ -9,7 +9,7 @@ from mi_companion import PROJECT_APP_PATH, RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
 
-__all__ = []
+__all__ = ["run"]
 
 
 def write_csv(csv_file_name: Path, area_list: Collection[Mapping]) -> None:

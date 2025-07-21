@@ -19,7 +19,7 @@ from qgis.core import (
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
 
-__all__ = []
+__all__ = ["run"]
 
 from mi_companion import RESOURCE_BASE_PATH
 

@@ -11,14 +11,14 @@ from mi_companion import (
     GRAPH_EDGE_WIDTH,
     HALF_SIZE,
 )
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import (
     NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
     NAVIGATION_POINT_DESCRIPTOR,
     NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
 )
 from mi_companion.mi_editor.conversion.projection import (
-    prepare_geom_for_qgis,
+    prepare_geom_for_editing_qgis,
     solve_target_crs_authid,
 )
 
@@ -39,7 +39,7 @@ def add_graph_network_layers(
     qgis_instance_handle,
 ):
     if True:
-        lines = [prepare_geom_for_qgis(l, clean=False) for l in lines]
+        lines = [prepare_geom_for_editing_qgis(l, clean=False) for l in lines]
 
         horizontals = list(
             zip(
@@ -178,7 +178,7 @@ def add_graph_network_layers(
                                 edge_context_type_dropdown_widget,
                             )
     if False:
-        points = [prepare_geom_for_qgis(p, clean=False) for p in points]
+        points = [prepare_geom_for_editing_qgis(p, clean=False) for p in points]
         logger.info(f"{len(points)=} loaded!")
         graph_points_layer = add_shapely_layer(
             qgis_instance_handle=qgis_instance_handle,
@@ -193,7 +193,7 @@ def add_graph_network_layers(
             crs=solve_target_crs_authid(),
         )
     if False:
-        points = [prepare_geom_for_qgis(p, clean=False) for p in points]
+        points = [prepare_geom_for_editing_qgis(p, clean=False) for p in points]
         logger.info(f"{len(points)=} loaded!")
         graph_points_layer = add_shapely_layer(
             qgis_instance_handle=qgis_instance_handle,

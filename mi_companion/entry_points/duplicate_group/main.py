@@ -1,17 +1,17 @@
 #!/usr/bin/python
 import logging
-from typing import Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+from typing import Optional
 
 from mi_companion import RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
-__all__ = []
+__all__ = ["run"]
 
 
 def run(

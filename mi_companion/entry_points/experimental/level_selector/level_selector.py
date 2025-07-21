@@ -1,7 +1,6 @@
 import logging
 import os
 from pathlib import Path
-from typing import Any, Iterable, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets, uic
@@ -29,11 +28,12 @@ from qgis.gui import QgsDockWidget
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
-from warg import ensure_in_sys_path
+from typing import Any, Iterable, Optional
 
 from jord.qgis_utilities.helpers import signals
 from mi_companion import RESOURCE_BASE_PATH
 from mi_companion.qgis_utilities import resolve_path
+from warg import ensure_in_sys_path
 
 FORM_CLASS, _ = uic.loadUiType(resolve_path("level_selector.ui", __file__))
 
@@ -43,7 +43,7 @@ logger = logging.getLogger(RESOURCE_BASE_PATH)
 VERBOSE = False
 
 ensure_in_sys_path(Path(__file__).parent.parent)
-__all__ = []
+__all__ = ["LevelSelectorWidget"]
 
 
 class LevelSelectorWidget(QgsDockWidget, FORM_CLASS):

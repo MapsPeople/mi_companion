@@ -1,6 +1,8 @@
 import logging
 from typing import Any, List, Optional, Tuple
 
+import shapely
+
 # noinspection PyUnresolvedReferences
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
@@ -24,11 +26,17 @@ from qgis.core import (
 )
 
 from integration_system.model import Solution
-from jord.qgis_utilities import feature_to_shapely
+from jord.qgis_utilities import (
+    extract_field_value,
+    feature_to_shapely,
+    qgs_geometry_to_shapely,
+)
 from mi_companion import (
+    ANCHOR_AS_INDIVIDUAL_FIELDS,
     HALF_SIZE,
 )
 from mi_companion.layer_descriptors import FLOOR_POLYGON_DESCRIPTOR
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
@@ -36,7 +44,6 @@ from .common_attributes import extract_translations
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from .extraction import special_extract_layer_data
 from .location import add_floor_contents
-from ...projection import prepare_geom_for_mi_db
 
 logger = logging.getLogger(__name__)
 
@@ -196,6 +203,9 @@ def get_floor_data(
             (admin_id, external_id, floor_attributes, floor_feature) = (
                 special_extract_layer_data(floor_level_item)
             )
+
+            floor_polygon = None
+
             try:
                 floor_polygon = feature_to_shapely(floor_feature)
             except Exception as e:
@@ -222,13 +232,34 @@ def get_floor_data(
             if floor_polygon is not None:
                 translations = extract_translations(floor_attributes)
 
+                anchor = floor_polygon.representative_point()
+
+                if ANCHOR_AS_INDIVIDUAL_FIELDS:
+                    if "anchor_x" in floor_attributes:
+                        ax = extract_field_value(floor_attributes, "anchor_x")
+                        floor_attributes.pop("anchor_x")
+                        ay = extract_field_value(floor_attributes, "anchor_y")
+                        floor_attributes.pop("anchor_y")
+                        anchor = shapely.Point([ax, ay])
+
+                else:
+
+                    if "anchor" in floor_attributes:
+                        a = extract_field_value(floor_attributes, "anchor")
+                        if a is not None and not (a.isNull() or a.isEmpty()):
+                            can = qgs_geometry_to_shapely(a)
+                            if can:
+                                anchor = can
+                        floor_attributes.pop("anchor")
+
                 try:
                     floor_key = solution.add_floor(
                         external_id=external_id,
                         floor_index=floor_attributes["floor_index"],
-                        polygon=prepare_geom_for_mi_db(floor_polygon),
+                        polygon=prepare_geom_for_mi_db_qgis(floor_polygon),
                         building_key=building_key,
                         translations=translations,
+                        anchor=prepare_geom_for_mi_db_qgis(anchor),
                     )
                 except Exception as e:
                     _invalid = f"Invalid floor: {e}"

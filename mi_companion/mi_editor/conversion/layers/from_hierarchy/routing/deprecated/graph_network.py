@@ -6,11 +6,11 @@ from typing import Any, List, Optional
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
-from integration_system.tools.graph_utilities import (
+from integration_system.tools import (
     lines_and_points_to_osm_xml,
 )
 from jord.qgis_utilities import feature_to_shapely, parse_q_value
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import (
     NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
     NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
@@ -18,7 +18,7 @@ from mi_companion.layer_descriptors import (
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.constants import (
     DISABLE_GRAPH_EDIT,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 logger = logging.getLogger(__name__)
 __all__ = ["add_graph_edges"]
@@ -69,7 +69,7 @@ def add_graph_edges(
                         )
                     }
 
-                    location_geometry = prepare_geom_for_mi_db(
+                    location_geometry = prepare_geom_for_mi_db_qgis(
                         feature_to_shapely(layer_feature), clean=False
                     )
 
@@ -95,7 +95,7 @@ def add_graph_edges(
                     vert_id = feature_attributes.pop("vertical_id")
                     v_type = feature_attributes.pop("highway")
                     level = feature_attributes.pop("level")
-                    location_geometry = prepare_geom_for_mi_db(
+                    location_geometry = prepare_geom_for_mi_db_qgis(
                         feature_to_shapely(layer_feature), clean=False
                     )
 

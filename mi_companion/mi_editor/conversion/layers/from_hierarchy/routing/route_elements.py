@@ -18,7 +18,7 @@ from jord.qgis_utilities import recurse_layers
 from mi_companion import (
     MAKE_FLOOR_WISE_LAYERS,
 )
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import (
     AVOIDS_GROUP_DESCRIPTOR,
     BARRIERS_GROUP_DESCRIPTOR,

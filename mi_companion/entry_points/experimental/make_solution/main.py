@@ -1,10 +1,10 @@
 #!/usr/bin/python
 import logging
 import uuid
-from typing import Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from typing import Optional
 
 SOME_COMMENT_IGNORE_THIS = """
     decimal                            Distinguisable                          N/S or E/W  | E/W     E/W
@@ -38,7 +38,7 @@ as%20OpenStreetMap%2C%20and%20GPS%20devices
 from mi_companion import RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
-__all__ = []
+__all__ = ["run"]
 
 
 def run(
@@ -66,7 +66,7 @@ def run(
 
     from integration_system.model import Solution
 
-    s = Solution(uuid.uuid4().hex, name, customer_id=customer_id)
+    s = Solution(uuid.uuid4().hex, name, _customer_id=customer_id)
     venue_name = "Empty Venue"
     venue_polygon = dilate(
         shapely.Point(wgs84_degree_lat, wgs84_degree_long),

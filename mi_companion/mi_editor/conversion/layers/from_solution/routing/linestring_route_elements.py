@@ -4,6 +4,7 @@ from typing import Any, List, Optional
 import geopandas
 
 from integration_system.model import DoorCollection, Graph
+from integration_system.pandas_utilities import locations_to_df
 from jord.qgis_utilities import (
     make_field_not_null,
     make_field_reuse_last_entered_value,
@@ -13,15 +14,13 @@ from jord.qgis_utilities import (
 from jord.qlive_utilities import add_dataframe_layer
 from mi_companion import INSERT_INDEX, MAKE_FLOOR_WISE_LAYERS
 from mi_companion.layer_descriptors import DOORS_GROUP_DESCRIPTOR
-from mi_companion.mi_editor.conversion.layers.from_solution.location import (
-    locations_to_df,
-)
 from mi_companion.mi_editor.conversion.projection import (
-    reproject_geometry_df,
+    reproject_geometry_df_qgis,
     solve_target_crs_authid,
 )
 
 logger = logging.getLogger(__name__)
+
 __all__ = ["add_linestring_route_element_layers"]
 
 
@@ -84,7 +83,7 @@ def add_linestring_route_element_layers(
 
                 # door_df["door_type"] = door_df["door_type"].apply(lambda x: x.name, axis=1)
 
-                reproject_geometry_df(linestring_df)
+                reproject_geometry_df_qgis(linestring_df)
 
                 linestring_layer = add_dataframe_layer(
                     qgis_instance_handle=qgis_instance_handle,
@@ -123,7 +122,7 @@ def add_linestring_route_element_layers(
 
         linestring_df = linestring_df[~linestring_df.is_empty]
 
-        reproject_geometry_df(linestring_df)
+        reproject_geometry_df_qgis(linestring_df)
 
         linestring_layer = add_dataframe_layer(
             qgis_instance_handle=qgis_instance_handle,

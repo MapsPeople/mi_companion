@@ -1,6 +1,6 @@
+# noinspection PyUnresolvedReferences
 from typing import Any, Collection, Iterable
 
-# noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsExpression,
     QgsGraduatedSymbolRenderer,

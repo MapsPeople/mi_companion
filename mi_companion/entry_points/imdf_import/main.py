@@ -8,16 +8,10 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
 
-from jord.qgis_utilities.helpers import InjectedProgressBar
 from mi_companion import RESOURCE_BASE_PATH
-from mi_companion.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
-from mi_companion.mi_editor.conversion import add_solution_layers
-from midf.conversion import to_mi_solution
-from midf.linking import link_imdf
-from midf.loading import load_imdf
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
-__all__ = []
+__all__ = ["run"]
 
 
 def run(*, imdf_zip_file_path: Path) -> None:
@@ -26,6 +20,13 @@ def run(*, imdf_zip_file_path: Path) -> None:
     :param imdf_zip_file_path:
     :return:
     """
+    from mi_companion.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
+    from mi_companion.mi_editor.conversion import add_solution_layers
+    from jord.qgis_utilities.helpers import InjectedProgressBar
+    from midf.conversion import to_mi_solution
+    from midf.linking import link_imdf
+    from midf.loading import load_imdf
+
     qgis_instance_handle = QgsProject.instance()
     layer_tree_root = QgsProject.instance().layerTreeRoot()
 

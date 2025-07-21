@@ -4,12 +4,11 @@ import logging
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject, QgsSettings, QgsVectorLayer
 
-from jord.qgis_utilities import set_label_styling
 from mi_companion import LAYER_LABEL_VISIBLE_MIN_RATIO, RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
 
-__all__ = []
+__all__ = ["run"]
 
 
 def run(
@@ -35,6 +34,8 @@ def run(
     :param field:
     :return:
     """
+    from jord.qgis_utilities import set_label_styling
+
     layers = list(QgsProject.instance().mapLayers().values())
 
     if len(layers) == 0:

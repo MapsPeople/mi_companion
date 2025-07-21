@@ -5,6 +5,7 @@ import geopandas
 
 from integration_system.model import Graph
 from integration_system.model.solution_item import CollectionMixin
+from integration_system.pandas_utilities import locations_to_df
 from jord.qgis_utilities import (
     make_field_not_null,
     make_field_reuse_last_entered_value,
@@ -13,11 +14,8 @@ from jord.qgis_utilities import (
 )
 from jord.qlive_utilities import add_dataframe_layer
 from mi_companion import INSERT_INDEX, MAKE_FLOOR_WISE_LAYERS
-from mi_companion.mi_editor.conversion.layers.from_solution.location import (
-    locations_to_df,
-)
 from mi_companion.mi_editor.conversion.projection import (
-    reproject_geometry_df,
+    reproject_geometry_df_qgis,
     solve_target_crs_authid,
 )
 
@@ -85,7 +83,7 @@ def add_point_route_element_layers(
 
                 door_df = door_df[~door_df.is_empty]
 
-                reproject_geometry_df(door_df)
+                reproject_geometry_df_qgis(door_df)
 
                 point_layer = add_dataframe_layer(
                     qgis_instance_handle=qgis_instance_handle,
@@ -128,7 +126,7 @@ def add_point_route_element_layers(
 
         door_df = door_df[~door_df.is_empty]
 
-        reproject_geometry_df(door_df)
+        reproject_geometry_df_qgis(door_df)
 
         point_layer = add_dataframe_layer(
             qgis_instance_handle=qgis_instance_handle,

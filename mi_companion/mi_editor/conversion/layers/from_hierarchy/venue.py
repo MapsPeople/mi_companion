@@ -14,7 +14,12 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from integration_system.common_models import MIVenueType
 from integration_system.mi import SolutionDepth
-from integration_system.model import OptionalPostalAddress, PostalAddress, Solution
+from integration_system.model import (
+    ImplementationStatus,
+    OptionalPostalAddress,
+    PostalAddress,
+    Solution,
+)
 from mi_companion import (
     HALF_SIZE,
 )
@@ -38,7 +43,7 @@ from .location_type import get_location_type_data
 
 # from .graph import add_venue_graph
 from .syncing import post_process_solution, sync_build_venue_solution
-from ...projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +64,7 @@ def convert_solution_venues(
     solution_customer_id: str,
     solution_occupants_enabled: bool,
     solution_available_languages: Collection[str],
-    solution_implementation_type: str,
+    solution_implementation_type: ImplementationStatus,
     solution_default_language: str,
     ith_solution: int,
     num_solution_elements: int,
@@ -108,9 +113,9 @@ def convert_solution_venues(
 
     if existing_solution is None:
         solution = Solution(
-            external_id=solution_external_id,
-            name=solution_name,
-            customer_id=solution_customer_id,
+            _external_id=solution_external_id,
+            _name=solution_name,
+            _customer_id=solution_customer_id,
         )
     else:
         solution = copy.deepcopy(existing_solution)
@@ -293,7 +298,7 @@ def get_venue_key(
                     venue_key = solution.add_venue(
                         admin_id=admin_id,
                         external_id=external_id,
-                        polygon=prepare_geom_for_mi_db(venue_polygon),
+                        polygon=prepare_geom_for_mi_db_qgis(venue_polygon),
                         venue_type=get_venue_type(layer_attributes),
                         last_verified=get_last_verified(layer_attributes),
                         translations=(translations),

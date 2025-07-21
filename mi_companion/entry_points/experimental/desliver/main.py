@@ -4,7 +4,7 @@ import logging
 from mi_companion import RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
-__all__ = []
+__all__ = ["run"]
 
 
 def run(*, buffer_size: float = 0.0000016) -> None:

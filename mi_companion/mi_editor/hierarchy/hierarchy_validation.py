@@ -1,5 +1,4 @@
 import logging
-from typing import Any, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets
@@ -18,6 +17,7 @@ from qgis.core import (
     QgsRasterLayer,
     QgsVectorLayer,
 )
+from typing import Any, Optional
 
 from jord.qgis_utilities import disconnect_signal, gc_layers, reconnect_signal
 from mi_companion.layer_descriptors import (
@@ -185,7 +185,7 @@ def added_children(node, index_from, index_to) -> None:
             PREVIOUS_PARENT[child_name] = node
 
 
-def remove_node(child):
+def remove_node(child: Any) -> None:
     NODE_TO_BE_REMOVED.add(child)
 
 
@@ -226,7 +226,7 @@ def remove_solution_hierarchy_change_listener() -> None:
 
 
 # Define a function to handle the layer tree update signal
-def remove_children():
+def remove_children() -> None:
     if False:
         for node in range(len(NODE_TO_BE_REMOVED)):
             node = NODE_TO_BE_REMOVED.pop()

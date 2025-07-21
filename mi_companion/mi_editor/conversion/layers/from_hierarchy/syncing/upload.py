@@ -21,7 +21,7 @@ from integration_system.model import (
     Solution,
 )
 from mi_companion import VERBOSE
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.gui.message_box import ResizableMessageBox
 from .operation_visualisation import show_differences
 from ..constants import DISABLE_GRAPH_EDIT

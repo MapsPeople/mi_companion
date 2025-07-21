@@ -1,7 +1,5 @@
-import uuid
-from typing import Any
-
 import shapely
+import uuid
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtWidgets
@@ -24,6 +22,7 @@ from qgis.gui import QgsMapLayerAction, QgsMapToolIdentify
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+from typing import Any
 
 from jord.qgis_utilities import feature_to_shapely
 from jord.qgis_utilities.helpers import reconnect_signal
@@ -68,7 +67,7 @@ def show_make_solution_dialog_action_callable(layer: Any, feature: Any) -> None:
     customer_id: str = "4ba27f32c1034ca880431259"
     venue_name = "default"
 
-    s = Solution(uuid.uuid4().hex.lower(), name, customer_id=customer_id)
+    s = Solution(uuid.uuid4().hex.lower(), name, _customer_id=customer_id)
 
     venue_polygon = clean_shape(shapely.unary_union(feature_to_shapely(feature)))
     assert isinstance(
@@ -104,7 +103,10 @@ def show_make_solution_dialog_action_callable(layer: Any, feature: Any) -> None:
 
 def add_augmented_actions(tool: Any, old_tool: Any) -> None:
     """Add the new action to the identify menu"""
-    global IDENTIFY_ACTIONS_AUGMENTED, SELECT_ACTIONS_AUGMENTED
+    # global IDENTIFY_ACTIONS_AUGMENTED, SELECT_ACTIONS_AUGMENTED
+
+    global IDENTIFY_ACTIONS_AUGMENTED
+
     if not IDENTIFY_ACTIONS_AUGMENTED and isinstance(tool, QgsMapToolIdentify):
         IDENTIFY_ACTIONS_AUGMENTED = True
         menu = tool.identifyMenu()

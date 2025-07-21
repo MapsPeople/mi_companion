@@ -8,11 +8,11 @@ from jord.qgis_utilities import (
     feature_to_shapely,
 )
 from mi_companion import VERBOSE
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
     extract_single_level_str_map,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ def add_prefers(
 
             prefer_key = solution.add_prefer(
                 prefer_attributes["admin_id"],
-                point=prepare_geom_for_mi_db(prefer_point),
+                point=prepare_geom_for_mi_db_qgis(prefer_point),
                 floor_index=int(prefer_attributes["floor_index"]),
                 graph_key=graph_key,
                 fields=fields,

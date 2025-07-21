@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import logging
-from typing import Dict, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -9,8 +8,9 @@ from qgis.core import (
     QgsCoordinateTransform,
     QgsProject,
 )
+from typing import Dict, Optional
 
-__all__ = []
+__all__ = ["run"]
 
 from mi_companion import RESOURCE_BASE_PATH
 

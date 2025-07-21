@@ -14,12 +14,12 @@ from qgis.core import (
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
 from integration_system.tools.graph_utilities import lines_3d_to_osm_xml
 from jord.qgis_utilities import feature_to_shapely, parse_q_value
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import GRAPH_LINES_DESCRIPTOR
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.constants import (
     DISABLE_GRAPH_EDIT,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 logger = logging.getLogger(__name__)
 
@@ -140,7 +140,7 @@ def add_3d_graph_edges(
 
                     layer_feature = set_z_from_m(layer_feature)
 
-                    graph_line = prepare_geom_for_mi_db(
+                    graph_line = prepare_geom_for_mi_db_qgis(
                         feature_to_shapely(layer_feature, validate=False), clean=False
                     )
 

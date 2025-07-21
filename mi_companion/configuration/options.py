@@ -11,10 +11,12 @@ __all__ = [
     "DeploymentCompanionOptionsPage",
     "DeploymentOptionsPageFactory",
     "read_bool_setting",
+    "read_float_setting",
+    "reload_settings",
+    "DeploymentCompanionOptionsWidget",
 ]
 
 import logging
-from typing import Any
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtGui, uic
@@ -30,11 +32,12 @@ from qgis.core import QgsProject
 
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
+from typing import Any
 
 from jord.qgis_utilities import read_plugin_setting, store_plugin_setting
 from jord.qgis_utilities.helpers import reconnect_signal
 from ..constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, VERSION
-from ..qgis_utilities import get_icon_path, load_icon, resolve_path
+from ..qgis_utilities.paths import get_icon_path, load_icon, resolve_path
 
 QGIS_PROJECT = QgsProject.instance()
 VERBOSE = False
@@ -176,6 +179,18 @@ def read_bool_setting(key: str) -> bool:
             return True
     else:
         raise Exception(f"{v=} was invalid for bool setting")
+
+
+def read_float_setting(key: str) -> float:
+    v = read_plugin_setting(
+        key,
+        default_value=DEFAULT_PLUGIN_SETTINGS[key],
+        project_name=PROJECT_NAME,
+    )
+    if isinstance(v, float):
+        return v
+
+    return float(v)
 
 
 class DeploymentCompanionOptionsPage(QgsOptionsPageWidget):

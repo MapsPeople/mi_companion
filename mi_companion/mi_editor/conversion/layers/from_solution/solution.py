@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional, Tuple
+from typing import Any, Iterable, Optional, Tuple
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -19,6 +19,7 @@ from integration_system.mi import (
 )
 from integration_system.model import (
     GraphEdgeContextTypes,
+    IMPLEMENTATION_STATUS,
     Solution,
 )
 from jord.qgis_utilities import (
@@ -26,7 +27,6 @@ from jord.qgis_utilities import (
     make_iterable_dropdown_widget,
     make_sorted_mapping_dropdown_widget,
     make_value_map_widget,
-    make_value_relation_widget,
 )
 from jord.qlive_utilities import add_no_geom_layer
 from mi_companion import (
@@ -34,14 +34,14 @@ from mi_companion import (
     DESCRIPTOR_BEFORE,
     OSM_HIGHWAY_TYPES,
 )
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import (
     DATABASE_GROUP_DESCRIPTOR,
     LOCATION_TYPE_DESCRIPTOR,
     SOLUTION_DATA_DESCRIPTOR,
     SOLUTION_GROUP_DESCRIPTOR,
 )
-from .location_type import add_location_type_layer
+from .location_type import add_location_type_layer, make_location_type_dropdown_widget
 from .venue import add_venue_layer
 
 __all__ = ["solution_venue_to_layer_hierarchy", "add_solution_layers"]
@@ -188,7 +188,7 @@ def add_solution_group(
             ...
 
     if found_solution_data is None:
-        layer = add_no_geom_layer(
+        solution_data_layers = add_no_geom_layer(
             qgis_instance_handle=qgis_instance_handle,
             name=SOLUTION_DATA_DESCRIPTOR,
             group=solution_group,
@@ -198,13 +198,41 @@ def add_solution_group(
                     "name": solution.name,
                     "customer_id": solution.customer_id,
                     "occupants_enabled": solution.occupants_enabled,
-                    "available_languages": str(solution.available_languages),
-                    "implementation_type": solution.implementation_type,
+                    "available_languages": solution.available_languages,
+                    "implementation_type": str(solution.implementation_type),
                     "default_language": solution.default_language,
                 }
             ],
             visible=False,
         )
+
+        implementation_type_dropdown_widget = make_sorted_mapping_dropdown_widget(
+            IMPLEMENTATION_STATUS
+        )
+
+        for layers_inner in solution_data_layers:
+            if layers_inner:
+                if isinstance(layers_inner, Iterable):
+                    for solution_data_layer in layers_inner:
+                        if solution_data_layer:
+                            solution_data_layer.setEditorWidgetSetup(
+                                solution_data_layers.fields().indexFromName(
+                                    "implementation_type"
+                                ),
+                                implementation_type_dropdown_widget,
+                            )
+                else:
+                    layers_inner.setEditorWidgetSetup(
+                        layers_inner.fields().indexFromName("implementation_type"),
+                        implementation_type_dropdown_widget,
+                    )
+
+    if False:
+        default_language_dropdown_widget = None
+        if read_bool_setting("MAKE_ENTRY_POINT_TYPE_DROPDOWN"):
+            default_language_dropdown_widget = make_enum_dropdown_widget(
+                MIEntryPointType
+            )
 
     if progress_bar:
         progress_bar.setValue(10)
@@ -226,6 +254,22 @@ def add_solution_group(
 
     if ADD_LOCATION_TYPE_LAYERS:
         location_type_layer = None
+
+        for c in solution_group.children():
+            if LOCATION_TYPE_DESCRIPTOR in c.name():
+                reply = QtWidgets.QMessageBox.question(
+                    None,
+                    f"Location Type layer for ({c.name()}) was already found",
+                    f"Location Type ({c.name()}) will be reloaded with the most recent data from th MapsIndoors database!\n"
+                    f"Accept?",
+                )
+
+                if reply == QtWidgets.QMessageBox.Yes:
+                    solution_group.removeChildNode(c)
+                    location_type_layer = None
+                else:
+                    ...
+
         for c in solution_group.children():
             if LOCATION_TYPE_DESCRIPTOR in c.name():
                 location_type_layer = [c.layer()]
@@ -243,14 +287,15 @@ def add_solution_group(
             )
             logger.info(f"Adding location type layer: {LOCATION_TYPE_DESCRIPTOR}")
 
-        location_type_layer = location_type_layer[0]
+        if len(location_type_layer):
+            location_type_layer = location_type_layer[0]
 
-        available_location_type_dropdown_widget = make_value_relation_widget(
-            location_type_layer.id(),
-            target_key_field_name="admin_id",
-            target_value_field_name=f"translations.{solution.default_language}.name",
-        )
-        location_type_ref_layer = location_type_layer
+            available_location_type_dropdown_widget = make_location_type_dropdown_widget(
+                location_type_layer.id(),
+                target_key_field_name="admin_id",
+                target_value_field_name=f"translations.{solution.default_language}.name",
+            )
+            location_type_ref_layer = location_type_layer
 
     else:
         if read_bool_setting("MAKE_LOCATION_TYPE_DROPDOWN"):

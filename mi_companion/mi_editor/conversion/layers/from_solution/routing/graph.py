@@ -9,7 +9,7 @@ from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
     DESCRIPTOR_BEFORE,
 )
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import (
     GRAPH_BOUND_DESCRIPTOR,
     GRAPH_GROUP_DESCRIPTOR,
@@ -21,7 +21,7 @@ from mi_companion.mi_editor.conversion.layers.from_solution.routing.route_elemen
     add_route_element_layers,
 )
 from mi_companion.mi_editor.conversion.projection import (
-    prepare_geom_for_qgis,
+    prepare_geom_for_editing_qgis,
     solve_target_crs_authid,
 )
 
@@ -74,7 +74,7 @@ def add_graph_layers(
         logger.warning(f"Graph {graph} has no boundary, defaulting to venue boundary")
         graph_boundary = venue.polygon
 
-    graph_boundary = prepare_geom_for_qgis(graph_boundary, clean=False)
+    graph_boundary = prepare_geom_for_editing_qgis(graph_boundary, clean=False)
 
     graph_bound_layer = add_shapely_layer(
         qgis_instance_handle=qgis_instance_handle,

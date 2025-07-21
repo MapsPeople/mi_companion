@@ -1,21 +1,23 @@
 #!/usr/bin/python
 import logging
-from textwrap import indent
-from typing import Optional
 
-from integration_system.config import MapsIndoors, Settings, set_settings
-from jord.qgis_utilities import read_plugin_setting
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
 
-__all__ = []
+__all__ = ["run"]
 
 
-def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> None:
-    from integration_system.tools.compatibilization import (
-        make_solution_compatible,
-    )
+def run(*, solution_id: str) -> None:
+    """
+
+    :param solution_id:
+    :return:
+    """
+
+    from integration_system.config import MapsIndoors, Settings, set_settings
+    from integration_system.mi import call_manager_api
+    from jord.qgis_utilities import read_plugin_setting
 
     sync_module_settings = Settings(
         mapsindoors=MapsIndoors(
@@ -49,15 +51,10 @@ def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> 
 
     set_settings(sync_module_settings)
 
-    logger.info(f"Running compatiblisation on {solution_id=}")
+    solution_id = solution_id.strip()
 
-    solution_external_id = None
-    if new_solution_external_id:
-        solution_external_id = new_solution_external_id
+    call_manager_api("PUT", f"/{solution_id}/api/derivedgeometry")
 
-    compatibility_report = make_solution_compatible(
-        solution_id, new_external_id=solution_external_id
-    )
     # noinspection PyUnresolvedReferences
     from qgis.PyQt.QtWidgets import (
         QMessageBox,
@@ -66,14 +63,11 @@ def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> 
     # noinspection PyUnresolvedReferences
     from qgis.PyQt import QtGui, QtWidgets, uic
 
-    formatted_report = indent(("\n".join(compatibility_report)), "  - ")
     QtWidgets.QMessageBox.information(
         None,
-        "Compatiblity Report",
-        f"Compatibilised Solution {solution_id}:\n{formatted_report}",
+        "Derived Geometry",
+        f"Derived is now being recomputed for solution {solution_id}",
     )
-
-    logger.info(f"Finished compatiblisation on {solution_id=}")
 
 
 if __name__ == "__main__":
