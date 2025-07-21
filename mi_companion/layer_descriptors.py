@@ -1,4 +1,4 @@
-from mi_companion.mi_editor.conversion.layers.type_enums import BackendLocationTypeEnum
+from .type_enums import BackendLocationTypeEnum
 
 DATABASE_GROUP_DESCRIPTOR = "(Database) MapsIndoors"
 SOLUTION_GROUP_DESCRIPTOR = "(Solution)"
@@ -23,6 +23,12 @@ NAVIGATION_POINT_DESCRIPTOR = "graph_points"
 ROOMS_DESCRIPTOR = BackendLocationTypeEnum.ROOM.value.lower()
 AREAS_DESCRIPTOR = BackendLocationTypeEnum.AREA.value.lower()
 POINT_OF_INTERESTS_DESCRIPTOR = BackendLocationTypeEnum.POI.value.lower()
+
+LOCATION_DESCRIPTORS = (
+    ROOMS_DESCRIPTOR,
+    AREAS_DESCRIPTOR,
+    POINT_OF_INTERESTS_DESCRIPTOR,
+)
 
 DOORS_GROUP_DESCRIPTOR = "(Doors)"
 CONNECTORS_GROUP_DESCRIPTOR = "(Connectors)"

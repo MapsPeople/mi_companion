@@ -1,9 +1,8 @@
 import json
 import logging
-from typing import List, Tuple
-
 import shapely
 import shapely.wkt
+from typing import List, Tuple
 
 __all__ = ["extract_wkt_elements", "is_json"]
 

@@ -1,6 +1,5 @@
 import ast
 import logging
-from typing import Any, Callable, Dict, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -15,6 +14,7 @@ from qgis.PyQt.QtWidgets import (
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from typing import Any, Callable, Dict, List, Optional
 
 from integration_system.mi import (
     SolutionDepth,
@@ -163,7 +163,7 @@ def convert_solution_layers_to_solution(
         if solution_external_id in get_solution_name_external_id_map().values():
             existing_solution = get_remote_solution(
                 solution_external_id,
-                venue_keys=[],
+                venue_keys=[],  # No Venues
                 depth=solution_depth,
                 include_route_elements=include_route_elements,
                 include_occupants=include_occupants,

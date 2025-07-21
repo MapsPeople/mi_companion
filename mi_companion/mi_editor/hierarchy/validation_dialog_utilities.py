@@ -1,5 +1,4 @@
 import logging
-from typing import Any
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QIcon
@@ -27,6 +26,7 @@ from qgis.gui import (
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+from typing import Any
 
 from jord.qgis_utilities import read_plugin_setting
 from mi_companion import (

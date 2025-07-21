@@ -1,15 +1,14 @@
 import logging
-from typing import Any, Iterable, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
+from typing import Any, Iterable, Optional
 
 from integration_system.model import Solution, Venue
 from jord.qgis_utilities import (
     make_field_not_null,
     make_field_unique,
     make_value_relation_widget,
-    read_plugin_setting,
     set_geometry_constraints,
     set_layer_rendering_scale,
 )
@@ -19,7 +18,7 @@ from mi_companion import (
     ALLOW_DUPLICATE_VENUES_IN_PROJECT,
     DESCRIPTOR_BEFORE,
 )
-from mi_companion.configuration.options import read_bool_setting, read_float_setting
+from mi_companion.configuration import read_bool_setting, read_float_setting
 from mi_companion.constants import (
     INSERT_INDEX,
 )
@@ -30,13 +29,13 @@ from mi_companion.layer_descriptors import (
 from mi_companion.mi_editor.conversion.layers.from_solution.routing.graph import (
     add_graph_layers,
 )
-from .building import add_building_layers
-from .occupant import add_occupant_layer
-from .parsing import translations_to_flattened_dict
 from mi_companion.mi_editor.conversion.projection import (
     prepare_geom_for_editing_qgis,
     solve_target_crs_authid,
 )
+from .building import add_building_layers
+from .occupant import add_occupant_layer
+from .parsing import translations_to_flattened_dict
 
 logger = logging.getLogger(__name__)
 

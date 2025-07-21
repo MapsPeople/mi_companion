@@ -1,8 +1,7 @@
 #!/usr/bin/python
+import ifcopenshell
 import logging
 from pathlib import Path
-
-import ifcopenshell
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject

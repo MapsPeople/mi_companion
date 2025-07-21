@@ -1,11 +1,11 @@
 import logging
-from typing import Dict, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from typing import Dict, Optional
 
 from integration_system.mi import SyncLevel, synchronize
 from integration_system.model import Solution

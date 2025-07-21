@@ -1,8 +1,7 @@
 import logging
+import yaml
 from logging import config
 from pathlib import Path
-
-import yaml
 
 # noinspection PyUnresolvedReferences
 from qgis.core import Qgis, QgsMessageLog

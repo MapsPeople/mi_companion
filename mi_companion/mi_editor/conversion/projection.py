@@ -1,23 +1,21 @@
 import logging
-import typing
-from typing import Optional
-
 import numpy
 import pyproj
 import shapely
+import typing
 from geopandas import GeoDataFrame
 from shapely.geometry.base import BaseGeometry
+from typing import Optional
 
-from integration_system.projection import MI_CRS
-from jord.shapely_utilities import clean_shape
-from mi_companion.configuration.options import read_bool_setting
 from integration_system.mi_sync_constants import (
     EDITING_CRS_AUTHID,
     EDITING_EPSG_NUMBER,
     MI_CRS_AUTHID,
     MI_EPSG_NUMBER,
 )
-
+from integration_system.projection import MI_CRS
+from jord.shapely_utilities import clean_shape
+from mi_companion.configuration import read_bool_setting
 from mi_companion.qgis_utilities.exceptions import InvalidReprojection
 
 __all__ = [

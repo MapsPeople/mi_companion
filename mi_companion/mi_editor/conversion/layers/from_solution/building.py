@@ -5,7 +5,6 @@ from integration_system.mi import get_outside_building_admin_id
 from integration_system.model import Building, Solution, Venue
 from jord.qgis_utilities import (
     make_field_unique,
-    read_plugin_setting,
     set_geometry_constraints,
     set_layer_rendering_scale,
 )
@@ -14,26 +13,27 @@ from mi_companion import (
     DESCRIPTOR_BEFORE,
     HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS,
 )
-from mi_companion.configuration.options import read_bool_setting, read_float_setting
-from mi_companion.layer_descriptors import (
-    BUILDING_GROUP_DESCRIPTOR,
-    BUILDING_POLYGON_DESCRIPTOR,
-)
-from .floor import add_floor_layers
-
-__all__ = ["add_building_layers"]
-
-from .parsing import translations_to_flattened_dict
-
-from mi_companion.mi_editor.conversion.projection import (
-    prepare_geom_for_editing_qgis,
-    solve_target_crs_authid,
-)
+from mi_companion.configuration import read_float_setting
 from mi_companion.constants import (
     ANCHOR_AS_INDIVIDUAL_FIELDS,
     INSERT_INDEX,
     SHOW_FLOOR_LAYERS_ON_LOAD,
 )
+from mi_companion.layer_descriptors import (
+    BUILDING_GROUP_DESCRIPTOR,
+    BUILDING_POLYGON_DESCRIPTOR,
+)
+from mi_companion.mi_editor.conversion.projection import (
+    prepare_geom_for_editing_qgis,
+    solve_target_crs_authid,
+)
+from mi_companion.qgis_utilities import auto_center_anchors_when_outside
+from .floor import add_floor_layers
+from .parsing import translations_to_flattened_dict
+from ...styling import add_rotation_scale_geometry_generator
+
+__all__ = ["add_building_layers"]
+
 
 logger = logging.getLogger(__name__)
 
@@ -132,6 +132,9 @@ def add_building_layers(
                 visible=False,
                 crs=solve_target_crs_authid(),
             )
+
+            auto_center_anchors_when_outside(building_layer)
+            add_rotation_scale_geometry_generator(building_layer)
 
             make_field_unique(building_layer, field_name="admin_id")
             set_geometry_constraints(building_layer)

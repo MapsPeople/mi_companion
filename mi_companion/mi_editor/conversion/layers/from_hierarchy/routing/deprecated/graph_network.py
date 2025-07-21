@@ -1,16 +1,16 @@
 import logging
 from collections import defaultdict
-from typing import Any, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from typing import Any, List, Optional
 
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
-from integration_system.tools.graph_utilities import (
+from integration_system.tools import (
     lines_and_points_to_osm_xml,
 )
 from jord.qgis_utilities import feature_to_shapely, parse_q_value
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import (
     NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
     NAVIGATION_VERTICAL_LINES_DESCRIPTOR,

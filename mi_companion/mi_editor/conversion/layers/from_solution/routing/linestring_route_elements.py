@@ -1,9 +1,9 @@
+import geopandas
 import logging
 from typing import Any, List, Optional
 
-import geopandas
-
 from integration_system.model import DoorCollection, Graph
+from integration_system.pandas_utilities import locations_to_df
 from jord.qgis_utilities import (
     make_field_not_null,
     make_field_reuse_last_entered_value,
@@ -13,7 +13,6 @@ from jord.qgis_utilities import (
 from jord.qlive_utilities import add_dataframe_layer
 from mi_companion import INSERT_INDEX, MAKE_FLOOR_WISE_LAYERS
 from mi_companion.layer_descriptors import DOORS_GROUP_DESCRIPTOR
-from integration_system.pandas_utilities import locations_to_df
 from mi_companion.mi_editor.conversion.projection import (
     reproject_geometry_df_qgis,
     solve_target_crs_authid,

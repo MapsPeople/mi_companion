@@ -9,7 +9,7 @@ from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
     DESCRIPTOR_BEFORE,
 )
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import (
     GRAPH_BOUND_DESCRIPTOR,
     GRAPH_GROUP_DESCRIPTOR,

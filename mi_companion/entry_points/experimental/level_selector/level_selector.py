@@ -1,7 +1,6 @@
 import logging
 import os
 from pathlib import Path
-from typing import Any, Iterable, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets, uic
@@ -29,6 +28,7 @@ from qgis.gui import QgsDockWidget
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+from typing import Any, Iterable, Optional
 
 from jord.qgis_utilities.helpers import signals
 from mi_companion import RESOURCE_BASE_PATH

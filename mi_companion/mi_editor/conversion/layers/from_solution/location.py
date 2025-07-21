@@ -1,7 +1,5 @@
-import logging
-from typing import Any, Iterable, List, Optional
-
 import geopandas
+import logging
 import pandas
 
 # noinspection PyUnresolvedReferences
@@ -9,6 +7,7 @@ import qgis
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
+from typing import Any, Iterable, List, Optional
 
 from integration_system.model import (
     Floor,
@@ -20,13 +19,11 @@ from integration_system.tools.serialisation import (
     collection_to_df,
 )
 from jord.qgis_utilities import (
-    HIDDEN_WIDGET,
     make_field_boolean,
     make_field_default,
     make_field_not_null,
     make_field_reuse_last_entered_value,
     make_field_unique,
-    read_plugin_setting,
     set_3d_view_settings,
     set_field_widget,
     set_geometry_constraints,
@@ -34,13 +31,26 @@ from jord.qgis_utilities import (
     set_layer_rendering_scale,
     styled_field_value_categorised,
 )
+from jord.qgis_utilities.helpers.widgets import COLOR_WIDGET
 from jord.qlive_utilities import add_dataframe_layer
 from mi_companion import ANCHOR_AS_INDIVIDUAL_FIELDS
-from mi_companion.configuration.options import read_bool_setting, read_float_setting
+from mi_companion.configuration import read_bool_setting, read_float_setting
 from mi_companion.constants import (
     FLOOR_HEIGHT,
     FLOOR_VERTICAL_SPACING,
     USE_EXTERNAL_ID_FLOOR_SELECTION,
+)
+from mi_companion.mi_editor.conversion.layers.from_solution.location_fields import (
+    BOOLEAN_LOCATION_FIELDS,
+    COLOR_LOCATION_FIELDS,
+    DATETIME_LOCATION_FIELDS,
+    FLOAT_LOCATION_FIELDS,
+    INT_LOCATION_FIELDS,
+    LocationGeometryType,
+    NOT_NULL_FIELDS,
+    RANGE_LOCATION_FIELDS,
+    REUSE_LAST_FIELDS,
+    STR_LOCATION_FIELDS,
 )
 from mi_companion.mi_editor.conversion.projection import (
     forward_project_qgis,
@@ -48,56 +58,22 @@ from mi_companion.mi_editor.conversion.projection import (
     should_reproject_qgis,
     solve_target_crs_authid,
 )
+from mi_companion.mi_editor.conversion.styling import (
+    add_rotation_scale_geometry_generator,
+    apply_display_rule_styling_categorized,
+)
+from mi_companion.qgis_utilities import auto_center_anchors_when_outside
+from mi_companion.type_enums import BackendLocationTypeEnum
 from .parsing import process_nested_fields_df
-from ..type_enums import BackendLocationTypeEnum
 
 try:
     from enum import StrEnum
 except ImportError:
     from strenum import StrEnum
 
-__all__ = ["add_floor_content_layers", "LocationGeometryType"]
+__all__ = ["add_floor_content_layers"]
 
 logger = logging.getLogger(__name__)
-
-BOOLEAN_LOCATION_ATTRS = (
-    "is_searchable",
-    "is_active",
-    # "is_obstacle",
-    # "is_selectable"
-    "display_rule.model3d.visible",
-)
-STR_LOCATION_ATTRS = (
-    "external_id",
-    "translations.en.name",
-    "display_rule.model3d.model",
-    "admin_id",
-)
-FLOAT_LOCATION_ATTRS = (
-    "settings_3d_width",
-    "settings_3d_margin",
-    "display_rule.model3d.scale",
-    "display_rule.model3d.rotation_x",
-    "display_rule.model3d.rotation_y",
-    "display_rule.model3d.rotation_z",
-)
-INT_LOCATION_ATTRS = (
-    "display_rule.label_zoom_from",
-    "display_rule.label_zoom_to",
-)
-DATETIME_LOCATION_ATTRS = ("active_from", "active_to")
-
-
-LIST_LOCATION_TYPE_ATTRS = ("restrictions",)
-
-# FIELDS_HIDDEN_IN_FORM = ('is_searchable', 'is_active', 'admin_id')
-FORM_FIELDS = ("translations.en.name", "location_type")
-
-
-class LocationGeometryType(StrEnum):
-    point = "point"
-    # linestring = "linestring"
-    polygon = "polygon"
 
 
 def add_location_layer(
@@ -212,23 +188,23 @@ def add_location_layer(
         # logger.warning(f"Nothing to be added, skipping {name}")
         return
 
-    for attr_name in BOOLEAN_LOCATION_ATTRS:
+    for attr_name in BOOLEAN_LOCATION_FIELDS:
         if attr_name in locations_df:
             locations_df[attr_name] = shape_df[attr_name].astype(bool, errors="ignore")
 
-    for attr_name in STR_LOCATION_ATTRS:
+    for attr_name in STR_LOCATION_FIELDS:
         if attr_name in locations_df:
             locations_df[attr_name] = shape_df[attr_name].astype(str, errors="ignore")
 
-    for attr_name in FLOAT_LOCATION_ATTRS:
+    for attr_name in FLOAT_LOCATION_FIELDS:
         if attr_name in locations_df:
             locations_df[attr_name] = shape_df[attr_name].astype(float, errors="ignore")
 
-    for attr_name in INT_LOCATION_ATTRS:
+    for attr_name in INT_LOCATION_FIELDS:
         if attr_name in locations_df:
             locations_df[attr_name] = shape_df[attr_name].astype(int, errors="ignore")
 
-    for attr_name in DATETIME_LOCATION_ATTRS:
+    for attr_name in DATETIME_LOCATION_FIELDS:
         if attr_name in locations_df:
             # locations_df[attr_name] = shape_df[attr_name].astype(datetime)
             locations_df[attr_name] = pandas.to_datetime(locations_df[attr_name])
@@ -301,12 +277,9 @@ def add_location_layer(
 
     make_field_unique(added_layers, field_name="admin_id")
 
-    for field_name in (  # MARK all tranlation names as required "not_null"
-        "translations.en.name",
-        "location_type",
-        "is_searchable",
-        "is_active",
-    ):
+    auto_center_anchors_when_outside(added_layers)
+
+    for field_name in NOT_NULL_FIELDS:
         make_field_not_null(added_layers, field_name=field_name)
 
     for field_name, field_default in {"is_searchable": True, "is_active": True}.items():
@@ -316,28 +289,20 @@ def add_location_layer(
         make_field_boolean(added_layers, field_name=field_name, nullable=False)
 
     if False:
-        for qgs_field_name in layer.fields():
-            field_name = qgs_field_name.name()
-            hide = True
-            for visible_form_field_name in FORM_FIELDS:
-                if visible_form_field_name in field_name:
-                    hide = False
-
-            if hide:
-                set_field_widget(added_layers, field_name, HIDDEN_WIDGET)
-
-    if False:
-        for field_name in BOOLEAN_LOCATION_ATTRS:
+        for field_name in BOOLEAN_LOCATION_FIELDS:
             make_field_boolean(added_layers, field_name=field_name)
 
-    for field_name in (
-        "translations.en.name",
-        "location_type",
-        "is_searchable",
-        "is_active",
-        "is_selectable",
-        "is_obstacle",
-    ):
+    if False:
+        if location_type_ref_layer:
+            apply_display_rule_styling_categorized(layer, location_type_ref_layer)
+
+    for field_name, field_widget in RANGE_LOCATION_FIELDS.items():
+        set_field_widget(added_layers, field_name, field_widget)
+
+    for field_name in COLOR_LOCATION_FIELDS:
+        set_field_widget(added_layers, field_name, COLOR_WIDGET)
+
+    for field_name in REUSE_LAST_FIELDS:
         make_field_reuse_last_entered_value(added_layers, field_name=field_name)
 
     for field_name in ("is_selectable", "is_obstacle"):
@@ -391,6 +356,8 @@ def add_floor_content_layers(
         extrusion=FLOOR_HEIGHT,
     )
 
+    add_rotation_scale_geometry_generator(room_layers)
+
     if read_bool_setting("USE_LOCATION_TYPE_FOR_LABEL"):  # TODO: STILL DOES NOT WORK...
         label_field_name = 'represent_value("location_type")'
     else:
@@ -433,6 +400,8 @@ def add_floor_content_layers(
         area_layers,
         min_ratio=read_float_setting("LAYER_GEOM_VISIBLE_MIN_RATIO"),
     )
+
+    add_rotation_scale_geometry_generator(area_layers)
 
     set_geometry_constraints(area_layers)
 

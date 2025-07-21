@@ -1,7 +1,6 @@
 import copy
 import logging
 from datetime import datetime
-from typing import Any, Callable, Collection, List, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
@@ -11,6 +10,7 @@ from qgis.PyQt.QtCore import QDateTime, QVariant
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from typing import Any, Callable, Collection, List, Mapping, Optional
 
 from integration_system.common_models import MIVenueType
 from integration_system.mi import SolutionDepth

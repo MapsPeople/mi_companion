@@ -2,7 +2,6 @@ import logging
 import math
 import os
 from collections import defaultdict
-from typing import Any, Callable, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets, uic
@@ -29,12 +28,17 @@ from qgis.core import (
 
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsDockWidget
+from typing import Any, Callable, Optional
 
 from integration_system.config import MapsIndoors, Settings, set_settings
 from integration_system.mi import SolutionDepth, get_venue_key_mi_venue_map
+from integration_system.mi_sync_constants import MI_EPSG_NUMBER
 from jord.qgis_utilities import InjectedProgressBar, read_plugin_setting, signals
 from jord.qlive_utilities import add_shapely_layer
 from jord.qt_utilities import DockWidgetAreaFlag
+from mi_companion.entry_points.add_language_to_group import (
+    ENTRY_POINT_NAME as ADD_LANGUAGE_BUTTON_NAME,
+)
 from mi_companion.mi_editor import (
     layer_hierarchy_to_solution,
     revert_venues,
@@ -54,10 +58,9 @@ from ..constants import (
     PROJECT_NAME,
     VERSION,
 )
-from integration_system.mi_sync_constants import MI_EPSG_NUMBER
 from ..qgis_utilities import extract_wkt_elements, get_icon_path, resolve_path
-from mi_companion.entry_points.add_language_to_group import (
-    ENTRY_POINT_NAME as ADD_LANGUAGE_BUTTON_NAME,
+from ..qgis_utilities.creation_mode import (
+    put_location_layers_into_creation_mode,
 )
 
 FORM_CLASS, _ = uic.loadUiType(resolve_path("main_dock.ui", __file__))
@@ -215,6 +218,18 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             if False:
                 self.sync_layout.addWidget(self.solution_depth_combo_box)
 
+        if read_bool_setting("ADD_LOCATION_TYPE_MODE_TOGGLE"):
+            self.creation_mode_button = QtWidgets.QPushButton(
+                "Apply Location Type Mode"
+            )
+            self.creation_mode_button.setToolTip(
+                "Enable Location Type mode for editing features, will hide all other widgets than location_type"
+            )
+            signals.reconnect_signal(
+                self.creation_mode_button.clicked, self.on_creation_mode_changed
+            )
+            self.status_layout.insertWidget(0, self.creation_mode_button)
+
         entry_point_modules = get_submodules_by_path(
             Path(__file__).parent.parent / "entry_points"
         )
@@ -247,6 +262,11 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         self.repopulate_grid_layout()
 
         signals.reconnect_signal(iface_.mapCanvas().mapToolSet, add_augmented_actions)
+
+    def on_creation_mode_changed(self) -> None:
+        """Handle creation mode checkbox state changes"""
+
+        put_location_layers_into_creation_mode()
 
     def export_button_clicked(self):
         from .dialogs.solution_export import ENTRY_POINT_DIALOG as export_dialog
@@ -391,12 +411,31 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
 
             bar.setValue(90)
 
-            self.venue_name_id_map = {
-                next(iter(v.venueInfo)).name: k for k, v in self.venues.items()
-            }
+            solution_default_language = "en"
+
+            self.venue_name_id_map = {}
+            for k, v in self.venues.items():
+                venue_info = None
+                for vi in v.venueInfo:
+                    if solution_default_language == vi.language:
+                        venue_info = vi
+                        break
+                if venue_info:
+                    venue_name = venue_info.name
+                    if venue_name in self.venue_name_id_map:
+                        logger.warning(
+                            f"Duplicate venue name found: {venue_name}. Using the latest one."
+                        )
+                        venue_name += f" ({k})"
+
+                else:
+                    venue_name = f"venue_id: {k}"
+
+                self.venue_name_id_map[venue_name] = k
 
             self.venue_combo_box.clear()
             self.venue_combo_box.addItems(sorted(self.venue_name_id_map.keys()))
+
             bar.setValue(100)
 
             self.changes_label.setText("Fetched venues")
@@ -411,7 +450,9 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
 
         if False:
             if self.solution_depth_combo_box:
-                solution_depth = str(self.solution_combo_box.currentText())
+                solution_depth = SolutionDepth(
+                    str(self.solution_combo_box.currentText())
+                )
 
         include_route_elements = read_bool_setting("ADD_ROUTE_ELEMENTS")
         include_graph = read_bool_setting("ADD_GRAPH")
@@ -471,7 +512,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
 
         solution_depth = SolutionDepth.obstacles
         if self.solution_depth_combo_box:
-            solution_depth = str(self.solution_combo_box.currentText())
+            solution_depth = SolutionDepth(str(self.solution_combo_box.currentText()))
 
         include_occupants = False
         include_media = False

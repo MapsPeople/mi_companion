@@ -3,10 +3,9 @@ import os
 import tempfile
 import typing
 from datetime import datetime, timedelta
-from pathlib import Path
-
 from flask import Flask, redirect, send_from_directory
 from google.cloud import storage
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 app = Flask("MapsPeople QGIS Plugin Server")

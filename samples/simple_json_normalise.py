@@ -1,5 +1,4 @@
 import dataclasses
-
 import shapely
 from pandas.io.json._normalize import _simple_json_normalize
 

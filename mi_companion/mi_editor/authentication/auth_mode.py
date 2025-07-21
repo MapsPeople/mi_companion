@@ -1,8 +1,7 @@
+import IPython
 import os
 import shutil
 import sys
-
-import IPython
 
 from .utilities import _open_new_browser
 

@@ -1,8 +1,8 @@
 import logging
-from typing import Any, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
+from typing import Any, List, Optional
 
 from integration_system.model import Occupant, Solution
 from jord.qgis_utilities import (

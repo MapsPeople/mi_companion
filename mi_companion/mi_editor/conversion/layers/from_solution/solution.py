@@ -1,11 +1,11 @@
 import logging
-from typing import Any, Iterable, Optional, Tuple
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup, QgsProject
+from typing import Any, Iterable, Optional, Tuple
 
 from integration_system.common_models import (
     MIConnectionType,
@@ -20,7 +20,6 @@ from integration_system.mi import (
 from integration_system.model import (
     GraphEdgeContextTypes,
     IMPLEMENTATION_STATUS,
-    ImplementationStatus,
     Solution,
 )
 from jord.qgis_utilities import (
@@ -28,7 +27,6 @@ from jord.qgis_utilities import (
     make_iterable_dropdown_widget,
     make_sorted_mapping_dropdown_widget,
     make_value_map_widget,
-    make_value_relation_widget,
 )
 from jord.qlive_utilities import add_no_geom_layer
 from mi_companion import (
@@ -36,7 +34,7 @@ from mi_companion import (
     DESCRIPTOR_BEFORE,
     OSM_HIGHWAY_TYPES,
 )
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import (
     DATABASE_GROUP_DESCRIPTOR,
     LOCATION_TYPE_DESCRIPTOR,

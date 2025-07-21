@@ -1,7 +1,6 @@
 import logging
-from typing import Any, Iterable
-
 import shapely
+from typing import Any, Iterable
 
 from jord.qgis_utilities import (
     make_field_not_null,

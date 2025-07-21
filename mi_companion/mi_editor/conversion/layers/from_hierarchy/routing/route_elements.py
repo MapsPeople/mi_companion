@@ -1,6 +1,5 @@
 import logging
 from collections import defaultdict
-from typing import Any, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -10,6 +9,7 @@ from qgis.PyQt.QtCore import QVariant
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from typing import Any, List, Optional
 
 from integration_system.model import (
     Solution,
@@ -18,7 +18,7 @@ from jord.qgis_utilities import recurse_layers
 from mi_companion import (
     MAKE_FLOOR_WISE_LAYERS,
 )
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import (
     AVOIDS_GROUP_DESCRIPTOR,
     BARRIERS_GROUP_DESCRIPTOR,

@@ -1,5 +1,3 @@
-from typing import Any
-
 # noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsCategorizedSymbolRenderer,
@@ -9,6 +7,7 @@ from qgis.core import (
     QgsStyle,
     QgsSymbol,
 )
+from typing import Any
 
 
 def set_m_based_categorised_styling_single_layer(

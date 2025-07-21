@@ -1,12 +1,12 @@
 #!/usr/bin/python
 import logging
-from typing import Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+from typing import Optional
 
 from mi_companion import RESOURCE_BASE_PATH
 

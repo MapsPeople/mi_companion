@@ -1,7 +1,5 @@
-import uuid
-from typing import Any
-
 import shapely
+import uuid
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtWidgets
@@ -24,6 +22,7 @@ from qgis.gui import QgsMapLayerAction, QgsMapToolIdentify
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+from typing import Any
 
 from jord.qgis_utilities import feature_to_shapely
 from jord.qgis_utilities.helpers import reconnect_signal

@@ -3,9 +3,6 @@ import ast
 # noinspection PyUnresolvedReferences
 import datetime
 import logging
-import uuid
-from typing import Any, Collection, List, Optional
-
 import shapely
 
 # noinspection PyUnresolvedReferences
@@ -30,6 +27,7 @@ from qgis.core import (
     QgsProject,
     QgsProject,
 )
+from typing import Any, Collection, List, Optional
 
 from integration_system.model import (
     Category,
@@ -52,19 +50,19 @@ from mi_companion import (
     ANCHOR_AS_INDIVIDUAL_FIELDS,
     VERBOSE,
 )
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
     extract_display_rule,
     extract_street_view_config,
     extract_translations,
 )
-from mi_companion.mi_editor.conversion.layers.type_enums import BackendLocationTypeEnum
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
+from mi_companion.type_enums import BackendLocationTypeEnum
 from warg import str_to_bool
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 __all__ = ["add_floor_contents"]
 

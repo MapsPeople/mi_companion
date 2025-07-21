@@ -2,8 +2,8 @@
 import logging
 from pathlib import Path
 
-from mi_companion import RESOURCE_BASE_PATH
 from integration_system.mi_sync_constants import MI_EPSG_NUMBER
+from mi_companion import RESOURCE_BASE_PATH
 from mi_companion.mi_editor.conversion.projection import get_target_crs_srsid
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)

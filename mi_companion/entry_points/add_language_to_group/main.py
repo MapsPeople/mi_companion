@@ -2,12 +2,10 @@
 import logging
 
 # noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
+from qgis.PyQt import QtGui, QtWidgets, uic
 
 # noinspection PyUnresolvedReferences
-from qgis.utils import iface
-
-from mi_companion import RESOURCE_BASE_PATH
+from qgis.PyQt.QtCore import QVariant
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import (
@@ -15,24 +13,16 @@ from qgis.PyQt.QtWidgets import (
 )
 
 # noinspection PyUnresolvedReferences
-from qgis.core import QgsField, QgsProject
-
 # noinspection PyUnresolvedReferences
-from qgis.PyQt.QtCore import QVariant
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtGui, QtWidgets, uic
-
-from mi_companion.layer_descriptors import (
-    LAYER_DESCRIPTORS_WITH_TRANSLATIONS,
-    SOLUTION_DATA_DESCRIPTOR,
-)
-
 # noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsCategorizedSymbolRenderer,
+    QgsField,
+    QgsLayerTreeGroup,
+    QgsLayerTreeLayer,
     QgsLineSymbol,
     QgsPalLayerSettings,
+    QgsProject,
     QgsProject,
     QgsRendererCategory,
     QgsSymbol,
@@ -43,6 +33,14 @@ from qgis.core import (
     QgsWkbTypes,
 )
 
+# noinspection PyUnresolvedReferences
+from qgis.utils import iface
+
+from mi_companion import RESOURCE_BASE_PATH
+from mi_companion.layer_descriptors import (
+    LAYER_DESCRIPTORS_WITH_TRANSLATIONS,
+    SOLUTION_DATA_DESCRIPTOR,
+)
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
 

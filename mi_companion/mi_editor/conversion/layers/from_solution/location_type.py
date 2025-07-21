@@ -1,5 +1,4 @@
 import logging
-from typing import Any, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -11,9 +10,10 @@ from qgis.core import (
     QgsFieldConstraints,
     QgsMapLayer,
 )
+from typing import Any, List, Optional
 
 from integration_system.model import Solution
-from integration_system.tools.serialisation import collection_to_df
+from integration_system.tools import collection_to_df
 from jord.pandas_utilities import df_to_columns
 from jord.qgis_utilities import (
     make_field_boolean,
@@ -21,35 +21,22 @@ from jord.qgis_utilities import (
     make_field_not_null,
     make_field_reuse_last_entered_value,
     make_field_unique,
+    set_field_widget,
 )
 from jord.qlive_utilities import add_no_geom_layer
+from .location_fields import (
+    BOOLEAN_LOCATION_TYPE_ATTRS,
+    FLOAT_LOCATION_TYPE_ATTRS,
+    INTEGER_LOCATION_TYPE_ATTRS,
+    LIST_LOCATION_TYPE_ATTRS,
+    RANGE_LOCATION_ATTRS,
+    STR_LOCATION_TYPE_ATTRS,
+)
 from .parsing import process_nested_fields_df
-
-BOOLEAN_LOCATION_TYPE_ATTRS = (
-    # "is_obstacle",
-    # "is_selectable",
-    "display_rule.model3d.visible",
-)
-STR_LOCATION_TYPE_ATTRS = (
-    "translations.en.name",
-    "display_rule.model3d.model",
-    "admin_id",
-    "color",
-)
-FLOAT_LOCATION_TYPE_ATTRS = ("settings_3d_margin", "settings_3d_width")
-INTEGER_LOCATION_TYPE_ATTRS = (
-    "display_rule.label_zoom_from",
-    "display_rule.label_zoom_to",
-)
-
-LIST_LOCATION_TYPE_ATTRS = ("restrictions",)
 
 logger = logging.getLogger(__name__)
 
 __all__ = ["add_location_type_layer", "make_location_type_dropdown_widget"]
-
-
-def set_display_rule_conditional_formatting(): ...
 
 
 def make_location_type_dropdown_widget(
@@ -57,7 +44,7 @@ def make_location_type_dropdown_widget(
     *,
     target_key_field_name: str = "admin_id",
     target_value_field_name: str = "translation.en.name",
-):
+) -> Any:
     return QgsEditorWidgetSetup(
         "ValueRelation",
         {
@@ -80,10 +67,6 @@ def make_location_type_dropdown_widget(
             "CompleterMatchFlags": 2,
         },
     )
-
-
-def make_range_widget():  # TODO: for rotation 0-360, step size 0.5
-    ...
 
 
 def add_location_type_layer(
@@ -168,5 +151,8 @@ def add_location_type_layer(
         make_field_default(
             added_layers, field_name=field_name, default_expression=f"null"
         )
+
+    for field_name, field_widget in RANGE_LOCATION_ATTRS.items():
+        set_field_widget(added_layers, field_name, field_widget)
 
     return added_layers

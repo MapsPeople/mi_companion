@@ -8,7 +8,7 @@ from jord.qgis_utilities import (
     feature_to_shapely,
 )
 from mi_companion import VERBOSE
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
     extract_single_level_str_map,
 )

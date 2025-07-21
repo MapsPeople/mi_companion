@@ -1,6 +1,4 @@
 import logging
-from typing import Any, List, Optional, Tuple
-
 import shapely
 
 # noinspection PyUnresolvedReferences
@@ -24,6 +22,7 @@ from qgis.core import (
     QgsProject,
     QgsProject,
 )
+from typing import Any, List, Optional, Tuple
 
 from integration_system.model import Solution
 from jord.qgis_utilities import (
@@ -36,6 +35,7 @@ from mi_companion import (
     HALF_SIZE,
 )
 from mi_companion.layer_descriptors import FLOOR_POLYGON_DESCRIPTOR
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
@@ -43,7 +43,6 @@ from .common_attributes import extract_translations
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from .extraction import special_extract_layer_data
 from .location import add_floor_contents
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 logger = logging.getLogger(__name__)
 

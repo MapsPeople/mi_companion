@@ -1,6 +1,5 @@
 import logging
 import math
-from typing import Any, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 # from qgis.core.QgsVariantUtils import isNull, typeToDisplayString
@@ -8,6 +7,10 @@ import numpy
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
+
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtGui import QColor
+from typing import Any, Mapping, Optional
 
 from integration_system.common_models import (
     MIIconPlacementRuleEnum,
@@ -385,7 +388,11 @@ def extract_display_rule(
                 field_type = field_types[field_name]
 
                 # Handle QVariant
-                if isinstance(attr_value, QVariant):
+
+                if isinstance(attr_value, QColor):
+                    attr_name = attr_value.name()
+
+                elif isinstance(attr_value, QVariant):
                     if attr_value.isNull():
                         continue
 

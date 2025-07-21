@@ -1,7 +1,6 @@
 import logging
-from typing import Iterable, Mapping
-
 import shapely
+from typing import Iterable, Mapping
 
 from jord.qgis_utilities import make_field_not_null, set_3d_view_settings
 from jord.qlive_utilities import add_shapely_layer
@@ -11,7 +10,7 @@ from mi_companion import (
     GRAPH_EDGE_WIDTH,
     HALF_SIZE,
 )
-from mi_companion.configuration.options import read_bool_setting
+from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import (
     NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
     NAVIGATION_POINT_DESCRIPTOR,
