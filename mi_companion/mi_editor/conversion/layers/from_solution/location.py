@@ -178,10 +178,10 @@ def add_location_layer(
         if should_reproject_qgis():
             locations_df["anchor"] = locations_df["anchor"].apply(forward_project_qgis)
 
-            if ANCHOR_AS_INDIVIDUAL_FIELDS:
-                locations_df["anchor_x"] = locations_df["anchor"].apply(lambda p: p.x)
-                locations_df["anchor_y"] = locations_df["anchor"].apply(lambda p: p.y)
-                locations_df.pop("anchor")
+        if ANCHOR_AS_INDIVIDUAL_FIELDS:
+            locations_df["anchor_x"] = locations_df["anchor"].apply(lambda p: p.x)
+            locations_df["anchor_y"] = locations_df["anchor"].apply(lambda p: p.y)
+            locations_df.pop("anchor")
 
     assert len(shape_df) == len(
         locations_df
