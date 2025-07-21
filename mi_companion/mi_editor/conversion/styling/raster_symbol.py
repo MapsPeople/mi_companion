@@ -112,8 +112,8 @@ if(
 
     # Set size unit to map units (meters)
     raster_layer.setSizeUnit(
-        # Qgis.RenderUnit.MapUnits
-        Qgis.RenderUnit.MetersInMapUnits
+        Qgis.RenderUnit.MapUnits
+        # Qgis.RenderUnit.MetersInMapUnits
     )
 
     return raster_layer

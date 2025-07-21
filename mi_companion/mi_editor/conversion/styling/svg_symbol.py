@@ -112,8 +112,8 @@ if(
 
     # Set size unit to map units (meters)
     svg_layer.setSizeUnit(
-        # Qgis.RenderUnit.MapUnits
-        Qgis.RenderUnit.MetersInMapUnits
+        Qgis.RenderUnit.MapUnits
+        # Qgis.RenderUnit.MetersInMapUnits
     )
 
     return svg_layer
