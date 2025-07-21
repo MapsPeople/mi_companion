@@ -1,11 +1,11 @@
 import logging
+from typing import Any, Collection, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtWidgets
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
-from typing import Any, Collection, List, Optional
 
 from integration_system.mi import (
     MIOperation,

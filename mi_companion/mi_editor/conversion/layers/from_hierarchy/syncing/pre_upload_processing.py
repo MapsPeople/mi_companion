@@ -1,8 +1,9 @@
 import logging
-import shapely
 from collections import defaultdict
 from itertools import chain
 from typing import Union
+
+import shapely
 
 from integration_system.model import Area, PointOfInterest, Room, Solution
 from jord.shapely_utilities import is_multi

@@ -1,4 +1,6 @@
 import logging
+from typing import Any, List, Optional, Tuple
+
 import shapely
 
 # noinspection PyUnresolvedReferences
@@ -22,7 +24,6 @@ from qgis.core import (
     QgsProject,
     QgsProject,
 )
-from typing import Any, List, Optional, Tuple
 
 from integration_system.model import Solution
 from jord.qgis_utilities import (

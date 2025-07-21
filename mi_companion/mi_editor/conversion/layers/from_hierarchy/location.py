@@ -3,6 +3,8 @@ import ast
 # noinspection PyUnresolvedReferences
 import datetime
 import logging
+from typing import Any, Collection, List, Optional
+
 import shapely
 
 # noinspection PyUnresolvedReferences
@@ -27,7 +29,6 @@ from qgis.core import (
     QgsProject,
     QgsProject,
 )
-from typing import Any, Collection, List, Optional
 
 from integration_system.model import (
     Category,

@@ -1,9 +1,9 @@
 import logging
 from collections import defaultdict
+from typing import Any, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-from typing import Any, List, Optional
 
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
 from integration_system.tools import (

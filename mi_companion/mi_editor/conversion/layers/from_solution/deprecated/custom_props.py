@@ -1,4 +1,5 @@
 import logging
+
 from geopandas import GeoDataFrame
 
 from mi_companion import NULL_VALUE

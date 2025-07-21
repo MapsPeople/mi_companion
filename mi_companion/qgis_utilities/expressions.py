@@ -93,7 +93,16 @@ with_variable('p',
 """
 
 
-ANCHOR_GEOMETRY_GENERATOR_EXPRESSION = 'make_point("anchor_x","anchor_y")'
+ANCHOR_GEOMETRY_GENERATOR_EXPRESSION = """
+if(
+  "anchor_x" is NULL OR "anchor_y" is NULL,
+  centroid(@geometry),
+  make_point("anchor_x","anchor_y")
+)
+
+"""
+
+
 ANCHOR_GEOMETRY_GENERATOR_EXPRESSION_COMPONENT = (
     "{component}(" + ANCHOR_GEOMETRY_GENERATOR_EXPRESSION + ")"
 )

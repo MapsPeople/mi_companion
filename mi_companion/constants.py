@@ -151,6 +151,7 @@ DEFAULT_PLUGIN_SETTINGS = {
     "LAYER_GEOM_VISIBLE_MIN_RATIO": 1.0 / 999999.0,
     "ADD_LOCATION_TYPE_MODE_TOGGLE": False,
     "ADD_ANCHOR_AND_3DROTSCL_STYLING": True,
+    "ADD_2DMODEL_STYLING": True,
 }
 
 INSERT_INDEX = 0  # if zero first, if one after hierarchy data

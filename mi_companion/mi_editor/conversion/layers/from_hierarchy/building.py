@@ -1,4 +1,6 @@
 import logging
+from typing import Any, List, Optional
+
 import shapely
 
 # noinspection PyUnresolvedReferences
@@ -19,7 +21,6 @@ from qgis.core import (
     QgsProject,
     QgsProject,
 )
-from typing import Any, List, Optional
 
 from integration_system.mi import (
     MI_OUTSIDE_BUILDING_NAME,

@@ -1,8 +1,9 @@
 import copy
 import dataclasses
+from typing import Mapping
+
 from geopandas import GeoDataFrame
 from pandas import DataFrame, json_normalize
-from typing import Mapping
 
 from integration_system.model.solution_item import CollectionMixin
 from jord.qgis_utilities import REAL_NONE_JSON_VALUE

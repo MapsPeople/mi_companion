@@ -1,11 +1,12 @@
 import logging
+import typing
+from typing import Optional
+
 import numpy
 import pyproj
 import shapely
-import typing
+import shapely.geometry
 from geopandas import GeoDataFrame
-from shapely.geometry.base import BaseGeometry
-from typing import Optional
 
 from integration_system.mi_sync_constants import (
     EDITING_CRS_AUTHID,
@@ -67,7 +68,9 @@ def get_forward_projection_qgis() -> typing.Callable:
     ).transform
 
 
-def back_project_qgis(geom: BaseGeometry) -> BaseGeometry:
+def back_project_qgis(
+    geom: shapely.geometry.base.BaseGeometry,
+) -> shapely.geometry.base.BaseGeometry:
     back = get_back_projection_qgis()
     if back is not None:
         return shapely.ops.transform(back, geom)
@@ -75,7 +78,9 @@ def back_project_qgis(geom: BaseGeometry) -> BaseGeometry:
     return geom
 
 
-def forward_project_qgis(geom: BaseGeometry) -> BaseGeometry:
+def forward_project_qgis(
+    geom: shapely.geometry.base.BaseGeometry,
+) -> shapely.geometry.base.BaseGeometry:
     forward = get_forward_projection_qgis()
 
     if forward is not None:
@@ -107,7 +112,7 @@ def should_reproject_to_project_qgis() -> bool:
     return read_bool_setting("REPROJECT_TO_PROJECT_CRS")
 
 
-def any_infinite_coords(geom_shapely: BaseGeometry) -> bool:
+def any_infinite_coords(geom_shapely: shapely.geometry.base.BaseGeometry) -> bool:
     """
 
     # Check for infinity in coordinates
@@ -124,7 +129,7 @@ def any_infinite_coords(geom_shapely: BaseGeometry) -> bool:
     return False
 
 
-def is_valid_lon_lat(geom_shapely: BaseGeometry) -> bool:
+def is_valid_lon_lat(geom_shapely: shapely.geometry.base.BaseGeometry) -> bool:
     """Check if all coordinates are within valid longitude/latitude ranges.
 
     :param geom_shapely: Shapely geometry to check
@@ -141,7 +146,9 @@ def is_valid_lon_lat(geom_shapely: BaseGeometry) -> bool:
     return True
 
 
-def is_valid_lon_lat_fast(geom_shapely: BaseGeometry) -> bool:  # Faster?
+def is_valid_lon_lat_fast(
+    geom_shapely: shapely.geometry.base.BaseGeometry,
+) -> bool:  # Faster?
     """Check if all coordinates are within valid longitude/latitude ranges.
 
     This function checks if coordinates are within the valid range:

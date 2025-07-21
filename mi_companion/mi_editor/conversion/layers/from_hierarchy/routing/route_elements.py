@@ -1,5 +1,6 @@
 import logging
 from collections import defaultdict
+from typing import Any, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -9,7 +10,6 @@ from qgis.PyQt.QtCore import QVariant
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-from typing import Any, List, Optional
 
 from integration_system.model import (
     Solution,

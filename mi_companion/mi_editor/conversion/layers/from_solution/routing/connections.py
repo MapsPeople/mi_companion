@@ -1,8 +1,9 @@
-import geopandas
 import logging
+from typing import Any, List, Optional
+
+import geopandas
 from geopandas import GeoDataFrame
 from pandas import json_normalize
-from typing import Any, List, Optional
 
 from integration_system.model import ConnectionCollection, Graph
 from jord.qgis_utilities import (

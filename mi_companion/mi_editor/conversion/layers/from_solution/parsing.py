@@ -1,9 +1,10 @@
 import dataclasses
 import logging
+from typing import Any
+
 import pandas
 from geopandas import GeoDataFrame
 from pandas.io.json._normalize import _simple_json_normalize
-from typing import Any
 
 from integration_system.model.typings import Translations
 

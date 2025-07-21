@@ -1,5 +1,5 @@
-import ast
 import logging
+from typing import Any, Callable, Dict, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -14,7 +14,6 @@ from qgis.PyQt.QtWidgets import (
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-from typing import Any, Callable, Dict, List, Optional
 
 from integration_system.mi import (
     SolutionDepth,

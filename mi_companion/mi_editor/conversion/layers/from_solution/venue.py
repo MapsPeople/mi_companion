@@ -1,8 +1,8 @@
 import logging
+from typing import Any, Iterable, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
-from typing import Any, Iterable, Optional
 
 from integration_system.model import Solution, Venue
 from jord.qgis_utilities import (

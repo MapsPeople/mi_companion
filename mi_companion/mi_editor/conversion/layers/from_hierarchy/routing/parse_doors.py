@@ -1,8 +1,8 @@
 import logging
+from typing import Any, List, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
-from typing import Any, List, Mapping, Optional
 
 from integration_system.common_models import MIDoorType
 from integration_system.model import Solution

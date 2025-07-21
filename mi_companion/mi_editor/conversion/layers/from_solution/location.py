@@ -1,5 +1,7 @@
-import geopandas
 import logging
+from typing import Any, Iterable, List, Optional
+
+import geopandas
 import pandas
 
 # noinspection PyUnresolvedReferences
@@ -7,7 +9,6 @@ import qgis
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
-from typing import Any, Iterable, List, Optional
 
 from integration_system.model import (
     Floor,
@@ -59,7 +60,9 @@ from mi_companion.mi_editor.conversion.projection import (
     solve_target_crs_authid,
 )
 from mi_companion.mi_editor.conversion.styling import (
+    add_raster_symbol,
     add_rotation_scale_geometry_generator,
+    add_svg_symbol,
     apply_display_rule_styling_categorized,
 )
 from mi_companion.qgis_utilities import auto_center_anchors_when_outside
@@ -356,6 +359,8 @@ def add_floor_content_layers(
         extrusion=FLOOR_HEIGHT,
     )
 
+    add_svg_symbol(room_layers)
+    add_raster_symbol(room_layers)
     add_rotation_scale_geometry_generator(room_layers)
 
     if read_bool_setting("USE_LOCATION_TYPE_FOR_LABEL"):  # TODO: STILL DOES NOT WORK...
@@ -401,6 +406,8 @@ def add_floor_content_layers(
         min_ratio=read_float_setting("LAYER_GEOM_VISIBLE_MIN_RATIO"),
     )
 
+    add_svg_symbol(area_layers)
+    add_raster_symbol(area_layers)
     add_rotation_scale_geometry_generator(area_layers)
 
     set_geometry_constraints(area_layers)
@@ -428,6 +435,9 @@ def add_floor_content_layers(
         poi_layers,
         min_ratio=read_float_setting("LAYER_GEOM_VISIBLE_MIN_RATIO"),
     )
+
+    add_svg_symbol(poi_layers)  # NO ANCHOR HERE..
+    add_raster_symbol(poi_layers)
 
     set_geometry_constraints(poi_layers)
 

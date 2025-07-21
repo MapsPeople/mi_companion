@@ -1,4 +1,5 @@
 import logging
+from typing import Any, List, Optional, Tuple
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -13,7 +14,6 @@ from qgis.PyQt.QtWidgets import (
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-from typing import Any, List, Optional, Tuple
 
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
 from jord.qgis_utilities import extract_layer_data_single, feature_to_shapely

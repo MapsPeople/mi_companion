@@ -1,6 +1,7 @@
-import geopandas
 import logging
 from typing import Any, List, Optional
+
+import geopandas
 
 from integration_system.model import DoorCollection, Graph
 from integration_system.pandas_utilities import locations_to_df

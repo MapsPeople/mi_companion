@@ -1,6 +1,7 @@
-import geopandas
 import logging
 from typing import Any, List, Optional
+
+import geopandas
 
 from integration_system.model import Graph
 from integration_system.model.solution_item import CollectionMixin

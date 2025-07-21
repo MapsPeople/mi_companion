@@ -1,4 +1,5 @@
 import logging
+from typing import Any, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -9,7 +10,6 @@ from qgis.core import (
     QgsProject,
     QgsWkbTypes,
 )
-from typing import Any, List, Optional
 
 from integration_system.model import FALLBACK_OSM_GRAPH, Solution
 from integration_system.tools.graph_utilities import lines_3d_to_osm_xml

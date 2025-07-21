@@ -1,4 +1,5 @@
 import logging
+from typing import Any, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -10,7 +11,6 @@ from qgis.core import (
     QgsFieldConstraints,
     QgsMapLayer,
 )
-from typing import Any, List, Optional
 
 from integration_system.model import Solution
 from integration_system.tools import collection_to_df
