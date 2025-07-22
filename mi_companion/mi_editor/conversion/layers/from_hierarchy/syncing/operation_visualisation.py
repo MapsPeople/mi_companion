@@ -9,9 +9,9 @@ from qgis.PyQt import QtCore, QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
-from integration_system.mi import MIOperation
-from integration_system.mi_sync_constants import MI_EPSG_NUMBER
-from integration_system.model import (
+from sync_module.mi import MIOperation
+from sync_module.mi_sync_constants import MI_EPSG_NUMBER
+from sync_module.model import (
     DIFFERENCE_GROUP_NAME,
     NEXT_DIFF_ITEM_INDICATOR,
     SHAPELY_DIFFERENCE_DESCRIPTION,

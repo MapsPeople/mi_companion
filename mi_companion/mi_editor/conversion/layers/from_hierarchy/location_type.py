@@ -4,7 +4,7 @@ from typing import Any, List, Optional
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
 
-from integration_system.model import LocationType, Solution
+from sync_module.model import LocationType, Solution
 from jord.qgis_utilities import (
     extract_field_value,
     extract_layer_attributes,

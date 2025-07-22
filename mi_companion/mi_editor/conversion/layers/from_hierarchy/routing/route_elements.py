@@ -11,7 +11,7 @@ from qgis.PyQt.QtCore import QVariant
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.model import (
+from sync_module.model import (
     Solution,
 )
 from jord.qgis_utilities import recurse_layers

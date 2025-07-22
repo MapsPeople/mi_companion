@@ -35,6 +35,22 @@ from mi_companion.qgis_utilities import ANCHOR_GEOMETRY_GENERATOR_EXPRESSION
 
 logger = logging.getLogger(__name__)
 
+__all__ = ["add_svg_symbol"]
+
+
+SVG_SYMBOL_ENABLED_EXPRESSION = QgsProperty.fromExpression(
+    """
+if(
+  "display_rule.model2d.model",
+  "display_rule.model2d.model" IS NOT NULL AND
+  "display_rule.model2d.model" IS NOT '' AND
+  "display_rule.model2d.model" IS NOT 'None' AND
+  "display_rule.model2d.model" LIKE '%.svg',
+  0
+)
+            """
+)
+
 
 def add_svg_with_geometry_generator(symbol):
     """
@@ -47,6 +63,10 @@ def add_svg_with_geometry_generator(symbol):
     geo_layer = QgsGeometryGeneratorSymbolLayer.create({})
     geo_layer.setGeometryExpression(ANCHOR_GEOMETRY_GENERATOR_EXPRESSION)
     geo_layer.setSymbolType(Qgis.SymbolType.Marker)
+
+    geo_layer.setDataDefinedProperty(
+        QgsSymbolLayer.PropertyLayerEnabled, SVG_SYMBOL_ENABLED_EXPRESSION
+    )
 
     # Create a sub-symbol for the geometry generator
     sub_symbol = QgsMarkerSymbol.createSimple({})
@@ -71,6 +91,11 @@ def create_svg_symbol_layer():
     # Create SVG layer
     svg_layer = QgsSvgMarkerSymbolLayer.create({})
 
+    # Set enabled property - only enable for non-SVG files
+    svg_layer.setDataDefinedProperty(
+        QgsSymbolLayer.PropertyLayerEnabled, SVG_SYMBOL_ENABLED_EXPRESSION
+    )
+
     # Set data-defined properties for SVG path, scale and rotation
     svg_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyName,
@@ -80,29 +105,13 @@ def create_svg_symbol_layer():
     # Width in map units based on the display_rule.model2d.width_meters field
     svg_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyWidth,
-        QgsProperty.fromExpression(
-            """
-if(
-  "display_rule.model2d.model" IS NOT NULL AND "display_rule.model2d.model" LIKE '%.svg',
-  coalesce("display_rule.model2d.width_meters", 5),
-  0
-)
-"""
-        ),
+        QgsProperty.fromExpression('coalesce("display_rule.model2d.width_meters", 5)'),
     )
 
     # Height in map units based on the display_rule.model2d.height_meters field
     svg_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyHeight,
-        QgsProperty.fromExpression(
-            """
-if(
-  "display_rule.model2d.model" IS NOT NULL AND "display_rule.model2d.model" LIKE '%.svg',
-  coalesce("display_rule.model2d.height_meters", 5),
-  0
-)
-"""
-        ),
+        QgsProperty.fromExpression('coalesce("display_rule.model2d.height_meters", 5)'),
     )
 
     svg_layer.setDataDefinedProperty(
@@ -112,8 +121,8 @@ if(
 
     # Set size unit to map units (meters)
     svg_layer.setSizeUnit(
-        # Qgis.RenderUnit.MapUnits
-        Qgis.RenderUnit.MetersInMapUnits
+        Qgis.RenderUnit.MapUnits
+        # Qgis.RenderUnit.MetersInMapUnits
     )
 
     return svg_layer

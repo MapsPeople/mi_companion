@@ -60,7 +60,7 @@ def show_make_solution_dialog_action_callable(layer: Any, feature: Any) -> None:
         feature.geometry().asWkt(),
     )
 
-    from integration_system.model import Solution
+    from sync_module.model import Solution
     from mi_companion.mi_editor import add_solution_layers
 
     name: str = "New Solution"

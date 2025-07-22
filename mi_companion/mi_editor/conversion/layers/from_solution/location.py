@@ -10,13 +10,13 @@ import qgis
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
 
-from integration_system.model import (
+from sync_module.model import (
     Floor,
     Solution,
 )
-from integration_system.model.solution_item import CollectionMixin
-from integration_system.pandas_utilities import locations_to_df
-from integration_system.tools.serialisation import (
+from sync_module.model.solution_item import CollectionMixin
+from sync_module.shared.pandas_utilities import locations_to_df
+from sync_module.tools.serialisation import (
     collection_to_df,
 )
 from jord.qgis_utilities import (
@@ -178,10 +178,10 @@ def add_location_layer(
         if should_reproject_qgis():
             locations_df["anchor"] = locations_df["anchor"].apply(forward_project_qgis)
 
-            if ANCHOR_AS_INDIVIDUAL_FIELDS:
-                locations_df["anchor_x"] = locations_df["anchor"].apply(lambda p: p.x)
-                locations_df["anchor_y"] = locations_df["anchor"].apply(lambda p: p.y)
-                locations_df.pop("anchor")
+        if ANCHOR_AS_INDIVIDUAL_FIELDS:
+            locations_df["anchor_x"] = locations_df["anchor"].apply(lambda p: p.x)
+            locations_df["anchor_y"] = locations_df["anchor"].apply(lambda p: p.y)
+            locations_df.pop("anchor")
 
     assert len(shape_df) == len(
         locations_df
@@ -359,8 +359,8 @@ def add_floor_content_layers(
         extrusion=FLOOR_HEIGHT,
     )
 
-    add_svg_symbol(room_layers)
     add_raster_symbol(room_layers)
+    add_svg_symbol(room_layers)
     add_rotation_scale_geometry_generator(room_layers)
 
     if read_bool_setting("USE_LOCATION_TYPE_FOR_LABEL"):  # TODO: STILL DOES NOT WORK...
@@ -406,8 +406,8 @@ def add_floor_content_layers(
         min_ratio=read_float_setting("LAYER_GEOM_VISIBLE_MIN_RATIO"),
     )
 
-    add_svg_symbol(area_layers)
     add_raster_symbol(area_layers)
+    add_svg_symbol(area_layers)
     add_rotation_scale_geometry_generator(area_layers)
 
     set_geometry_constraints(area_layers)
@@ -436,8 +436,8 @@ def add_floor_content_layers(
         min_ratio=read_float_setting("LAYER_GEOM_VISIBLE_MIN_RATIO"),
     )
 
-    add_svg_symbol(poi_layers)  # NO ANCHOR HERE..
     add_raster_symbol(poi_layers)
+    add_svg_symbol(poi_layers)  # NO ANCHOR HERE..
 
     set_geometry_constraints(poi_layers)
 

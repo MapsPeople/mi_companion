@@ -11,10 +11,10 @@ __all__ = ["run"]
 
 
 def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> None:
-    from integration_system.tools.compatibilization import (
+    from sync_module.tools.compatibilization import (
         make_solution_compatible,
     )
-    from integration_system.config import MapsIndoors, Settings, set_settings
+    from sync_module.mi.config import MapsIndoors, Settings, set_settings
     from jord.qgis_utilities import read_plugin_setting
 
     sync_module_settings = Settings(

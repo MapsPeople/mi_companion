@@ -6,7 +6,7 @@ import pandas
 from geopandas import GeoDataFrame
 from pandas.io.json._normalize import _simple_json_normalize
 
-from integration_system.model.typings import Translations
+from sync_module.model.typings import Translations
 
 logger = logging.getLogger(__name__)
 __all__ = ["process_nested_fields_df", "translations_to_flattened_dict"]
@@ -69,8 +69,8 @@ def translations_to_flattened_dict(translations: Translations) -> dict[str, Any]
 
 
 if __name__ == "__main__":
-    from integration_system.mi import get_remote_solution
-    from integration_system.tools import collection_to_df
+    from sync_module.mi import get_remote_solution
+    from sync_module.tools import collection_to_df
 
     solution = get_remote_solution("fjordhaven7")
 

@@ -15,8 +15,8 @@ def run(*, solution_id: str) -> None:
     :return:
     """
 
-    from integration_system.config import MapsIndoors, Settings, set_settings
-    from integration_system.tools.compatibilization import (
+    from sync_module.mi.config import MapsIndoors, Settings, set_settings
+    from sync_module.tools.compatibilization import (
         make_route_elements_compatible,
     )
     from jord.qgis_utilities import read_plugin_setting

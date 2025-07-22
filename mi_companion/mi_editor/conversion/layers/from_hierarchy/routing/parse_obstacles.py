@@ -1,7 +1,7 @@
 import logging
 from typing import Any, List, Optional
 
-from integration_system.model import Solution
+from sync_module.model import Solution
 from jord.qgis_utilities import (
     GeometryIsEmptyError,
     extract_feature_attributes,

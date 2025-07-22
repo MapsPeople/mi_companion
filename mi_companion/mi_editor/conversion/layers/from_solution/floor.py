@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Optional
 
-from integration_system.model import Building, Floor, Solution
+from sync_module.model import Building, Floor, Solution
 from jord.qgis_utilities import (
     Qgis3dCullingMode,
     Qgis3dFacade,

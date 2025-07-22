@@ -5,7 +5,7 @@ from typing import Union
 
 import shapely
 
-from integration_system.model import Area, PointOfInterest, Room, Solution
+from sync_module.model import Area, PointOfInterest, Room, Solution
 from jord.shapely_utilities import is_multi
 from mi_companion.configuration import read_bool_setting
 

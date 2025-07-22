@@ -16,8 +16,8 @@ def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> 
     :param new_solution_external_id:
     :return:
     """
-    from integration_system.config import MapsIndoors, Settings, set_settings
-    from integration_system.tools.compatibilization import (
+    from sync_module.mi.config import MapsIndoors, Settings, set_settings
+    from sync_module.tools.compatibilization import (
         get_or_set_solution_external_id,
     )
     from jord.qgis_utilities import read_plugin_setting

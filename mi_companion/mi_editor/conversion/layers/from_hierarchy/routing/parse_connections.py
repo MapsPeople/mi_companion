@@ -6,8 +6,8 @@ from typing import Any, List, Mapping, Optional
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
 
-from integration_system.common_models import MIConnectionType
-from integration_system.model import Connection, Connector, Solution
+from sync_module.shared.model.common_models import MIConnectionType
+from sync_module.model import Connection, Connector, Solution
 from jord.qgis_utilities import (
     GeometryIsEmptyError,
     extract_feature_attributes,

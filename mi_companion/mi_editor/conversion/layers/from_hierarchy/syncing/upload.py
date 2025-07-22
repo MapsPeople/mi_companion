@@ -7,7 +7,7 @@ from qgis.PyQt import QtCore, QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
-from integration_system.mi import (
+from sync_module.mi import (
     MIOperation,
     SolutionDepth,
     SyncLevel,
@@ -16,7 +16,7 @@ from integration_system.mi import (
     strategy_solver,
     synchronize,
 )
-from integration_system.model import (
+from sync_module.model import (
     Graph,
     Solution,
 )

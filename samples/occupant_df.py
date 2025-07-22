@@ -1,9 +1,9 @@
 from itertools import tee
 from typing import Iterable, Mapping
 
-from integration_system.mi import get_remote_solution
-from integration_system.model import Venue
-from integration_system.tools.serialisation import collection_to_df
+from sync_module.mi import get_remote_solution
+from sync_module.model import Venue
+from sync_module.tools.serialisation import collection_to_df
 from jord.pandas_utilities import df_to_columns
 from jord.typing_utilities import solve_attribute_uri
 

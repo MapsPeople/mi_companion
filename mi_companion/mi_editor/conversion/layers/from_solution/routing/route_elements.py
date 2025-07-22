@@ -2,7 +2,7 @@ import logging
 from collections import defaultdict
 from typing import Any, Optional
 
-from integration_system.model import (
+from sync_module.model import (
     Avoid,
     Barrier,
     Connection,

@@ -5,7 +5,7 @@ import geopandas
 from geopandas import GeoDataFrame
 from pandas import json_normalize
 
-from integration_system.model import ConnectionCollection, Graph
+from sync_module.model import ConnectionCollection, Graph
 from jord.qgis_utilities import (
     make_field_not_null,
     make_field_reuse_last_entered_value,

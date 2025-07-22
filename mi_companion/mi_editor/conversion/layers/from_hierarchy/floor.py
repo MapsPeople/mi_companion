@@ -25,7 +25,7 @@ from qgis.core import (
     QgsProject,
 )
 
-from integration_system.model import Solution
+from sync_module.model import Solution
 from jord.qgis_utilities import (
     extract_field_value,
     feature_to_shapely,

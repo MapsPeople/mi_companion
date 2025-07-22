@@ -1,6 +1,6 @@
--e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/integration_system"
+-e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/sync_module"
 -e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/svaguely"
-#-e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/integration_system" # --no-deps"
+#-e "file://${REQUIREMENTS_FILE_PARENT_DIRECTORY}/submodules/sync_module" # --no-deps"
 
 #pytest >=7.4.0
 #shapely >= 2.0.1

@@ -95,7 +95,7 @@ with_variable('p',
 
 ANCHOR_GEOMETRY_GENERATOR_EXPRESSION = """
 if(
-  "anchor_x" is NULL OR "anchor_y" is NULL,
+  "anchor_x" is NULL OR "anchor_y" is NULL OR "anchor_x" IS '' OR "anchor_y" IS '',
   centroid(@geometry),
   make_point("anchor_x","anchor_y")
 )

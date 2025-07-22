@@ -25,8 +25,8 @@ def run(
     :return:
     """
 
-    from integration_system.config import MapsIndoors, Settings, set_settings
-    from integration_system.tools.migration import migrate_venue
+    from sync_module.mi.config import MapsIndoors, Settings, set_settings
+    from sync_module.tools.migration import migrate_venue
     from jord.qgis_utilities import read_plugin_setting
 
     sync_module_settings = Settings(
