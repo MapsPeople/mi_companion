@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
+## 0.7.8 - 2025-07-22
+
+* [Optimisation] Only enabled rendering of svg and raster symbol if populated
+
 ## 0.7.7 - 2025-07-21
 
 * [Deprecation] Removed AUTO_REGENERATE_EXTERNAL_ID_IF_MISSING functionality

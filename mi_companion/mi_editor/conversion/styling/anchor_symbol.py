@@ -39,6 +39,9 @@ from mi_companion.qgis_utilities import (
 logger = logging.getLogger(__name__)
 
 
+__all__ = ["add_rotation_scale_geometry_generator"]
+
+
 def make_rot_and_sca_symbology_layer():
     rot_and_sca_symbol_layer = QgsGeometryGeneratorSymbolLayer.create({})
     rot_and_sca_symbol_layer.setGeometryExpression(

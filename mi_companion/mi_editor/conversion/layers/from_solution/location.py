@@ -359,8 +359,8 @@ def add_floor_content_layers(
         extrusion=FLOOR_HEIGHT,
     )
 
-    add_svg_symbol(room_layers)
     add_raster_symbol(room_layers)
+    add_svg_symbol(room_layers)
     add_rotation_scale_geometry_generator(room_layers)
 
     if read_bool_setting("USE_LOCATION_TYPE_FOR_LABEL"):  # TODO: STILL DOES NOT WORK...
@@ -406,8 +406,8 @@ def add_floor_content_layers(
         min_ratio=read_float_setting("LAYER_GEOM_VISIBLE_MIN_RATIO"),
     )
 
-    add_svg_symbol(area_layers)
     add_raster_symbol(area_layers)
+    add_svg_symbol(area_layers)
     add_rotation_scale_geometry_generator(area_layers)
 
     set_geometry_constraints(area_layers)
@@ -436,8 +436,8 @@ def add_floor_content_layers(
         min_ratio=read_float_setting("LAYER_GEOM_VISIBLE_MIN_RATIO"),
     )
 
-    add_svg_symbol(poi_layers)  # NO ANCHOR HERE..
     add_raster_symbol(poi_layers)
+    add_svg_symbol(poi_layers)  # NO ANCHOR HERE..
 
     set_geometry_constraints(poi_layers)
 

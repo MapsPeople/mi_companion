@@ -36,7 +36,24 @@ logger = logging.getLogger(__name__)
 from mi_companion.qgis_utilities import ANCHOR_GEOMETRY_GENERATOR_EXPRESSION
 
 
-def add_raster_with_geometry_generator(symbol):
+__all__ = ["add_raster_symbol"]
+
+
+RASTER_SYMBOL_ENABLED_EXPRESSION = QgsProperty.fromExpression(
+    """
+if(
+  "display_rule.model2d.model",
+  "display_rule.model2d.model" IS NOT NULL AND
+  "display_rule.model2d.model" IS NOT '' AND
+  "display_rule.model2d.model" IS NOT 'None' AND
+  "display_rule.model2d.model" NOT LIKE '%.svg',
+  0
+)
+            """
+)
+
+
+def add_raster_with_geometry_generator(symbol) -> None:
     """
     Add a raster marker with its own geometry generator to the symbol.
 
@@ -47,6 +64,10 @@ def add_raster_with_geometry_generator(symbol):
     geo_layer = QgsGeometryGeneratorSymbolLayer.create({})
     geo_layer.setGeometryExpression(ANCHOR_GEOMETRY_GENERATOR_EXPRESSION)
     geo_layer.setSymbolType(Qgis.SymbolType.Marker)
+
+    geo_layer.setDataDefinedProperty(
+        QgsSymbolLayer.PropertyLayerEnabled, RASTER_SYMBOL_ENABLED_EXPRESSION
+    )
 
     # Create a sub-symbol for the geometry generator
     sub_symbol = QgsMarkerSymbol.createSimple({})
@@ -71,6 +92,11 @@ def create_raster_symbol_layer():
     # Create raster layer
     raster_layer = QgsRasterMarkerSymbolLayer.create({})
 
+    # Set enabled property - only enable for non-SVG files
+    raster_layer.setDataDefinedProperty(
+        QgsSymbolLayer.PropertyLayerEnabled, RASTER_SYMBOL_ENABLED_EXPRESSION
+    )
+
     # Set data-defined properties for raster path, scale and rotation
     raster_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyName,
@@ -85,29 +111,13 @@ def create_raster_symbol_layer():
     # Width in map units based on the display_rule.model2d.width_meters field
     raster_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyWidth,
-        QgsProperty.fromExpression(
-            """
-if(
-    "display_rule.model2d.model" IS NOT NULL AND "display_rule.model2d.model" LIKE '%.svg',
-    0,
-    coalesce("display_rule.model2d.width_meters", 5)
-)
-"""
-        ),
+        QgsProperty.fromExpression('coalesce("display_rule.model2d.width_meters", 5)'),
     )
 
     # Height in map units based on the display_rule.model2d.height_meters field
     raster_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyHeight,
-        QgsProperty.fromExpression(
-            """
-if(
-    "display_rule.model2d.model" IS NOT NULL AND "display_rule.model2d.model" LIKE '%.svg',
-    0,
-    coalesce("display_rule.model2d.height_meters", 5)
-)
-"""
-        ),
+        QgsProperty.fromExpression('coalesce("display_rule.model2d.height_meters", 5)'),
     )
 
     # Set size unit to map units (meters)
