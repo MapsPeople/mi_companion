@@ -125,9 +125,6 @@ def sync_build_venue_solution(
         msg_box.setWindowTitle(window_title)
         text_msg = f"The {solution_name}:{venue_name} venue has been modified."
 
-        if read_bool_setting("UPLOAD_OSM_GRAPH"):
-            text_msg += "\nNote: Graph will always update ATM"
-
         msg_box.setText(text_msg)
         msg_box.setInformativeText(
             f"Do you want to sync following changes?\n\n{aggregate_operation_description(operations)}"
