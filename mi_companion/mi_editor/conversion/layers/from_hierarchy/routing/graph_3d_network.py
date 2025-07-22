@@ -11,8 +11,8 @@ from qgis.core import (
     QgsWkbTypes,
 )
 
-from integration_system.model import FALLBACK_OSM_GRAPH, Solution
-from integration_system.tools.graph_utilities import lines_3d_to_osm_xml
+from sync_module.model import FALLBACK_OSM_GRAPH, Solution
+from sync_module.tools.graph_utilities import lines_3d_to_osm_xml
 from jord.qgis_utilities import feature_to_shapely, parse_q_value
 from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import GRAPH_LINES_DESCRIPTOR

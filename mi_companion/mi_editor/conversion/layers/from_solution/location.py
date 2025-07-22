@@ -10,13 +10,13 @@ import qgis
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
 
-from integration_system.model import (
+from sync_module.model import (
     Floor,
     Solution,
 )
-from integration_system.model.solution_item import CollectionMixin
-from integration_system.pandas_utilities import locations_to_df
-from integration_system.tools.serialisation import (
+from sync_module.model.solution_item import CollectionMixin
+from sync_module.shared.pandas_utilities import locations_to_df
+from sync_module.tools.serialisation import (
     collection_to_df,
 )
 from jord.qgis_utilities import (

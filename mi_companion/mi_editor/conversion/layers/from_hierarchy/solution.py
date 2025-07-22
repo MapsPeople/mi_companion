@@ -15,12 +15,12 @@ from qgis.PyQt.QtWidgets import (
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.mi import (
+from sync_module.mi import (
     SolutionDepth,
     get_remote_solution,
     get_solution_name_external_id_map,
 )
-from integration_system.model import ImplementationStatus, Solution
+from sync_module.model import ImplementationStatus, Solution
 from jord.qgis_utilities import parse_q_value
 from mi_companion import UPLOAD_ERROR_CONFIRMATION_TITLE
 from mi_companion.layer_descriptors import (

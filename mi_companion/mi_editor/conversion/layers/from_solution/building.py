@@ -1,8 +1,8 @@
 import logging
 from typing import Any, Callable, Optional
 
-from integration_system.mi import get_outside_building_admin_id
-from integration_system.model import Building, Solution, Venue
+from sync_module.mi import get_outside_building_admin_id
+from sync_module.model import Building, Solution, Venue
 from jord.qgis_utilities import (
     make_field_unique,
     set_geometry_constraints,

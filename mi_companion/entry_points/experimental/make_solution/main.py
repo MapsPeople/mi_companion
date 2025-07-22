@@ -64,7 +64,7 @@ def run(
     # noinspection PyUnresolvedReferences
     # from qgis.utils import iface
 
-    from integration_system.model import Solution
+    from sync_module.model import Solution
 
     s = Solution(uuid.uuid4().hex, name, _customer_id=customer_id)
     venue_name = "Empty Venue"

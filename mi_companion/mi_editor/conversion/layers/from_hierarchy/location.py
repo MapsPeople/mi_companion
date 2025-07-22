@@ -30,15 +30,15 @@ from qgis.core import (
     QgsProject,
 )
 
-from integration_system.model import (
+from sync_module.model import (
     Category,
     LocationType,
     OpeningHoursDetail,
     Solution,
     StrToDetailTypeMap,
 )
-from integration_system.model.typings import LanguageBundle
-from integration_system.tools.serialisation import standard_opening_hours_from_dict
+from sync_module.model.typings import LanguageBundle
+from sync_module.tools.serialisation import standard_opening_hours_from_dict
 from jord.qgis_utilities import (
     extract_feature_attributes,
     extract_field_value,

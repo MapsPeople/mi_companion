@@ -5,8 +5,8 @@ from typing import Any, List, Optional
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.model import FALLBACK_OSM_GRAPH, Solution
-from integration_system.tools import (
+from sync_module.model import FALLBACK_OSM_GRAPH, Solution
+from sync_module.tools import (
     lines_and_points_to_osm_xml,
 )
 from jord.qgis_utilities import feature_to_shapely, parse_q_value

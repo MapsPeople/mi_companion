@@ -1,7 +1,7 @@
 import shapely
 
-from integration_system.common_models import MIVenueType
-from integration_system.model import (
+from sync_module.shared.model.common_models import MIVenueType
+from sync_module.model import (
     Area,
     Building,
     Floor,

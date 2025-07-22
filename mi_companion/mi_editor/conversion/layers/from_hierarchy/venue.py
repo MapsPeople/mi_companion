@@ -12,9 +12,9 @@ from qgis.PyQt.QtCore import QDateTime, QVariant
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.common_models import MIVenueType
-from integration_system.mi import SolutionDepth
-from integration_system.model import (
+from sync_module.shared.model.common_models import MIVenueType
+from sync_module.mi import SolutionDepth
+from sync_module.model import (
     ImplementationStatus,
     OptionalPostalAddress,
     PostalAddress,

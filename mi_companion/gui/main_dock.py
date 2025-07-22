@@ -30,9 +30,9 @@ from qgis.core import (
 from qgis.gui import QgsDockWidget
 from typing import Any, Callable, Optional
 
-from integration_system.config import MapsIndoors, Settings, set_settings
-from integration_system.mi import SolutionDepth, get_venue_key_mi_venue_map
-from integration_system.mi_sync_constants import MI_EPSG_NUMBER
+from sync_module.mi.config import MapsIndoors, Settings, set_settings
+from sync_module.mi import SolutionDepth, get_venue_key_mi_venue_map
+from sync_module.mi_sync_constants import MI_EPSG_NUMBER
 from jord.qgis_utilities import InjectedProgressBar, read_plugin_setting, signals
 from jord.qlive_utilities import add_shapely_layer
 from jord.qt_utilities import DockWidgetAreaFlag
@@ -134,7 +134,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         """Constructor."""
         super().__init__(parent)
 
-        from integration_system.config import Settings
+        from sync_module.mi.config import Settings
 
         # INITIALISATION OF ATTRS
         self.fetched_solution = None
@@ -153,7 +153,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         if VERBOSE:
             reload_module("jord")
             reload_module("warg")
-            reload_module("integration_system")
+            reload_module("sync_module")
 
         self.plugin_dir = Path(os.path.dirname(__file__))
         self.sync_module_settings = Settings()
@@ -336,7 +336,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         set_settings(self.sync_module_settings)
 
     def refresh_solution_combo_box(self, reload_venues: bool = True) -> None:
-        from integration_system.mi import get_solution_name_external_id_map
+        from sync_module.mi import get_solution_name_external_id_map
 
         with InjectedProgressBar(
             parent=self.iface_.mainWindow().statusBar()
@@ -369,7 +369,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         self.venue_combo_box.clear()
 
     def refresh_venue_button_clicked(self) -> None:
-        from integration_system.mi import (
+        from sync_module.mi import (
             get_solution_id,
         )
 

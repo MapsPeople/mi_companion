@@ -1,4 +1,4 @@
-from integration_system.model import ImplementationStatus
+from sync_module.model import ImplementationStatus
 
 
 print(sorted({l.name for l in ImplementationStatus}))

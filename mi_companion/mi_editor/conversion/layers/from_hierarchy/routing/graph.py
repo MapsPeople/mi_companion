@@ -15,7 +15,7 @@ from qgis.PyQt.QtWidgets import (
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from integration_system.model import FALLBACK_OSM_GRAPH, Solution
+from sync_module.model import FALLBACK_OSM_GRAPH, Solution
 from jord.qgis_utilities import extract_layer_data_single, feature_to_shapely
 from mi_companion import UPLOAD_ERROR_CONFIRMATION_TITLE
 from mi_companion.layer_descriptors import GRAPH_BOUND_DESCRIPTOR

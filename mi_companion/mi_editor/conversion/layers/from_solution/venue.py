@@ -4,7 +4,7 @@ from typing import Any, Iterable, Optional
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
-from integration_system.model import Solution, Venue
+from sync_module.model import Solution, Venue
 from jord.qgis_utilities import (
     make_field_not_null,
     make_field_unique,

@@ -12,11 +12,11 @@ from qgis.PyQt.QtCore import QVariant
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QColor
 
-from integration_system.common_models import (
+from sync_module.shared.model.common_models import (
     MIIconPlacementRuleEnum,
     MILabelTypeOptionEnum,
 )
-from integration_system.model import (
+from sync_module.model import (
     BadgeDisplayRule,
     Data3D,
     DisplayPolygon,
@@ -28,7 +28,7 @@ from integration_system.model import (
     OptionalDisplayRule,
     StreetViewConfig,
 )
-from integration_system.model.typings import LanguageBundle
+from sync_module.model.typings import LanguageBundle
 from jord.qgis_utilities import (
     REAL_NONE_JSON_VALUE,
     is_str_value_null_like,

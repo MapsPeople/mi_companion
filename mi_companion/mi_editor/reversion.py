@@ -7,8 +7,8 @@ from qgis.PyQt import QtWidgets
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 from typing import Dict, Optional
 
-from integration_system.mi import SyncLevel, synchronize
-from integration_system.model import Solution
+from sync_module.mi import SyncLevel, synchronize
+from sync_module.model import Solution
 from mi_companion import HALF_SIZE
 from mi_companion.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
 

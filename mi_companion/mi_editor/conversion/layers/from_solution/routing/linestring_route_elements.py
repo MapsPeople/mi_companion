@@ -3,8 +3,8 @@ from typing import Any, List, Optional
 
 import geopandas
 
-from integration_system.model import DoorCollection, Graph
-from integration_system.pandas_utilities import locations_to_df
+from sync_module.model import DoorCollection, Graph
+from sync_module.shared.pandas_utilities import locations_to_df
 from jord.qgis_utilities import (
     make_field_not_null,
     make_field_reuse_last_entered_value,

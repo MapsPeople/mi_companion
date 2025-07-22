@@ -7,17 +7,17 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup, QgsProject
 
-from integration_system.common_models import (
+from sync_module.shared.model.common_models import (
     MIConnectionType,
     MIDoorType,
     MIEntryPointType,
     MIVenueType,
 )
-from integration_system.mi import (
+from sync_module.mi import (
     SolutionDepth,
     get_remote_solution,
 )
-from integration_system.model import (
+from sync_module.model import (
     GraphEdgeContextTypes,
     IMPLEMENTATION_STATUS,
     Solution,

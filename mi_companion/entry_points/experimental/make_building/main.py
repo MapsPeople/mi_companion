@@ -21,7 +21,7 @@ logger = logging.getLogger(RESOURCE_BASE_PATH)
 def run(*, name: str = "New Building (Building)") -> None:
     import shapely
     from jord.shapely_utilities import dilate
-    from integration_system.model import Solution
+    from sync_module.model import Solution
 
     parent = None
     selected_nodes = iface.layerTreeView().selectedNodes()

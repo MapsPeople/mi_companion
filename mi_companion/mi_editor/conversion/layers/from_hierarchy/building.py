@@ -22,11 +22,11 @@ from qgis.core import (
     QgsProject,
 )
 
-from integration_system.mi import (
+from sync_module.mi import (
     MI_OUTSIDE_BUILDING_NAME,
     get_outside_building_floor_name,
 )
-from integration_system.model import LanguageBundle, Solution
+from sync_module.model import LanguageBundle, Solution
 from jord.qgis_utilities import (
     extract_field_value,
     feature_to_shapely,

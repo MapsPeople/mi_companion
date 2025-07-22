@@ -26,9 +26,9 @@ if p.exists():
 
 if __name__ == "__main__":
     import zmq
-    import integration_system
+    import sync_module
 
-    logger.info(f"Loading {integration_system.__version__}")
+    logger.info(f"Loading {sync_module.__version__}")
 
     logger.error(zmq.zmq_version())
     logger.error(zmq.backend.zmq_version_info())

@@ -123,8 +123,8 @@ def package_dependencies(
     emit_additional_bundle_files(
         python_version=python_version,
         target_site_packages_dir=bundle_name,
-        BUNDLE_VERSION=VERSION,
-        BUNDLE_PROJECT_NAME=project_name,
+        bundle_version=VERSION,
+        bundle_project_name=project_name,
     )
 
 
@@ -132,16 +132,16 @@ def emit_additional_bundle_files(
     *,
     python_version: str,
     target_site_packages_dir: Path,
-    BUNDLE_VERSION: str = "0.0.1",
-    BUNDLE_PROJECT_NAME: str = "MapsIndoors",
+    bundle_version: str = "0.0.1",
+    bundle_project_name: str = "MapsIndoors",
 ) -> None:
     with open(target_site_packages_dir / "metadata.txt", "w") as f:
         f.write(
             f"""[general]
-name={BUNDLE_PROJECT_NAME} Python {python_version} bundle
+name={bundle_project_name} Python {python_version} bundle
 qgisMinimumVersion={MIN_QGIS_VERSION}
 #qgisMaximumVersion=3.38
-version={BUNDLE_VERSION}
+version={bundle_version}
 
 author=heider
 email=chen@mapspeople.com
