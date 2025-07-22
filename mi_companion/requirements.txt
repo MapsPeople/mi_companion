@@ -6,12 +6,13 @@ authlib>=1.2.1
 certifi>=14.05.14
 ezdxf>=1.3.0
 geojson>=3.1.0
-jord[qt,shapely,geopandas]>=0.9.17
-osmnx~=1.9.4 # OUTDATED NUMPY...
+jord[qt,shapely,geopandas,networkx]>=0.9.18
+osmnx>=2.0.5 # OUTDATED NUMPY...
 pydantic==2.11.4
 strenum>=0.4.5
 pytest-xdist>=3.3.1
 python_dateutil>=2.5.3
+shapely>=2.1.1
 #sentry-sdk>=2.0.1 # PRETTY BAD INTERFACE! REPLACE
 setuptools>=21.0.0
 six>=1.10
