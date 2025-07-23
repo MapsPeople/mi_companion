@@ -33,27 +33,15 @@ from qgis.utils import iface
 from mi_companion.configuration import read_bool_setting
 
 logger = logging.getLogger(__name__)
-from mi_companion.qgis_utilities import ANCHOR_GEOMETRY_GENERATOR_EXPRESSION
-
+from mi_companion.qgis_utilities import (
+    ANCHOR_GEOMETRY_GENERATOR_EXPRESSION,
+    get_hierarchical_lookup_field_expression,
+)
 
 __all__ = ["add_raster_symbol"]
 
 
-RASTER_SYMBOL_ENABLED_EXPRESSION = QgsProperty.fromExpression(
-    """
-if(
-  "display_rule.model2d.model",
-  "display_rule.model2d.model" IS NOT NULL AND
-  "display_rule.model2d.model" IS NOT '' AND
-  "display_rule.model2d.model" IS NOT 'None' AND
-  "display_rule.model2d.model" NOT LIKE '%.svg',
-  0
-)
-            """
-)
-
-
-def add_raster_with_geometry_generator(symbol) -> None:
+def add_raster_with_geometry_generator(symbol, model2d_lookup_expression) -> None:
     """
     Add a raster marker with its own geometry generator to the symbol.
 
@@ -65,8 +53,26 @@ def add_raster_with_geometry_generator(symbol) -> None:
     geo_layer.setGeometryExpression(ANCHOR_GEOMETRY_GENERATOR_EXPRESSION)
     geo_layer.setSymbolType(Qgis.SymbolType.Marker)
 
+    raster_symbol_enabled_expression = QgsProperty.fromExpression(
+        f"""
+with_variable(
+  'model2d',
+  {model2d_lookup_expression},
+  if(
+    @model2d,
+    @model2d IS NOT NULL AND
+    @model2d IS NOT '' AND
+    @model2d IS NOT 'None' AND
+    @model2d IS NOT 'nan' AND
+    @model2d NOT LIKE '%.svg',
+    0
+  )
+)
+        """
+    )
+
     geo_layer.setDataDefinedProperty(
-        QgsSymbolLayer.PropertyLayerEnabled, RASTER_SYMBOL_ENABLED_EXPRESSION
+        QgsSymbolLayer.PropertyLayerEnabled, raster_symbol_enabled_expression
     )
 
     # Create a sub-symbol for the geometry generator
@@ -77,7 +83,7 @@ def add_raster_with_geometry_generator(symbol) -> None:
         sub_symbol.deleteSymbolLayer(0)
 
     # Create raster layer and add it to the sub-symbol
-    raster_layer = create_raster_symbol_layer()
+    raster_layer = create_raster_symbol_layer(model2d_lookup_expression)
     sub_symbol.appendSymbolLayer(raster_layer)
 
     # Set the sub-symbol to the geometry generator
@@ -87,20 +93,15 @@ def add_raster_with_geometry_generator(symbol) -> None:
     symbol.appendSymbolLayer(geo_layer)
 
 
-def create_raster_symbol_layer():
+def create_raster_symbol_layer(model2d_lookup_expression):
     """Create and configure a raster marker symbol layer"""
     # Create raster layer
     raster_layer = QgsRasterMarkerSymbolLayer.create({})
 
-    # Set enabled property - only enable for non-SVG files
-    raster_layer.setDataDefinedProperty(
-        QgsSymbolLayer.PropertyLayerEnabled, RASTER_SYMBOL_ENABLED_EXPRESSION
-    )
-
     # Set data-defined properties for raster path, scale and rotation
     raster_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyName,
-        QgsProperty.fromExpression('"display_rule.model2d.model"'),
+        QgsProperty.fromExpression(model2d_lookup_expression),
     )
 
     raster_layer.setDataDefinedProperty(
@@ -158,6 +159,8 @@ def add_raster_symbol(layers):
 
         modified = False
 
+        model2d_lookup_expression = get_hierarchical_lookup_field_expression(layer)
+
         # Handle different renderer types
         if isinstance(renderer, QgsRuleBasedRenderer):
             # For rule-based renderers, modify each rule's symbol
@@ -165,7 +168,9 @@ def add_raster_symbol(layers):
             for child_rule in root_rule.children():
                 if child_rule.symbol():
                     # Add raster with its own geometry generator
-                    add_raster_with_geometry_generator(child_rule.symbol())
+                    add_raster_with_geometry_generator(
+                        child_rule.symbol(), model2d_lookup_expression
+                    )
                     modified = True
 
             # Create a new renderer with the modified rules
@@ -178,7 +183,9 @@ def add_raster_symbol(layers):
             for category in renderer.categories():
                 if category.symbol():
                     symbol = category.symbol().clone()
-                    add_raster_with_geometry_generator(symbol)
+                    add_raster_with_geometry_generator(
+                        symbol, model2d_lookup_expression
+                    )
                     # Create a new category with the modified symbol
                     new_category = QgsRendererCategory(
                         category.value(), symbol, category.label()
@@ -190,7 +197,9 @@ def add_raster_symbol(layers):
             source_symbol = None
             if renderer.sourceSymbol():
                 source_symbol = renderer.sourceSymbol().clone()
-                add_raster_with_geometry_generator(source_symbol)
+                add_raster_with_geometry_generator(
+                    source_symbol, model2d_lookup_expression
+                )
 
             # Create a new renderer with the modified categories
             if categories:
@@ -208,7 +217,7 @@ def add_raster_symbol(layers):
             symbol = renderer.symbol()
             if symbol:
                 # Add raster with its own geometry generator
-                add_raster_with_geometry_generator(symbol)
+                add_raster_with_geometry_generator(symbol, model2d_lookup_expression)
 
                 # Create a new renderer with the modified symbol
                 new_renderer = renderer.clone()

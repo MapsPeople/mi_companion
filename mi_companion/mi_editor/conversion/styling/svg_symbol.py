@@ -31,28 +31,17 @@ from qgis.core import (
 from qgis.utils import iface
 
 from mi_companion.configuration import read_bool_setting
-from mi_companion.qgis_utilities import ANCHOR_GEOMETRY_GENERATOR_EXPRESSION
+from mi_companion.qgis_utilities import (
+    ANCHOR_GEOMETRY_GENERATOR_EXPRESSION,
+    get_hierarchical_lookup_field_expression,
+)
 
 logger = logging.getLogger(__name__)
 
 __all__ = ["add_svg_symbol"]
 
 
-SVG_SYMBOL_ENABLED_EXPRESSION = QgsProperty.fromExpression(
-    """
-if(
-  "display_rule.model2d.model",
-  "display_rule.model2d.model" IS NOT NULL AND
-  "display_rule.model2d.model" IS NOT '' AND
-  "display_rule.model2d.model" IS NOT 'None' AND
-  "display_rule.model2d.model" LIKE '%.svg',
-  0
-)
-            """
-)
-
-
-def add_svg_with_geometry_generator(symbol):
+def add_svg_with_geometry_generator(symbol, model2d_lookup_expression):
     """
     Add an SVG marker with its own geometry generator to the symbol.
 
@@ -63,6 +52,28 @@ def add_svg_with_geometry_generator(symbol):
     geo_layer = QgsGeometryGeneratorSymbolLayer.create({})
     geo_layer.setGeometryExpression(ANCHOR_GEOMETRY_GENERATOR_EXPRESSION)
     geo_layer.setSymbolType(Qgis.SymbolType.Marker)
+
+    SVG_SYMBOL_ENABLED_EXPRESSION = QgsProperty.fromExpression(
+        f"""
+
+
+    with_variable(
+  'model2d',
+  {model2d_lookup_expression},
+  if(
+    @model2d,
+    @model2d IS NOT NULL AND
+    @model2d IS NOT '' AND
+    @model2d IS NOT 'None' AND
+    @model2d IS NOT 'nan' AND
+    @model2d LIKE '%.svg',
+    0
+  )
+)
+
+
+                """
+    )
 
     geo_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyLayerEnabled, SVG_SYMBOL_ENABLED_EXPRESSION
@@ -76,7 +87,7 @@ def add_svg_with_geometry_generator(symbol):
         sub_symbol.deleteSymbolLayer(0)
 
     # Create SVG layer and add it to the sub-symbol
-    svg_layer = create_svg_symbol_layer()
+    svg_layer = create_svg_symbol_layer(model2d_lookup_expression)
     sub_symbol.appendSymbolLayer(svg_layer)
 
     # Set the sub-symbol to the geometry generator
@@ -86,20 +97,15 @@ def add_svg_with_geometry_generator(symbol):
     symbol.appendSymbolLayer(geo_layer)
 
 
-def create_svg_symbol_layer():
+def create_svg_symbol_layer(model2d_lookup_expression):
     """Create and configure an SVG marker symbol layer"""
     # Create SVG layer
     svg_layer = QgsSvgMarkerSymbolLayer.create({})
 
-    # Set enabled property - only enable for non-SVG files
-    svg_layer.setDataDefinedProperty(
-        QgsSymbolLayer.PropertyLayerEnabled, SVG_SYMBOL_ENABLED_EXPRESSION
-    )
-
     # Set data-defined properties for SVG path, scale and rotation
     svg_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyName,
-        QgsProperty.fromExpression('"display_rule.model2d.model"'),
+        QgsProperty.fromExpression(model2d_lookup_expression),
     )
 
     # Width in map units based on the display_rule.model2d.width_meters field
@@ -157,6 +163,8 @@ def add_svg_symbol(layers):
 
         modified = False
 
+        model2d_lookup_expression = get_hierarchical_lookup_field_expression(layer)
+
         # Handle different renderer types
         if isinstance(renderer, QgsRuleBasedRenderer):
             # For rule-based renderers, modify each rule's symbol
@@ -164,7 +172,9 @@ def add_svg_symbol(layers):
             for child_rule in root_rule.children():
                 if child_rule.symbol():
                     # Add SVG with its own geometry generator
-                    add_svg_with_geometry_generator(child_rule.symbol())
+                    add_svg_with_geometry_generator(
+                        child_rule.symbol(), model2d_lookup_expression
+                    )
                     modified = True
 
             # Create a new renderer with the modified rules
@@ -177,7 +187,7 @@ def add_svg_symbol(layers):
             for category in renderer.categories():
                 if category.symbol():
                     symbol = category.symbol().clone()
-                    add_svg_with_geometry_generator(symbol)
+                    add_svg_with_geometry_generator(symbol, model2d_lookup_expression)
                     # Create a new category with the modified symbol
                     new_category = QgsRendererCategory(
                         category.value(), symbol, category.label()
@@ -189,7 +199,9 @@ def add_svg_symbol(layers):
             source_symbol = None
             if renderer.sourceSymbol():
                 source_symbol = renderer.sourceSymbol().clone()
-                add_svg_with_geometry_generator(source_symbol)
+                add_svg_with_geometry_generator(
+                    source_symbol, model2d_lookup_expression
+                )
 
             # Create a new renderer with the modified categories
             if categories:
@@ -207,7 +219,7 @@ def add_svg_symbol(layers):
             symbol = renderer.symbol()
             if symbol:
                 # Add SVG with its own geometry generator
-                add_svg_with_geometry_generator(symbol)
+                add_svg_with_geometry_generator(symbol, model2d_lookup_expression)
 
                 # Create a new renderer with the modified symbol
                 new_renderer = renderer.clone()
