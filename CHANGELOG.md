@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
+## 0.7.12 - 2025-07-22
+
+* [Bug] If shapely <2.1.0 is already available in QGIS then make sure that equals_exact call is using normalised geometries
+* [Feature] 2d_model are now inherited from location_types as well
+
+
 ## 0.7.11 - 2025-07-22
 
 * [Bug] Release pipeline again packaged the wrong Zip of bundles as it failed while resolving
