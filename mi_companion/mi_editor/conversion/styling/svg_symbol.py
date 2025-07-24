@@ -41,7 +41,14 @@ logger = logging.getLogger(__name__)
 __all__ = ["add_svg_symbol"]
 
 
-def add_svg_with_geometry_generator(symbol, model2d_lookup_expression):
+def add_svg_with_geometry_generator(
+    symbol,
+    *,
+    model2d_lookup_expression,
+    height_lookup_expression,
+    width_lookup_expression,
+    bearing_lookup_expression,
+):
     """
     Add an SVG marker with its own geometry generator to the symbol.
 
@@ -87,7 +94,12 @@ def add_svg_with_geometry_generator(symbol, model2d_lookup_expression):
         sub_symbol.deleteSymbolLayer(0)
 
     # Create SVG layer and add it to the sub-symbol
-    svg_layer = create_svg_symbol_layer(model2d_lookup_expression)
+    svg_layer = create_svg_symbol_layer(
+        model2d_lookup_expression=model2d_lookup_expression,
+        height_lookup_expression=height_lookup_expression,
+        width_lookup_expression=width_lookup_expression,
+        bearing_lookup_expression=bearing_lookup_expression,
+    )
     sub_symbol.appendSymbolLayer(svg_layer)
 
     # Set the sub-symbol to the geometry generator
@@ -97,7 +109,13 @@ def add_svg_with_geometry_generator(symbol, model2d_lookup_expression):
     symbol.appendSymbolLayer(geo_layer)
 
 
-def create_svg_symbol_layer(model2d_lookup_expression):
+def create_svg_symbol_layer(
+    *,
+    model2d_lookup_expression,
+    height_lookup_expression,
+    width_lookup_expression,
+    bearing_lookup_expression,
+):
     """Create and configure an SVG marker symbol layer"""
     # Create SVG layer
     svg_layer = QgsSvgMarkerSymbolLayer.create({})
@@ -111,18 +129,18 @@ def create_svg_symbol_layer(model2d_lookup_expression):
     # Width in map units based on the display_rule.model2d.width_meters field
     svg_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyWidth,
-        QgsProperty.fromExpression('coalesce("display_rule.model2d.width_meters", 5)'),
+        QgsProperty.fromExpression("coalesce(" + width_lookup_expression + ", 5)"),
     )
 
     # Height in map units based on the display_rule.model2d.height_meters field
     svg_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyHeight,
-        QgsProperty.fromExpression('coalesce("display_rule.model2d.height_meters", 5)'),
+        QgsProperty.fromExpression("coalesce(" + height_lookup_expression + ", 5)"),
     )
 
     svg_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyAngle,
-        QgsProperty.fromExpression('coalesce("display_rule.model2d.bearing", 0)'),
+        QgsProperty.fromExpression("coalesce(" + bearing_lookup_expression + ", 0)"),
     )
 
     # Set size unit to map units (meters)
@@ -164,6 +182,15 @@ def add_svg_symbol(layers):
         modified = False
 
         model2d_lookup_expression = get_hierarchical_lookup_field_expression(layer)
+        height_lookup_expression = get_hierarchical_lookup_field_expression(
+            layer, look_up_field_name="display_rule.model2d.height_meters"
+        )
+        width_lookup_expression = get_hierarchical_lookup_field_expression(
+            layer, look_up_field_name="display_rule.model2d.width_meters"
+        )
+        bearing_lookup_expression = get_hierarchical_lookup_field_expression(
+            layer, look_up_field_name="display_rule.model2d.bearing"
+        )
 
         # Handle different renderer types
         if isinstance(renderer, QgsRuleBasedRenderer):
@@ -173,7 +200,11 @@ def add_svg_symbol(layers):
                 if child_rule.symbol():
                     # Add SVG with its own geometry generator
                     add_svg_with_geometry_generator(
-                        child_rule.symbol(), model2d_lookup_expression
+                        child_rule.symbol(),
+                        model2d_lookup_expression=model2d_lookup_expression,
+                        height_lookup_expression=height_lookup_expression,
+                        width_lookup_expression=width_lookup_expression,
+                        bearing_lookup_expression=bearing_lookup_expression,
                     )
                     modified = True
 
@@ -187,7 +218,13 @@ def add_svg_symbol(layers):
             for category in renderer.categories():
                 if category.symbol():
                     symbol = category.symbol().clone()
-                    add_svg_with_geometry_generator(symbol, model2d_lookup_expression)
+                    add_svg_with_geometry_generator(
+                        symbol,
+                        model2d_lookup_expression=model2d_lookup_expression,
+                        height_lookup_expression=height_lookup_expression,
+                        width_lookup_expression=width_lookup_expression,
+                        bearing_lookup_expression=bearing_lookup_expression,
+                    )
                     # Create a new category with the modified symbol
                     new_category = QgsRendererCategory(
                         category.value(), symbol, category.label()
@@ -200,7 +237,11 @@ def add_svg_symbol(layers):
             if renderer.sourceSymbol():
                 source_symbol = renderer.sourceSymbol().clone()
                 add_svg_with_geometry_generator(
-                    source_symbol, model2d_lookup_expression
+                    source_symbol,
+                    model2d_lookup_expression=model2d_lookup_expression,
+                    height_lookup_expression=height_lookup_expression,
+                    width_lookup_expression=width_lookup_expression,
+                    bearing_lookup_expression=bearing_lookup_expression,
                 )
 
             # Create a new renderer with the modified categories
@@ -219,7 +260,13 @@ def add_svg_symbol(layers):
             symbol = renderer.symbol()
             if symbol:
                 # Add SVG with its own geometry generator
-                add_svg_with_geometry_generator(symbol, model2d_lookup_expression)
+                add_svg_with_geometry_generator(
+                    symbol,
+                    model2d_lookup_expression=model2d_lookup_expression,
+                    height_lookup_expression=height_lookup_expression,
+                    width_lookup_expression=width_lookup_expression,
+                    bearing_lookup_expression=bearing_lookup_expression,
+                )
 
                 # Create a new renderer with the modified symbol
                 new_renderer = renderer.clone()

@@ -41,7 +41,14 @@ from mi_companion.qgis_utilities import (
 __all__ = ["add_raster_symbol"]
 
 
-def add_raster_with_geometry_generator(symbol, model2d_lookup_expression) -> None:
+def add_raster_with_geometry_generator(
+    symbol,
+    *,
+    model2d_lookup_expression,
+    height_lookup_expression,
+    width_lookup_expression,
+    bearing_lookup_expression,
+) -> None:
     """
     Add a raster marker with its own geometry generator to the symbol.
 
@@ -83,7 +90,12 @@ with_variable(
         sub_symbol.deleteSymbolLayer(0)
 
     # Create raster layer and add it to the sub-symbol
-    raster_layer = create_raster_symbol_layer(model2d_lookup_expression)
+    raster_layer = create_raster_symbol_layer(
+        model2d_lookup_expression=model2d_lookup_expression,
+        height_lookup_expression=height_lookup_expression,
+        width_lookup_expression=width_lookup_expression,
+        bearing_lookup_expression=bearing_lookup_expression,
+    )
     sub_symbol.appendSymbolLayer(raster_layer)
 
     # Set the sub-symbol to the geometry generator
@@ -93,7 +105,13 @@ with_variable(
     symbol.appendSymbolLayer(geo_layer)
 
 
-def create_raster_symbol_layer(model2d_lookup_expression):
+def create_raster_symbol_layer(
+    *,
+    model2d_lookup_expression,
+    height_lookup_expression,
+    width_lookup_expression,
+    bearing_lookup_expression,
+):
     """Create and configure a raster marker symbol layer"""
     # Create raster layer
     raster_layer = QgsRasterMarkerSymbolLayer.create({})
@@ -106,19 +124,19 @@ def create_raster_symbol_layer(model2d_lookup_expression):
 
     raster_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyAngle,
-        QgsProperty.fromExpression('coalesce("display_rule.model2d.bearing", 0)'),
+        QgsProperty.fromExpression("coalesce(" + bearing_lookup_expression + ", 0)"),
     )
 
     # Width in map units based on the display_rule.model2d.width_meters field
     raster_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyWidth,
-        QgsProperty.fromExpression('coalesce("display_rule.model2d.width_meters", 5)'),
+        QgsProperty.fromExpression("coalesce(" + width_lookup_expression + ", 5)"),
     )
 
     # Height in map units based on the display_rule.model2d.height_meters field
     raster_layer.setDataDefinedProperty(
         QgsSymbolLayer.PropertyHeight,
-        QgsProperty.fromExpression('coalesce("display_rule.model2d.height_meters", 5)'),
+        QgsProperty.fromExpression("coalesce(" + height_lookup_expression + ", 5)"),
     )
 
     # Set size unit to map units (meters)
@@ -160,6 +178,15 @@ def add_raster_symbol(layers):
         modified = False
 
         model2d_lookup_expression = get_hierarchical_lookup_field_expression(layer)
+        height_lookup_expression = get_hierarchical_lookup_field_expression(
+            layer, look_up_field_name="display_rule.model2d.height_meters"
+        )
+        width_lookup_expression = get_hierarchical_lookup_field_expression(
+            layer, look_up_field_name="display_rule.model2d.width_meters"
+        )
+        bearing_lookup_expression = get_hierarchical_lookup_field_expression(
+            layer, look_up_field_name="display_rule.model2d.bearing"
+        )
 
         # Handle different renderer types
         if isinstance(renderer, QgsRuleBasedRenderer):
@@ -169,7 +196,11 @@ def add_raster_symbol(layers):
                 if child_rule.symbol():
                     # Add raster with its own geometry generator
                     add_raster_with_geometry_generator(
-                        child_rule.symbol(), model2d_lookup_expression
+                        child_rule.symbol(),
+                        model2d_lookup_expression=model2d_lookup_expression,
+                        height_lookup_expression=height_lookup_expression,
+                        width_lookup_expression=width_lookup_expression,
+                        bearing_lookup_expression=bearing_lookup_expression,
                     )
                     modified = True
 
@@ -184,7 +215,11 @@ def add_raster_symbol(layers):
                 if category.symbol():
                     symbol = category.symbol().clone()
                     add_raster_with_geometry_generator(
-                        symbol, model2d_lookup_expression
+                        symbol,
+                        model2d_lookup_expression=model2d_lookup_expression,
+                        height_lookup_expression=height_lookup_expression,
+                        width_lookup_expression=width_lookup_expression,
+                        bearing_lookup_expression=bearing_lookup_expression,
                     )
                     # Create a new category with the modified symbol
                     new_category = QgsRendererCategory(
@@ -198,7 +233,11 @@ def add_raster_symbol(layers):
             if renderer.sourceSymbol():
                 source_symbol = renderer.sourceSymbol().clone()
                 add_raster_with_geometry_generator(
-                    source_symbol, model2d_lookup_expression
+                    source_symbol,
+                    model2d_lookup_expression=model2d_lookup_expression,
+                    height_lookup_expression=height_lookup_expression,
+                    width_lookup_expression=width_lookup_expression,
+                    bearing_lookup_expression=bearing_lookup_expression,
                 )
 
             # Create a new renderer with the modified categories
@@ -217,7 +256,13 @@ def add_raster_symbol(layers):
             symbol = renderer.symbol()
             if symbol:
                 # Add raster with its own geometry generator
-                add_raster_with_geometry_generator(symbol, model2d_lookup_expression)
+                add_raster_with_geometry_generator(
+                    symbol,
+                    model2d_lookup_expression=model2d_lookup_expression,
+                    height_lookup_expression=height_lookup_expression,
+                    width_lookup_expression=width_lookup_expression,
+                    bearing_lookup_expression=bearing_lookup_expression,
+                )
 
                 # Create a new renderer with the modified symbol
                 new_renderer = renderer.clone()
