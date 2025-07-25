@@ -293,7 +293,9 @@ def get_venue_key(
                     raise Exception("Upload cancelled")
 
             if venue_polygon:
-                translations = extract_translations(layer_attributes)
+                translations = extract_translations(
+                    layer_attributes, required_languages=solution.available_languages
+                )
                 try:
                     venue_key = solution.add_venue(
                         admin_id=admin_id,

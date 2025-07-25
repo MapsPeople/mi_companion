@@ -132,7 +132,9 @@ def add_floor_locations(
                         f"{location_type_key} is not a location type that already exists"
                     )
 
-            translations = extract_translations(feature_attributes)
+            translations = extract_translations(
+                feature_attributes, required_languages=solution.available_languages
+            )
 
             if "admin_id" in feature_attributes:
                 admin_id = feature_attributes["admin_id"]

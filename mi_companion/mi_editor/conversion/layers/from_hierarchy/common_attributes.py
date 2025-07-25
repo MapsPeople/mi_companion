@@ -1,6 +1,6 @@
 import logging
 import math
-from typing import Any, Mapping, Optional
+from typing import Any, Iterable, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 # from qgis.core.QgsVariantUtils import isNull, typeToDisplayString
@@ -48,20 +48,28 @@ __all__ = [
     "extract_single_level_str_map",
     "extract_display_rule",
     "parse_q_value_field_translations",
+    "extract_street_view_config",
 ]
 
 
 RETURN_EMPTY_DISPLAY_RULE = False
+PATCH_MISSING_TRANSLATIONS = True
+
+
+class MissingTranslationsException(Exception):
+    pass
 
 
 def extract_translations(
     layer_attributes: Mapping[str, Any],
     *,
+    required_languages: Iterable[str],
     nested_str_map_field_name: str = "translations",
 ) -> Optional[Mapping[str, LanguageBundle]]:
     """
     THIS IS THE DIRTIEST function ever written; null is a hell of a concept
 
+    :param required_languages:
     :param nested_str_map_field_name:
     :param layer_attributes:
     :return:
@@ -89,6 +97,16 @@ def extract_translations(
             name=v["name"] if "name" in v else None,
             description=v["description"] if "description" in v else None,
             fields=v["fields"] if "fields" in v else None,
+        )
+
+    missing_translations = set(required_languages) - set(translations.keys())
+    if PATCH_MISSING_TRANSLATIONS:
+        for language in missing_translations:
+            logger.warning(f"Patching {language} translation with {out['en']}")
+            out[language] = out["en"]
+    else:
+        raise MissingTranslationsException(
+            f"Missing translations for languages {missing_translations}"
         )
 
     return out

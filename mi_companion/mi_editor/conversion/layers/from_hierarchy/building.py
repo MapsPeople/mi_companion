@@ -318,7 +318,9 @@ def get_building_key(
                     raise Exception("Upload cancelled")
 
             if building_polygon is not None:
-                translations = extract_translations(layer_attributes)
+                translations = extract_translations(
+                    layer_attributes, required_languages=solution.available_languages
+                )
 
                 anchor = building_polygon.representative_point()
 

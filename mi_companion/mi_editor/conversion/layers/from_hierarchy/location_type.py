@@ -99,7 +99,9 @@ def get_location_type_data(
                         attributes.pop("settings_3d_width")
 
                     display_rule = extract_display_rule(attributes)
-                    translations = extract_translations(attributes)
+                    translations = extract_translations(
+                        attributes, required_languages=solution.available_languages
+                    )
 
                     lt = solution.location_types.get(
                         LocationType.compute_key(admin_id=admin_id)

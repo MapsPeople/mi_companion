@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import logging
+from typing import Optional
 
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH
 
@@ -8,9 +9,10 @@ logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = ["run"]
 
 
-def run(*, solution_id: str) -> None:
+def run(*, solution_id: str, venue_ids: Optional[str] = None) -> None:
     """
 
+    :param venue_ids: comma seperated
     :param solution_id:
     :return:
     """
@@ -53,7 +55,17 @@ def run(*, solution_id: str) -> None:
 
     solution_id = solution_id.strip()
 
-    call_manager_api("PUT", f"/{solution_id}/api/derivedgeometry")
+    if venue_ids:
+        venue_ids = venue_ids.split(",")
+        for venue_id in venue_ids:
+            venue_id = venue_id.strip()
+            call_manager_api(
+                "PUT",
+                f"/{solution_id}/api/derivedgeometry",
+                query_params={"venueId": venue_id},
+            )
+    else:
+        call_manager_api("PUT", f"/{solution_id}/api/derivedgeometry")
 
     # noinspection PyUnresolvedReferences
     from qgis.PyQt.QtWidgets import (

@@ -228,7 +228,9 @@ def get_floor_data(
                 logger.error(f"{floor_polygon=}")
 
             if floor_polygon is not None:
-                translations = extract_translations(floor_attributes)
+                translations = extract_translations(
+                    floor_attributes, required_languages=solution.available_languages
+                )
 
                 anchor = floor_polygon.representative_point()
 
