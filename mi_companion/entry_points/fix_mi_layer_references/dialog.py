@@ -1,12 +1,12 @@
 import logging
 import os
+from typing import Any
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
-from typing import Any
 
 from jord.qgis_utilities.helpers import signals
 from mi_companion import RESOURCE_BASE_PATH

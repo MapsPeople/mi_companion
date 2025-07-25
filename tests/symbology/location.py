@@ -1,5 +1,3 @@
-import pytest
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets, uic
 
@@ -11,7 +9,6 @@ from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
 
-# noinspection PyUnresolvedReferences
 # noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsApplication,

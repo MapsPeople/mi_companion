@@ -1,8 +1,6 @@
 import logging
 from typing import Any, Callable, Optional
 
-from sync_module.mi import get_outside_building_admin_id
-from sync_module.model import Building, Solution, Venue
 from jord.qgis_utilities import (
     make_field_unique,
     set_geometry_constraints,
@@ -28,6 +26,8 @@ from mi_companion.mi_editor.conversion.projection import (
     solve_target_crs_authid,
 )
 from mi_companion.qgis_utilities import auto_center_anchors_when_outside
+from sync_module.mi import get_outside_building_admin_id
+from sync_module.model import Building, Solution, Venue
 from .floor import add_floor_layers
 from .parsing import translations_to_flattened_dict
 from ...styling import add_rotation_scale_geometry_generator

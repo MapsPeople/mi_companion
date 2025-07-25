@@ -1,9 +1,9 @@
 import logging
+from inspect import isclass
+from pathlib import Path
 
 # noinspection PyUnresolvedReferences
 import qgis
-from inspect import isclass
-from pathlib import Path
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import uic

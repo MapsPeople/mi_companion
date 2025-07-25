@@ -17,6 +17,7 @@ __all__ = [
 ]
 
 import logging
+from typing import Any
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtGui, uic
@@ -32,7 +33,6 @@ from qgis.core import QgsProject
 
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
-from typing import Any
 
 from jord.qgis_utilities import read_plugin_setting, store_plugin_setting
 from jord.qgis_utilities.helpers import reconnect_signal

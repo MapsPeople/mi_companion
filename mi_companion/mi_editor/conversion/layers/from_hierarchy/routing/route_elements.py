@@ -11,9 +11,6 @@ from qgis.PyQt.QtCore import QVariant
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from sync_module.model import (
-    Solution,
-)
 from jord.qgis_utilities import recurse_layers
 from mi_companion import (
     MAKE_FLOOR_WISE_LAYERS,
@@ -27,6 +24,9 @@ from mi_companion.layer_descriptors import (
     ENTRY_POINTS_GROUP_DESCRIPTOR,
     OBSTACLES_GROUP_DESCRIPTOR,
     PREFERS_GROUP_DESCRIPTOR,
+)
+from sync_module.model import (
+    Solution,
 )
 from .parse_avoids import add_avoids
 from .parse_barriers import add_barriers

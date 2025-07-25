@@ -1,4 +1,5 @@
 import logging
+from typing import Any, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets
@@ -17,7 +18,6 @@ from qgis.core import (
     QgsRasterLayer,
     QgsVectorLayer,
 )
-from typing import Any, Optional
 
 from jord.qgis_utilities import disconnect_signal, gc_layers, reconnect_signal
 from mi_companion.layer_descriptors import (

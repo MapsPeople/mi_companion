@@ -1,7 +1,6 @@
 import logging
 from typing import Any, Optional
 
-from sync_module.model import Building, Floor, Solution
 from jord.qgis_utilities import (
     Qgis3dCullingMode,
     Qgis3dFacade,
@@ -30,6 +29,7 @@ from mi_companion.mi_editor.conversion.projection import (
     solve_target_crs_authid,
 )
 from mi_companion.qgis_utilities import auto_center_anchors_when_outside
+from sync_module.model import Building, Floor, Solution
 from .location import add_floor_content_layers
 from .parsing import translations_to_flattened_dict
 from ...styling import add_rotation_scale_geometry_generator

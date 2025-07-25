@@ -1,5 +1,6 @@
 import logging
 from enum import Enum
+from typing import Any, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets
@@ -9,7 +10,6 @@ from qgis.PyQt.QtWidgets import QMessageBox
 
 # noinspection PyUnresolvedReferences
 from qgis.core import Qgis, QgsProject
-from typing import Any, Optional
 
 from .hierarchy_model import INVERSE_NODE_PARENT_MAPPING, NODE_PARENT_MAPPING
 from .validation_dialog_utilities import (
@@ -26,7 +26,7 @@ __all__ = [
     "transfer_node_ownership",
 ]
 
-ENABLE_UNDO = False
+from ...constants import ENABLE_UNDO
 
 logger = logging.getLogger(__name__)
 

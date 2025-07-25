@@ -11,8 +11,6 @@ from qgis.core import (
     QgsWkbTypes,
 )
 
-from sync_module.model import FALLBACK_OSM_GRAPH, Solution
-from sync_module.tools.graph_utilities import lines_3d_to_osm_xml
 from jord.qgis_utilities import feature_to_shapely, parse_q_value
 from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import GRAPH_LINES_DESCRIPTOR
@@ -20,6 +18,8 @@ from mi_companion.mi_editor.conversion.layers.from_hierarchy.constants import (
     DISABLE_GRAPH_EDIT,
 )
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
+from sync_module.model import FALLBACK_OSM_GRAPH, Solution
+from sync_module.tools.graph_utilities import lines_3d_to_osm_xml
 
 logger = logging.getLogger(__name__)
 

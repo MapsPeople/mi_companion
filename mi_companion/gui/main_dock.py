@@ -2,6 +2,7 @@ import logging
 import math
 import os
 from collections import defaultdict
+from typing import Any, Callable, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets, uic
@@ -28,11 +29,7 @@ from qgis.core import (
 
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsDockWidget
-from typing import Any, Callable, Optional
 
-from sync_module.mi.config import MapsIndoors, Settings, set_settings
-from sync_module.mi import SolutionDepth, get_venue_key_mi_venue_map
-from sync_module.mi_sync_constants import MI_EPSG_NUMBER
 from jord.qgis_utilities import InjectedProgressBar, read_plugin_setting, signals
 from jord.qlive_utilities import add_shapely_layer
 from jord.qt_utilities import DockWidgetAreaFlag
@@ -48,6 +45,9 @@ from mi_companion.mi_editor.hierarchy.hierarchy_validation import (
     add_solution_hierarchy_change_listener,
     remove_solution_hierarchy_change_listener,
 )
+from sync_module.mi import SolutionDepth, get_venue_key_mi_venue_map
+from sync_module.mi.config import MapsIndoors, Settings, set_settings
+from sync_module.mi_sync_constants import MI_EPSG_NUMBER
 from warg import get_submodules_by_path, reload_module
 from .gui_utilities import clean_str
 from .make_solution_right_click import add_augmented_actions

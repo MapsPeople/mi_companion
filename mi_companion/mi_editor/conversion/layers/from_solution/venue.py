@@ -4,7 +4,6 @@ from typing import Any, Iterable, Optional
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
-from sync_module.model import Solution, Venue
 from jord.qgis_utilities import (
     make_field_not_null,
     make_field_unique,
@@ -33,6 +32,7 @@ from mi_companion.mi_editor.conversion.projection import (
     prepare_geom_for_editing_qgis,
     solve_target_crs_authid,
 )
+from sync_module.model import Solution, Venue
 from .building import add_building_layers
 from .occupant import add_occupant_layer
 from .parsing import translations_to_flattened_dict

@@ -15,12 +15,6 @@ from qgis.PyQt.QtWidgets import (
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from sync_module.mi import (
-    SolutionDepth,
-    get_remote_solution,
-    get_solution_name_external_id_map,
-)
-from sync_module.model import ImplementationStatus, Solution
 from jord.qgis_utilities import parse_q_value
 from mi_companion import UPLOAD_ERROR_CONFIRMATION_TITLE
 from mi_companion.layer_descriptors import (
@@ -28,6 +22,12 @@ from mi_companion.layer_descriptors import (
     SOLUTION_DATA_DESCRIPTOR,
     SOLUTION_GROUP_DESCRIPTOR,
 )
+from sync_module.mi import (
+    SolutionDepth,
+    get_remote_solution,
+    get_solution_name_external_id_map,
+)
+from sync_module.model import ImplementationStatus, Solution
 from .venue import convert_solution_venues
 
 __all__ = ["layer_hierarchy_to_solution", "convert_solution_layers_to_solution"]

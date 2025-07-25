@@ -10,15 +10,6 @@ import qgis
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
 
-from sync_module.model import (
-    Floor,
-    Solution,
-)
-from sync_module.model.solution_item import CollectionMixin
-from sync_module.shared.pandas_utilities import locations_to_df
-from sync_module.tools.serialisation import (
-    collection_to_df,
-)
 from jord.qgis_utilities import (
     make_field_boolean,
     make_field_default,
@@ -67,6 +58,15 @@ from mi_companion.mi_editor.conversion.styling import (
 )
 from mi_companion.qgis_utilities import auto_center_anchors_when_outside
 from mi_companion.type_enums import BackendLocationTypeEnum
+from sync_module.model import (
+    Floor,
+    Solution,
+)
+from sync_module.model.solution_item import CollectionMixin
+from sync_module.shared.pandas_utilities import locations_to_df
+from sync_module.tools.serialisation import (
+    collection_to_df,
+)
 from .parsing import process_nested_fields_df
 
 try:

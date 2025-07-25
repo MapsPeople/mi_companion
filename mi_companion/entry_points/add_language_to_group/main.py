@@ -14,7 +14,6 @@ from qgis.PyQt.QtWidgets import (
 
 # noinspection PyUnresolvedReferences
 # noinspection PyUnresolvedReferences
-# noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsCategorizedSymbolRenderer,
     QgsField,

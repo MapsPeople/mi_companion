@@ -39,7 +39,11 @@ from mi_companion.qgis_utilities import (
 logger = logging.getLogger(__name__)
 
 
-__all__ = ["add_rotation_scale_geometry_generator"]
+__all__ = [
+    "add_rotation_scale_geometry_generator",
+    "make_anchor_symbology_layer",
+    "make_rot_and_sca_symbology_layer",
+]
 
 
 def make_rot_and_sca_symbology_layer():

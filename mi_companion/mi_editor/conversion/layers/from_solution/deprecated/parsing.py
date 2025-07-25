@@ -5,8 +5,8 @@ from typing import Mapping
 from geopandas import GeoDataFrame
 from pandas import DataFrame, json_normalize
 
-from sync_module.model.solution_item import CollectionMixin
 from jord.qgis_utilities import REAL_NONE_JSON_VALUE
+from sync_module.model.solution_item import CollectionMixin
 
 
 def process_nested_str_map_df(df: GeoDataFrame, *, nested_map_field_name: str) -> None:

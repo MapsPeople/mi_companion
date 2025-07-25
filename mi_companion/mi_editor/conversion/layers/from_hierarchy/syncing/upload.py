@@ -7,6 +7,9 @@ from qgis.PyQt import QtCore, QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
+from mi_companion import VERBOSE
+from mi_companion.configuration import read_bool_setting
+from mi_companion.gui.message_box import ResizableMessageBox
 from sync_module.mi import (
     MIOperation,
     SolutionDepth,
@@ -20,9 +23,6 @@ from sync_module.model import (
     Graph,
     Solution,
 )
-from mi_companion import VERBOSE
-from mi_companion.configuration import read_bool_setting
-from mi_companion.gui.message_box import ResizableMessageBox
 from .operation_visualisation import show_differences
 from ..constants import DISABLE_GRAPH_EDIT
 

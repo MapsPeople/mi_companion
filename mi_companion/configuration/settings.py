@@ -1,8 +1,8 @@
 import logging
+from typing import Any, Dict, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
-from typing import Any, Dict, Mapping, Optional
 
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 

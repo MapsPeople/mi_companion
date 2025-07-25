@@ -9,17 +9,14 @@ import shapely
 
 # noinspection PyUnresolvedReferences
 # noinspection PyUnresolvedReferences
-# noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets, QtWidgets
 
-# noinspection PyUnresolvedReferences
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant, QVariant
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QMessageBox, QTextEdit
 
-# noinspection PyUnresolvedReferences
 # noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsLayerTreeGroup,
@@ -30,15 +27,6 @@ from qgis.core import (
     QgsProject,
 )
 
-from sync_module.model import (
-    Category,
-    LocationType,
-    OpeningHoursDetail,
-    Solution,
-    StrToDetailTypeMap,
-)
-from sync_module.model.typings import LanguageBundle
-from sync_module.tools.serialisation import standard_opening_hours_from_dict
 from jord.qgis_utilities import (
     extract_feature_attributes,
     extract_field_value,
@@ -62,6 +50,15 @@ from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
 from mi_companion.type_enums import BackendLocationTypeEnum
+from sync_module.model import (
+    Category,
+    LocationType,
+    OpeningHoursDetail,
+    Solution,
+    StrToDetailTypeMap,
+)
+from sync_module.model.typings import LanguageBundle
+from sync_module.tools.serialisation import standard_opening_hours_from_dict
 from warg import str_to_bool
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 

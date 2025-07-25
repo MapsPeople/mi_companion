@@ -2,18 +2,6 @@ import logging
 from collections import defaultdict
 from typing import Any, Optional
 
-from sync_module.model import (
-    Avoid,
-    Barrier,
-    Connection,
-    Door,
-    EntryPoint,
-    Graph,
-    Obstacle,
-    Prefer,
-    RouteElementItem,
-    Solution,
-)
 from jord.qgis_utilities import (
     make_field_reuse_last_entered_value,
     set_3d_view_settings,
@@ -32,6 +20,18 @@ from mi_companion.layer_descriptors import (
     ENTRY_POINTS_GROUP_DESCRIPTOR,
     OBSTACLES_GROUP_DESCRIPTOR,
     PREFERS_GROUP_DESCRIPTOR,
+)
+from sync_module.model import (
+    Avoid,
+    Barrier,
+    Connection,
+    Door,
+    EntryPoint,
+    Graph,
+    Obstacle,
+    Prefer,
+    RouteElementItem,
+    Solution,
 )
 from .connections import add_connection_layers
 from .linestring_route_elements import add_linestring_route_element_layers

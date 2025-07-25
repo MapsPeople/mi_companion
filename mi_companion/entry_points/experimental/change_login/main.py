@@ -5,7 +5,6 @@ import logging
 from qgis.PyQt.QtWidgets import QInputDialog
 
 # noinspection PyUnresolvedReferences
-# noinspection PyUnresolvedReferences
 from qgis.core import (
     Qgis,
     QgsApplication,

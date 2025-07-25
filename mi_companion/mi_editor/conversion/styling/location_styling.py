@@ -41,7 +41,7 @@ __all__ = [
     "apply_display_rule_styling_rule_based",
 ]
 
-from mi_companion.mi_editor.conversion.styling.anchor_symbol import (
+from .anchor_symbol import (
     make_anchor_symbology_layer,
     make_rot_and_sca_symbology_layer,
 )

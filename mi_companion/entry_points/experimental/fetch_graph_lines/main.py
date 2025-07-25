@@ -1,10 +1,10 @@
 #!/usr/bin/python
 import logging
 
-from sync_module.mi.config import MapsIndoors, Settings, set_settings
-from sync_module.mi import call_manager_api
 from jord.qgis_utilities import read_plugin_setting
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH
+from sync_module.mi import call_manager_api
+from sync_module.mi.config import MapsIndoors, Settings, set_settings
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
 

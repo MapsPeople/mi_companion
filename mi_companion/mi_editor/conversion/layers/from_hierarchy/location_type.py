@@ -4,12 +4,12 @@ from typing import Any, List, Optional
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
 
-from sync_module.model import LocationType, Solution
 from jord.qgis_utilities import (
     extract_field_value,
     extract_layer_attributes,
 )
 from mi_companion.layer_descriptors import LOCATION_TYPE_DESCRIPTOR
+from sync_module.model import LocationType, Solution
 from warg import str_to_bool
 from .common_attributes import extract_display_rule, extract_translations
 

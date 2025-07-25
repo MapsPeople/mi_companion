@@ -22,11 +22,6 @@ from qgis.core import (
     QgsProject,
 )
 
-from sync_module.mi import (
-    MI_OUTSIDE_BUILDING_NAME,
-    get_outside_building_floor_name,
-)
-from sync_module.model import LanguageBundle, Solution
 from jord.qgis_utilities import (
     extract_field_value,
     feature_to_shapely,
@@ -49,6 +44,11 @@ from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_
 from mi_companion.mi_editor.hierarchy import (
     make_hierarchy_validation_dialog,
 )
+from sync_module.mi import (
+    MI_OUTSIDE_BUILDING_NAME,
+    get_outside_building_floor_name,
+)
+from sync_module.model import LanguageBundle, Solution
 from .common_attributes import extract_translations
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from .extraction import special_extract_layer_data

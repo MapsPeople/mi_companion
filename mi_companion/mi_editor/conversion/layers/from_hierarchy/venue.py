@@ -12,14 +12,6 @@ from qgis.PyQt.QtCore import QDateTime, QVariant
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from sync_module.shared.model.common_models import MIVenueType
-from sync_module.mi import SolutionDepth
-from sync_module.model import (
-    ImplementationStatus,
-    OptionalPostalAddress,
-    PostalAddress,
-    Solution,
-)
 from mi_companion import (
     HALF_SIZE,
 )
@@ -30,6 +22,14 @@ from mi_companion.layer_descriptors import (
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
+from sync_module.mi import SolutionDepth
+from sync_module.model import (
+    ImplementationStatus,
+    OptionalPostalAddress,
+    PostalAddress,
+    Solution,
+)
+from sync_module.shared.model.common_models import MIVenueType
 from .building import add_venue_level_hierarchy
 from .common_attributes import extract_translations
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE

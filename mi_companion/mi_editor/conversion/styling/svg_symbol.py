@@ -1,4 +1,5 @@
 import logging
+from typing import Any, Iterable
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -42,13 +43,13 @@ __all__ = ["add_svg_symbol"]
 
 
 def add_svg_with_geometry_generator(
-    symbol,
+    symbol: Any,
     *,
-    model2d_lookup_expression,
-    height_lookup_expression,
-    width_lookup_expression,
-    bearing_lookup_expression,
-):
+    model2d_lookup_expression: str,
+    height_lookup_expression: str,
+    width_lookup_expression: str,
+    bearing_lookup_expression: str,
+) -> None:
     """
     Add an SVG marker with its own geometry generator to the symbol.
 
@@ -111,11 +112,11 @@ def add_svg_with_geometry_generator(
 
 def create_svg_symbol_layer(
     *,
-    model2d_lookup_expression,
-    height_lookup_expression,
-    width_lookup_expression,
-    bearing_lookup_expression,
-):
+    model2d_lookup_expression: str,
+    height_lookup_expression: str,
+    width_lookup_expression: str,
+    bearing_lookup_expression: str,
+) -> Any:
     """Create and configure an SVG marker symbol layer"""
     # Create SVG layer
     svg_layer = QgsSvgMarkerSymbolLayer.create({})
@@ -152,7 +153,7 @@ def create_svg_symbol_layer(
     return svg_layer
 
 
-def add_svg_symbol(layers):
+def add_svg_symbol(layers: Iterable[Any]) -> None:
     """
     Add SVG symbols to layers by adding SVG symbol layers to their own geometry generators
     based on display_rule.model2d.model with scaling and rotation.

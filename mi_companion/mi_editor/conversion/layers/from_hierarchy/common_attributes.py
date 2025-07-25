@@ -12,9 +12,15 @@ from qgis.PyQt.QtCore import QVariant
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QColor
 
-from sync_module.shared.model.common_models import (
-    MIIconPlacementRuleEnum,
-    MILabelTypeOptionEnum,
+from jord.qgis_utilities import (
+    REAL_NONE_JSON_VALUE,
+    is_str_value_null_like,
+    parse_q_value,
+)
+from mi_companion import (
+    ADD_FLOAT_NAN_TRANSLATION_VALUES,
+    ADD_REAL_NONE_TRANSLATION_VALUES,
+    ADD_STRING_NAN_TRANSLATION_VALUES,
 )
 from sync_module.model import (
     BadgeDisplayRule,
@@ -29,15 +35,9 @@ from sync_module.model import (
     StreetViewConfig,
 )
 from sync_module.model.typings import LanguageBundle
-from jord.qgis_utilities import (
-    REAL_NONE_JSON_VALUE,
-    is_str_value_null_like,
-    parse_q_value,
-)
-from mi_companion import (
-    ADD_FLOAT_NAN_translation_VALUES,
-    ADD_REAL_NONE_translation_VALUES,
-    ADD_STRING_NAN_translation_VALUES,
+from sync_module.shared.model.common_models import (
+    MIIconPlacementRuleEnum,
+    MILabelTypeOptionEnum,
 )
 from warg import nested_dict, str_to_bool
 
@@ -134,12 +134,12 @@ def parse_q_value_field_translations(cname, f_name, lang, translations, v):
         v_str = v.lower().strip()
         if is_str_value_null_like(v_str):
             # logger.debug("Was PANDAS NULL STRING VALUE")
-            if ADD_STRING_NAN_translation_VALUES:
+            if ADD_STRING_NAN_TRANSLATION_VALUES:
                 translations[lang][cname][f_name] = None
         else:
             if v_str == REAL_NONE_JSON_VALUE.lower():
                 # logger.debug("Was REAL_NULL Value")
-                if ADD_REAL_NONE_translation_VALUES:
+                if ADD_REAL_NONE_TRANSLATION_VALUES:
                     translations[lang][cname][f_name] = None
             else:
                 # logger.debug(f"Was str Value")
@@ -147,7 +147,7 @@ def parse_q_value_field_translations(cname, f_name, lang, translations, v):
     elif isinstance(v, float):
         if math.isnan(v) or numpy.isnan(v):
             logger.debug(f"Was float Nan Value")
-            if ADD_FLOAT_NAN_translation_VALUES:
+            if ADD_FLOAT_NAN_TRANSLATION_VALUES:
                 translations[lang][cname][f_name] = None
         else:
             logger.debug(f"Was float Value")
@@ -167,12 +167,12 @@ def parse_q_value_field_translations(cname, f_name, lang, translations, v):
                 v_str_ = vs.lower().strip()
                 if is_str_value_null_like(v_str_):
                     # logger.debug("Was PANDAS NULL STRING VALUE")
-                    if ADD_STRING_NAN_translation_VALUES:
+                    if ADD_STRING_NAN_TRANSLATION_VALUES:
                         translations[lang][cname][f_name] = None
                 else:
                     if v_str_ == REAL_NONE_JSON_VALUE.lower():
                         # logger.debug("Was REAL_NULL Value")
-                        if ADD_REAL_NONE_translation_VALUES:
+                        if ADD_REAL_NONE_TRANSLATION_VALUES:
                             translations[lang][cname][f_name] = None
                     else:
                         # logger.debug(f"Was str Value")
@@ -190,12 +190,12 @@ def parse_q_value_translations(cname, lang, translations, v):
         v_str = v.lower().strip()
         if is_str_value_null_like(v_str):
             # logger.debug("Was PANDAS NULL STRING VALUE")
-            if ADD_STRING_NAN_translation_VALUES:
+            if ADD_STRING_NAN_TRANSLATION_VALUES:
                 translations[lang][cname] = None
         else:
             if v_str == REAL_NONE_JSON_VALUE.lower():
                 # logger.debug("Was REAL_NULL Value")
-                if ADD_REAL_NONE_translation_VALUES:
+                if ADD_REAL_NONE_TRANSLATION_VALUES:
                     translations[lang][cname] = None
             else:
                 # logger.debug(f"Was str Value")
@@ -203,7 +203,7 @@ def parse_q_value_translations(cname, lang, translations, v):
     elif isinstance(v, float):
         if math.isnan(v) or numpy.isnan(v):
             logger.debug(f"Was float Nan Value")
-            if ADD_FLOAT_NAN_translation_VALUES:
+            if ADD_FLOAT_NAN_TRANSLATION_VALUES:
                 translations[lang][cname] = None
         else:
             logger.debug(f"Was float Value")
@@ -223,12 +223,12 @@ def parse_q_value_translations(cname, lang, translations, v):
                 v_str_ = vs.lower().strip()
                 if is_str_value_null_like(v_str_):
                     # logger.debug("Was PANDAS NULL STRING VALUE")
-                    if ADD_STRING_NAN_translation_VALUES:
+                    if ADD_STRING_NAN_TRANSLATION_VALUES:
                         translations[lang][cname] = None
                 else:
                     if v_str_ == REAL_NONE_JSON_VALUE.lower():
                         # logger.debug("Was REAL_NULL Value")
-                        if ADD_REAL_NONE_translation_VALUES:
+                        if ADD_REAL_NONE_TRANSLATION_VALUES:
                             translations[lang][cname] = None
                     else:
                         # logger.debug(f"Was str Value")
@@ -264,12 +264,12 @@ def extract_single_level_str_map(
                     v_str = v.lower().strip()
                     if is_str_value_null_like(v_str):
                         # logger.debug("Was PANDAS NULL STRING VALUE")
-                        if ADD_STRING_NAN_translation_VALUES:
+                        if ADD_STRING_NAN_TRANSLATION_VALUES:
                             custom_props[cname] = None
                     else:
                         if v_str == REAL_NONE_JSON_VALUE.lower():
                             # logger.debug("Was REAL_NULL Value")
-                            if ADD_REAL_NONE_translation_VALUES:
+                            if ADD_REAL_NONE_TRANSLATION_VALUES:
                                 custom_props[cname] = None
                         else:
                             # logger.debug(f"Was str Value")
@@ -277,7 +277,7 @@ def extract_single_level_str_map(
                 elif isinstance(v, float):
                     if math.isnan(v) or numpy.isnan(v):
                         logger.debug(f"Was float Nan Value")
-                        if ADD_FLOAT_NAN_translation_VALUES:
+                        if ADD_FLOAT_NAN_TRANSLATION_VALUES:
                             custom_props[cname] = None
                     else:
                         logger.debug(f"Was float Value")
@@ -297,12 +297,12 @@ def extract_single_level_str_map(
                             v_str_ = vs.lower().strip()
                             if is_str_value_null_like(v_str_):
                                 # logger.debug("Was PANDAS NULL STRING VALUE")
-                                if ADD_STRING_NAN_translation_VALUES:
+                                if ADD_STRING_NAN_TRANSLATION_VALUES:
                                     custom_props[cname] = None
                             else:
                                 if v_str_ == REAL_NONE_JSON_VALUE.lower():
                                     # logger.debug("Was REAL_NULL Value")
-                                    if ADD_REAL_NONE_translation_VALUES:
+                                    if ADD_REAL_NONE_TRANSLATION_VALUES:
                                         custom_props[cname] = None
                                 else:
                                     # logger.debug(f"Was str Value")

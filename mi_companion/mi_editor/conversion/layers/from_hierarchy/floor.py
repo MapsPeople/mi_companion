@@ -4,7 +4,6 @@ from typing import Any, List, Optional, Tuple
 import shapely
 
 # noinspection PyUnresolvedReferences
-# noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
 
 # noinspection PyUnresolvedReferences
@@ -13,7 +12,6 @@ from qgis.PyQt.QtCore import QVariant
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QMessageBox, QTextEdit
 
-# noinspection PyUnresolvedReferences
 # noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsFeatureRequest,
@@ -25,7 +23,6 @@ from qgis.core import (
     QgsProject,
 )
 
-from sync_module.model import Solution
 from jord.qgis_utilities import (
     extract_field_value,
     feature_to_shapely,
@@ -40,6 +37,7 @@ from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
+from sync_module.model import Solution
 from .common_attributes import extract_translations
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from .extraction import special_extract_layer_data

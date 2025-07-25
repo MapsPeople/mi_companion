@@ -5,9 +5,9 @@ from typing import Union
 
 import shapely
 
-from sync_module.model import Area, PointOfInterest, Room, Solution
 from jord.shapely_utilities import is_multi
 from mi_companion.configuration import read_bool_setting
+from sync_module.model import Area, PointOfInterest, Room, Solution
 
 logger = logging.getLogger(__name__)
 

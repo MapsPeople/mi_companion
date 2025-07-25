@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import logging
+
 import shapely
 
 # noinspection PyUnresolvedReferences

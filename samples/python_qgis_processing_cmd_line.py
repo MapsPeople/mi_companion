@@ -4,15 +4,16 @@ QGIS Processing Command Line Interface
 This script allows running QGIS processing algorithms from the command line.
 """
 
+import argparse
 import os
 import sys
-import argparse
+
+from qgis.analysis import QgsNativeAlgorithms
 from qgis.core import (
     QgsApplication,
     QgsProcessingFeedback,
     QgsProcessingUtils,
 )
-from qgis.analysis import QgsNativeAlgorithms
 
 
 def main():

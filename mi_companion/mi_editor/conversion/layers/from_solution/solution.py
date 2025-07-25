@@ -7,21 +7,6 @@ from qgis.PyQt import QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup, QgsProject
 
-from sync_module.shared.model.common_models import (
-    MIConnectionType,
-    MIDoorType,
-    MIEntryPointType,
-    MIVenueType,
-)
-from sync_module.mi import (
-    SolutionDepth,
-    get_remote_solution,
-)
-from sync_module.model import (
-    GraphEdgeContextTypes,
-    IMPLEMENTATION_STATUS,
-    Solution,
-)
 from jord.qgis_utilities import (
     make_enum_dropdown_widget,
     make_iterable_dropdown_widget,
@@ -40,6 +25,21 @@ from mi_companion.layer_descriptors import (
     LOCATION_TYPE_DESCRIPTOR,
     SOLUTION_DATA_DESCRIPTOR,
     SOLUTION_GROUP_DESCRIPTOR,
+)
+from sync_module.mi import (
+    SolutionDepth,
+    get_remote_solution,
+)
+from sync_module.model import (
+    GraphEdgeContextTypes,
+    IMPLEMENTATION_STATUS,
+    Solution,
+)
+from sync_module.shared.model.common_models import (
+    MIConnectionType,
+    MIDoorType,
+    MIEntryPointType,
+    MIVenueType,
 )
 from .location_type import add_location_type_layer, make_location_type_dropdown_widget
 from .venue import add_venue_layer

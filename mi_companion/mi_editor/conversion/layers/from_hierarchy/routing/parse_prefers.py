@@ -1,7 +1,6 @@
 import logging
 from typing import Any, List, Optional
 
-from sync_module.model import Solution
 from jord.qgis_utilities import (
     GeometryIsEmptyError,
     extract_feature_attributes,
@@ -13,6 +12,7 @@ from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes i
     extract_single_level_str_map,
 )
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
+from sync_module.model import Solution
 
 logger = logging.getLogger(__name__)
 

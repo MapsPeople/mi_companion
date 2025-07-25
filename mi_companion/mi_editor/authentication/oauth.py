@@ -10,8 +10,6 @@ Typical use-case consists of:
 
 import base64
 import errno
-import google.auth
-import google.auth.transport.requests
 import hashlib
 import http.server
 import json
@@ -22,9 +20,12 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+from typing import Any, Dict, Optional, Sequence, Union
+
+import google.auth
+import google.auth.transport.requests
 from ee import data as ee_data, ee_exception
 from google.auth import _cloud_sdk
-from typing import Any, Dict, Optional, Sequence, Union
 
 from mi_companion.mi_editor.authentication.auth_mode import (
     GCLOUD_COMMAND,

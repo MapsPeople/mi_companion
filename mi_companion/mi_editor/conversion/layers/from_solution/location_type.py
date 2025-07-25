@@ -12,8 +12,6 @@ from qgis.core import (
     QgsMapLayer,
 )
 
-from sync_module.model import Solution
-from sync_module.tools import collection_to_df
 from jord.pandas_utilities import df_to_columns
 from jord.qgis_utilities import (
     make_field_boolean,
@@ -24,6 +22,8 @@ from jord.qgis_utilities import (
     set_field_widget,
 )
 from jord.qlive_utilities import add_no_geom_layer
+from sync_module.model import Solution
+from sync_module.tools import collection_to_df
 from .location_fields import (
     BOOLEAN_LOCATION_TYPE_ATTRS,
     FLOAT_LOCATION_TYPE_ATTRS,

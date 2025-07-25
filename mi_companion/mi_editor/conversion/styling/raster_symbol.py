@@ -1,4 +1,5 @@
 import logging
+from typing import Any, Iterable
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -42,12 +43,12 @@ __all__ = ["add_raster_symbol"]
 
 
 def add_raster_with_geometry_generator(
-    symbol,
+    symbol: Any,
     *,
-    model2d_lookup_expression,
-    height_lookup_expression,
-    width_lookup_expression,
-    bearing_lookup_expression,
+    model2d_lookup_expression: str,
+    height_lookup_expression: str,
+    width_lookup_expression: str,
+    bearing_lookup_expression: str,
 ) -> None:
     """
     Add a raster marker with its own geometry generator to the symbol.
@@ -107,11 +108,11 @@ with_variable(
 
 def create_raster_symbol_layer(
     *,
-    model2d_lookup_expression,
-    height_lookup_expression,
-    width_lookup_expression,
-    bearing_lookup_expression,
-):
+    model2d_lookup_expression: str,
+    height_lookup_expression: str,
+    width_lookup_expression: str,
+    bearing_lookup_expression: str,
+) -> Any:
     """Create and configure a raster marker symbol layer"""
     # Create raster layer
     raster_layer = QgsRasterMarkerSymbolLayer.create({})
@@ -148,7 +149,7 @@ def create_raster_symbol_layer(
     return raster_layer
 
 
-def add_raster_symbol(layers):
+def add_raster_symbol(layers: Iterable[Any]) -> None:
     """
     Add raster symbols to layers by adding raster marker layers to their own geometry generators
     based on display_rule.model2d.model with scaling and rotation.

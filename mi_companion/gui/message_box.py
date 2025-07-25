@@ -1,6 +1,7 @@
 # noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import QMessageBox, QTextEdit
 from typing import Any
+
+from qgis.PyQt.QtWidgets import QMessageBox, QTextEdit
 
 
 class ResizableMessageBox(QMessageBox):  # TODO: MOVE THIS TO JORD!

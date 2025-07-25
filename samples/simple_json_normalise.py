@@ -1,10 +1,11 @@
 import dataclasses
+
 import shapely
 from pandas.io.json._normalize import _simple_json_normalize
 
+from jord.shapely_utilities import dilate
 from sync_module.model import Solution
 from sync_module.model.typings import LanguageBundle
-from jord.shapely_utilities import dilate
 
 solution = Solution("s", "s", "s")
 

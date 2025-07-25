@@ -5,10 +5,6 @@ from typing import Any, List, Optional
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
-from sync_module.model import FALLBACK_OSM_GRAPH, Solution
-from sync_module.tools import (
-    lines_and_points_to_osm_xml,
-)
 from jord.qgis_utilities import feature_to_shapely, parse_q_value
 from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import (
@@ -19,6 +15,10 @@ from mi_companion.mi_editor.conversion.layers.from_hierarchy.constants import (
     DISABLE_GRAPH_EDIT,
 )
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
+from sync_module.model import FALLBACK_OSM_GRAPH, Solution
+from sync_module.tools import (
+    lines_and_points_to_osm_xml,
+)
 
 logger = logging.getLogger(__name__)
 __all__ = ["add_graph_edges"]

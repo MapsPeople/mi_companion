@@ -2,7 +2,6 @@
 import logging
 
 # noinspection PyUnresolvedReferences
-# noinspection PyUnresolvedReferences
 from qgis.core import (
     Qgis,
     QgsCoordinateReferenceSystem,

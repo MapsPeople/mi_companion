@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import logging
 from pathlib import Path
+from typing import Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QColor, QFont
@@ -24,7 +25,6 @@ from qgis.core import (
     QgsVectorLayer,
     QgsVectorLayerSimpleLabeling,
 )
-from typing import Optional
 
 from mi_companion import RESOURCE_BASE_PATH
 

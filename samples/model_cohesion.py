@@ -1,6 +1,6 @@
 import shapely
 
-from sync_module.shared.model.common_models import MIVenueType
+from jord.shapely_utilities import dilate
 from sync_module.model import (
     Area,
     Building,
@@ -9,7 +9,7 @@ from sync_module.model import (
     LocationType,
     Venue,
 )
-from jord.shapely_utilities import dilate
+from sync_module.shared.model.common_models import MIVenueType
 
 if __name__ == "__main__":
     venue = Venue(

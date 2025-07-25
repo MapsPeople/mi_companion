@@ -23,6 +23,7 @@ __copyright__ = (
 )
 
 import logging
+from typing import List
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QObject, QSize, pyqtSignal, pyqtSlot
@@ -35,7 +36,6 @@ from qgis.core import QgsMapLayer, QgsProject
 
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsMapCanvas, QgsMessageBar
-from typing import List
 
 LOGGER = logging.getLogger("QGIS")
 
