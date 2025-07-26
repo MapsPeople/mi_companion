@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
+## 0.7.13 - 2025-07-26
+
+* [Bug] Anchor generation now uses "point_on_surface" rather than "centroid" ensure that the anchor point is always inside the polygon
+
 ## 0.7.12 - 2025-07-22
 
 * [Bug] If shapely <2.1.0 is already available in QGIS then make sure that equals_exact call is using normalised geometries
