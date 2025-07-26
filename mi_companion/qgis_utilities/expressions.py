@@ -96,7 +96,7 @@ with_variable('p',
 ANCHOR_GEOMETRY_GENERATOR_EXPRESSION = """
 if(
   "anchor_x" is NULL OR "anchor_y" is NULL OR "anchor_x" IS '' OR "anchor_y" IS '',
-  centroid(@geometry),
+  point_on_surface(@geometry),
   make_point("anchor_x","anchor_y")
 )
 
@@ -113,11 +113,11 @@ with_variable(
   make_point("anchor_x","anchor_y"),
   if(
     is_empty_or_null(@anchor),
-    centroid( @geometry ),
+    point_on_surface( @geometry ),
     if(
       within(@anchor,@geometry),
         @anchor,
-        centroid( @geometry )
+        point_on_surface( @geometry )
     )
   )
 )
