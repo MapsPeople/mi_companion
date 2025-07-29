@@ -55,7 +55,7 @@ def auto_center_anchors_when_outside(layers):
 
                     # Set policy to use default value when merging
                     layers_inner.setFieldMergePolicy(
-                        field_idx, Qgis.FieldDomainMergePolicy.GeometryWeighted
+                        field_idx, Qgis.FieldDomainMergePolicy.DefaultValue
                     )
 
                     # Set policy to use default value when duplicating
