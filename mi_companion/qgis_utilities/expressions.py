@@ -112,17 +112,24 @@ RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY = """
 with_variable(
   'anchor',
   make_point("anchor_x","anchor_y"),
-  if(
-    is_empty_or_null(@anchor),
-    point_on_surface( @geometry ),
+  with_variable('new_anchor',
     if(
-      within(@anchor,@geometry),
+      within(centroid(@geometry),@geometry),
+      centroid(@geometry),
+      point_on_surface( @geometry )
+      ),
+    if(
+      is_empty_or_null(@anchor),
+      @new_anchor,
+      if(
+        within(@anchor, @geometry),
         @anchor,
-        point_on_surface( @geometry )
+        @new_anchor
+      )
     )
   )
 )
-"""
+"""  # TODO: USE CENTROID IF STILL INSIDE POLYGON OTHERWISE POINT_ON_SURFACE
 
 RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY_COMPONENT = (
     "{component}(" + RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY + ")"
