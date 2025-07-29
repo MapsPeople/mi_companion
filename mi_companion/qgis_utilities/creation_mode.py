@@ -6,7 +6,6 @@ from mi_companion.layer_descriptors import (
 from mi_companion.qgis_utilities.expressions import (
     DEFAULT_NAME_GET_LOCATION_TYPE_NAME_EXPRESSION,
     NAME_MUST_NOT_NULL_AND_NOT_EMPTY_VALIDATION_EXPRESSION,
-    RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY_COMPONENT,
 )
 
 logger = logging.getLogger(__name__)
@@ -187,43 +186,3 @@ def hide_all_other_fields(layer, fields_to_keep_visible) -> None:
     missing_fields = set(fields_to_keep_visible) - found_fields
     if missing_fields:
         logger.warning(f"Fields {missing_fields} not found in layer '{layer.name()}'")
-
-
-def auto_center_anchors_when_outside(layers):
-    from qgis.core import (
-        QgsProject,
-        QgsFieldConstraints,
-        QgsDefaultValue,
-        QgsEditorWidgetSetup,
-    )
-
-    for layers_inner in layers:
-
-        for c, v in {"anchor_x": "x", "anchor_y": "y"}.items():
-            fields = layers_inner.fields()
-
-            # Find name fields, including translations
-            for field_idx in range(fields.count()):
-                field_name = fields.at(field_idx).name()
-
-                if c in field_name:
-                    layers_inner.setFieldConstraint(
-                        field_idx,
-                        QgsFieldConstraints.ConstraintNotNull,
-                        QgsFieldConstraints.ConstraintStrengthHard,
-                    )
-
-                    layers_inner.setFieldConstraint(
-                        field_idx,
-                        QgsFieldConstraints.ConstraintExpression,
-                        QgsFieldConstraints.ConstraintStrengthHard,
-                    )
-
-                    # Set default value for the name field
-                    default_value = QgsDefaultValue(
-                        RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY_COMPONENT.format(
-                            component=v
-                        ),
-                        applyOnUpdate=True,
-                    )
-                    layers_inner.setDefaultValueDefinition(field_idx, default_value)

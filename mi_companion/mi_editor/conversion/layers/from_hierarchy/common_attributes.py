@@ -102,6 +102,12 @@ def extract_translations(
 
     missing_translations = set(required_languages) - set(translations.keys())
     if PATCH_MISSING_TRANSLATIONS:
+        if "en" not in out:
+            if True:
+                raise Exception('Big problem! The "en".name not in translations')
+            else:
+                ...
+                # TODO: DEFAULT TO LOCATION_TYPE?
 
         if not out["en"].name.lower().startswith(MI_OUTSIDE_BUILDING_NAME.lower()):
             for language in missing_translations:

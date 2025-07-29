@@ -1,8 +1,14 @@
 import logging
+import subprocess
 from pathlib import Path
 
+from dev_install_dependencies import install_dependencies
+
+print(subprocess.check_call(["python", "-m", "pip", "install", "-y", "apppath"]))
+
+
 from plugin_config import PROFILE, QGIS_APP_PATH
-from warg import is_mac, is_windows
+from warg import ensure_existence, is_mac, is_windows
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +36,8 @@ if __name__ == "__main__":
             / source_folder.name
         )
 
+        ensure_existence(target_folder.parent)
+
         if (
             not target_folder.exists()
         ):  # Does it check for casing of filepath in windows?
@@ -44,3 +52,5 @@ if __name__ == "__main__":
             print("symlinked src->target", source_folder, "->", target_folder)
         else:
             print(target_folder, "already exists!")
+
+    install_dependencies()
