@@ -29,7 +29,7 @@ from mi_companion.qgis_utilities import auto_center_anchors_when_outside
 from sync_module.mi import get_outside_building_admin_id
 from sync_module.model import Building, Solution, Venue
 from .floor import add_floor_layers
-from .parsing import translations_to_flattened_dict
+from sync_module.tools.serialisation.parsing import translations_to_flattened_dict
 from ...styling import add_rotation_scale_geometry_generator
 
 __all__ = ["add_building_layers"]

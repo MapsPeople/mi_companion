@@ -10,7 +10,7 @@ from jord.qgis_utilities import (
 from jord.qlive_utilities import add_no_geom_layer
 from sync_module.model import Solution
 from sync_module.tools.serialisation import collection_to_df
-from .parsing import process_nested_fields_df
+from sync_module.tools.serialisation.parsing import process_nested_fields_df
 
 BOOLEAN_OCCUPANT_ATTRS = ()
 STR_OCCUPANT_ATTRS = ()  # ("name",)
@@ -56,7 +56,7 @@ def add_occupant_layer(
     else:
         selected = shape_df
 
-    process_nested_fields_df(selected)
+    selected = process_nested_fields_df(selected)
 
     if not len(shape_df):
         logger.warning(f"Nothing to be added, skipping occupants layer")

@@ -22,6 +22,7 @@ from mi_companion import (
     ADD_REAL_NONE_TRANSLATION_VALUES,
     ADD_STRING_NAN_TRANSLATION_VALUES,
 )
+from sync_module.mi import MI_OUTSIDE_BUILDING_NAME
 from sync_module.model import (
     BadgeDisplayRule,
     Data3D,
@@ -101,9 +102,11 @@ def extract_translations(
 
     missing_translations = set(required_languages) - set(translations.keys())
     if PATCH_MISSING_TRANSLATIONS:
-        for language in missing_translations:
-            logger.warning(f"Patching {language} translation with {out['en']}")
-            out[language] = out["en"]
+
+        if not out["en"].name.lower().startswith(MI_OUTSIDE_BUILDING_NAME.lower()):
+            for language in missing_translations:
+                logger.warning(f"Patching {language} translation with {out['en']}")
+                out[language] = out["en"]
     else:
         raise MissingTranslationsException(
             f"Missing translations for languages {missing_translations}"

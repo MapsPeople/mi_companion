@@ -17,6 +17,7 @@ BOOLEAN_LOCATION_FIELDS = (
     # "is_obstacle",
     # "is_selectable"
     "display_rule.model3d.visible",
+    "display_rule.model2d.visible",
 )
 
 STR_LOCATION_FIELDS = (
@@ -93,6 +94,7 @@ BOOLEAN_LOCATION_TYPE_ATTRS = (
     # "is_obstacle",
     # "is_selectable",
     "display_rule.model3d.visible",
+    "display_rule.model2d.visible",
 )
 STR_LOCATION_TYPE_ATTRS = (
     "translations.en.name",

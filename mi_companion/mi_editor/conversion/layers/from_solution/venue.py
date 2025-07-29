@@ -35,7 +35,7 @@ from mi_companion.mi_editor.conversion.projection import (
 from sync_module.model import Solution, Venue
 from .building import add_building_layers
 from .occupant import add_occupant_layer
-from .parsing import translations_to_flattened_dict
+from sync_module.tools.serialisation.parsing import translations_to_flattened_dict
 
 logger = logging.getLogger(__name__)
 

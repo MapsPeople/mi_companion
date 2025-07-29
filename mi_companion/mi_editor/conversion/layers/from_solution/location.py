@@ -67,7 +67,7 @@ from sync_module.shared.pandas_utilities import locations_to_df
 from sync_module.tools.serialisation import (
     collection_to_df,
 )
-from .parsing import process_nested_fields_df
+from sync_module.tools.serialisation.parsing import process_nested_fields_df
 
 try:
     from enum import StrEnum
@@ -161,16 +161,15 @@ def add_location_layer(
         locations_df
     ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
 
-    process_nested_fields_df(locations_df)
+    locations_df = process_nested_fields_df(locations_df)
     assert len(shape_df) == len(
         locations_df
     ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
 
-    empty_lines = locations_df[locations_df.is_empty]
-    if not empty_lines.empty:
-        logger.warning(f"Dropping {empty_lines}")
-
-    locations_df = locations_df[~locations_df.is_empty]
+    try:
+        locations_df = locations_df[~locations_df.is_empty]
+    except Exception as e:
+        logger.error(f"{e}")
 
     reproject_geometry_df_qgis(locations_df)
 
@@ -191,9 +190,12 @@ def add_location_layer(
         # logger.warning(f"Nothing to be added, skipping {name}")
         return
 
-    for attr_name in BOOLEAN_LOCATION_FIELDS:
-        if attr_name in locations_df:
-            locations_df[attr_name] = shape_df[attr_name].astype(bool, errors="ignore")
+    if False:
+        for attr_name in BOOLEAN_LOCATION_FIELDS:
+            if attr_name in locations_df:
+                locations_df[attr_name] = shape_df[attr_name].astype(
+                    bool, errors="ignore"
+                )
 
     for attr_name in STR_LOCATION_FIELDS:
         if attr_name in locations_df:
