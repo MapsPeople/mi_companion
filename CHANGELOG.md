@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
+
+## 0.7.16 - 2025-07-29
+
+* [Simplification] If a restriction is an empty string then ignore it on location_types, areas and pois as well
+
 ## 0.7.15 - 2025-07-29
 
 * [Simplification] If a restriction is an empty string then ignore it
