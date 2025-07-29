@@ -20,6 +20,14 @@ and you are good to go.
 
 Now just open QGIS and get cracking.
 
+
+## How to setup editable development environment
+
+Using the interpreter of choice, execute
+
+`python dev_install_dependencies.py`
+
+
 ## How to setup python interpreter in pycharm
 
 1. Build mi_companion_bundle and install. Run `bundle_packaging.py` to build the mi_companion_bundle. Run

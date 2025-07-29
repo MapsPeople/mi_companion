@@ -56,7 +56,9 @@ from mi_companion.mi_editor.conversion.styling import (
     add_svg_symbol,
     apply_display_rule_styling_categorized,
 )
-from mi_companion.qgis_utilities import auto_center_anchors_when_outside
+from mi_companion.qgis_utilities.anchor_centering import (
+    auto_center_anchors_when_outside,
+)
 from mi_companion.type_enums import BackendLocationTypeEnum
 from sync_module.model import (
     Floor,

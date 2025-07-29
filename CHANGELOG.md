@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 0.7.17 - 2025-07-29
 
 * [Simplification] If a translation for a certain language is missing try to migitate from copying en at the moment
+* [Feature] Set policy for when splitting, merging and duplicating features.
 
 ## 0.7.16 - 2025-07-29
 

@@ -20,6 +20,7 @@ from qgis.core import (
     QgsWkbTypes,
 )
 
+
 HEX_COLOR_POLY_FILL_EXPRESSION = QgsProperty.fromExpression(
     r"""
 with_variable('i',
