@@ -3,7 +3,24 @@
 This plugin is an editor for MI-based data, it provides a direct view into what currently resides in the MI
 Database and thus lets you modify and extend it with ease.
 
-### How to setup python interpreter in pycharm
+
+## How to setup QGIS development environment for Windows
+
+Find your QGIS shell environment .bat
+
+like this `C:\Program Files\QGIS 3.44.0\OSGeo4W.bat`
+
+execute with "Run as administrator"
+
+cd to the root of this repository and run
+
+`python dev_install_plugin.py`
+
+and you are good to go.
+
+Now just open QGIS and get cracking.
+
+## How to setup python interpreter in pycharm
 
 1. Build mi_companion_bundle and install. Run `bundle_packaging.py` to build the mi_companion_bundle. Run
    `dev_install_plugin.py` to install the plugin.
