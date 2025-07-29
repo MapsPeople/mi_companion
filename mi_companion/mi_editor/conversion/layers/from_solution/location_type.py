@@ -32,7 +32,7 @@ from .location_fields import (
     RANGE_LOCATION_ATTRS,
     STR_LOCATION_TYPE_ATTRS,
 )
-from .parsing import process_nested_fields_df
+from sync_module.tools.serialisation.parsing import process_nested_fields_df
 
 logger = logging.getLogger(__name__)
 
@@ -100,15 +100,16 @@ def add_location_type_layer(
     else:
         selected = shape_df
 
-    process_nested_fields_df(selected)
+    selected = process_nested_fields_df(selected)
 
     if not len(selected):
         # logger.warning(f"Nothing to be added, skipping {name}")
         return None
 
-    for attr_name in BOOLEAN_LOCATION_TYPE_ATTRS:
-        if attr_name in selected:
-            selected[attr_name] = selected[attr_name].astype(bool, errors="ignore")
+    if False:
+        for attr_name in BOOLEAN_LOCATION_TYPE_ATTRS:
+            if attr_name in selected:
+                selected[attr_name] = selected[attr_name].astype(bool, errors="ignore")
 
     for attr_name in STR_LOCATION_TYPE_ATTRS:
         if attr_name in selected:

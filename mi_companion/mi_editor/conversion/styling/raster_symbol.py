@@ -162,18 +162,18 @@ def add_raster_symbol(layers: Iterable[Any]) -> None:
         return
 
     if not layers:
-        logger.error(f"{layers=} was not found")
+        logger.info(f"{layers=} was not found")
         return
 
     for layer in layers:
         if not layer:
-            logger.error(f"{layer=} was not found")
+            logger.info(f"{layer=} was not found")
             continue
 
         # Get the renderer for this layer
         renderer = layer.renderer()
         if not renderer:
-            logger.error(f"{renderer=} was not found")
+            logger.info(f"{renderer=} was not found")
             continue
 
         modified = False

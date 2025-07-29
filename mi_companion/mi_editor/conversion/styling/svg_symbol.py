@@ -51,21 +51,24 @@ def add_svg_with_geometry_generator(
     bearing_lookup_expression: str,
 ) -> None:
     """
+
     Add an SVG marker with its own geometry generator to the symbol.
 
-    Args:
-        symbol: The symbol to add the SVG generator to
+    :param symbol:
+    :param model2d_lookup_expression:
+    :param height_lookup_expression:
+    :param width_lookup_expression:
+    :param bearing_lookup_expression:
+    :return:
     """
     # Create a geometry generator symbol layer for the SVG
     geo_layer = QgsGeometryGeneratorSymbolLayer.create({})
     geo_layer.setGeometryExpression(ANCHOR_GEOMETRY_GENERATOR_EXPRESSION)
     geo_layer.setSymbolType(Qgis.SymbolType.Marker)
 
-    SVG_SYMBOL_ENABLED_EXPRESSION = QgsProperty.fromExpression(
+    svg_symbol_enabled_expression = QgsProperty.fromExpression(
         f"""
-
-
-    with_variable(
+with_variable(
   'model2d',
   {model2d_lookup_expression},
   if(
@@ -84,7 +87,7 @@ def add_svg_with_geometry_generator(
     )
 
     geo_layer.setDataDefinedProperty(
-        QgsSymbolLayer.PropertyLayerEnabled, SVG_SYMBOL_ENABLED_EXPRESSION
+        QgsSymbolLayer.PropertyLayerEnabled, svg_symbol_enabled_expression
     )
 
     # Create a sub-symbol for the geometry generator
@@ -117,7 +120,15 @@ def create_svg_symbol_layer(
     width_lookup_expression: str,
     bearing_lookup_expression: str,
 ) -> Any:
-    """Create and configure an SVG marker symbol layer"""
+    """
+    Create and configure an SVG marker symbol layer
+
+    :param model2d_lookup_expression:
+    :param height_lookup_expression:
+    :param width_lookup_expression:
+    :param bearing_lookup_expression:
+    :return:
+    """
     # Create SVG layer
     svg_layer = QgsSvgMarkerSymbolLayer.create({})
 
@@ -159,25 +170,25 @@ def add_svg_symbol(layers: Iterable[Any]) -> None:
     based on display_rule.model2d.model with scaling and rotation.
     Uses width_meters and height_meter parameters for proportional sizing.
 
-    Args:
-        layers: List of vector layers to add the SVG symbols to
+    :param layers:
+    :return:
     """
     if not read_bool_setting("ADD_2DMODEL_STYLING"):
         return
 
     if not layers:
-        logger.error(f"{layers=} was not found")
+        logger.info(f"{layers=} was not found")
         return
 
     for layer in layers:
         if not layer:
-            logger.error(f"{layer=} was not found")
+            logger.info(f"{layer=} was not found")
             continue
 
         # Get the renderer for this layer
         renderer = layer.renderer()
         if not renderer:
-            logger.error(f"{renderer=} was not found")
+            logger.info(f"{renderer=} was not found")
             continue
 
         modified = False
