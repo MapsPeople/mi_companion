@@ -1,6 +1,8 @@
 import logging
 
+from mi_companion.constants import ONLY_RESET_ANCHOR_IF_OUTSIDE
 from mi_companion.qgis_utilities import (
+    RESET_ANCHOR_TO_CENTROID_COMPONENT,
     RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY_COMPONENT,
 )
 
@@ -44,11 +46,16 @@ def auto_center_anchors_when_outside(layers):
                         QgsFieldConstraints.ConstraintStrengthHard,
                     )
 
+                    default_expression = RESET_ANCHOR_TO_CENTROID_COMPONENT
+
+                    if ONLY_RESET_ANCHOR_IF_OUTSIDE:
+                        default_expression = (
+                            RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY_COMPONENT
+                        )
+
                     # Set default value for the name field
                     default_value = QgsDefaultValue(
-                        RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY_COMPONENT.format(
-                            component=v
-                        ),
+                        default_expression.format(component=v),
                         applyOnUpdate=True,
                     )
                     layers_inner.setDefaultValueDefinition(field_idx, default_value)

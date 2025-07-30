@@ -108,16 +108,21 @@ ANCHOR_GEOMETRY_GENERATOR_EXPRESSION_COMPONENT = (
     "{component}(" + ANCHOR_GEOMETRY_GENERATOR_EXPRESSION + ")"
 )
 
-RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY = """
+POINT_WITHIN_GEOMETRY = """
+if(
+      within(centroid(@geometry),@geometry),
+      centroid(@geometry),
+      point_on_surface(@geometry)
+)
+"""
+
+
+RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY = f"""
 with_variable(
   'anchor',
   make_point("anchor_x","anchor_y"),
   with_variable('new_anchor',
-    if(
-      within(centroid(@geometry),@geometry),
-      centroid(@geometry),
-      point_on_surface( @geometry )
-      ),
+    {POINT_WITHIN_GEOMETRY},
     if(
       is_empty_or_null(@anchor),
       @new_anchor,
@@ -129,11 +134,13 @@ with_variable(
     )
   )
 )
-"""  # TODO: USE CENTROID IF STILL INSIDE POLYGON OTHERWISE POINT_ON_SURFACE
+"""
 
 RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY_COMPONENT = (
     "{component}(" + RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY + ")"
 )
+
+RESET_ANCHOR_TO_CENTROID_COMPONENT = "{component}(" + POINT_WITHIN_GEOMETRY + ")"
 
 
 NAME_MUST_NOT_NULL_AND_NOT_EMPTY_VALIDATION_EXPRESSION = """
