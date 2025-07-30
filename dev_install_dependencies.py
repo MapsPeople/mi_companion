@@ -1,8 +1,9 @@
+import logging
 import os
 import subprocess
 from pathlib import Path
 
-from dev_install_plugin import logger
+logger = logging.getLogger(__name__)
 
 
 def pip_install_editable(package_paths):
