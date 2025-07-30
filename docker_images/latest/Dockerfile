@@ -12,10 +12,11 @@ FROM base AS setup
 WORKDIR /app
 ENV SUBMODULE_DIRECTORY=/app/submodules
 
-COPY mi_sync/ $SUBMODULE_DIRECTORY/mi_sync
-COPY midf/ $SUBMODULE_DIRECTORY/midf
-COPY svaguely/ $SUBMODULE_DIRECTORY/svaguely
-COPY caddy/ $SUBMODULE_DIRECTORY/caddy
+
+COPY mi_sync $SUBMODULE_DIRECTORY/mi_sync
+COPY midf $SUBMODULE_DIRECTORY/midf
+COPY svaguely $SUBMODULE_DIRECTORY/svaguely
+COPY caddy $SUBMODULE_DIRECTORY/caddy
 
 COPY mi_companion/requirements.txt requirements.txt
 RUN pip install --break-system-packages --no-cache-dir -r requirements.txt
@@ -30,8 +31,8 @@ RUN export DISPLAY
 FROM setup AS run
 
 #RUN python create_resourcefiles.py
-COPY mi_companion/ mi_companion/
-COPY tests/ tests/
+COPY mi_companion mi_companion/
+COPY tests tests/
 
 #ENTRYPOINT ["pytest","--cov","mi_companion","--cov-report","term-missing","tests"]
 ENTRYPOINT ["pytest", "tests"]
