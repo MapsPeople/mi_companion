@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
+## 0.7.18 - 2025-07-30
+
+* [Bug] In QGIS <3.44.0 the setFieldMergePolicy of QgsVectorLayer is not available, now the download processes do not stop but rather warns the user to upgrade and proceeds
+
 ## 0.7.17 - 2025-07-29
 
 * [Simplification] If a translation for a certain language is missing try to migitate from copying en at the moment
