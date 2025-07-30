@@ -29,7 +29,7 @@ from sync_module.model import (
     PostalAddress,
     Solution,
 )
-from sync_module.shared.model.common_models import MIVenueType
+from sync_module.shared import MIVenueType
 from .building import add_venue_level_hierarchy
 from .common_attributes import extract_translations
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE

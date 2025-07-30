@@ -9,7 +9,7 @@ from sync_module.model import (
     LocationType,
     Venue,
 )
-from sync_module.shared.model.common_models import MIVenueType
+from sync_module.shared import MIVenueType
 
 if __name__ == "__main__":
     venue = Venue(

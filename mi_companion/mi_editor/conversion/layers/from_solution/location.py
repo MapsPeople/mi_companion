@@ -61,7 +61,7 @@ from mi_companion.qgis_utilities import (
 )
 from mi_companion.type_enums import BackendLocationTypeEnum
 from sync_module.model import CollectionMixin, Floor, Solution
-from sync_module.shared import locations_to_df
+from sync_module.pandas_utilities import locations_to_df
 from sync_module.tools import collection_to_df, process_nested_fields_df
 
 try:

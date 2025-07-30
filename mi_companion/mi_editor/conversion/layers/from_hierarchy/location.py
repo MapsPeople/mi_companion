@@ -52,12 +52,12 @@ from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
 from mi_companion.type_enums import BackendLocationTypeEnum
 from sync_module.model import (
     Category,
-    LanguageBundle,
     LocationType,
     OpeningHoursDetail,
     Solution,
     StrToDetailTypeMap,
 )
+from sync_module.shared import LanguageBundle
 from sync_module.tools import standard_opening_hours_from_dict
 from warg import str_to_bool
 from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE

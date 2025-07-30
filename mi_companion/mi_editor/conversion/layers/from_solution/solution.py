@@ -35,7 +35,7 @@ from sync_module.model import (
     IMPLEMENTATION_STATUS,
     Solution,
 )
-from sync_module.shared.model.common_models import (
+from sync_module.shared import (
     MIConnectionType,
     MIDoorType,
     MIEntryPointType,

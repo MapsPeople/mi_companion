@@ -35,10 +35,10 @@ from sync_module.model import (
     OptionalDisplayRule,
     StreetViewConfig,
 )
-from sync_module.model.typings import LanguageBundle
-from sync_module.shared.model.common_models import (
+from sync_module.shared import (
     MIIconPlacementRuleEnum,
     MILabelTypeOptionEnum,
+    LanguageBundle,
 )
 from warg import nested_dict, str_to_bool
 

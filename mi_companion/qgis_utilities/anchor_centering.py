@@ -1,19 +1,14 @@
 import logging
 
 # noinspection PyUnresolvedReferences
-# noinspection PyUnresolvedReferences
 from qgis.core import (
     Qgis,
     QgsDefaultValue,
-    QgsEditorWidgetSetup,
     QgsFieldConstraints,
-    QgsGeometry,
-    QgsMessageLog,
-    QgsProject,
 )
 
 from mi_companion.constants import ONLY_RESET_ANCHOR_IF_OUTSIDE
-from mi_companion.qgis_utilities import (
+from .expressions import (
     RESET_ANCHOR_TO_CENTROID_COMPONENT,
     RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY_COMPONENT,
 )
