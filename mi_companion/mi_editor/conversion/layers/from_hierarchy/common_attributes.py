@@ -36,9 +36,9 @@ from sync_module.model import (
     StreetViewConfig,
 )
 from sync_module.shared import (
+    LanguageBundle,
     MIIconPlacementRuleEnum,
     MILabelTypeOptionEnum,
-    LanguageBundle,
 )
 from warg import nested_dict, str_to_bool
 

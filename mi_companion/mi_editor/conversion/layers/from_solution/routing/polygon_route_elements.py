@@ -15,8 +15,7 @@ from mi_companion.mi_editor.conversion.projection import (
     reproject_geometry_df_qgis,
     solve_target_crs_authid,
 )
-from sync_module.model import Graph
-from sync_module.model.solution_item import CollectionMixin
+from sync_module.model import CollectionMixin, Graph
 from sync_module.pandas_utilities import locations_to_df
 
 logger = logging.getLogger(__name__)
