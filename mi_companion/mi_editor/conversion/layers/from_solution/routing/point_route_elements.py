@@ -17,7 +17,7 @@ from mi_companion.mi_editor.conversion.projection import (
 )
 from sync_module.model import Graph
 from sync_module.model.solution_item import CollectionMixin
-from sync_module.shared.pandas_utilities import locations_to_df
+from sync_module.pandas_utilities import locations_to_df
 
 __all__ = ["add_point_route_element_layers"]
 

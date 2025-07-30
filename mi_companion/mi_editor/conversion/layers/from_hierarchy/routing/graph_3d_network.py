@@ -19,7 +19,7 @@ from mi_companion.mi_editor.conversion.layers.from_hierarchy.constants import (
 )
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from sync_module.model import FALLBACK_OSM_GRAPH, Solution
-from sync_module.tools.graph_utilities import lines_3d_to_osm_xml
+from sync_module.tools import lines_3d_to_osm_xml
 
 logger = logging.getLogger(__name__)
 

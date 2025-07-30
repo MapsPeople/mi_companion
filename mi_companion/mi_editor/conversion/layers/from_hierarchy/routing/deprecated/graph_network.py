@@ -16,7 +16,7 @@ from mi_companion.mi_editor.conversion.layers.from_hierarchy.constants import (
 )
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from sync_module.model import FALLBACK_OSM_GRAPH, Solution
-from sync_module.tools import (
+from sync_module.tools.graph_utilities.deprecated import (
     lines_and_points_to_osm_xml,
 )
 

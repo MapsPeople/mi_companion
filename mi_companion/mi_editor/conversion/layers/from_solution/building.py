@@ -25,13 +25,13 @@ from mi_companion.mi_editor.conversion.projection import (
     prepare_geom_for_editing_qgis,
     solve_target_crs_authid,
 )
-from mi_companion.qgis_utilities.anchor_centering import (
+from mi_companion.qgis_utilities import (
     auto_center_anchors_when_outside,
 )
 from sync_module.mi import get_outside_building_admin_id
 from sync_module.model import Building, Solution, Venue
+from sync_module.tools import translations_to_flattened_dict
 from .floor import add_floor_layers
-from sync_module.tools.serialisation.parsing import translations_to_flattened_dict
 from ...styling import add_rotation_scale_geometry_generator
 
 __all__ = ["add_building_layers"]

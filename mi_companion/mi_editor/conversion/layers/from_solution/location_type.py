@@ -23,7 +23,7 @@ from jord.qgis_utilities import (
 )
 from jord.qlive_utilities import add_no_geom_layer
 from sync_module.model import Solution
-from sync_module.tools import collection_to_df
+from sync_module.tools import collection_to_df, process_nested_fields_df
 from .location_fields import (
     BOOLEAN_LOCATION_TYPE_ATTRS,
     FLOAT_LOCATION_TYPE_ATTRS,
@@ -32,7 +32,6 @@ from .location_fields import (
     RANGE_LOCATION_ATTRS,
     STR_LOCATION_TYPE_ATTRS,
 )
-from sync_module.tools.serialisation.parsing import process_nested_fields_df
 
 logger = logging.getLogger(__name__)
 

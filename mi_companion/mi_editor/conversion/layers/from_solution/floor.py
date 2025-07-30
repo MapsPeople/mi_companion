@@ -28,12 +28,12 @@ from mi_companion.mi_editor.conversion.projection import (
     prepare_geom_for_editing_qgis,
     solve_target_crs_authid,
 )
-from mi_companion.qgis_utilities.anchor_centering import (
+from mi_companion.qgis_utilities import (
     auto_center_anchors_when_outside,
 )
 from sync_module.model import Building, Floor, Solution
+from sync_module.tools import translations_to_flattened_dict
 from .location import add_floor_content_layers
-from sync_module.tools.serialisation.parsing import translations_to_flattened_dict
 from ...styling import add_rotation_scale_geometry_generator
 
 logger = logging.getLogger(__name__)

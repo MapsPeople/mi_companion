@@ -10,7 +10,7 @@ from geopandas import GeoDataFrame
 
 from jord.shapely_utilities import clean_shape
 from mi_companion.configuration import read_bool_setting
-from mi_companion.qgis_utilities.exceptions import InvalidReprojection
+from mi_companion.qgis_utilities import InvalidReprojection
 from sync_module.mi_sync_constants import (
     EDITING_CRS_AUTHID,
     EDITING_EPSG_NUMBER,

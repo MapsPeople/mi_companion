@@ -3,7 +3,7 @@ import logging
 from mi_companion.layer_descriptors import (
     LOCATION_DESCRIPTORS,
 )
-from mi_companion.qgis_utilities.expressions import (
+from mi_companion.qgis_utilities import (
     DEFAULT_NAME_GET_LOCATION_TYPE_NAME_EXPRESSION,
     NAME_MUST_NOT_NULL_AND_NOT_EMPTY_VALIDATION_EXPRESSION,
 )
