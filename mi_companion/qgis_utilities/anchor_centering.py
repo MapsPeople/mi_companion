@@ -1,3 +1,5 @@
+import logging
+
 from mi_companion.qgis_utilities import (
     RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY_COMPONENT,
 )
@@ -14,6 +16,9 @@ from qgis.core import (
 from qgis.core import Qgis, QgsGeometry, QgsMessageLog
 
 __all__ = ["auto_center_anchors_when_outside"]
+
+
+logger = logging.getLogger(__name__)
 
 
 def auto_center_anchors_when_outside(layers):
@@ -48,17 +53,32 @@ def auto_center_anchors_when_outside(layers):
                     )
                     layers_inner.setDefaultValueDefinition(field_idx, default_value)
 
-                    # Set policy to use default value when splitting
-                    layers_inner.setFieldSplitPolicy(
-                        field_idx, Qgis.FieldDomainSplitPolicy.GeometryRatio
-                    )
+                    try:
+                        # Set policy to use default value when splitting
+                        layers_inner.setFieldSplitPolicy(
+                            field_idx, Qgis.FieldDomainSplitPolicy.GeometryRatio
+                        )
+                    except Exception as e:
+                        logger.warning(
+                            "QgsVectorLayer.setFieldSplitPolicy is only available in QGIS >=3.30.0, please upgrade your QGIS to fix this"
+                        )
 
-                    # Set policy to use default value when merging
-                    layers_inner.setFieldMergePolicy(
-                        field_idx, Qgis.FieldDomainMergePolicy.DefaultValue
-                    )
+                    try:
+                        # Set policy to use default value when merging
+                        layers_inner.setFieldMergePolicy(
+                            field_idx, Qgis.FieldDomainMergePolicy.DefaultValue
+                        )
+                    except Exception as e:
+                        logger.warning(
+                            "QgsVectorLayer.setFieldMergePolicy is only available in QGIS >=3.44.0, please upgrade your QGIS to fix this"
+                        )
 
-                    # Set policy to use default value when duplicating
-                    layers_inner.setFieldDuplicatePolicy(
-                        field_idx, Qgis.FieldDuplicatePolicy.Duplicate
-                    )
+                    try:
+                        # Set policy to use default value when duplicating
+                        layers_inner.setFieldDuplicatePolicy(
+                            field_idx, Qgis.FieldDuplicatePolicy.Duplicate
+                        )
+                    except Exception as e:
+                        logger.warning(
+                            "QgsVectorLayer.setFieldDuplicatePolicy is only available in QGIS >=3.38.0, please upgrade your QGIS to fix this"
+                        )
