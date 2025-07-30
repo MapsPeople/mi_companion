@@ -17,7 +17,7 @@ from sync_module.mi_sync_constants import (
     MI_CRS_AUTHID,
     MI_EPSG_NUMBER,
 )
-from sync_module.shared.projection import MI_CRS
+from sync_module.shared import MI_CRS
 
 __all__ = [
     "prepare_geom_for_mi_db_qgis",
