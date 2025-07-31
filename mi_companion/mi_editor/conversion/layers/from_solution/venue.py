@@ -32,7 +32,7 @@ from mi_companion.mi_editor.conversion.projection import (
     prepare_geom_for_editing_qgis,
     solve_target_crs_authid,
 )
-from sync_module.model import Solution, Venue
+from sync_module.model import FALLBACK_OSM_GRAPH, Solution, Venue
 from sync_module.tools import translations_to_flattened_dict
 from .building import add_building_layers
 from .occupant import add_occupant_layer
@@ -147,9 +147,21 @@ def add_venue_layer(
         )
 
         if read_bool_setting("ADD_GRAPH"):  # add graph
-            if venue.graph:
+            graph = venue.graph
+
+            if read_bool_setting("ADD_DUMMY_GRAPH_IF_MISSING"):
+                graph_key = solution.add_graph(
+                    graph_id=f"{venue_name}_graph",
+                    osm_xml=FALLBACK_OSM_GRAPH,
+                    boundary=venue.polygon,
+                )
+                solution.update_venue(venue.key, graph_key=graph_key)
+                graph = venue.graph
+
+            if graph is not None:
+
                 add_graph_layers(
-                    graph=venue.graph,
+                    graph=graph,
                     venue_group=venue_group,
                     qgis_instance_handle=qgis_instance_handle,
                     solution=solution,
