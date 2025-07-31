@@ -5,11 +5,10 @@ from sync_module.model import (
     Area,
     Building,
     Floor,
-    LanguageBundle,
     LocationType,
     Venue,
 )
-from sync_module.shared import MIVenueType
+from sync_module.shared import MIVenueType, LanguageBundle
 
 if __name__ == "__main__":
     venue = Venue(
