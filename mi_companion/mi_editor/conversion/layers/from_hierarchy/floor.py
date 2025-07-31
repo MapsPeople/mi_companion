@@ -39,7 +39,7 @@ from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
 )
 from sync_module.model import Solution
 from .common_attributes import extract_translations
-from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
+from mi_companion.mi_editor.constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from .extraction import special_extract_layer_data
 from .location import add_floor_contents
 

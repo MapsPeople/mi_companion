@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
 
+## 0.7.20 - 2025-07-31
+
+* [Regression Fix] An import in the "set label field" functionality had become invalid, this is fixed now
+
 ## 0.7.19 - 2025-07-30
 
 * [Logic Change] Now reset anchor point on every edit not only when outside geometry

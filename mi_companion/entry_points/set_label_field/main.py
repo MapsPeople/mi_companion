@@ -4,7 +4,8 @@ import logging
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject, QgsSettings, QgsVectorLayer
 
-from mi_companion import LAYER_LABEL_VISIBLE_MIN_RATIO, RESOURCE_BASE_PATH
+from mi_companion import RESOURCE_BASE_PATH
+from mi_companion.configuration import read_float_setting
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
 
@@ -14,7 +15,7 @@ __all__ = ["run"]
 def run(
     *,
     field: str = "represent_value(location_type) + ': ' + name + ' - ' + external_id",
-    min_ratio: float = LAYER_LABEL_VISIBLE_MIN_RATIO,
+    min_ratio: float = read_float_setting("LAYER_LABEL_VISIBLE_MIN_RATIO"),
 ) -> None:
     """
     Set label value field

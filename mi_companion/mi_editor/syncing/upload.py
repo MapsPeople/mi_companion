@@ -14,17 +14,19 @@ from sync_module.mi import (
     MIOperation,
     SolutionDepth,
     SyncLevel,
-    default_matcher,
-    default_strategy,
     strategy_solver,
     synchronize,
+    default_matcher,
+    default_strategy,
+    create_if_it_does_not_exist_predicate,
 )
+
 from sync_module.model import (
     Graph,
     Solution,
 )
 from .operation_visualisation import show_differences
-from ..constants import DISABLE_GRAPH_EDIT
+from mi_companion.mi_editor.constants import DISABLE_GRAPH_EDIT
 
 logger = logging.getLogger(__name__)
 
@@ -34,10 +36,8 @@ __all__ = ["sync_build_venue_solution"]
 def sync_build_venue_solution(
     *,
     qgis_instance_handle: Any,
-    include_graph: bool,  # IGNORED FOR NOW
     include_media: bool,
     include_occupants: bool,
-    include_route_elements: bool,  # IGNORED
     solution: Solution,
     solution_depth: SolutionDepth,
     solution_name: str,
@@ -66,10 +66,8 @@ def sync_build_venue_solution(
             )
 
     :param qgis_instance_handle:
-    :param include_graph:
     :param include_media:
     :param include_occupants:
-    :param include_route_elements:
     :param solution:
     :param solution_depth:
     :param solution_name:
@@ -155,13 +153,8 @@ def sync_build_venue_solution(
     sync_level = SyncLevel.venue
 
     strategy = dict(default_strategy())
-    if (
-        not (
-            read_bool_setting("UPDATE_GRAPH") and read_bool_setting("UPLOAD_OSM_GRAPH")
-        )
-        or DISABLE_GRAPH_EDIT
-    ):
-        strategy[Graph] = default_matcher, None  # Do not update graph
+
+    strategy[Graph] = default_matcher, create_if_it_does_not_exist_predicate
 
     try:
         success = synchronize(
@@ -183,11 +176,10 @@ def sync_build_venue_solution(
                 else None
             ),
             depth=solution_depth,
-            include_route_elements=read_bool_setting("ADD_ROUTE_ELEMENTS")
-            and include_route_elements,
+            include_route_elements=read_bool_setting("ADD_ROUTE_ELEMENTS"),
             include_occupants=include_occupants,
             include_media=include_media,
-            include_graph=read_bool_setting("ADD_GRAPH") and include_graph,
+            include_graph=read_bool_setting("ADD_GRAPH"),
             operation_solver=strategy_solver(
                 sync_level=sync_level, depth=solution_depth, strategy=strategy
             ),

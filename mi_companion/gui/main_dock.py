@@ -454,8 +454,6 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                     str(self.solution_combo_box.currentText())
                 )
 
-        include_route_elements = read_bool_setting("ADD_ROUTE_ELEMENTS")
-        include_graph = read_bool_setting("ADD_GRAPH")
         include_occupants = read_bool_setting("ADD_OCCUPANTS")
         include_media = read_bool_setting("ADD_MEDIA")
 
@@ -477,10 +475,8 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                             v,
                             progress_bar=venue_bar,
                             depth=solution_depth,
-                            include_route_elements=include_route_elements,
                             include_occupants=include_occupants,
                             include_media=include_media,
-                            include_graph=include_graph,
                         )
                     download_bar.setValue(int((float(i) / num_venues) * 100))
 
@@ -497,10 +493,8 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                         self.venue_name_id_map[venue_name],
                         progress_bar=download_bar,
                         depth=solution_depth,
-                        include_route_elements=include_route_elements,
                         include_occupants=include_occupants,
                         include_media=include_media,
-                        include_graph=include_graph,
                     )
                     self.changes_label.setText(f"Downloaded {venue_name}")
 
@@ -514,12 +508,6 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         if self.solution_depth_combo_box:
             solution_depth = SolutionDepth(str(self.solution_combo_box.currentText()))
 
-        include_occupants = False
-        include_media = False
-
-        include_route_elements = read_bool_setting("ADD_ROUTE_ELEMENTS")
-        include_graph = read_bool_setting("ADD_GRAPH")
-
         with InjectedProgressBar(parent=self.iface_.mainWindow().statusBar()) as bar:
             self.changes_label.setText(f"Uploading venues")
             try:
@@ -527,10 +515,6 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                     self,
                     progress_bar=bar,
                     solution_depth=solution_depth,
-                    include_route_elements=include_route_elements,
-                    include_occupants=include_occupants,
-                    include_media=include_media,
-                    include_graph=include_graph,
                 )
 
             except Exception as e:
@@ -541,7 +525,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
 
     def revert_button_clicked(self) -> None:
         self.set_update_sync_settings()
-        # TODO: MAKE INTO A RELOAD INSTEAD?
+
         with InjectedProgressBar(parent=self.iface_.mainWindow().statusBar()) as bar:
             self.changes_label.setText(f"Revert venues")
             try:

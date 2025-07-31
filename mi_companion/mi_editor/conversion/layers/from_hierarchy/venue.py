@@ -22,7 +22,7 @@ from mi_companion.layer_descriptors import (
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
-from mi_companion.mi_editor.uploading import upload_venue
+from mi_companion.mi_editor.syncing.uploading import upload_venue
 from sync_module.mi import SolutionDepth
 from sync_module.model import (
     ImplementationStatus,
@@ -33,7 +33,7 @@ from sync_module.model import (
 from sync_module.shared import MIVenueType
 from .building import add_venue_level_hierarchy
 from .common_attributes import extract_translations
-from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
+from mi_companion.mi_editor.constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 
 __all__ = ["convert_solution_venues"]
 
@@ -69,10 +69,8 @@ def convert_solution_venues(
     ith_solution: int,
     num_solution_elements: int,
     solution_depth: SolutionDepth = SolutionDepth.obstacles,
-    include_route_elements: bool = False,
     include_occupants: bool = False,
     include_media: bool = False,
-    include_graph: bool = False,
     upload_venues: bool = True,
     collect_invalid: bool = False,
     collect_warnings: bool = False,
@@ -197,21 +195,19 @@ def convert_solution_venues(
                 raise ex
 
         upload_venue(
-            collect_errors,
-            collect_invalid,
-            collect_warnings,
-            include_graph,
-            include_media,
-            include_occupants,
-            include_route_elements,
-            issues,
-            progress_bar,
-            qgis_instance_handle,
-            solution,
-            solution_depth,
-            solution_name,
-            upload_venues,
-            venue_key,
+            collect_errors=collect_errors,
+            collect_invalid=collect_invalid,
+            collect_warnings=collect_warnings,
+            include_media=include_media,
+            include_occupants=include_occupants,
+            issues=issues,
+            progress_bar=progress_bar,
+            qgis_instance_handle=qgis_instance_handle,
+            solution=solution,
+            solution_depth=solution_depth,
+            solution_name=solution_name,
+            upload_venues=upload_venues,
+            venue_key=venue_key,
         )
 
         solutions.append(solution)

@@ -149,7 +149,7 @@ def add_venue_layer(
         if read_bool_setting("ADD_GRAPH"):  # add graph
             graph = venue.graph
 
-            if read_bool_setting("ADD_DUMMY_GRAPH_IF_MISSING"):
+            if graph is None and read_bool_setting("ADD_DUMMY_GRAPH_IF_MISSING"):
                 graph_key = solution.add_graph(
                     graph_id=f"{venue_name}_graph",
                     osm_xml=FALLBACK_OSM_GRAPH,

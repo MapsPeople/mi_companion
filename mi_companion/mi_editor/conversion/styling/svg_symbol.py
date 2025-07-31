@@ -287,10 +287,10 @@ def add_svg_symbol(layers: Iterable[Any]) -> None:
 
                 modified = True
             else:
-                logger.error(f"Symbol not found for layer {layer.name()}")
+                logger.info(f"Symbol not found for layer {layer.name()}")
 
         # Trigger layer updates if modified
         if modified:
             layer.triggerRepaint()
             layer.emitStyleChanged()
-            logger.warning(f"Added SVG symbol layer to layer '{layer.name()}'")
+            logger.info(f"Added SVG symbol layer to layer '{layer.name()}'")

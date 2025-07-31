@@ -51,7 +51,7 @@ def make_rot_and_sca_symbology_layer():
     rot_and_sca_symbol_layer.setGeometryExpression(
         ROT_AND_SCALE_GEOMETRY_LINE_GENERATOR_EXPRESSION
     )
-    # Create a marker sub-symbol for the points
+
     line_symbol = QgsLineSymbol.createSimple(
         {
             "name": "Rotation and Scale",
@@ -65,17 +65,17 @@ def make_rot_and_sca_symbology_layer():
         QgsSymbolLayer.PropertyFillColor,
         QgsProperty.fromExpression('"display_rule.polygon.stroke_color"'),
     )
-    # Set the sub-symbol as a marker symbol
+
     rot_and_sca_symbol_layer.setSubSymbol(line_symbol)
-    # Set the symbol type to point geometry
     rot_and_sca_symbol_layer.setSymbolType(Qgis.SymbolType.Line)
+
     return rot_and_sca_symbol_layer
 
 
 def make_anchor_symbology_layer():
     anchor_symbol_layer = QgsGeometryGeneratorSymbolLayer.create({})
     anchor_symbol_layer.setGeometryExpression(ANCHOR_GEOMETRY_GENERATOR_EXPRESSION)
-    # Create a marker sub-symbol for the points
+
     marker_symbol = QgsMarkerSymbol.createSimple({"name": "Anchor"})
     marker_symbol.symbolLayer(0).setDataDefinedProperty(
         QgsSymbolLayer.PropertyStrokeColor,
@@ -85,10 +85,10 @@ def make_anchor_symbology_layer():
         QgsSymbolLayer.PropertyFillColor,
         QgsProperty.fromExpression('"display_rule.polygon.stroke_color"'),
     )
-    # Set the sub-symbol as a marker symbol
+
     anchor_symbol_layer.setSubSymbol(marker_symbol)
-    # Set the symbol type to point geometry
     anchor_symbol_layer.setSymbolType(Qgis.SymbolType.Marker)
+
     return anchor_symbol_layer
 
 
@@ -104,18 +104,18 @@ def add_rotation_scale_geometry_generator(layers):
         return
 
     if not layers:
-        logger.error(f"{layers=} was not found")
+        logger.info(f"{layers=} was not found")
         return
 
     for layer in layers:
         if not layer:
-            logger.error(f"{layer=} was not found")
+            logger.info(f"{layer=} was not found")
             continue
 
         # Get the renderer for this layer
         renderer = layer.renderer()
         if not renderer:
-            logger.error(f"{renderer=} was not found")
+            logger.info(f"{renderer=} was not found")
             continue
 
         modified = False
@@ -171,7 +171,7 @@ def add_rotation_scale_geometry_generator(layers):
 
                 modified = True
             else:
-                logger.error(f"Symbol not found for layer {layer.name()}")
+                logger.info(f"Symbol not found for layer {layer.name()}")
 
         # Trigger layer updates
         if modified:

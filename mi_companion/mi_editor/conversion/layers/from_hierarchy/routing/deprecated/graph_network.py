@@ -11,7 +11,7 @@ from mi_companion.layer_descriptors import (
     NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
     NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
 )
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.constants import (
+from mi_companion.mi_editor.constants import (
     DISABLE_GRAPH_EDIT,
 )
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
