@@ -5,7 +5,7 @@ from jord.pandas_utilities import df_to_columns
 from jord.typing_utilities import solve_attribute_uri
 from sync_module.mi import get_remote_solution
 from sync_module.model import Venue
-from sync_module.tools.serialisation import collection_to_df
+from sync_module.tools import collection_to_df
 
 a = get_remote_solution(
     "fjordhaven7",

@@ -1,4 +1,4 @@
-from sync_module.tools.serialisation.parsing import process_nested_fields_df
+from sync_module.tools import process_nested_fields_df
 
 if __name__ == "__main__":
     from sync_module.mi import get_remote_solution

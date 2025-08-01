@@ -35,8 +35,8 @@ from sync_module.model import (
     OptionalDisplayRule,
     StreetViewConfig,
 )
-from sync_module.model.typings import LanguageBundle
-from sync_module.shared.model.common_models import (
+from sync_module.shared import (
+    LanguageBundle,
     MIIconPlacementRuleEnum,
     MILabelTypeOptionEnum,
 )
@@ -108,6 +108,14 @@ def extract_translations(
             else:
                 ...
                 # TODO: DEFAULT TO LOCATION_TYPE?
+                out["en"] = LanguageBundle(name="No english name")
+
+        if not out["en"].name:
+            out["en"] = LanguageBundle(
+                name="No english name",
+                description=out["en"].description,
+                fields=out["en"].fields,
+            )
 
         if not out["en"].name.lower().startswith(MI_OUTSIDE_BUILDING_NAME.lower()):
             for language in missing_translations:

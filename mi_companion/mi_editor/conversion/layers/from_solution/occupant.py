@@ -9,8 +9,7 @@ from jord.qgis_utilities import (
 )
 from jord.qlive_utilities import add_no_geom_layer
 from sync_module.model import Solution
-from sync_module.tools.serialisation import collection_to_df
-from sync_module.tools.serialisation.parsing import process_nested_fields_df
+from sync_module.tools import collection_to_df, process_nested_fields_df
 
 BOOLEAN_OCCUPANT_ATTRS = ()
 STR_OCCUPANT_ATTRS = ()  # ("name",)

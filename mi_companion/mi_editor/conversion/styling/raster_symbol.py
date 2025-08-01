@@ -158,7 +158,7 @@ def add_raster_symbol(layers: Iterable[Any]) -> None:
     Args:
         layers: List of vector layers to add the raster symbols to
     """
-    if not read_bool_setting("ADD_2DMODEL_STYLING"):
+    if not read_bool_setting("ADD_SVG_AND_RASTER_SYMBOLS"):
         return
 
     if not layers:
@@ -272,10 +272,10 @@ def add_raster_symbol(layers: Iterable[Any]) -> None:
 
                 modified = True
             else:
-                logger.error(f"Symbol not found for layer {layer.name()}")
+                logger.info(f"Symbol not found for layer {layer.name()}")
 
         # Trigger layer updates if modified
         if modified:
             layer.triggerRepaint()
             layer.emitStyleChanged()
-            logger.warning(f"Added raster symbol layer to layer '{layer.name()}'")
+            logger.info(f"Added raster symbol layer to layer '{layer.name()}'")

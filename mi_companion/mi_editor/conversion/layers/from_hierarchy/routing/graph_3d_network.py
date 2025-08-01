@@ -14,12 +14,12 @@ from qgis.core import (
 from jord.qgis_utilities import feature_to_shapely, parse_q_value
 from mi_companion.configuration import read_bool_setting
 from mi_companion.layer_descriptors import GRAPH_LINES_DESCRIPTOR
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.constants import (
+from mi_companion.mi_editor.constants import (
     DISABLE_GRAPH_EDIT,
 )
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from sync_module.model import FALLBACK_OSM_GRAPH, Solution
-from sync_module.tools.graph_utilities import lines_3d_to_osm_xml
+from sync_module.tools import lines_3d_to_osm_xml
 
 logger = logging.getLogger(__name__)
 
@@ -115,6 +115,10 @@ def add_3d_graph_edges(
     """
     if not read_bool_setting("UPLOAD_OSM_GRAPH") or DISABLE_GRAPH_EDIT:
         logger.warning("OSM graph upload is disabled")
+
+        # osm_xml = FALLBACK_OSM_GRAPH
+        # solution.update_graph(graph_key, osm_xml=osm_xml)
+
         return
 
     lines = []

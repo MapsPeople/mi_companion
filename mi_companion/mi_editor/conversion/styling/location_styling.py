@@ -45,7 +45,7 @@ from .anchor_symbol import (
     make_anchor_symbology_layer,
     make_rot_and_sca_symbology_layer,
 )
-from mi_companion.qgis_utilities.expressions import (
+from mi_companion.qgis_utilities import (
     HEX_COLOR_POLY_FILL_EXPRESSION,
 )
 

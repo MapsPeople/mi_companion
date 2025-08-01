@@ -11,7 +11,7 @@ __all__ = ["run"]
 
 
 def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> None:
-    from sync_module.tools.compatibilization import (
+    from sync_module.tools import (
         make_solution_compatible,
     )
     from sync_module.mi.config import MapsIndoors, Settings, set_settings

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from sync_module.tools.serialisation import from_json
+from sync_module.tools import from_json
 
 
 def test_load_solution_to_layers():

@@ -23,7 +23,7 @@ from mi_companion.mi_editor.conversion.projection import (
     solve_target_crs_authid,
 )
 from sync_module.model import Graph, Solution, Venue
-from sync_module.tools.graph_utilities import osm_xml_to_lines
+from sync_module.tools import osm_xml_to_lines
 
 logger = logging.getLogger(__name__)
 

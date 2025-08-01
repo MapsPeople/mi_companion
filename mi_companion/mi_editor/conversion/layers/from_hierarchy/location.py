@@ -57,10 +57,10 @@ from sync_module.model import (
     Solution,
     StrToDetailTypeMap,
 )
-from sync_module.model.typings import LanguageBundle
-from sync_module.tools.serialisation import standard_opening_hours_from_dict
+from sync_module.shared import LanguageBundle
+from sync_module.tools import standard_opening_hours_from_dict
 from warg import str_to_bool
-from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
+from mi_companion.mi_editor.constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 
 __all__ = ["add_floor_contents"]
 

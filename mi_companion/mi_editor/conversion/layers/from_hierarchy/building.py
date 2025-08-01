@@ -48,9 +48,10 @@ from sync_module.mi import (
     MI_OUTSIDE_BUILDING_NAME,
     get_outside_building_floor_name,
 )
-from sync_module.model import LanguageBundle, Solution
+from sync_module.model import Solution
+from sync_module.shared import LanguageBundle
 from .common_attributes import extract_translations
-from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
+from mi_companion.mi_editor.constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from .extraction import special_extract_layer_data
 from .floor import add_building_floors
 from .location import add_floor_contents

@@ -35,7 +35,7 @@ from sync_module.model import (
     IMPLEMENTATION_STATUS,
     Solution,
 )
-from sync_module.shared.model.common_models import (
+from sync_module.shared import (
     MIConnectionType,
     MIDoorType,
     MIEntryPointType,
@@ -332,8 +332,6 @@ def solution_venue_to_layer_hierarchy(
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
     include_occupants: bool = True,
     include_media: bool = False,
-    include_route_elements: bool = True,
-    include_graph: bool = True,
     depth: SolutionDepth = SolutionDepth.occupants,
 ) -> Solution:
     """
@@ -363,8 +361,6 @@ def solution_venue_to_layer_hierarchy(
         venue_keys=[venue_external_id],
         include_occupants=include_occupants,
         include_media=include_media,
-        include_route_elements=include_route_elements,
-        include_graph=include_graph,
         depth=depth,
     )
 

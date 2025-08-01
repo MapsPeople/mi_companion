@@ -22,6 +22,7 @@ from mi_companion.layer_descriptors import (
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
+from mi_companion.mi_editor.syncing.uploading import upload_venue
 from sync_module.mi import SolutionDepth
 from sync_module.model import (
     ImplementationStatus,
@@ -29,10 +30,10 @@ from sync_module.model import (
     PostalAddress,
     Solution,
 )
-from sync_module.shared.model.common_models import MIVenueType
+from sync_module.shared import MIVenueType
 from .building import add_venue_level_hierarchy
 from .common_attributes import extract_translations
-from .constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
+from mi_companion.mi_editor.constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 
 __all__ = ["convert_solution_venues"]
 
@@ -42,7 +43,6 @@ from jord.qgis_utilities import feature_to_shapely
 from .location_type import get_location_type_data
 
 # from .graph import add_venue_graph
-from .syncing import post_process_solution, sync_build_venue_solution
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 logger = logging.getLogger(__name__)
@@ -69,10 +69,8 @@ def convert_solution_venues(
     ith_solution: int,
     num_solution_elements: int,
     solution_depth: SolutionDepth = SolutionDepth.obstacles,
-    include_route_elements: bool = False,
     include_occupants: bool = False,
     include_media: bool = False,
-    include_graph: bool = False,
     upload_venues: bool = True,
     collect_invalid: bool = False,
     collect_warnings: bool = False,
@@ -196,54 +194,21 @@ def convert_solution_venues(
                 QtWidgets.QMessageBox.critical(None, "Error", f"\n\n- {str(ex)}")
                 raise ex
 
-        post_process_solution(solution)
-
-        if collect_invalid:
-            assert upload_venues is False, "Cannot upload venues if collecting invalid"
-            title = f"Validation {venue_key}"
-
-            if issues:
-                QtWidgets.QMessageBox.critical(
-                    None, title, "- " + "\n\n- ".join(issues)
-                )
-            else:
-                QtWidgets.QMessageBox.information(None, title, "No issues found")
-
-            issue_points = []
-            for issue in issues:
-                if isinstance(issue, str):
-                    logger.error(issue)
-                else:
-                    logger.error(f"{issue=}")
-                    issue_points.append(issue)
-
-            if issue_points:
-                ...
-                # qgis_instance_handle.iface.mapCanvas().setSelection(            issue_points            )
-                # add_shapely_layer(qgis_instance_handle=qgis_instance_handle, geoms=issue_points)
-                # TODO: Add  shapely layer with issues
-
-        elif upload_venues:
-            assert (
-                len(issues) == 0
-                and not collect_invalid
-                and not collect_warnings
-                and not collect_errors
-            ), (
-                f"Did not expect issues: {issues=}, {collect_invalid=}, {collect_warnings=}, {collect_errors=}, "
-                f"cannot upload!"
-            )
-            sync_build_venue_solution(
-                qgis_instance_handle=qgis_instance_handle,
-                include_graph=include_graph,
-                include_media=include_media,
-                include_occupants=include_occupants,
-                include_route_elements=include_route_elements,
-                solution=solution,
-                solution_depth=solution_depth,
-                solution_name=solution_name,
-                progress_bar=progress_bar,
-            )
+        upload_venue(
+            collect_errors=collect_errors,
+            collect_invalid=collect_invalid,
+            collect_warnings=collect_warnings,
+            include_media=include_media,
+            include_occupants=include_occupants,
+            issues=issues,
+            progress_bar=progress_bar,
+            qgis_instance_handle=qgis_instance_handle,
+            solution=solution,
+            solution_depth=solution_depth,
+            solution_name=solution_name,
+            upload_venues=upload_venues,
+            venue_key=venue_key,
+        )
 
         solutions.append(solution)
 

@@ -10,14 +10,14 @@ from geopandas import GeoDataFrame
 
 from jord.shapely_utilities import clean_shape
 from mi_companion.configuration import read_bool_setting
-from mi_companion.qgis_utilities.exceptions import InvalidReprojection
+from mi_companion.qgis_utilities import InvalidReprojection
 from sync_module.mi_sync_constants import (
     EDITING_CRS_AUTHID,
     EDITING_EPSG_NUMBER,
     MI_CRS_AUTHID,
     MI_EPSG_NUMBER,
 )
-from sync_module.shared.projection import MI_CRS
+from sync_module.shared import MI_CRS
 
 __all__ = [
     "prepare_geom_for_mi_db_qgis",

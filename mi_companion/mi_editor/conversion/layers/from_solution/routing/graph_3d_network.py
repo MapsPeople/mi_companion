@@ -63,13 +63,9 @@ def add_graph_3d_network_layers(
     for ith, (line, meta_data) in enumerate(zip(lines, lines_meta_data)):
         edge_levels = meta_data.pop("level").split(";")
 
-        _ = meta_data.pop("from")
-        _ = meta_data.pop("to")
-        _ = meta_data.pop("length")
-        _ = meta_data.pop("distance")
-        _ = meta_data.pop("oneway")
-        _ = meta_data.pop("reversed")
-        _ = meta_data.pop("osmid")
+        for a in ("from", "to", "length", "distance", "oneway", "reversed", "osmid"):
+            if a in meta_data:
+                _ = meta_data.pop(a)
 
         coords = line.coords
         num_coords = len(coords)
@@ -115,6 +111,7 @@ def add_graph_3d_network_layers(
             ogr_linestring = ogr.Geometry(ogr.wkbLineString)
             for c in z_augmented_line_points:
                 ogr_linestring.AddPointZM(*c)
+
             z_augment_lines.append(ogr_linestring.ExportToWkb())
 
     graph_lines_layer = add_wkb_layer(
@@ -128,6 +125,7 @@ def add_graph_3d_network_layers(
         visible=True,
         crs=solve_target_crs_authid(),
     )
+
     if True:
         set_3d_view_settings(  # MAKE offset CONDITIONAL ON FLOOR_INDEX column
             graph_lines_layer,

@@ -25,9 +25,9 @@ from jord.qgis_utilities import (
 )
 from jord.qgis_utilities.helpers.widgets import COLOR_WIDGET
 from jord.qlive_utilities import add_dataframe_layer
-from mi_companion import ANCHOR_AS_INDIVIDUAL_FIELDS
 from mi_companion.configuration import read_bool_setting, read_float_setting
 from mi_companion.constants import (
+    ANCHOR_AS_INDIVIDUAL_FIELDS,
     FLOOR_HEIGHT,
     FLOOR_VERTICAL_SPACING,
     USE_EXTERNAL_ID_FLOOR_SELECTION,
@@ -56,20 +56,13 @@ from mi_companion.mi_editor.conversion.styling import (
     add_svg_symbol,
     apply_display_rule_styling_categorized,
 )
-from mi_companion.qgis_utilities.anchor_centering import (
+from mi_companion.qgis_utilities import (
     auto_center_anchors_when_outside,
 )
 from mi_companion.type_enums import BackendLocationTypeEnum
-from sync_module.model import (
-    Floor,
-    Solution,
-)
-from sync_module.model.solution_item import CollectionMixin
-from sync_module.shared.pandas_utilities import locations_to_df
-from sync_module.tools.serialisation import (
-    collection_to_df,
-)
-from sync_module.tools.serialisation.parsing import process_nested_fields_df
+from sync_module.model import CollectionMixin, Floor, Solution
+from sync_module.pandas_utilities import locations_to_df
+from sync_module.tools import collection_to_df, process_nested_fields_df
 
 try:
     from enum import StrEnum

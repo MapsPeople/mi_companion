@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
+## 0.7.20 - 2025-08-01
+
+* [Regression Fix] An import in the "set label field" functionality had become invalid, this is fixed now
+* [Feature] Patch english langauge if it is missing or empty now
+* [Feature] Auto patch anchors that did end up outside a polygon at upload-time
+* [Feature] Location-type based location creation mode button and functionality now controllable through the ADD_LOCATION_TYPE_MODE_TOGGLE flag in settings
 
 ## 0.7.19 - 2025-07-30
 
@@ -76,7 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   geometries
 * [Validation] All result lon and lat coordinates are now range validation (-90 to 90) and (-180 to 180)
 * [Feature] Anchor and 3d-rotation is now visualised in every polygon, can be disabled by setting,
-  ADD_ANCHOR_AND_3DROTSCL_STYLING.
+  ADD_ANCHOR_AND_3DROTSCL_SYMBOLS.
 * [Feature] Adds support for 2D model styling and visualisation (SVG and raster symbols) on location level, location-type level is still missing
 
 ## 0.7.6 - 2025-07-03
@@ -87,8 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Bug-fix] If a field erroneously has a non-lowercase key (Dictated by upload to the ManagerAPI) it is now
   lowered on download.
 * [New Button] Added a button "Recalculate 3d Walls" for forcefully recomputing 3D walls aka "DerivedGeometry"
-  for solutions based on
-  a solutionId.
+  for solutions based on a solutionId.
 * [Bug-fix] Property is_obstacle and is_selectable is now tracked and persisted.
 * [QOL] Location-Types dropdown are now sorted by translations.[default-language].name. Duplicate locationtype
   names are grouped together. Admin-id's are displayed when hovered over the locationtype.

@@ -41,10 +41,8 @@ def convert_solution_layers_to_solution(
     progress_bar: Callable,
     mi_group: Any,
     solution_depth: SolutionDepth = SolutionDepth.obstacles,
-    include_route_elements: bool = False,
     include_occupants: bool = False,
     include_media: bool = False,
-    include_graph: bool = False,
     upload_venues: bool = True,
     collect_warnings: bool = False,
     collect_errors: bool = False,
@@ -164,10 +162,8 @@ def convert_solution_layers_to_solution(
                 solution_external_id,
                 venue_keys=[],  # No Venues
                 depth=solution_depth,
-                include_route_elements=include_route_elements,
                 include_occupants=include_occupants,
                 include_media=include_media,
-                include_graph=include_graph,
             )
         else:
             existing_solution = None
@@ -190,10 +186,8 @@ def convert_solution_layers_to_solution(
                 ith_solution=ith_child,
                 num_solution_elements=num_mi_group_elements,
                 solution_depth=solution_depth,
-                include_route_elements=include_route_elements,
                 include_occupants=include_occupants,
                 include_media=include_media,
-                include_graph=include_graph,
                 upload_venues=upload_venues,
                 collect_invalid=collect_invalid,
                 collect_warnings=collect_warnings,
@@ -211,10 +205,8 @@ def layer_hierarchy_to_solution(
     *,
     progress_bar: Optional[QtWidgets.QProgressBar] = None,
     solution_depth: SolutionDepth = SolutionDepth.obstacles,
-    include_route_elements: bool = False,
     include_occupants: bool = False,
     include_media: bool = False,
-    include_graph: bool = False,
 ) -> None:
     """
 
@@ -264,8 +256,6 @@ def layer_hierarchy_to_solution(
         progress_bar=progress_bar,
         mi_group=mi_group,
         solution_depth=solution_depth,
-        include_route_elements=include_route_elements,
         include_occupants=include_occupants,
         include_media=include_media,
-        include_graph=include_graph,
     )

@@ -1,5 +1,5 @@
 from sync_module.mi import get_remote_solution
-from sync_module.tools.serialisation import collection_to_df
+from sync_module.tools import collection_to_df
 
 a = get_remote_solution("kemper-merged")
 shape_df = collection_to_df(a.location_types, pop_keys=["display_rule"])

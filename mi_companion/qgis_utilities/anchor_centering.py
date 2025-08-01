@@ -1,21 +1,18 @@
 import logging
-
-from mi_companion.constants import ONLY_RESET_ANCHOR_IF_OUTSIDE
-from mi_companion.qgis_utilities import (
-    RESET_ANCHOR_TO_CENTROID_COMPONENT,
-    RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY_COMPONENT,
-)
+from typing import Iterable
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
-    QgsProject,
-    QgsFieldConstraints,
+    Qgis,
     QgsDefaultValue,
-    QgsEditorWidgetSetup,
+    QgsFieldConstraints,
 )
 
-# noinspection PyUnresolvedReferences
-from qgis.core import Qgis, QgsGeometry, QgsMessageLog
+from mi_companion.constants import ONLY_RESET_ANCHOR_IF_OUTSIDE
+from .expressions import (
+    RESET_ANCHOR_TO_CENTROID_COMPONENT,
+    RESET_ANCHOR_TO_CENTROID_IF_MOVED_OUTSIDE_GEOMETRY_COMPONENT,
+)
 
 __all__ = ["auto_center_anchors_when_outside"]
 
@@ -23,7 +20,7 @@ __all__ = ["auto_center_anchors_when_outside"]
 logger = logging.getLogger(__name__)
 
 
-def auto_center_anchors_when_outside(layers):
+def auto_center_anchors_when_outside(layers: Iterable) -> None:
     for layers_inner in layers:
 
         for c, v in {"anchor_x": "x", "anchor_y": "y"}.items():

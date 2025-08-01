@@ -17,7 +17,7 @@ from mi_companion.mi_editor.conversion.projection import (
     solve_target_crs_authid,
 )
 from sync_module.model import DoorCollection, Graph
-from sync_module.shared.pandas_utilities import locations_to_df
+from sync_module.pandas_utilities import locations_to_df
 
 logger = logging.getLogger(__name__)
 

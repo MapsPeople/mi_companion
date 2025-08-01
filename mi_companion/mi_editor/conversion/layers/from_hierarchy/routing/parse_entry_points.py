@@ -11,7 +11,7 @@ from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes i
 )
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from sync_module.model import Solution
-from sync_module.shared.model.common_models import MIEntryPointType
+from sync_module.shared import MIEntryPointType
 
 logger = logging.getLogger(__name__)
 

@@ -54,7 +54,8 @@ def get_occupant_data(
                     lt = solution.occupants.get(Occupant.compute_key(admin_id=admin_id))
                     if lt is None:
                         solution.add_occupant(
-                            location_key=...  # TODO: FINISH IMPLEMENTATION
+                            location_key=...,  # TODO: FINISH IMPLEMENTATION
+                            occupant_template_key=...,
                         )
 
             except Exception as e:
