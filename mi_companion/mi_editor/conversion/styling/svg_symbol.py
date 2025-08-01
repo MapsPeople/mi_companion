@@ -173,7 +173,7 @@ def add_svg_symbol(layers: Iterable[Any]) -> None:
     :param layers:
     :return:
     """
-    if not read_bool_setting("ADD_2DMODEL_STYLING"):
+    if not read_bool_setting("ADD_SVG_AND_RASTER_SYMBOLS"):
         return
 
     if not layers:

@@ -1,4 +1,5 @@
 import logging
+from typing import Iterable
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -19,7 +20,7 @@ __all__ = ["auto_center_anchors_when_outside"]
 logger = logging.getLogger(__name__)
 
 
-def auto_center_anchors_when_outside(layers):
+def auto_center_anchors_when_outside(layers: Iterable) -> None:
     for layers_inner in layers:
 
         for c, v in {"anchor_x": "x", "anchor_y": "y"}.items():

@@ -100,7 +100,7 @@ def add_rotation_scale_geometry_generator(layers):
         layers: List of vector layers to add the geometry generator to
     """
 
-    if not read_bool_setting("ADD_ANCHOR_AND_3DROTSCL_STYLING"):
+    if not read_bool_setting("ADD_ANCHOR_AND_3DROTSCL_SYMBOLS"):
         return
 
     if not layers:

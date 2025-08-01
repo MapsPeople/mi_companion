@@ -158,7 +158,7 @@ def add_raster_symbol(layers: Iterable[Any]) -> None:
     Args:
         layers: List of vector layers to add the raster symbols to
     """
-    if not read_bool_setting("ADD_2DMODEL_STYLING"):
+    if not read_bool_setting("ADD_SVG_AND_RASTER_SYMBOLS"):
         return
 
     if not layers:
