@@ -151,7 +151,7 @@ def add_venue_layer(
 
             if graph is None and read_bool_setting("ADD_DUMMY_GRAPH_IF_MISSING"):
                 graph_key = solution.add_graph(
-                    graph_id=f"{venue_name}_graph",
+                    graph_id=f"{venue.translations['en'].name}_graph",
                     osm_xml=FALLBACK_OSM_GRAPH,
                     boundary=venue.polygon,
                 )
