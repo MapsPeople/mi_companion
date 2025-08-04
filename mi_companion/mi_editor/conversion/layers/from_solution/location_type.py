@@ -24,7 +24,7 @@ from jord.qgis_utilities import (
 from jord.qlive_utilities import add_no_geom_layer
 from sync_module.model import Solution
 from sync_module.tools import collection_to_df, process_nested_fields_df
-from .location_fields import (
+from mi_companion.qgis_utilities.location_fields import (
     BOOLEAN_LOCATION_TYPE_ATTRS,
     FLOAT_LOCATION_TYPE_ATTRS,
     INTEGER_LOCATION_TYPE_ATTRS,

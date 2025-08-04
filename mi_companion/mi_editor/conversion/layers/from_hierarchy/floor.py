@@ -39,8 +39,8 @@ from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
 from sync_module.model import Solution
-from .common_attributes import extract_translations
-from .extraction import special_extract_layer_data
+from mi_companion.qgis_utilities.common_attributes import extract_translations
+from mi_companion.qgis_utilities.extraction import special_extract_layer_data
 from .location import add_floor_contents
 
 logger = logging.getLogger(__name__)

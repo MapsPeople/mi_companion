@@ -35,7 +35,9 @@ from mi_companion.mi_editor.conversion.projection import (
 from sync_module.model import FALLBACK_OSM_GRAPH, Solution, Venue
 from sync_module.tools import translations_to_flattened_dict
 from .building import add_building_layers
-from .occupant import add_occupant_layer
+from mi_companion.mi_editor.conversion.layers.from_solution.occupancy.occupant import (
+    add_occupant_layer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -120,20 +122,9 @@ def add_venue_layer(
         if progress_bar:
             progress_bar.setValue(20)
 
-        occupant_dropdown_widget = None
-        if ADD_OCCUPANT_LAYERS:
-            occupant_layer = add_occupant_layer(
-                solution=solution,
-                venue_group=venue_group,
-                qgis_instance_handle=qgis_instance_handle,
-            )
-            if occupant_layer:
-                assert len(occupant_layer) == 1
-                occupant_layer = occupant_layer[0]
-                occupant_dropdown_widget = make_value_relation_widget(
-                    occupant_layer.id(),
-                    allow_null_values=True,
-                )
+        occupant_dropdown_widget = add_occupant_layers(
+            qgis_instance_handle, solution, venue_group
+        )
 
         add_building_layers(
             solution=solution,
@@ -146,36 +137,77 @@ def add_venue_layer(
             occupant_dropdown_widget=occupant_dropdown_widget,
         )
 
-        if read_bool_setting("ADD_GRAPH"):  # add graph
-            graph = venue.graph
-
-            if graph is None and read_bool_setting("ADD_DUMMY_GRAPH_IF_MISSING"):
-                graph_key = solution.add_graph(
-                    graph_id=f"{venue.translations['en'].name}_graph",
-                    osm_xml=FALLBACK_OSM_GRAPH,
-                    boundary=venue.polygon,
-                )
-                solution.update_venue(venue.key, graph_key=graph_key)
-                graph = venue.graph
-
-            if graph is not None:
-
-                add_graph_layers(
-                    graph=graph,
-                    venue_group=venue_group,
-                    qgis_instance_handle=qgis_instance_handle,
-                    solution=solution,
-                    venue=venue,
-                    highway_type_dropdown_widget=highway_type_dropdown_widget,
-                    door_type_dropdown_widget=door_type_dropdown_widget,
-                    connection_type_dropdown_widget=connection_type_dropdown_widget,
-                    entry_point_type_dropdown_widget=entry_point_type_dropdown_widget,
-                    edge_context_type_dropdown_widget=edge_context_type_dropdown_widget,
-                )
+        add_graph_layers_ss(
+            connection_type_dropdown_widget,
+            door_type_dropdown_widget,
+            edge_context_type_dropdown_widget,
+            entry_point_type_dropdown_widget,
+            highway_type_dropdown_widget,
+            qgis_instance_handle,
+            solution,
+            venue,
+            venue_group,
+        )
 
         if INSERT_INDEX > 0:
             add_venue_polygon_layer(
                 qgis_instance_handle, venue, venue_group, venue_type_dropdown_widget
+            )
+
+
+def add_occupant_layers(qgis_instance_handle, solution, venue_group):
+    occupant_dropdown_widget = None
+    if ADD_OCCUPANT_LAYERS:
+        occupant_layer = add_occupant_layer(
+            solution=solution,
+            venue_group=venue_group,
+            qgis_instance_handle=qgis_instance_handle,
+        )
+        if occupant_layer:
+            assert len(occupant_layer) == 1
+            occupant_layer = occupant_layer[0]
+            occupant_dropdown_widget = make_value_relation_widget(
+                occupant_layer.id(),
+                allow_null_values=True,
+            )
+    return occupant_dropdown_widget
+
+
+def add_graph_layers_ss(
+    connection_type_dropdown_widget,
+    door_type_dropdown_widget,
+    edge_context_type_dropdown_widget,
+    entry_point_type_dropdown_widget,
+    highway_type_dropdown_widget,
+    qgis_instance_handle,
+    solution,
+    venue,
+    venue_group,
+):
+    if read_bool_setting("ADD_GRAPH"):  # add graph
+        graph = venue.graph
+
+        if graph is None and read_bool_setting("ADD_DUMMY_GRAPH_IF_MISSING"):
+            graph_key = solution.add_graph(
+                graph_id=f"{venue.translations['en'].name}_graph",
+                osm_xml=FALLBACK_OSM_GRAPH,
+                boundary=venue.polygon,
+            )
+            solution.update_venue(venue.key, graph_key=graph_key)
+            graph = venue.graph
+
+        if graph is not None:
+            add_graph_layers(
+                graph=graph,
+                venue_group=venue_group,
+                qgis_instance_handle=qgis_instance_handle,
+                solution=solution,
+                venue=venue,
+                highway_type_dropdown_widget=highway_type_dropdown_widget,
+                door_type_dropdown_widget=door_type_dropdown_widget,
+                connection_type_dropdown_widget=connection_type_dropdown_widget,
+                entry_point_type_dropdown_widget=entry_point_type_dropdown_widget,
+                edge_context_type_dropdown_widget=edge_context_type_dropdown_widget,
             )
 
 

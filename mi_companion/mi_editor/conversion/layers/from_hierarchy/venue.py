@@ -33,11 +33,11 @@ from sync_module.model import (
 )
 from sync_module.shared import MIVenueType
 from .building import add_venue_level_hierarchy
-from .common_attributes import extract_translations
+from mi_companion.qgis_utilities.common_attributes import extract_translations
 
 __all__ = ["convert_solution_venues"]
 
-from .extraction import special_extract_layer_data
+from mi_companion.qgis_utilities.extraction import special_extract_layer_data
 from jord.qgis_utilities import feature_to_shapely
 
 from .location_type import get_location_type_data

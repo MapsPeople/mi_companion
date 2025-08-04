@@ -252,7 +252,6 @@ def add_solution_group_if_missing(layer_tree_root, mi_hierarchy_group_name, solu
         mi_group = layer_tree_root.addGroup(mi_hierarchy_group_name)
 
     mi_group.setExpanded(True)
-    # mi_group.setExpanded(False)
 
     if DESCRIPTOR_BEFORE:
         solution_name = f"{SOLUTION_GROUP_DESCRIPTOR} {solution.name}"
@@ -270,13 +269,8 @@ def add_solution_group_if_missing(layer_tree_root, mi_hierarchy_group_name, solu
 
 
 def add_solution_data_layers(qgis_instance_handle, solution, solution_group):
-    # solution_layer_name = f"{solution.name}_solution_data"
-    # solution_data_layers = QgsProject.instance().mapLayersByName(solution_layer_name)
-    # logger.info(f"Found {solution_data_layers}")
 
     found_solution_data = None
-
-    # found_solution_data = len(solution_data_layers)>0
 
     for c in solution_group.children():
         if SOLUTION_DATA_DESCRIPTOR in c.name():
@@ -295,6 +289,7 @@ def add_solution_data_layers(qgis_instance_handle, solution, solution_group):
             found_solution_data = None
         else:
             ...
+
     if found_solution_data is None:
         solution_data_layers = add_no_geom_layer(
             qgis_instance_handle=qgis_instance_handle,

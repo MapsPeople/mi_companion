@@ -41,7 +41,7 @@ from mi_companion import (
 )
 from mi_companion.configuration import read_bool_setting
 from mi_companion.mi_editor.constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
+from mi_companion.qgis_utilities.common_attributes import (
     extract_display_rule,
     extract_street_view_config,
     extract_translations,

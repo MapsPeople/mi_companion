@@ -11,7 +11,10 @@ from jord.qgis_utilities import (
 from mi_companion.layer_descriptors import LOCATION_TYPE_DESCRIPTOR
 from sync_module.model import LocationType, Solution
 from warg import str_to_bool
-from .common_attributes import extract_display_rule, extract_translations
+from mi_companion.qgis_utilities.common_attributes import (
+    extract_display_rule,
+    extract_translations,
+)
 
 BOOLEAN_LOCATION_TYPE_ATTRS = ()
 STR_LOCATION_TYPE_ATTRS = ("translations.en.name", "admin_id")

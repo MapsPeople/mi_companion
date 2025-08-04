@@ -51,8 +51,8 @@ from sync_module.mi import (
 )
 from sync_module.model import Solution
 from sync_module.shared import LanguageBundle
-from .common_attributes import extract_translations
-from .extraction import special_extract_layer_data
+from mi_companion.qgis_utilities.common_attributes import extract_translations
+from mi_companion.qgis_utilities.extraction import special_extract_layer_data
 from .floor import add_building_floors
 from .location import add_floor_contents
 

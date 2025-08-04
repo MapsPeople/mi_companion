@@ -32,7 +32,7 @@ from mi_companion.constants import (
     FLOOR_VERTICAL_SPACING,
     USE_EXTERNAL_ID_FLOOR_SELECTION,
 )
-from mi_companion.mi_editor.conversion.layers.from_solution.location_fields import (
+from mi_companion.qgis_utilities.location_fields import (
     BOOLEAN_LOCATION_FIELDS,
     COLOR_LOCATION_FIELDS,
     DATETIME_LOCATION_FIELDS,

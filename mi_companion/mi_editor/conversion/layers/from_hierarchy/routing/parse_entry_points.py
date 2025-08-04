@@ -6,7 +6,7 @@ from qgis.PyQt.QtCore import QVariant
 
 from jord.qgis_utilities import extract_feature_attributes, feature_to_shapely
 from mi_companion import VERBOSE
-from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
+from mi_companion.qgis_utilities.common_attributes import (
     extract_single_level_str_map,
 )
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
