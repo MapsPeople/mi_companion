@@ -1,0 +1,29 @@
+@startuml C4_Component_mi_sync
+!include <C4/C4_Component.puml>
+
+title Component Diagram for `mi_sync`
+
+Container_Boundary(mi_sync, "`mi_sync`") {
+    Component(sync_module, "sync_module", "Synchronization implementation") {
+        Component(mi, "mi", "MI sync logic") {
+            Component(client_model, "client_model", "Client models")
+            Component(conversion, "conversion", "Conversion logic")
+            Component(manager_model, "manager_model", "Manager models")
+            Component(operations, "operations", "Operations")
+        }
+        Component(model, "model", "Data models") {
+            Component(display_rules, "display_rules", "Display rules")
+            Component(locations, "locations", "Locations")
+            Component(occupancy, "occupancy", "Occupancy")
+            Component(route_elements, "route_elements", "Route elements")
+            Component(solution_interface, "solution_interface", "Solution interface")
+        }
+        Component(shared, "shared", "Shared utilities")
+        Component(tools, "tools", "Migration and transformation tools")
+    }
+
+    Component(scripts, "scripts", "Automation scripts")
+    Component(tests, "tests", "Unit and integration tests")
+}
+
+@enduml
