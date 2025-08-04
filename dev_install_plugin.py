@@ -4,7 +4,7 @@ from pathlib import Path
 
 from dev_install_dependencies import install_dependencies
 
-print(subprocess.check_call(["python", "-m", "pip", "install", "-y", "apppath"]))
+print(subprocess.check_call(["python3", "-m", "pip", "install",  "apppath", "--break-system-packages"]))
 
 
 from plugin_config import PROFILE, QGIS_APP_PATH

@@ -19,7 +19,7 @@ def pip_install_editable(package_paths):
     if packages_to_remove:
         try:
             subprocess.check_call(
-                ["python", "-m", "pip", "uninstall", "-y"] + packages_to_remove
+                ["python3", "-m", "pip", "uninstall", "-y"] + packages_to_remove + ["--break-system-packages"]
             )
             print(f"Uninstalled: {', '.join(packages_to_remove)}")
         except subprocess.CalledProcessError as e:
@@ -28,7 +28,7 @@ def pip_install_editable(package_paths):
     # Install each package in editable mode
     for path in package_paths:
         try:
-            subprocess.check_call(["python", "-m", "pip", "install", "-e", path])
+            subprocess.check_call(["python3", "-m", "pip", "install", "-e", path, "--break-system-packages"])
             print(f"Installed: {path}")
         except subprocess.CalledProcessError as e:
             logger.error(f"Failed to install {path}: {e}")
@@ -40,14 +40,14 @@ def install_dependencies():
     env["SUBMODULE_DIRECTORY"] = str(Path(__file__).parent)
     print(
         subprocess.check_call(
-            ["python", "-m", "pip", "install", "-r", "mi_companion/requirements.txt"],
+            ["python3", "-m", "pip", "install", "-r", "mi_companion/requirements.txt", "--break-system-packages"],
             env=env,
         )
     )
     print(
         subprocess.check_call(
             [
-                "python",
+                "python3",
                 "-m",
                 "pip",
                 "uninstall",
@@ -55,7 +55,7 @@ def install_dependencies():
                 "sync_module",
                 "midf",
                 "svaugely",
-                "caddy",
+                "caddy","--break-system-packages"
             ]
         )
     )
