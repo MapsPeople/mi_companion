@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
+## 0.7.21 - 2025-08-04
+
+* [Regression Fix] last_verified field is not serialised and deserialised properly
+* [Feature] Auto add a graph to a venue on download if it is missing a graph
+
 ## 0.7.20 - 2025-08-01
 
 * [Regression Fix] An import in the "set label field" functionality had become invalid, this is fixed now

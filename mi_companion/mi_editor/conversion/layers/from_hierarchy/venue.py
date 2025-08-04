@@ -268,7 +268,7 @@ def get_venue_key(
                         polygon=prepare_geom_for_mi_db_qgis(venue_polygon),
                         venue_type=get_venue_type(layer_attributes),
                         last_verified=get_last_verified(layer_attributes),
-                        translations=(translations),
+                        translations=translations,
                         address=get_address(layer_attributes),
                     )
                 except Exception as e:
@@ -303,12 +303,12 @@ def get_address(layer_attributes: Mapping[str, Any]) -> OptionalPostalAddress:
     return address
 
 
-def get_last_verified(layer_attributes: Mapping[str, Any]) -> datetime:
+def get_last_verified(layer_attributes: Mapping[str, Any]) -> Optional[datetime]:
     if "last_verified" in layer_attributes and layer_attributes["last_verified"]:
         last_verified = layer_attributes["last_verified"]
 
         if isinstance(last_verified, str):
-            ...
+            last_verified = datetime.fromisoformat(last_verified)
         elif isinstance(last_verified, QDateTime):
             try:
                 last_verified = last_verified.toPyDate()
@@ -322,7 +322,8 @@ def get_last_verified(layer_attributes: Mapping[str, Any]) -> datetime:
                         raise e
 
         elif isinstance(last_verified, datetime):
-            last_verified = last_verified.timestamp()
+            ...
+            # last_verified = last_verified.timestamp()
         # elif isinstance(last_verified, int):
         #  last_verified = last_verified * 1000
         elif isinstance(last_verified, QVariant):

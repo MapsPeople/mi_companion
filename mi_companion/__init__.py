@@ -12,6 +12,7 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     logger = None
+
     #
     from .mi_companion_plugin import MapsIndoorsCompanionPlugin
     import logging
