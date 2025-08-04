@@ -1,12 +1,10 @@
 import logging
 
-from .upload import sync_build_venue_solution
-from .pre_upload_processing import post_process_solution
-
-
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
 
+from .pre_upload_processing import post_process_solution
+from .upload import sync_build_venue_solution
 
 logger = logging.getLogger(__name__)
 

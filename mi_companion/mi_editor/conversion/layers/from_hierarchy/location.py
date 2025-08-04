@@ -40,6 +40,7 @@ from mi_companion import (
     VERBOSE,
 )
 from mi_companion.configuration import read_bool_setting
+from mi_companion.mi_editor.constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.common_attributes import (
     extract_display_rule,
     extract_street_view_config,
@@ -60,7 +61,6 @@ from sync_module.model import (
 from sync_module.shared import LanguageBundle
 from sync_module.tools import standard_opening_hours_from_dict
 from warg import str_to_bool
-from mi_companion.mi_editor.constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 
 __all__ = ["add_floor_contents"]
 

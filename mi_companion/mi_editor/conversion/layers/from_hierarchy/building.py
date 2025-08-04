@@ -37,6 +37,7 @@ from mi_companion.layer_descriptors import (
     FLOOR_GROUP_DESCRIPTOR,
     GRAPH_GROUP_DESCRIPTOR,
 )
+from mi_companion.mi_editor.constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.routing import (
     add_venue_graph,
 )
@@ -51,7 +52,6 @@ from sync_module.mi import (
 from sync_module.model import Solution
 from sync_module.shared import LanguageBundle
 from .common_attributes import extract_translations
-from mi_companion.mi_editor.constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from .extraction import special_extract_layer_data
 from .floor import add_building_floors
 from .location import add_floor_contents

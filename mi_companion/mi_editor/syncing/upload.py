@@ -14,19 +14,17 @@ from sync_module.mi import (
     MIOperation,
     SolutionDepth,
     SyncLevel,
-    strategy_solver,
-    synchronize,
+    create_if_it_does_not_exist_predicate,
     default_matcher,
     default_strategy,
-    create_if_it_does_not_exist_predicate,
+    strategy_solver,
+    synchronize,
 )
-
 from sync_module.model import (
     Graph,
     Solution,
 )
 from .operation_visualisation import show_differences
-from mi_companion.mi_editor.constants import DISABLE_GRAPH_EDIT
 
 logger = logging.getLogger(__name__)
 

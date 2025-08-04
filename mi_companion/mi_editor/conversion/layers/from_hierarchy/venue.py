@@ -19,6 +19,7 @@ from mi_companion.layer_descriptors import (
     VENUE_GROUP_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
 )
+from mi_companion.mi_editor.constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
@@ -33,7 +34,6 @@ from sync_module.model import (
 from sync_module.shared import MIVenueType
 from .building import add_venue_level_hierarchy
 from .common_attributes import extract_translations
-from mi_companion.mi_editor.constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 
 __all__ = ["convert_solution_venues"]
 
