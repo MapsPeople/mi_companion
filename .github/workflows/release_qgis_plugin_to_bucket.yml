@@ -93,5 +93,12 @@ jobs:
         name: upload-file-to-bucket
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
+          path: plugins.xml
+          destination: qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
+
+      - id: "upload-plugins-xml-to-bucket"
+        name: upload-file-to-bucket
+        uses: "google-github-actions/upload-cloud-storage@v2"
+        with:
           path: plugins_merged.xml
           destination: qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
