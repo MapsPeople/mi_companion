@@ -88,6 +88,10 @@ jobs:
           mkdir -p downloaded
           gcloud storage cp gs://qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/plugins.xml downloaded/
 
+      - name: Install mising dependencies
+        run: |
+          python -m pip install --upgrade pip lxml
+
       - id: "merge-plugin-xmls"
         name: merge-plugin-xmls
         run: |
