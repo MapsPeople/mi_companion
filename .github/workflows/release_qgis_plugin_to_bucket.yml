@@ -90,14 +90,14 @@ jobs:
           python merge_plugin_xml_files.py plugins.xml downloaded/plugins.xml plugins_merged.xml
 
       - id: "upload-plugins-xml-to-bucket"
-        name: upload-file-to-bucket
+        name: upload-plugins-xml-to-bucket
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
           path: plugins.xml
           destination: qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
 
-      - id: "upload-plugins-xml-to-bucket"
-        name: upload-file-to-bucket
+      - id: "upload-merged-plugins-xml-to-bucket"
+        name: upload-merged-plugins-xml-to-bucket
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
           path: plugins_merged.xml
