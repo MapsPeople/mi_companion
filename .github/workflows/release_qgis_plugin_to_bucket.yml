@@ -82,7 +82,7 @@ jobs:
         name: download-file-from-gcs
         run: |
           mkdir -p downloaded
-          gcloud storage cp qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/mi_companion.${{ env.RELEASE_VERSION }}/plugins.xml downloaded/
+          gcloud storage cp qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/plugins.xml downloaded/
 
       - id: "merge-plugin-xmls"
         name: merge-plugin-xmls
