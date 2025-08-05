@@ -2,3 +2,4 @@ jord>=0.8.9
 requests
 pyqt6>=6.0.0
 types-PyYAML
+lxml
