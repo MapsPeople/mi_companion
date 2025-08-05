@@ -78,11 +78,15 @@ jobs:
         with:
           version: '>= 363.0.0'
 
+      - id: "list-files-in-GCS-path"
+        name: list-files-in-GCS-path
+        run: gcloud storage ls gs://qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
+
       - id: "download-file-from-gcs"
         name: download-file-from-gcs
         run: |
           mkdir -p downloaded
-          gcloud storage cp qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/plugins.xml downloaded/
+          gcloud storage cp gs://qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/plugins.xml downloaded/
 
       - id: "merge-plugin-xmls"
         name: merge-plugin-xmls
