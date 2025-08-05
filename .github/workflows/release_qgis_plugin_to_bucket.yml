@@ -71,10 +71,27 @@ jobs:
           path: mi_companion.${{ env.RELEASE_VERSION }}.zip
           destination: qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
 
-      #TODO: MERGE PLUGINS.xml
+
+      - id: "setup-gcloud-cli"
+        name: "setup-gcloud-cli"
+        uses: "google-github-actions/setup-gcloud@v2"
+        with:
+          version: '>= 363.0.0'
+
+      - id: "download-file-from-gcs"
+        name: download-file-from-gcs
+        run: |
+          mkdir -p downloaded
+          gcloud storage cp qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/mi_companion.${{ env.RELEASE_VERSION }}/plugins.xml downloaded/
+
+      - id: "merge-plugin-xmls"
+        name: merge-plugin-xmls
+        run: |
+          python merge_plugin_xml_files.py plugins.xml downloaded/plugins.xml plugins_merged.xml
+
       - id: "upload-plugins-xml-to-bucket"
         name: upload-file-to-bucket
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
-          path: plugins.xml
+          path: plugins_merged.xml
           destination: qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
