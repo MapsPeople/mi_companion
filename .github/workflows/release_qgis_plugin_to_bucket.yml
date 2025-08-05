@@ -80,7 +80,7 @@ jobs:
 
       - id: "list-files-in-GCS-path"
         name: list-files-in-GCS-path
-        run: gcloud storage ls gs://qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/ | gcs-plugins-list.txt
+        run: gcloud storage ls gs://qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/ > gcs-plugins-list.txt
 
       - id: "download-file-from-gcs"
         name: download-file-from-gcs
