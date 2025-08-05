@@ -3,7 +3,7 @@ name=MapsIndoors Beta
 
 qgisMinimumVersion=3.36
 qgisMaximumVersion=3.99
-version=0.7.20-exp-merge-xmls-2
+version=0.7.20-exp-merge-xmls-3
 
 author=MapsPeople A/S
 email=chen@mapspeople.com
