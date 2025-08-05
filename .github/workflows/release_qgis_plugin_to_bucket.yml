@@ -46,7 +46,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip qgis-plugin-ci jord
+          python -m pip install --upgrade pip qgis-plugin-ci jord lxml
 
       - name: Fetch current changelog
         run: qgis-plugin-ci changelog ${{ env.RELEASE_VERSION }} >> release.md
@@ -80,7 +80,7 @@ jobs:
 
       - id: "list-files-in-GCS-path"
         name: list-files-in-GCS-path
-        run: gcloud storage ls gs://qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
+        run: gcloud storage ls gs://qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/ | gcs-plugins-list.txt
 
       - id: "download-file-from-gcs"
         name: download-file-from-gcs
@@ -88,14 +88,10 @@ jobs:
           mkdir -p downloaded
           gcloud storage cp gs://qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/plugins.xml downloaded/
 
-      - name: Install mising dependencies
-        run: |
-          python -m pip install --upgrade pip lxml
-
       - id: "merge-plugin-xmls"
         name: merge-plugin-xmls
         run: |
-          python merge_plugin_xml_files.py plugins.xml downloaded/plugins.xml plugins_merged.xml
+          python plugin_xml_operations.py merge plugins.xml downloaded/plugins.xml plugins_merged.xml
 
       - id: "upload-plugins-xml-to-bucket"
         name: upload-plugins-xml-to-bucket
@@ -109,4 +105,4 @@ jobs:
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
           path: plugins_merged.xml
-          destination: qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
+          destination: qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/plugins_merged.xml
