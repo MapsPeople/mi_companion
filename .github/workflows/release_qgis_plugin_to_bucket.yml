@@ -104,9 +104,16 @@ jobs:
             echo "No previous plugins.xml file found to backup."
           fi
 
+      - id: "upload-merged-plugins-xml-to-bucket-test"
+        name: upload-merged-plugins-xml-to-bucket-test
+        uses: "google-github-actions/upload-cloud-storage@v2"
+        with:
+          path: plugins_merged.xml
+          destination: ${{ env.QGIS_PATH }}
+
       - id: "upload-merged-plugins-xml-to-bucket"
         name: upload-merged-plugins-xml-to-bucket
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
           path: plugins_merged.xml
-          destination: ${{ env.QGIS_PATH }}/plugins.xml
+          destination: "${{ env.QGIS_PATH }}/plugins.xml"
