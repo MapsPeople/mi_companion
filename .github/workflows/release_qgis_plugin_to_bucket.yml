@@ -71,7 +71,7 @@ jobs:
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
           path: mi_companion.${{ env.RELEASE_VERSION }}.zip
-          destination: $QGIS_PATH
+          destination: ${{ env.QGIS_PATH }}
 
 
       - id: "setup-gcloud-cli"
@@ -82,13 +82,13 @@ jobs:
 
       - id: "list-files-in-GCS-path"
         name: list-files-in-GCS-path
-        run: gcloud storage ls $GCS_PATH > gcs-plugins.txt
+        run: gcloud storage ls ${{ env.GCS_PATH }} > gcs-plugins.txt
 
       - id: "download-file-from-gcs"
         name: download-file-from-gcs
         run: |
           mkdir -p downloaded
-          gcloud storage cp $GCS_PATH/plugins.xml downloaded/
+          gcloud storage cp ${{ env.GCS_PATH }}/plugins.xml downloaded/
 
       - id: "merge-plugin-xmls"
         name: merge-plugin-xmls
@@ -98,8 +98,8 @@ jobs:
       - id: "backup-previous-plugins-file-on-bucket"
         name: backup-previous-plugins-file-on-bucket
         run: |
-          if gcloud storage ls $GCS_PATH/plugins.xml | grep plugins.xml; then
-            gcloud storage cp $GCS_PATH/plugins.xml $GCS_PATH/plugins_backup.xml
+          if gcloud storage ls ${{ env.GCS_PATH }}/plugins.xml | grep plugins.xml; then
+            gcloud storage cp ${{ env.GCS_PATH }}/plugins.xml ${{ env.GCS_PATH }}/plugins_backup.xml
           else
             echo "No previous plugins.xml file found to backup."
           fi
@@ -109,4 +109,4 @@ jobs:
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
           path: plugins_merged.xml
-          destination: $QGIS_PATH/plugins.xml
+          destination: ${{ env.QGIS_PATH }}/plugins.xml
