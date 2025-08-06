@@ -1,6 +1,6 @@
 geopandas>=0.0.1
 numpy>=1.26.0
-pyproj==3.4.1
+#pyproj==3.4.1 # LINUX DEPLOYMENT MUST USE THIS VERSION
 apppath>=1.0.7
 authlib>=1.2.1
 certifi>=14.05.14
