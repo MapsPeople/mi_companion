@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     strategy:
       fail-fast: false
       matrix:
@@ -30,8 +29,11 @@ jobs:
       id-token: "write"
 
     steps:
-      - name: Set env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Set environment variables
+        run: |
+          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "QGIS_PATH=qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}" >> $GITHUB_ENV
+          echo "GCS_PATH=gs://qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
         with:
@@ -69,7 +71,7 @@ jobs:
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
           path: mi_companion.${{ env.RELEASE_VERSION }}.zip
-          destination: qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
+          destination: $QGIS_PATH
 
 
       - id: "setup-gcloud-cli"
@@ -80,29 +82,31 @@ jobs:
 
       - id: "list-files-in-GCS-path"
         name: list-files-in-GCS-path
-        run: gcloud storage ls gs://qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/ > gcs-plugins-list.txt
+        run: gcloud storage ls $GCS_PATH > gcs-plugins.txt
 
       - id: "download-file-from-gcs"
         name: download-file-from-gcs
         run: |
           mkdir -p downloaded
-          gcloud storage cp gs://qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/plugins.xml downloaded/
+          gcloud storage cp $GCS_PATH/plugins.xml downloaded/
 
       - id: "merge-plugin-xmls"
         name: merge-plugin-xmls
         run: |
           python plugin_xml_operations.py merge plugins.xml downloaded/plugins.xml plugins_merged.xml
 
-      - id: "upload-plugins-xml-to-bucket"
-        name: upload-plugins-xml-to-bucket
-        uses: "google-github-actions/upload-cloud-storage@v2"
-        with:
-          path: plugins.xml
-          destination: qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
+      - id: "backup-previous-plugins-file-on-bucket"
+        name: backup-previous-plugins-file-on-bucket
+        run: |
+          if gcloud storage ls $GCS_PATH/plugins.xml | grep plugins.xml; then
+            gcloud storage cp $GCS_PATH/plugins.xml $GCS_PATH/plugins_backup.xml
+          else
+            echo "No previous plugins.xml file found to backup."
+          fi
 
       - id: "upload-merged-plugins-xml-to-bucket"
         name: upload-merged-plugins-xml-to-bucket
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
           path: plugins_merged.xml
-          destination: qgisplugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/plugins_merged.xml
+          destination: $QGIS_PATH/plugins.xml

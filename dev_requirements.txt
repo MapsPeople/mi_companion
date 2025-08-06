@@ -3,3 +3,4 @@ requests
 pyqt6>=6.0.0
 types-PyYAML
 lxml
+pytest

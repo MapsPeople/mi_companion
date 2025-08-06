@@ -1,5 +1,8 @@
+# Standard library
 import sys
-from typing import Iterable, Set
+from typing import Iterable, Set, Optional
+
+# Third-party imports
 from lxml import etree
 
 
@@ -28,18 +31,27 @@ def append_unique_plugins(
 
 def remove_deprecated_plugins(tree: etree._ElementTree) -> None:
     """Remove deprecated plugins from the XML tree."""
-    for plugin in tree.xpath("//pyqgis_plugin[@deprecated='true']"):
+    for plugin in tree.findall(".//pyqgis_plugin[deprecated='True']"):
         plugin.getparent().remove(plugin)
 
 
-def remove_deprecated_plugins_from_file(file: str) -> None:
+def remove_deprecated_plugins_from_file(
+    file: str, extra_file: Optional[str] = None
+) -> None:
     """Remove deprecated plugins from a given XML file."""
     tree = etree.parse(file)
     remove_deprecated_plugins(tree)
-    tree.write(file, pretty_print=True, xml_declaration=True, encoding="UTF-8")
+    if extra_file:
+        tree.write(
+            extra_file, pretty_print=True, xml_declaration=True, encoding="UTF-8"
+        )
+    else:
+        tree.write(file, pretty_print=True, xml_declaration=True, encoding="UTF-8")
 
 
-def remove_missing_plugins_from_gcs(xml_file: str, gcs_plugins: Set[str]) -> None:
+def remove_missing_plugins_from_gcs(
+    xml_file: str, gcs_plugins: Set[str], extra_file: Optional[str] = None
+) -> None:
     """Remove plugins from the XML file that are no longer present on the GCS bucket."""
     tree = etree.parse(xml_file)
     root = tree.getroot()
@@ -59,8 +71,13 @@ def remove_missing_plugins_from_gcs(xml_file: str, gcs_plugins: Set[str]) -> Non
             )
             # Remove the plugin element from the root
             root.remove(plugin)
-
-    tree.write(xml_file, pretty_print=True, xml_declaration=True, encoding="UTF-8")
+    if extra_file:
+        # If an extra file is provided, write the modified XML to that file
+        tree.write(
+            extra_file, pretty_print=True, xml_declaration=True, encoding="UTF-8"
+        )
+    else:
+        tree.write(xml_file, pretty_print=True, xml_declaration=True, encoding="UTF-8")
 
 
 def merge_xml(file1: str, file2: str, output: str) -> None:
@@ -77,6 +94,26 @@ def merge_xml(file1: str, file2: str, output: str) -> None:
     tree.write(output, pretty_print=True, xml_declaration=True, encoding="UTF-8")
 
 
+def read_gcs_plugin_versions(file_path: str) -> Set[str]:
+    """Read plugin versions from a GCS plugins list file."""
+    gcs_plugins_set = set()
+    with open(file_path) as gcs_plugins_txt:
+        for line in gcs_plugins_txt:
+            if line.strip():
+                try:
+                    version = (
+                        line.strip()
+                        .split("/")[-1]
+                        .split("mi_companion.")[1]
+                        .split(".zip")[0]
+                    )
+                except IndexError:
+                    continue
+                if version:
+                    gcs_plugins_set.add(version)
+    return gcs_plugins_set
+
+
 if __name__ == "__main__":
     if sys.argv[1] not in ["merge", "remove_deprecated", "remove_missing"]:
         print(f"Unknown operation: {sys.argv[1]}")
@@ -91,26 +128,10 @@ if __name__ == "__main__":
     elif sys.argv[1] == "remove_missing":
         if len(sys.argv) != 4:
             print(
-                "Usage: python plugin_xml_operations.py remove_missing file_one.xml gcs-plugins-list.txt"
+                "Usage: python plugin_xml_operations.py remove_missing file_one.xml gcs-plugins.txt"
             )
             sys.exit(1)
-        # Read the GCS plugins list from the file, assuming each line contains a plugin version
-        with open(sys.argv[3]) as gcs_plugins_txt:
-            gcs_plugins_set = set()
-            for line in gcs_plugins_txt:
-                if line.strip():
-                    try:
-                        # Extract the version from the line, assuming it follows a specific format
-                        version = (
-                            line.strip()
-                            .split("/")[-1]
-                            .split("mi_companion.")[1]
-                            .split(".zip")[0]
-                        )
-                    except IndexError:
-                        continue
-                    # Add the version to the set
-                    if version:
-                        gcs_plugins_set.add(version)
 
-            remove_missing_plugins_from_gcs(sys.argv[2], gcs_plugins_set)
+        # Read the GCS plugins list from the file, assuming each line contains a plugin version
+        gcs_plugins_set = read_gcs_plugin_versions(sys.argv[3])
+        remove_missing_plugins_from_gcs(sys.argv[2], gcs_plugins_set)
