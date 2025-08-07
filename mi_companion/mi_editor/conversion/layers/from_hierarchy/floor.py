@@ -30,10 +30,10 @@ from jord.qgis_utilities import (
 )
 from mi_companion import (
     ANCHOR_AS_INDIVIDUAL_FIELDS,
+    APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE,
     HALF_SIZE,
 )
 from mi_companion.layer_descriptors import FLOOR_POLYGON_DESCRIPTOR
-from mi_companion.mi_editor.constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,

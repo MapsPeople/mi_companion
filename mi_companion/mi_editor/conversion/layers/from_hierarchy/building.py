@@ -29,6 +29,7 @@ from jord.qgis_utilities import (
 )
 from mi_companion import (
     ANCHOR_AS_INDIVIDUAL_FIELDS,
+    APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE,
     HALF_SIZE,
     HANDLE_OUTSIDE_FLOORS_SEPARATELY_FROM_BUILDINGS,
 )
@@ -37,7 +38,6 @@ from mi_companion.layer_descriptors import (
     FLOOR_GROUP_DESCRIPTOR,
     GRAPH_GROUP_DESCRIPTOR,
 )
-from mi_companion.mi_editor.constants import APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE
 from mi_companion.mi_editor.conversion.layers.from_hierarchy.routing import (
     add_venue_graph,
 )
