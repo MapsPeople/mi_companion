@@ -1,0 +1,3 @@
+gs://qgisplugins/dev/win_amd64/3.12/mi_companion.0.7.20-exp-merge-xmls-8.zip
+gs://qgisplugins/dev/win_amd64/3.12/mi_companion.0.7.20.zip
+gs://qgisplugins/dev/win_amd64/3.12/plugins.xml

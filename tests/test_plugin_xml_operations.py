@@ -1,23 +1,23 @@
 # Standard library
-import os
 import sys
+from pathlib import Path
 import tempfile
 
 # Third-party imports
 import pytest
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import plugin_xml_operations as pxo
 
 
 @pytest.fixture
 def inputs_dir():
-    return os.path.join(os.path.dirname(__file__), "inputs")
+    return Path("inputs").as_posix()
 
 
 def test_read_gcs_plugin_versions(inputs_dir):
-    gcs_plugins_file = os.sep.join([inputs_dir, "gcs-plugins.txt"])
+    gcs_plugins_file = Path(inputs_dir) / "gcs-plugins.txt"
     gcs_plugins_set = pxo.read_gcs_plugin_versions(gcs_plugins_file)
     print(gcs_plugins_set)
 
@@ -29,9 +29,9 @@ def test_read_gcs_plugin_versions(inputs_dir):
 
 
 def test_merge_xml(inputs_dir):
-    file1 = os.sep.join([inputs_dir, "plugin_one.xml"])
-    file2 = os.sep.join([inputs_dir, "plugin_two.xml"])
-    merged_file = os.sep.join([inputs_dir, "plugin_merged.xml"])
+    file1 = Path(inputs_dir) / "plugin_one.xml"
+    file2 = Path(inputs_dir) / "plugin_two.xml"
+    merged_file = Path(inputs_dir) / "plugin_merged.xml"
 
     pxo.merge_xml(str(file1), str(file2), str(merged_file))
 
@@ -57,8 +57,8 @@ def test_merge_xml(inputs_dir):
 
 
 def test_remove_missing_plugins_from_gcs(inputs_dir):
-    xml_file = os.sep.join([inputs_dir, "plugin_merged.xml"])
-    gcs_plugins = os.sep.join([inputs_dir, "gcs-plugins.txt"])
+    xml_file = Path(inputs_dir) / "plugin_merged.xml"
+    gcs_plugins = Path(inputs_dir) / "gcs-plugins.txt"
 
     # Create a temporary file to write the modified XML
     with tempfile.NamedTemporaryFile(
@@ -86,11 +86,11 @@ def test_remove_missing_plugins_from_gcs(inputs_dir):
         )
 
     # Clean up the temporary file
-    os.remove(temp_file_path)
+    Path(temp_file_path).unlink()
 
 
 def test_remove_deprecated_plugins_from_file(inputs_dir):
-    xml_file = os.sep.join([inputs_dir, "plugin_two.xml"])
+    xml_file = Path(inputs_dir) / "plugin_two.xml"
 
     # Create a temporary file to write the modified XML
     with tempfile.NamedTemporaryFile(
@@ -117,4 +117,27 @@ def test_remove_deprecated_plugins_from_file(inputs_dir):
         )
 
     # Clean up the temporary file
-    os.remove(temp_file_path)
+    Path(temp_file_path).unlink()
+
+
+def test_version_dash_determines_experimental_status(inputs_dir):
+    """
+    Test that plugins with exactly one dash in their version are marked as experimental,
+    while plugins with zero or multiple dashes are not marked as experimental.
+    """
+    from lxml import etree
+
+    xml_file = Path(inputs_dir) / "plugin_two.xml"
+    tree = etree.parse(str(xml_file))
+    root = tree.getroot()
+    if root.tag != "plugins":
+        raise ValueError(f"Root element must be 'plugins', found '{root.tag}'")
+    for plugin in root.findall("pyqgis_plugin"):
+        version = plugin.attrib.get("version", "")
+        experimental_elem = plugin.find("experimental", "")
+        if experimental_elem is not None:
+            is_experimental = experimental_elem.text.lower() == "true"
+            dash_count = version.count("-")
+            # One dash should make it experimental
+            expected_experimental = dash_count == 1
+            assert is_experimental == expected_experimental
