@@ -121,7 +121,7 @@ def add_3d_graph_edges(
             layer = location_group_item.layer()
 
             if layer:
-                for ith, layer_feature in enumerate(layer.getFeatures()):
+                for ith, layer_feature in enumerate(layer.getFeatures(), start=1):
                     feature_attributes = {
                         k.name(): parse_q_value(v)
                         for k, v in zip(
