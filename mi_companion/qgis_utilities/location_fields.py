@@ -73,11 +73,13 @@ FLOAT_LOCATION_FIELDS = (
     "settings_3d_width",
     "settings_3d_margin",
     "display_rule.model3d.scale",
+    # "display_rule.label_zoom_from",
+    # "display_rule.label_zoom_to",
     *RANGE_LOCATION_FIELDS.keys(),
 )
 INT_LOCATION_FIELDS = (
-    "display_rule.label_zoom_from",
-    "display_rule.label_zoom_to",
+    # "display_rule.label_zoom_from",
+    # "display_rule.label_zoom_to",
 )
 DATETIME_LOCATION_FIELDS = ("active_from", "active_to")
 
@@ -124,9 +126,11 @@ FLOAT_LOCATION_TYPE_ATTRS = (
     "settings_3d_margin",
     "settings_3d_width",
     *RANGE_LOCATION_ATTRS.keys(),
+    # "display_rule.label_zoom_from",
+    # "display_rule.label_zoom_to",
 )
 INTEGER_LOCATION_TYPE_ATTRS = (
-    "display_rule.label_zoom_from",
-    "display_rule.label_zoom_to",
+    # "display_rule.label_zoom_from",
+    # "display_rule.label_zoom_to",
 )
 LIST_LOCATION_TYPE_ATTRS = ("restrictions",)

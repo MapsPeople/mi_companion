@@ -23,6 +23,7 @@ from mi_companion import (
     ADD_STRING_NAN_TRANSLATION_VALUES,
 )
 from sync_module.mi import MI_OUTSIDE_BUILDING_NAME
+from sync_module.mi_sync_constants import ZOOM_LEVEL_DATA_TYPE
 from sync_module.model import (
     BadgeDisplayRule,
     Data3D,
@@ -378,8 +379,8 @@ def extract_display_rule(
 
     # Field types based on DisplayRule class definition
     field_types = {
-        "zoom_from": int,
-        "zoom_to": int,
+        "zoom_from": ZOOM_LEVEL_DATA_TYPE,
+        "zoom_to": ZOOM_LEVEL_DATA_TYPE,
         "visible": bool,
         "icon": str,
         "icon_visible": bool,
@@ -393,8 +394,8 @@ def extract_display_rule(
         "label": str,
         "label_visible": bool,
         "label_style": LabelDisplayRule,
-        "label_zoom_from": int,
-        "label_zoom_to": int,
+        "label_zoom_from": ZOOM_LEVEL_DATA_TYPE,
+        "label_zoom_to": ZOOM_LEVEL_DATA_TYPE,
         "label_type": MILabelTypeOptionEnum,
         "label_max_width": int,
         "image_scale": float,
