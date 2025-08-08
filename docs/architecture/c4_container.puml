@@ -1,0 +1,23 @@
+@startuml C4_Container
+!include <C4/C4_Container.puml>
+
+title Container Diagram for `mi_companion`
+
+System_Boundary(mi_companion, "`mi_companion`") {
+    Container(mi_companion_app, "`mi_companion`", "Python Package", "Main application logic, plugin management, GUI.")
+    Container(mi_sync, "`mi_sync`", "Submodule", "Handles synchronization with MI backend.")
+    Container(midf, "`midf`", "Submodule", "IMDF data model and related processing.")
+    Container(svaguely, "`svaguely`", "Submodule", "Additional features or modules.")
+    Container(caddy, "`caddy`", "Submodule", "Data conversion, exporting, visualization, and related utilities.")
+    Container(samples, "`samples`", "Python Scripts", "Example scripts and utilities.")
+    Container(tests, "`tests`", "Python Package", "Automated tests for all modules.")
+}
+
+Rel(mi_companion_app, mi_sync, "Uses for backend sync")
+Rel(mi_companion_app, midf, "Uses for IMDF data processing")
+Rel(mi_companion_app, svaguely, "Uses for additional features")
+Rel(mi_companion_app, caddy, "Uses for data conversion and visualization")
+Rel(tests, mi_companion_app, "Validates")
+Rel(samples, mi_companion_app, "Provides usage examples")
+
+@enduml

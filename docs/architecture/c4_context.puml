@@ -1,0 +1,16 @@
+@startuml C4_Context
+!include <C4/C4_Container.puml>
+
+title System Context Diagram for `mi_companion`
+
+Person(user, "Developer/Testers/Automation Systems", "Interacts with the system for development, testing, and automation tasks.")
+System_Boundary(mi_companion, "`mi_companion`") {
+    System(mi_backend, "MI Backend", "Internal system for mapping/indoor solutions.")
+    System_Ext(qgis, "QGIS", "Geospatial data processing and visualization.")
+}
+
+Rel(user, mi_companion, "Uses")
+Rel(mi_companion, mi_backend, "Synchronizes data via `mi_sync`")
+Rel(mi_companion, qgis, "Integrates for geospatial processing")
+
+@enduml
