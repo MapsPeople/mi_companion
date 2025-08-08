@@ -1,0 +1,21 @@
+@startuml C4_Component_mi_companion
+!include <C4/C4_Component.puml>
+
+title Component Diagram for `mi_companion`
+
+Container_Boundary(mi_companion, "`mi_companion`") {
+    Component(plugin_entry, "`mi_companion_plugin.py`", "Plugin Entry Point")
+    Component(gui, "gui", "User Interface Components")
+    Component(qgis_utils, "qgis_utilities", "Integration with QGIS")
+    Component(configuration, "configuration", "Handles plugin and app configuration")
+    Component(entry_points, "entry_points", "Plugin entry and registration")
+    Component(mi_editor, "MI Editor", "Editor for mapping/indoor data")
+}
+
+Rel(plugin_entry, gui, "Uses for UI")
+Rel(plugin_entry, qgis_utils, "Uses for QGIS integration")
+Rel(plugin_entry, configuration, "Loads configuration")
+Rel(plugin_entry, entry_points, "Registers plugin")
+Rel(plugin_entry, mi_editor, "Provides editing features")
+
+@enduml

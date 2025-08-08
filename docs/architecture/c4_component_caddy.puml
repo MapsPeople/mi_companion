@@ -1,0 +1,24 @@
+@startuml C4_Component_caddy
+!include <C4/C4_Component.puml>
+
+title Component Diagram for `caddy`
+
+Container_Boundary(caddy, "`caddy`") {
+    Component(conversion, "Conversion", "Data conversion utilities")
+    Component(exporting, "Exporting", "Export data to various formats")
+    Component(visualisation, "Visualisation", "Visualization tools")
+    Component(model, "Model", "Data models and structures")
+    Component(ezdxf_utilities, "EZDXF Utilities", "DXF file handling")
+    Component(shapely_utilities, "Shapely Utilities", "Geospatial processing")
+    Component(difference, "Difference", "Data comparison utilities")
+    Component(deprecated, "Deprecated", "Legacy code")
+}
+
+Rel(conversion, exporting, "Exports converted data")
+Rel(conversion, model, "Uses data models")
+Rel(exporting, visualisation, "Visualizes exported data")
+Rel(ezdxf_utilities, conversion, "Handles DXF conversion")
+Rel(shapely_utilities, conversion, "Processes geospatial data")
+Rel(difference, model, "Compares data models")
+
+@enduml

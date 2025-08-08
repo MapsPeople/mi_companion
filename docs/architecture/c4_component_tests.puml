@@ -1,0 +1,16 @@
+@startuml C4_Component_tests
+!include <C4/C4_Component.puml>
+
+title Component Diagram for `tests`
+
+Container_Boundary(tests, "`tests`") {
+    Component(conftest, "conftest.py", "Test configuration")
+    Component(qgis_interface, "qgis_interface.py", "Mocks QGIS environment")
+    Component(test_geometry_exception_parsing, "test_geometry_exception_parsing.py", "Tests geometry error handling")
+    Component(test_qgis_environment, "test_qgis_environment.py", "Tests QGIS setup")
+    Component(utilities, utilities.py", "Test utilities")
+    Component(conversion, "conversion", "Tests data conversion")
+    Component(symbology, "symbology", "Tests symbology logic")
+}
+
+@enduml

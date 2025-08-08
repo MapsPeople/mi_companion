@@ -1,0 +1,26 @@
+@startuml C4_Component_midf
+!include <C4/C4_Component.puml>
+
+title Component Diagram for `midf`
+
+Container_Boundary(midf, "midf") {
+    Component(samples, "samples", "Example data and scripts") {
+        Component(point_maps, "point_maps", "Point maps scripts") {
+             Component(loaders, "loaders", "Loaders subfolder")
+            Component(model, "model", "Model subfolder")
+        }
+        Component(venue, "venue", "Venue geojson data")
+    }
+    Component(midf_pkg, "midf", "IMDF schema and processing") {
+        Component(dataframe_loading, "dataframe_loading", "DataFrame loaders")
+        Component(feature_linking, "feature_linking", "Feature linking")
+        Component(imdf_model, "imdf_model", "IMDF model classes")
+        Component(mi_conversion, "mi_conversion", "MI conversion logic")
+        Component(model, "model", "Solution models")
+        Component(validation, "validation", "Validation logic")
+    }
+
+
+}
+
+@enduml
