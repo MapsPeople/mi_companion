@@ -1,0 +1,14 @@
+@startuml C4_Component_svaguely
+!include <C4/C4_Component.puml>
+
+title Component Diagram for `svaguely`
+
+Container_Boundary(svaguely, "`svaguely`") {
+    Component(svaguely_pkg, "svaguely", "Main package and core logic")
+    Component(docs, "Docs", "Documentation")
+    Component(requirements, "Requirements", "Dependency management")
+    Component(samples, "Samples", "Example scripts and usage")
+    Component(tests, "Tests", "Unit and integration tests")
+}
+
+@enduml

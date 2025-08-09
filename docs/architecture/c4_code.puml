@@ -1,0 +1,17 @@
+@startuml C4_Code
+!include <C4/C4_Component.puml>
+
+title Code/Detail Diagram for `mi_sync/scripts/update_master_test_solution.py`
+
+Component(update_script, "`update_master_test_solution.py`", "Python Script", "Orchestrates test solution creation and synchronization.")
+Component(solution_model, "`sync_module.model.Solution`", "Python Class", "Represents a solution model.")
+Component(data_population, "Data Population", "Handles venues, rooms, occupants, etc.")
+Component(sync_function, "`sync_module.mi.synchronize`", "Python Function", "Performs synchronization.")
+Component(test_helpers, "Test Helpers", "Utilities for testing.")
+
+Rel(update_script, solution_model, "Creates test solution")
+Rel(update_script, data_population, "Populates data")
+Rel(update_script, sync_function, "Synchronizes with backend")
+Rel(update_script, test_helpers, "Uses for testing")
+
+@enduml

@@ -1,0 +1,16 @@
+@startuml C4_Component_samples
+!include <C4/C4_Component.puml>
+
+title Component Diagram for `samples`
+
+Container_Boundary(samples, "`samples`") {
+    Component(fetch_solution, "fetch_solution.py", "Fetches solution data")
+    Component(location_type_display_rule, "location_type_display_rule.py", "Display logic for location types")
+    Component(model_cohesion, "model_cohesion.py", "Checks model consistency")
+    Component(occupant_df, "occupant_df.py", "Processes occupant data")
+    Component(qgis_execute, "qgis_execute.py", "Runs QGIS processing")
+    Component(plugin_server, "Plugin Server", "Server for plugin testing")
+    Component(tasks, "Tasks", "Task automation scripts")
+}
+
+@enduml
