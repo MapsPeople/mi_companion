@@ -83,7 +83,7 @@ with_variable('p',
       translate(
         @p,
         0,
-        "display_rule.model3d.scale"
+        coalesce("display_rule.model3d.scale", 1) * 0.000005
       )
     ),
     "display_rule.model3d.rotation_z",
