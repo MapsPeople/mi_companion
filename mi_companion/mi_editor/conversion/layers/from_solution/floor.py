@@ -34,7 +34,6 @@ from mi_companion.qgis_utilities import (
 from sync_module.model import Building, Floor, Solution
 from sync_module.tools import translations_to_flattened_dict
 from .location import add_floor_content_layers
-from ...styling import add_rotation_scale_geometry_generator
 
 logger = logging.getLogger(__name__)
 
@@ -166,4 +165,3 @@ def add_floor_layers(
             )
 
             auto_center_anchors_when_outside(floor_layer)
-            add_rotation_scale_geometry_generator(floor_layer)
