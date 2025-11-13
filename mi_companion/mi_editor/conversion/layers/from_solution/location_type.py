@@ -156,3 +156,30 @@ def add_location_type_layer(
         set_field_widget(added_layers, field_name, field_widget)
 
     return added_layers
+
+def get_location_types_with_3d_models(solution: Solution) -> set[str]:
+    """
+    Get a set of location_type admin_ids that have 3D models configured.
+
+    This checks the location_type definitions in the solution to see which
+    have display_rule.model3d.model set (not null).
+
+    :param solution: The solution object containing location types
+    :return: Set of admin_ids for location types with 3D models
+    """
+    location_types_with_3d = set()
+
+    for location_type in solution.location_types:
+        has_3d_model = False
+
+        # Check if location type has 3D model defined
+        if location_type.display_rule and hasattr(location_type.display_rule, 'model3d'):
+            if hasattr(location_type.display_rule.model3d, 'model'):
+                if location_type.display_rule.model3d.model is not None:
+                    has_3d_model = True
+
+        if has_3d_model:
+            location_types_with_3d.add(location_type.admin_id)
+
+
+    return location_types_with_3d
