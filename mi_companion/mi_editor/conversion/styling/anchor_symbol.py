@@ -1,4 +1,5 @@
 import logging
+import re
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -25,8 +26,17 @@ from qgis.core import (
     QgsSymbol,
     QgsSymbolLayer,
     QgsWkbTypes,
-)
+    QgsSimpleMarkerSymbolLayer,
+    QgsMarkerSymbolLayer,
+    QgsApplication,
+    QgsProject,
+    QgsUnitTypes,
+    QgsGraduatedSymbolRenderer,
+    QgsRendererRange,
 
+)
+import os
+from PyQt5.QtGui import QColor
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
 
@@ -40,13 +50,19 @@ logger = logging.getLogger(__name__)
 
 
 __all__ = [
-    "add_rotation_scale_geometry_generator",
-    "make_anchor_symbology_layer",
     "make_rot_and_sca_symbology_layer",
+    "make_anchor_symbology_layer",
+    "add_rotation_scale_geometry_generator",
+    "remove_rotation_scale_geometry_generator"
 ]
 
 
 def make_rot_and_sca_symbology_layer():
+    """
+    Create a geometry generator symbol layer for rotation and scale visualization.
+
+    :return: QgsGeometryGeneratorSymbolLayer configured for rotation/scale display
+    """
     rot_and_sca_symbol_layer = QgsGeometryGeneratorSymbolLayer.create({})
     rot_and_sca_symbol_layer.setGeometryExpression(
         ROT_AND_SCALE_GEOMETRY_LINE_GENERATOR_EXPRESSION
@@ -73,6 +89,11 @@ def make_rot_and_sca_symbology_layer():
 
 
 def make_anchor_symbology_layer():
+    """
+    Create a geometry generator symbol layer for anchor point visualization.
+
+    :return: QgsGeometryGeneratorSymbolLayer configured for anchor display
+    """
     anchor_symbol_layer = QgsGeometryGeneratorSymbolLayer.create({})
     anchor_symbol_layer.setGeometryExpression(ANCHOR_GEOMETRY_GENERATOR_EXPRESSION)
 
@@ -91,145 +112,281 @@ def make_anchor_symbology_layer():
 
     return anchor_symbol_layer
 
-
-def add_rotation_scale_geometry_generator(layers):
+def _rule_matches_location_types(rule, location_types_with_3d):
     """
-    Add a geometry generator symbol layer with the ROT_AND_SCALE_GEOMETRY_LINE_GENERATOR_EXPRESSION to the layers.
+    Returns True if the rule has filter expression includes any of the location_types_with_3d.
+    """
+    if not rule.filterExpression():
+        return True  # no filter = apply to all
+    for lt in location_types_with_3d:
+        if f'"location_type" = \'{lt}\'' in rule.filterExpression():
+            return True
+    return False
+
+def add_rotation_scale_geometry_generator(layers, location_types_with_3d=None):
+    """
+    Add 3D rotation/anchor geometry generators (red arrow + blue dot) to features in layers.
+    Only features matching location_types_with_3d will get the indicators.
 
     Args:
-        layers: List of vector layers to add the geometry generator to
+        layers: List of QgsVectorLayer
+        location_types_with_3d: Optional set of location_type values to filter features
     """
-
-    if not read_bool_setting("ADD_ANCHOR_AND_3DROTSCL_SYMBOLS"):
-        return
-
     if not layers:
-        logger.info(f"{layers=} was not found")
+        logger.info("No layers provided.")
         return
 
     for layer in layers:
         if not layer:
-            logger.info(f"{layer=} was not found")
             continue
-
-        # Get the renderer for this layer
         renderer = layer.renderer()
         if not renderer:
-            logger.info(f"{renderer=} was not found")
             continue
 
         modified = False
+        logger.info(f"Processing layer '{layer.name()}' ({type(renderer).__name__})")
 
-        # Handle different renderer types
+        # Rule-based Renderer
         if isinstance(renderer, QgsRuleBasedRenderer):
-            # For rule-based renderers, we need to get the root rule and its children
             root_rule = renderer.rootRule()
-            for child_rule in root_rule.children():
-                if child_rule.symbol():
-                    add_anchor_and_rot_scl_geometry_generators_to_symbol(
-                        child_rule.symbol()
-                    )
-                    modified = True
+            for rule in root_rule.children():
+                symbol = rule.symbol()
+                if symbol:
+                    # Apply only if rule filter matches location_types_with_3d or if no filter
+                    if (not location_types_with_3d) or _rule_matches_location_types(rule, location_types_with_3d):
+                        symbol = symbol.clone()
+                        add_anchor_and_rot_scl_geometry_generators_to_symbol(symbol)
+                        rule.setSymbol(symbol)
+                        modified = True
 
+        # Categorized Renderer
         elif isinstance(renderer, QgsCategorizedSymbolRenderer):
-            # For categorized renderers, add to each category symbol
-            categories = []
-            for category in renderer.categories():
-                if category.symbol():
-                    symbol = category.symbol().clone()
+            new_categories = []
+            for cat in renderer.categories():
+                symbol = cat.symbol().clone()
+                # Only add indicators if category value is in the filter
+                if not location_types_with_3d or cat.value() in location_types_with_3d:
                     add_anchor_and_rot_scl_geometry_generators_to_symbol(symbol)
-                    # Create a new category with the modified symbol
-                    new_category = QgsRendererCategory(
-                        category.value(), symbol, category.label()
-                    )
-                    categories.append(new_category)
                     modified = True
+                new_categories.append(QgsRendererCategory(cat.value(), symbol, cat.label()))
 
-            # Update the renderer with new categories
-            if categories:
-                new_renderer = QgsCategorizedSymbolRenderer(
-                    renderer.classAttribute(), categories
-                )
+            new_renderer = QgsCategorizedSymbolRenderer(renderer.classAttribute(), new_categories)
+            if renderer.sourceSymbol():
+                new_renderer.setSourceSymbol(renderer.sourceSymbol().clone())
+            layer.setRenderer(new_renderer)
 
-                if renderer.sourceSymbol():
-                    source_symbol = renderer.sourceSymbol().clone()
-                    add_anchor_and_rot_scl_geometry_generators_to_symbol(source_symbol)
-                    new_renderer.setSourceSymbol(source_symbol)
+        # Graduated Renderer
+        elif isinstance(renderer, QgsGraduatedSymbolRenderer):
+            new_ranges = []
+            for r in renderer.ranges():
+                symbol = r.symbol().clone()
+                # Check if the range label/value is in the filter (optional)
+                if not location_types_with_3d or str(r.label()) in location_types_with_3d or str(r.lowerValue()) in location_types_with_3d:
+                    add_anchor_and_rot_scl_geometry_generators_to_symbol(symbol)
+                    modified = True
+                new_range = QgsRendererRange(r.lowerValue(), r.upperValue(), symbol, r.label())
+                new_ranges.append(new_range)
 
-                layer.setRenderer(new_renderer)
+            new_renderer = QgsGraduatedSymbolRenderer(renderer.classAttribute(), new_ranges)
+            new_renderer.setMode(renderer.mode())
+            if renderer.sourceSymbol():
+                new_renderer.setSourceSymbol(renderer.sourceSymbol().clone())
+            layer.setRenderer(new_renderer)
 
-        else:
-            # For simple renderers like single symbol renderer
+        # Single-symbol renderer
+        elif hasattr(renderer, "symbol") and callable(renderer.symbol):
             symbol = renderer.symbol()
             if symbol:
                 symbol = symbol.clone()
-                add_anchor_and_rot_scl_geometry_generators_to_symbol(symbol)
-                # Create a new renderer with the modified symbol
+                # Apply filter: check feature attribute via expression
+                if not location_types_with_3d:
+                    add_anchor_and_rot_scl_geometry_generators_to_symbol(symbol)
+                    modified = True
+                # Otherwise, for single symbol you would need to convert to rule-based to apply filter
+
                 new_renderer = renderer.clone()
                 new_renderer.setSymbol(symbol)
                 layer.setRenderer(new_renderer)
 
-                modified = True
-            else:
-                logger.info(f"Symbol not found for layer {layer.name()}")
-
-        # Trigger layer updates
+        # Update layer
         if modified:
             layer.triggerRepaint()
             layer.emitStyleChanged()
-            logger.info(f"Added geometry generator to layer '{layer.name()}'")
-
+            logger.info(f"✓ Added 3D indicators to layer '{layer.name()}'")
 
 def add_anchor_and_rot_scl_geometry_generators_to_symbol(symbol):
-    """Helper function to add the geometry generator to a symbol"""
+    """
+    Adds 3D rotation/anchor geometry generators (red arrow + blue dot) to a symbol.
+    Both markers are responsive to map zoom using @map_scale.
+    """
 
-    arrow_geometry_generator = QgsGeometryGeneratorSymbolLayer.create({})
-    arrow_geometry_generator.setGeometryExpression(
-        ROT_AND_SCALE_GEOMETRY_LINE_GENERATOR_EXPRESSION
-    )
-    arrow_geometry_generator.setSymbolType(Qgis.SymbolType.Line)
-    arrow_geometry_generator.setSubSymbol(
-        QgsLineSymbol.createSimple(
-            {
-                "line_color": "255,0,0,255",
-                "line_style": "solid",
-                "line_width": "0.5",
-                "capstyle": "round",
-                "joinstyle": "round",
-                "customdash": "",
-                "arrow_start_width": "0",  # No arrow at start
-                "arrow_start_width_unit": "MM",
-                "arrow_end_width": "3",  # 3mm arrow width at end
-                "arrow_end_width_unit": "MM",
-                "arrow_type": "0",  # Simple arrowhead (0=regular, 1=curved)
-                "head_length": "1.5",  # Length of arrowhead
-                "head_length_unit": "MM",
-                "head_thickness": "1.5",  # Thickness of arrowhead
-                "head_thickness_unit": "MM",
-                "head_type": "0",  # Fill style of arrowhead (0=filled, 1=unfilled)
-            }
-        )
-    )
+    # Red Arrow Geometry Generator
+    direction_geometry_generator = QgsGeometryGeneratorSymbolLayer.create({})
+    direction_geometry_generator.setGeometryExpression('make_point("anchor_x", "anchor_y")')
+    direction_geometry_generator.setSymbolType(Qgis.SymbolType.Marker)
 
-    # Create geometry generator symbol layer
+    # Load SVG arrow
+    svg_filename = 'arrows/arrow_06.svg'
+    svg_path = None
+    for base_path in QgsApplication.svgPaths():
+        candidate = os.path.join(base_path, svg_filename)
+        if os.path.exists(candidate):
+            svg_path = candidate
+            break
+
+    if not svg_path:
+        project_dir = QgsProject.instance().homePath()
+        local_candidate = os.path.join(project_dir, svg_filename)
+        if os.path.exists(local_candidate):
+            svg_path = local_candidate
+        else:
+            raise FileNotFoundError(f"Cannot find {svg_filename} in QGIS paths or project directory")
+
+    # Create SVG marker
+    marker_symbol = QgsMarkerSymbol()
+    svg_marker = QgsSvgMarkerSymbolLayer(svg_path)
+    svg_marker.setColor(QColor(255, 0, 0))
+    svg_marker.setSize(8)
+
+    # Anchor bottom of arrow
+    svg_marker.setVerticalAnchorPoint(QgsMarkerSymbolLayer.VerticalAnchorPoint.Bottom)
+
+    marker_symbol.changeSymbolLayer(0, svg_marker)
+    # Rotate arrow based on feature attribute
+    marker_symbol.setDataDefinedAngle(QgsProperty.fromExpression('"display_rule.model3d.rotation_z"'))
+
+    direction_geometry_generator.setSubSymbol(marker_symbol)
+    symbol.appendSymbolLayer(direction_geometry_generator)
+
+    # Blue Anchor Dot Geometry Generator
     anchor_geometry_generator = QgsGeometryGeneratorSymbolLayer.create({})
-    anchor_geometry_generator.setGeometryExpression(
-        ANCHOR_GEOMETRY_GENERATOR_EXPRESSION
-    )
-
+    anchor_geometry_generator.setGeometryExpression('make_point("anchor_x", "anchor_y")')
     anchor_geometry_generator.setSymbolType(Qgis.SymbolType.Marker)
-    anchor_geometry_generator.setSubSymbol(
-        QgsMarkerSymbol.createSimple(
-            {
-                "name": "circle",
-                "color": "0,0,255,255",  # Blue color for the anchor point
-                "size": "2",  # 2mm size
-                "outline_color": "0,0,0,255",  # Black outline
-                "outline_width": "0.2",  # Thin outline
-                "outline_style": "solid",
-            }
-        )
-    )
 
-    symbol.appendSymbolLayer(arrow_geometry_generator)
+    anchor_symbol = QgsMarkerSymbol.createSimple({
+        'name': 'circle',
+        'size': '1',
+        'color': '0,0,255,255'
+    })
+    # Make it responsive
+    anchor_symbol.setSizeUnit(QgsUnitTypes.RenderMapUnits)  # ensure it uses map units
+    anchor_symbol.setDataDefinedSize(QgsProperty.fromExpression('1 * (@map_scale / 1000)'))
+
+    anchor_geometry_generator.setSubSymbol(anchor_symbol)
     symbol.appendSymbolLayer(anchor_geometry_generator)
+
+def remove_rotation_scale_geometry_generator(layers, location_types_with_3d=None):
+    """
+    Remove 3D rotation/anchor geometry generators only from features matching
+    location_types_with_3d in the given layers.
+    
+    Args:
+        layers: List of QgsVectorLayer
+        location_types_with_3d: Optional set of location_type values to filter which features to remove
+    """
+    if not layers:
+        return
+
+    for layer in layers:
+        renderer = layer.renderer()
+        if not renderer:
+            continue
+
+        modified = False
+
+        # Rule-based
+        if isinstance(renderer, QgsRuleBasedRenderer):
+            for rule in renderer.rootRule().children():
+                symbol = rule.symbol()
+                if symbol:
+                    if not location_types_with_3d or _rule_matches_location_types(rule, location_types_with_3d):
+                        if remove_anchor_and_rot_scl_geometry_generators_from_symbol(symbol):
+                            modified = True
+
+        # Categorized
+        elif isinstance(renderer, QgsCategorizedSymbolRenderer):
+            new_categories = []
+            for cat in renderer.categories():
+                symbol = cat.symbol().clone()
+                if not location_types_with_3d or cat.value() in location_types_with_3d:
+                    if remove_anchor_and_rot_scl_geometry_generators_from_symbol(symbol):
+                        modified = True
+                new_categories.append(QgsRendererCategory(cat.value(), symbol, cat.label()))
+            new_renderer = QgsCategorizedSymbolRenderer(renderer.classAttribute(), new_categories)
+            if renderer.sourceSymbol():
+                new_renderer.setSourceSymbol(renderer.sourceSymbol().clone())
+            layer.setRenderer(new_renderer)
+
+        # Graduated
+        elif isinstance(renderer, QgsGraduatedSymbolRenderer):
+            new_ranges = []
+            for r in renderer.ranges():
+                symbol = r.symbol().clone()
+                if not location_types_with_3d or str(r.label()) in location_types_with_3d or str(r.lowerValue()) in location_types_with_3d:
+                    if remove_anchor_and_rot_scl_geometry_generators_from_symbol(symbol):
+                        modified = True
+                new_range = QgsRendererRange(r.lowerValue(), r.upperValue(), symbol, r.label())
+                new_ranges.append(new_range)
+            new_renderer = QgsGraduatedSymbolRenderer(renderer.classAttribute(), new_ranges)
+            new_renderer.setMode(renderer.mode())
+            if renderer.sourceSymbol():
+                new_renderer.setSourceSymbol(renderer.sourceSymbol().clone())
+            layer.setRenderer(new_renderer)
+
+        # Single-symbol
+        elif hasattr(renderer, "symbol") and callable(renderer.symbol):
+            symbol = renderer.symbol().clone()
+            # Cannot filter per feature here unless we convert to rule-based, so we remove only if no filter
+            if not location_types_with_3d:
+                if remove_anchor_and_rot_scl_geometry_generators_from_symbol(symbol):
+                    new_renderer = renderer.clone()
+                    new_renderer.setSymbol(symbol)
+                    layer.setRenderer(new_renderer)
+                    modified = True
+
+        # Update layer
+        if modified:
+            layer.triggerRepaint()
+            layer.emitStyleChanged()
+
+def remove_anchor_and_rot_scl_geometry_generators_from_symbol(symbol):
+    """
+    Remove anchor and rotation/scale geometry generator symbol layers
+    (red arrow + blue dot) from a given symbol.
+
+    Returns:
+        bool: True if at least one layer was removed, False otherwise.
+    """
+    removed_any = False
+    layers_to_remove = []
+
+    for index, symbol_layer in enumerate(symbol.symbolLayers()):
+        if isinstance(symbol_layer, QgsGeometryGeneratorSymbolLayer):
+            sub_symbol = symbol_layer.subSymbol()
+            if not sub_symbol:
+                continue
+
+            # Check for SVG red arrow
+            if any(
+                isinstance(sub_symbol, QgsSvgMarkerSymbolLayer) and
+                sub_symbol.color().red() == 255 and sub_symbol.color().green() == 0 and sub_symbol.color().blue() == 0
+                for sub_symbol in sub_symbol.symbolLayers()
+            ):
+                layers_to_remove.append(index)
+                continue
+
+            # Check for blue anchor dot
+            if any(
+                isinstance(sub_symbol, QgsSimpleMarkerSymbolLayer) and
+                sub_symbol.color().red() == 0 and sub_symbol.color().green() == 0 and sub_symbol.color().blue() == 255
+                for sub_symbol in sub_symbol.symbolLayers()
+            ):
+                layers_to_remove.append(index)
+                continue
+
+    # Remove layers in reverse order to avoid index shifting
+    for index in sorted(layers_to_remove, reverse=True):
+        symbol.deleteSymbolLayer(index)
+        removed_any = True
+
+    return removed_any

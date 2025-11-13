@@ -52,7 +52,6 @@ from mi_companion.mi_editor.conversion.projection import (
 )
 from mi_companion.mi_editor.conversion.styling import (
     add_raster_symbol,
-    add_rotation_scale_geometry_generator,
     add_svg_symbol,
     apply_display_rule_styling_categorized,
 )
@@ -89,6 +88,7 @@ def add_location_layer(
     opacity: float = 1.0,
 ) -> Optional[List[Any]]:  # QgsVectorLayer
     """
+    Add a location layer to QGIS with optional 3D model orientation indicators.
 
     :param location_type_ref_layer:
     :param location_collection:
@@ -176,13 +176,19 @@ def add_location_layer(
             locations_df["anchor_x"] = locations_df["anchor"].apply(lambda p: p.x)
             locations_df["anchor_y"] = locations_df["anchor"].apply(lambda p: p.y)
             locations_df.pop("anchor")
+    elif "point" in locations_df:
+        if should_reproject_qgis():
+            locations_df["point"] = locations_df["point"].apply(forward_project_qgis)
 
+        if ANCHOR_AS_INDIVIDUAL_FIELDS:
+            locations_df["anchor_x"] = locations_df["point"].apply(lambda p: p.x)
+            locations_df["anchor_y"] = locations_df["point"].apply(lambda p: p.y)
+    
     assert len(shape_df) == len(
         locations_df
     ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
 
     if not len(shape_df):
-        # logger.warning(f"Nothing to be added, skipping {name}")
         return
 
     if False:
@@ -325,6 +331,7 @@ def add_floor_content_layers(
     occupant_dropdown_widget: Optional[Any] = None,
 ) -> None:
     """
+    Add all location layers (rooms, areas, POIs) for a floor.
 
     :param location_type_ref_layer:
     :param qgis_instance_handle:
@@ -335,6 +342,7 @@ def add_floor_content_layers(
     :param occupant_dropdown_widget:
     :return:
     """
+    # Add room layers
     room_layers = add_location_layer(
         location_collection=solution.rooms,
         occupant_collection=solution.occupants,
@@ -358,7 +366,6 @@ def add_floor_content_layers(
 
     add_raster_symbol(room_layers)
     add_svg_symbol(room_layers)
-    add_rotation_scale_geometry_generator(room_layers)
 
     if read_bool_setting("USE_LOCATION_TYPE_FOR_LABEL"):  # TODO: STILL DOES NOT WORK...
         label_field_name = 'represent_value("location_type")'
@@ -378,6 +385,7 @@ def add_floor_content_layers(
 
     set_geometry_constraints(room_layers)
 
+    # Add area layers
     area_layers = add_location_layer(
         location_collection=solution.areas,
         occupant_collection=solution.occupants,
@@ -405,10 +413,10 @@ def add_floor_content_layers(
 
     add_raster_symbol(area_layers)
     add_svg_symbol(area_layers)
-    add_rotation_scale_geometry_generator(area_layers)
 
     set_geometry_constraints(area_layers)
 
+    # Add POI layers
     poi_layers = add_location_layer(
         location_collection=solution.points_of_interest,
         occupant_collection=solution.occupants,
