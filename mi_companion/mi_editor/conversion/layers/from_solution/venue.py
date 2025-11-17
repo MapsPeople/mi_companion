@@ -36,6 +36,7 @@ from sync_module.model import FALLBACK_OSM_GRAPH, Solution, Venue
 from sync_module.tools import translations_to_flattened_dict
 from .building import add_building_layers
 from .occupant import add_occupant_layer
+from .utils import sanitize_name
 
 logger = logging.getLogger(__name__)
 
@@ -150,8 +151,9 @@ def add_venue_layer(
             graph = venue.graph
 
             if graph is None and read_bool_setting("ADD_DUMMY_GRAPH_IF_MISSING"):
+                graph_name = sanitize_name(venue.translations['en'].name)
                 graph_key = solution.add_graph(
-                    graph_id=f"{venue.translations['en'].name}_graph",
+                    graph_id=f"{graph_name}_graph",
                     osm_xml=FALLBACK_OSM_GRAPH,
                     boundary=venue.polygon,
                 )
