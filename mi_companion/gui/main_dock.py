@@ -265,13 +265,13 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         self.repopulate_grid_layout()
 
         signals.reconnect_signal(iface_.mapCanvas().mapToolSet, add_augmented_actions)
-
-        self.toggle_3d_button = QtWidgets.QPushButton("Toggle 3D Indicators")
-        self.toggle_3d_button.setCheckable(True)
-        self.toggle_3d_button.setToolTip("Show/hide 3D rotation & anchor indicators for current solution")
-        self.status_layout.insertWidget(0, self.toggle_3d_button)
-        signals.reconnect_signal(self.toggle_3d_button.clicked, lambda: self.toggle_3d_indicators())
-        self._3d_indicators_enabled = False
+        if read_bool_setting("ADD_ANCHOR_AND_3DROTSCL_SYMBOLS"):
+            self.toggle_3d_button = QtWidgets.QPushButton("Toggle 3D Indicators")
+            self.toggle_3d_button.setCheckable(True)
+            self.toggle_3d_button.setToolTip("Show/hide 3D rotation & anchor indicators for current solution")
+            self.status_layout.insertWidget(0, self.toggle_3d_button)
+            signals.reconnect_signal(self.toggle_3d_button.clicked, lambda: self.toggle_3d_indicators())
+            self._3d_indicators_enabled = False
 
     def on_creation_mode_changed(self) -> None:
         """Handle creation mode checkbox state changes"""
@@ -445,9 +445,14 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                 current_selected_solution_name
             ]
             bar.setValue(10)
-
+            if self.solution_external_id is None:
+                logger.error(
+                    "There is no external_id assigned to this solution. Please assign one to fetch the solution."
+                )
+                return
+            
             solution_id = get_solution_id(self.solution_external_id)
-            if solution_id is None:
+            if solution_id is None: 
                 logger.error(
                     f"Could not find solution id for {self.solution_external_id}"
                 )

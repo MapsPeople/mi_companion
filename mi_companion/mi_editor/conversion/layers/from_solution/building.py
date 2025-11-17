@@ -136,7 +136,6 @@ def add_building_layers(
             )
 
             auto_center_anchors_when_outside(building_layer)
-            add_rotation_scale_geometry_generator(building_layer)
 
             make_field_unique(building_layer, field_name="admin_id")
             set_geometry_constraints(building_layer)
