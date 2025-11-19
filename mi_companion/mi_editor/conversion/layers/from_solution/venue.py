@@ -1,5 +1,7 @@
 import logging
 from typing import Any, Iterable, Optional
+import re
+import unicodedata
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -36,12 +38,28 @@ from sync_module.model import FALLBACK_OSM_GRAPH, Solution, Venue
 from sync_module.tools import translations_to_flattened_dict
 from .building import add_building_layers
 from .occupant import add_occupant_layer
-from .utils import sanitize_name
 
 logger = logging.getLogger(__name__)
 
 __all__ = ["add_venue_layer"]
 
+def _sanitize_graph_name(name: str) -> str:
+    # Normalize accents/Unicode → ASCII
+    name = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
+    # Lowercase
+    name = name.lower()
+
+    # Replace all whitespace with underscores
+    name = re.sub(r"\s+", "_", name)
+    # Remove everything except letters, digits, and underscores
+    name = re.sub(r"[^a-z0-9_]", "", name)
+    # Collapse multiple underscores into one
+    name = re.sub(r"_+", "_", name)
+
+    # Strip leading/trailing underscores
+    name = name.strip("_")
+
+    return name
 
 def add_venue_layer(
     *,
@@ -151,7 +169,7 @@ def add_venue_layer(
             graph = venue.graph
 
             if graph is None and read_bool_setting("ADD_DUMMY_GRAPH_IF_MISSING"):
-                graph_name = sanitize_name(venue.translations['en'].name)
+                graph_name = _sanitize_graph_name(venue.translations['en'].name)
                 graph_key = solution.add_graph(
                     graph_id=f"{graph_name}_graph",
                     osm_xml=FALLBACK_OSM_GRAPH,
