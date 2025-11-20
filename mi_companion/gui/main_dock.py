@@ -278,16 +278,13 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
 
         put_location_layers_into_creation_mode()
     
-    def toggle_3d_indicators(self, enable: Optional[bool] = None):
+    def toggle_3d_indicators(self):
         """
         Toggle 3D rotation/anchor geometry generators on all layers of the current solution/venue.
 
         If `enable` is None, it will toggle the current state.
         """
-        if enable is None:
-            self._3d_indicators_enabled = not self._3d_indicators_enabled
-        else:
-            self._3d_indicators_enabled = enable
+        self._3d_indicators_enabled = not self._3d_indicators_enabled
 
         # Gather all layers
         active_layers = QgsProject.instance().layerTreeRoot().checkedLayers()

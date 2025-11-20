@@ -245,34 +245,40 @@ def add_anchor_and_rot_scl_geometry_generators_to_symbol(symbol):
     # Create SVG marker
     marker_symbol = QgsMarkerSymbol()
     svg_marker = QgsSvgMarkerSymbolLayer(svg_path)
-    svg_marker.setColor(QColor(255, 0, 0))
-    svg_marker.setSize(8)
+    # Set width to 10 and height to 20
 
-    # Anchor bottom of arrow
+    svg_marker.setSize(10)  # This sets the width
+
+    svg_marker.setColor(QColor(255, 0, 0))
+
+    # Set anchor point to bottom of the arrow
     svg_marker.setVerticalAnchorPoint(QgsMarkerSymbolLayer.VerticalAnchorPoint.Bottom)
 
+    # Replace the default marker with our SVG marker
     marker_symbol.changeSymbolLayer(0, svg_marker)
-    # Rotate arrow based on feature attribute
-    marker_symbol.setDataDefinedAngle(QgsProperty.fromExpression('"display_rule.model3d.rotation_z"'))
+
+    # Apply rotation to the marker to match the rotation_z value
+    marker_symbol.setDataDefinedAngle(
+        QgsProperty.fromExpression('"display_rule.model3d.rotation_z"')
+    )
 
     direction_geometry_generator.setSubSymbol(marker_symbol)
-    symbol.appendSymbolLayer(direction_geometry_generator)
 
-    # Blue Anchor Dot Geometry Generator
+    # The anchor point marker (blue dot) if still needed
     anchor_geometry_generator = QgsGeometryGeneratorSymbolLayer.create({})
     anchor_geometry_generator.setGeometryExpression('make_point("anchor_x", "anchor_y")')
     anchor_geometry_generator.setSymbolType(Qgis.SymbolType.Marker)
 
     anchor_symbol = QgsMarkerSymbol.createSimple({
         'name': 'circle',
-        'size': '1',
+        'size': '2',
         'color': '0,0,255,255'
     })
-    # Make it responsive
-    anchor_symbol.setSizeUnit(QgsUnitTypes.RenderMapUnits)  # ensure it uses map units
-    anchor_symbol.setDataDefinedSize(QgsProperty.fromExpression('1 * (@map_scale / 1000)'))
 
     anchor_geometry_generator.setSubSymbol(anchor_symbol)
+
+    # Add both geometry generators to the symbol
+    symbol.appendSymbolLayer(direction_geometry_generator)
     symbol.appendSymbolLayer(anchor_geometry_generator)
 
 def remove_rotation_scale_geometry_generator(layers, location_types_with_3d=None):
