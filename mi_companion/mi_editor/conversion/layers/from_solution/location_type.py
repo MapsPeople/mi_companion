@@ -200,10 +200,7 @@ def get_location_types_with_tridimensional_model() -> set[str]:
         if not layer.name().startswith("location_types_"):
             continue
         
-        logger.warning(f" layer: {layer.name()}")
-        logger.warning(f" layer type: {type(layer)}")
         for feature in layer.getFeatures():
-            logger.warning(f'feature: {feature.attributes()}')
             admin_id = feature["admin_id"]
             model = feature["display_rule.model3d.model"]
 
