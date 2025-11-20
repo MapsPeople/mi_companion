@@ -63,7 +63,7 @@ from ..qgis_utilities import extract_wkt_elements, get_icon_path, resolve_path
 from ..qgis_utilities.creation_mode import (
     put_location_layers_into_creation_mode,
 )
-from mi_companion.mi_editor.conversion.layers.from_solution.location_type import get_location_types_with_3d_models
+from mi_companion.mi_editor.conversion.layers.from_solution.location_type import get_location_types_with_tridimensional_model
 from mi_companion.mi_editor.conversion.styling.anchor_symbol import add_rotation_scale_geometry_generator, remove_rotation_scale_geometry_generator
 
 FORM_CLASS, _ = uic.loadUiType(resolve_path("main_dock.ui", __file__))
@@ -289,31 +289,25 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         else:
             self._3d_indicators_enabled = enable
 
-        # Ensure we have a loaded solution
-        if not getattr(self, "fetched_solution", None):
-            logger.warning("No solution loaded, cannot toggle 3D indicators.")
-            return
-
         # Gather all layers
         active_layers = QgsProject.instance().layerTreeRoot().checkedLayers()
+
         if not active_layers:
             logger.warning("No layers found for current solution/venue.")
             return
-        location_types_with_3d = get_location_types_with_3d_models(self.fetched_solution)
+
+        location_types_with_tridimentional = get_location_types_with_tridimensional_model()
 
         # Apply or remove geometry generators
-        if self._3d_indicators_enabled and location_types_with_3d:
-            # Get the set of location types with 3D models
-            logger.info(f"Location types with 3D models: {location_types_with_3d}")
-
+        if self._3d_indicators_enabled and location_types_with_tridimentional:
             # Add geometry generators
-            add_rotation_scale_geometry_generator(active_layers, location_types_with_3d)
+            add_rotation_scale_geometry_generator(active_layers, location_types_with_tridimentional)
             logger.info("3D indicators ENABLED for all layers")
             self.changes_label.setText("3D indicators: ON")
 
         else:
             # Remove geometry generators (inverse of the add_ method)
-            remove_rotation_scale_geometry_generator(active_layers, location_types_with_3d)
+            remove_rotation_scale_geometry_generator(active_layers, location_types_with_tridimentional)
             logger.info("3D indicators DISABLED for all layers")
             self.changes_label.setText("3D indicators: OFF")
 
@@ -547,9 +541,6 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                         include_media=include_media,
                     )
                     self.original_solution_venues[self.solution_external_id][venue_name] = solution_layers
-
-                    # ← SET fetched_solution so the toggle can work
-                    self.fetched_solution = solution_layers
 
                     self.changes_label.setText(f"Downloaded {venue_name}")
 
