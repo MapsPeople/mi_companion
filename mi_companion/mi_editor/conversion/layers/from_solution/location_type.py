@@ -11,6 +11,17 @@ from qgis.core import (
     QgsFieldConstraints,
     QgsMapLayer,
 )
+from qgis.core import (
+    QgsApplication,
+    QgsFeature,
+    QgsGeometry,
+    QgsLayerTree,
+    QgsLayerTreeModel,
+    QgsProject,
+    QgsRasterLayer,
+    QgsVectorLayer,
+    QgsRuleBasedRenderer,
+)
 
 from jord.pandas_utilities import df_to_columns
 from jord.qgis_utilities import (
@@ -157,29 +168,46 @@ def add_location_type_layer(
 
     return added_layers
 
-def get_location_types_with_3d_models(solution: Solution) -> set[str]:
+def has_valid_model(model_value) -> bool:
     """
-    Get a set of location_type admin_ids that have 3D models configured.
-
-    This checks the location_type definitions in the solution to see which
-    have display_rule.model3d.model set (not null).
-
-    :param solution: The solution object containing location types
-    :return: Set of admin_ids for location types with 3D models
+    Return True if the model_value is a real 3D model reference,
+    not None, empty, or a string representing null.
     """
+    if model_value is None:
+        return False
+    
+    if isinstance(model_value, str):
+        return model_value.strip().lower() not in ("", "none", "null")
+    
+    return True  # fallback in case some other type sneaks in
+
+
+def get_location_types_with_tridimensional_model() -> set[str]:
+    """
+    Extract location_type admin_ids that have 3D models configured
+    directly from QGIS layers.
+    """
+
+    root = QgsProject.instance().layerTreeRoot()
     location_types_with_3d = set()
 
-    for location_type in solution.location_types:
-        has_3d_model = False
+    for tree_layer in root.findLayers():
+        layer = tree_layer.layer()
 
-        # Check if location type has 3D model defined
-        if location_type.display_rule and hasattr(location_type.display_rule, 'model3d'):
-            if hasattr(location_type.display_rule.model3d, 'model'):
-                if location_type.display_rule.model3d.model is not None:
-                    has_3d_model = True
+        if not isinstance(layer, QgsVectorLayer):
+            continue
 
-        if has_3d_model:
-            location_types_with_3d.add(location_type.admin_id)
+        if not layer.name().startswith("location_types_"):
+            continue
+        
+        logger.warning(f" layer: {layer.name()}")
+        logger.warning(f" layer type: {type(layer)}")
+        for feature in layer.getFeatures():
+            logger.warning(f'feature: {feature.attributes()}')
+            admin_id = feature["admin_id"]
+            model = feature["display_rule.model3d.model"]
 
+            if has_valid_model(model):
+                location_types_with_3d.add(admin_id)
 
     return location_types_with_3d
