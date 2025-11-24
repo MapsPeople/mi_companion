@@ -202,8 +202,11 @@ def get_location_types_with_tridimensional_model() -> set[str]:
         
         for feature in layer.getFeatures():
             admin_id = feature["admin_id"]
-            model = feature["display_rule.model3d.model"]
-
+            try:
+                model = feature["display_rule.model3d.model"]
+            except KeyError:
+                continue
+            
             if has_valid_model(model):
                 location_types_with_3d.add(admin_id)
 

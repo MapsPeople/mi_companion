@@ -284,6 +284,14 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
 
         If `enable` is None, it will toggle the current state.
         """
+        location_types_with_tridimentional = get_location_types_with_tridimensional_model()
+        if not location_types_with_tridimentional:
+            QtWidgets.QMessageBox.warning(
+                None,
+                "No 3D Models",
+                "This solution has no 3D models attached. Please add 3D models to location types before using this feature.",
+            )
+            return
         self._3d_indicators_enabled = not self._3d_indicators_enabled
 
         # Gather all layers
@@ -293,7 +301,6 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             logger.warning("No layers found for current solution/venue.")
             return
 
-        location_types_with_tridimentional = get_location_types_with_tridimensional_model()
 
         # Apply or remove geometry generators
         if self._3d_indicators_enabled and location_types_with_tridimentional:
