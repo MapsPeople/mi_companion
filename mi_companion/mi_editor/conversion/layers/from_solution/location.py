@@ -176,14 +176,14 @@ def add_location_layer(
             locations_df["anchor_x"] = locations_df["anchor"].apply(lambda p: p.x)
             locations_df["anchor_y"] = locations_df["anchor"].apply(lambda p: p.y)
             locations_df.pop("anchor")
+
     elif "point" in locations_df:
-        if should_reproject_qgis():
-            locations_df["point"] = locations_df["point"].apply(forward_project_qgis)
+        # pois don't have an anchor, so we use the point itself. Point is already in the right coordinate system, no matter if REPROJECT_SHAPES setting true or false. So we don't need the if-statement like for the anchors above
 
         if ANCHOR_AS_INDIVIDUAL_FIELDS:
             locations_df["anchor_x"] = locations_df["point"].apply(lambda p: p.x)
             locations_df["anchor_y"] = locations_df["point"].apply(lambda p: p.y)
-    
+
     assert len(shape_df) == len(
         locations_df
     ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
