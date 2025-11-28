@@ -230,6 +230,20 @@ def add_location_layer(
 
     # locations_df.replace({numpy.nan: None}, inplace=True)
 
+    # Get the current columns
+    current_columns = list(locations_df.columns)
+
+    # Remove the datetime columns if they exist
+    if "active_to" in current_columns:
+        current_columns.remove("active_to")
+    if "active_from" in current_columns:
+        current_columns.remove("active_from")
+
+    # Add them at the end
+    new_columns_order = current_columns + ["active_from", "active_to"]
+
+    # Reindex the DataFrame with the new column order
+    locations_df = locations_df.reindex(columns=new_columns_order)
     added_layers = add_dataframe_layer(
         qgis_instance_handle=qgis_instance_handle,
         dataframe=locations_df,
