@@ -176,14 +176,14 @@ def add_location_layer(
             locations_df["anchor_x"] = locations_df["anchor"].apply(lambda p: p.x)
             locations_df["anchor_y"] = locations_df["anchor"].apply(lambda p: p.y)
             locations_df.pop("anchor")
+
     elif "point" in locations_df:
-        if should_reproject_qgis():
-            locations_df["point"] = locations_df["point"].apply(forward_project_qgis)
+        # pois don't have an anchor, so we use the point itself. Point is already in the right coordinate system, no matter if REPROJECT_SHAPES setting true or false. So we don't need the if-statement like for the anchors above
 
         if ANCHOR_AS_INDIVIDUAL_FIELDS:
             locations_df["anchor_x"] = locations_df["point"].apply(lambda p: p.x)
             locations_df["anchor_y"] = locations_df["point"].apply(lambda p: p.y)
-    
+
     assert len(shape_df) == len(
         locations_df
     ), f"Some Features where dropped, should not happen! {len(shape_df)}!={len(locations_df)}"
@@ -229,6 +229,18 @@ def add_location_layer(
             locations_df["occupant"] = locations_df.index
 
     # locations_df.replace({numpy.nan: None}, inplace=True)
+
+    # Put active_from and active_to at the end of the dataframe/attribute table in QGIS
+    # Get existing datetime columns in the dataframe
+    datetime_cols = [
+        col for col in ["active_from", "active_to"] if col in locations_df.columns
+    ]
+    # If any datetime columns exist, move them to the end
+    if datetime_cols:
+        # Get all columns that are not datetime columns
+        other_cols = [col for col in locations_df.columns if col not in datetime_cols]
+        new_columns_order = other_cols + datetime_cols
+        locations_df = locations_df.reindex(columns=new_columns_order)
 
     added_layers = add_dataframe_layer(
         qgis_instance_handle=qgis_instance_handle,
