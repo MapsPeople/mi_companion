@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
+## 0.7.22 - 2025-12-01
+
+* [Bug] Could not create POI anchors due to double reprojection
+* [Optimisation] Moved active_to and active_from to the end of the attribute table to prevent autofill on scrolling, when creating a new location
+* [Optimisation] When clicking the Toggle 3D indicators button, but no 3D models exist, a warning pops up.
+
 ## 0.7.21 - 2025-11-28
 
 * [Feature] Visible 3D orientation of model with toggle button
