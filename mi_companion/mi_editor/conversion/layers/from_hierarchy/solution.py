@@ -195,7 +195,7 @@ def convert_solution_layers_to_solution(
                 issues=issues,
             )
         )
-
+    logger.warning(f'Solutions: {solutions}')
     return solutions
 
 

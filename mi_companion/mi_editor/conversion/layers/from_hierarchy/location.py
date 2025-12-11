@@ -95,6 +95,7 @@ def add_floor_locations(
     :param issues:
     :return:
     """
+    logger.warning(f"Solution from add_floor_locations: {solution.venues.admin_ids}")
     layer = location_group_item.layer()
     if layer:
         for layer_feature in layer.getFeatures():
@@ -137,12 +138,13 @@ def add_floor_locations(
             )
 
             if "admin_id" in feature_attributes:
+                logger.warning(f'Features attributes :{feature_attributes}')
                 admin_id = feature_attributes["admin_id"]
                 if admin_id is None:
                     raise MissingKeyValue(f"Missing key {admin_id=}")
                 elif isinstance(admin_id, str):
                     v = admin_id
-                    v_str = v.lower().strip()
+                    v_str = v.strip()
                     if is_str_value_null_like(v_str):
                         raise MissingKeyColumn(f'Missing "admin_id" column')
                     else:
@@ -441,7 +443,7 @@ def add_floor_locations(
                         ...
 
                 shapely_geom = prepare_geom_for_mi_db_qgis(location_geometry)
-
+                logger.warning(f'----------------------------------------{common_kvs}')
                 try:
                     if backend_location_type == BackendLocationTypeEnum.ROOM:
                         location_key = solution.add_room(

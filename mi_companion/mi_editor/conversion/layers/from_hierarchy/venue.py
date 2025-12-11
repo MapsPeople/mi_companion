@@ -147,6 +147,7 @@ def convert_solution_venues(
             continue  # Selected the solution_data object
 
         if VENUE_GROUP_DESCRIPTOR in solution_group_item.name():
+            logger.warning(f'Venue key from convert_solution_venues: {venue_key}')
             venue_key = get_venue_key(
                 solution,
                 solution_group_item,
@@ -225,7 +226,7 @@ def get_venue_key(
 ) -> Optional[str]:
     for venue_level_item in venue_group_items.children():
         layer_type_test = isinstance(venue_level_item, QgsLayerTreeLayer)
-        layer_name = str(venue_level_item.name()).lower().strip()
+        layer_name = str(venue_level_item.name()).strip()
         layer_descriptor_test = VENUE_POLYGON_DESCRIPTOR.lower().strip() in layer_name
 
         if layer_type_test and layer_descriptor_test:
@@ -262,6 +263,7 @@ def get_venue_key(
                     layer_attributes, required_languages=solution.available_languages
                 )
                 try:
+                    logger.warning(f"From get_venue_key:{admin_id}")
                     venue_key = solution.add_venue(
                         admin_id=admin_id,
                         external_id=external_id,

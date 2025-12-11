@@ -48,7 +48,7 @@ def special_extract_layer_data(
             raise ValueError(f"{layer_feature} is missing a valid admin id")
         else:
             admin_id = str(admin_id.value())
-
+    logger.warning(f" From special_extract_layer_data:{admin_id}")
     external_id = (
         layer_attributes["external_id"] if "external_id" in layer_attributes else None
     )
