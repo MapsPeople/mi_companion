@@ -11,9 +11,6 @@ from mi_companion.layer_descriptors import (
     NAVIGATION_HORIZONTAL_LINES_DESCRIPTOR,
     NAVIGATION_VERTICAL_LINES_DESCRIPTOR,
 )
-from mi_companion.mi_editor.constants import (
-    DISABLE_GRAPH_EDIT,
-)
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from sync_module.model import FALLBACK_OSM_GRAPH, Solution
 from sync_module.tools.graph_utilities.deprecated import (
@@ -45,7 +42,7 @@ def add_graph_edges(
     :param issues:
     :return:
     """
-    if not read_bool_setting("UPLOAD_OSM_GRAPH") or DISABLE_GRAPH_EDIT:
+    if not read_bool_setting("UPLOAD_OSM_GRAPH"):
         logger.warning("OSM graph upload is disabled")
         return
 

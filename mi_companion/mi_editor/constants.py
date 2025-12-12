@@ -4,4 +4,5 @@ APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE = (
     f"will be omitted from the upload."
 )
 
-DISABLE_GRAPH_EDIT = True
+# TODO: Proper remove this once graph editing is complete
+# DISABLE_GRAPH_EDIT = False
