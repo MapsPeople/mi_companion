@@ -220,7 +220,7 @@ def add_venue_polygon_layer(
         name=VENUE_POLYGON_DESCRIPTOR,
         columns=[
             {
-                "admin_id": venue.admin_id,
+                "admin_id": venue.original_admin_id,
                 "external_id": venue.external_id,
                 "last_verified": venue.last_verified,
                 "venue_type": venue.venue_type.value,
