@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
+## 0.7.22-exp - 2025-12-12
+
+* [Bugfixes] We removed the unexpected lowercasing of venue-id's for floors, buildings and locations.
+* [Optimization] Do not show generic language related updates in the update dialogue.
+
 ## 0.7.22 - 2025-12-01
 
 * [Bug] Could not create POI anchors due to double reprojection

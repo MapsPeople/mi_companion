@@ -213,14 +213,13 @@ def add_venue_polygon_layer(
     :param venue_type_dropdown_widget:
     :return:
     """
-
     venue_layer = add_shapely_layer(
         qgis_instance_handle=qgis_instance_handle,
         geoms=[prepare_geom_for_editing_qgis(venue.polygon)],
         name=VENUE_POLYGON_DESCRIPTOR,
         columns=[
             {
-                "admin_id": venue.admin_id,
+                "admin_id": venue.original_admin_id,
                 "external_id": venue.external_id,
                 "last_verified": venue.last_verified,
                 "venue_type": venue.venue_type.value,
