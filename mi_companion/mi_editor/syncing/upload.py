@@ -26,7 +26,8 @@ from sync_module.model import (
     Solution,
 )
 from .operation_visualisation import show_differences
-from mi_companion.mi_editor.constants import DISABLE_GRAPH_EDIT
+
+# from mi_companion.mi_editor.constants import DISABLE_GRAPH_EDIT
 
 logger = logging.getLogger(__name__)
 
@@ -154,7 +155,8 @@ def sync_build_venue_solution(
 
     strategy = dict(default_strategy())
 
-    strategy[Graph] = default_matcher, create_if_it_does_not_exist_predicate
+    if not read_bool_setting("UPLOAD_OSM_GRAPH"):
+        strategy[Graph] = default_matcher, create_if_it_does_not_exist_predicate
 
     try:
         success = synchronize(
