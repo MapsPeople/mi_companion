@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
-## 0.7.22-exp_graph - 2026-01-12
+## 0.7.22-exp-graph - 2026-01-12
 
 * [Feature] Made manual graph editing available. But it is hidden behind a settings flag.
 
