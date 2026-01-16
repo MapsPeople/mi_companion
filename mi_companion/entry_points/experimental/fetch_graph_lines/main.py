@@ -3,6 +3,9 @@ import logging
 
 from jord.qgis_utilities import read_plugin_setting
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH
+from mi_companion.mi_editor.authentication.get_credentials_from_auth_manager import (
+    get_credentials_from_auth_manager,
+)
 from sync_module.mi import call_manager_api
 from sync_module.mi.config import MapsIndoors, Settings, set_settings
 
@@ -7590,18 +7593,12 @@ def run(*, solution_id: str, graph_id: str) -> None:
         :param graph_id:
         :return:
     """
+    mp_username, mp_password = get_credentials_from_auth_manager()
+
     sync_module_settings = Settings(
         mapsindoors=MapsIndoors(
-            username=read_plugin_setting(
-                "MAPS_INDOORS_USERNAME",
-                default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_USERNAME"],
-                project_name=PROJECT_NAME,
-            ),
-            password=read_plugin_setting(
-                "MAPS_INDOORS_PASSWORD",
-                default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_PASSWORD"],
-                project_name=PROJECT_NAME,
-            ),
+            username=mp_username,
+            password=mp_password,
             token_endpoint=read_plugin_setting(
                 "MAPS_INDOORS_TOKEN_ENDPOINT",
                 default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_TOKEN_ENDPOINT"],

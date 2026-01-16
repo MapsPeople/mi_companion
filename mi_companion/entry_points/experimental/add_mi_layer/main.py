@@ -67,7 +67,10 @@ def create_mi_layer(layer_data: dict, layer_name: str) -> bool:
 
 def run() -> None:
     """Add an MI layer to the project from available options"""
+    # noinspection PyUnresolvedReferences
     from qgis.PyQt.QtWidgets import QInputDialog
+
+    # noinspection PyUnresolvedReferences
     from qgis.utils import iface
 
     # Get available layers

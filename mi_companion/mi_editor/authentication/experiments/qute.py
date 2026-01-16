@@ -9,7 +9,7 @@ from pathlib import Path
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QMessageBox
 
-from mi_companion.mi_editor.authentication import oauth
+from mi_companion.mi_editor.authentication.experiments import oauth
 
 # fix the warnings/errors messages from 'file_cache is unavailable when using oauth2client'
 # https://github.com/googleapis/google-api-python-client/issues/299

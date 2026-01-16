@@ -27,14 +27,16 @@ import google.auth.transport.requests
 from ee import data as ee_data, ee_exception
 from google.auth import _cloud_sdk
 
-from mi_companion.mi_editor.authentication.auth_mode import (
+from mi_companion.mi_editor.authentication.experiments.auth_mode import (
     GCLOUD_COMMAND,
     in_colab_shell,
     in_jupyter_shell,
     localhost_is_viable,
     no_gcloud,
 )
-from mi_companion.mi_editor.authentication.utilities import _open_new_browser
+from mi_companion.mi_editor.authentication.experiments.utilities import (
+    _open_new_browser,
+)
 
 # Optional imports used for specific shells.
 # pylint: disable=g-import-not-at-top

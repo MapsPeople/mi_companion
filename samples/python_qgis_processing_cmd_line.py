@@ -8,7 +8,10 @@ import argparse
 import os
 import sys
 
+# noinspection PyUnresolvedReferences
 from qgis.analysis import QgsNativeAlgorithms
+
+# noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsApplication,
     QgsProcessingFeedback,
@@ -41,7 +44,10 @@ def main():
 
     # Add the processing framework
     sys.path.append(os.path.join(qgis_prefix, "python/plugins"))
+    # noinspection PyUnresolvedReferences
     import processing
+
+    # noinspection PyUnresolvedReferences
     from processing.core.Processing import Processing
 
     Processing.initialize()

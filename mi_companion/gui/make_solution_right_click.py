@@ -28,6 +28,7 @@ from qgis.utils import iface
 from jord.qgis_utilities import feature_to_shapely
 from jord.qgis_utilities.helpers import reconnect_signal
 from jord.shapely_utilities import clean_shape
+from sync_module.shared import LanguageBundle, Translations
 
 # noinspection PyUnresolvedReferences
 # from qgis.utils import iface
@@ -74,19 +75,39 @@ def show_make_solution_dialog_action_callable(layer: Any, feature: Any) -> None:
     assert isinstance(
         venue_polygon, shapely.Polygon
     ), f"{venue_polygon=} must be shapely.Polygon"
-    venue_key = s.add_venue(venue_name, venue_name, polygon=venue_polygon)
+    venue_key = s.add_venue(
+        admin_id=venue_name,
+        polygon=venue_polygon,
+        translations={"en": LanguageBundle(name=venue_name)},
+    )
     building_key = s.add_building(
-        venue_name, venue_name, polygon=venue_polygon, venue_key=venue_key
+        admin_id=venue_name,
+        polygon=venue_polygon,
+        venue_key=venue_key,
+        translations={"en": LanguageBundle(name=venue_name)},
     )
     floor_key = s.add_floor(
-        floor_index=0, building_key=building_key, name=venue_name, polygon=venue_polygon
+        floor_index=0,
+        building_key=building_key,
+        translations={"en": LanguageBundle(name=venue_name)},
+        polygon=venue_polygon,
     )
-    s.add_room(venue_name, venue_name, polygon=venue_polygon, floor_key=floor_key)
-    s.add_area(venue_name, venue_name, polygon=venue_polygon, floor_key=floor_key)
+    s.add_room(
+        venue_name,
+        translations={"en": LanguageBundle(name=venue_name)},
+        polygon=venue_polygon,
+        floor_key=floor_key,
+    )
+    s.add_area(
+        venue_name,
+        translations={"en": LanguageBundle(name=venue_name)},
+        polygon=venue_polygon,
+        floor_key=floor_key,
+    )
     s.add_point_of_interest(
         venue_name,
-        venue_name,
-        venue_polygon.representative_point(),
+        translations={"en": LanguageBundle(name=venue_name)},
+        point=venue_polygon.representative_point(),
         floor_key=floor_key,
     )
     # s.add_graph()

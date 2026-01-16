@@ -7,10 +7,9 @@ from qgis.PyQt import QtCore, QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
-from jord.qgis_utilities import help_button, no_button, yes_button
+from jord.qgis_utilities import help_button, no_button, yes_button, ResizableMessageBox
 from mi_companion import VERBOSE
 from mi_companion.configuration import read_bool_setting
-from mi_companion.gui.message_box import ResizableMessageBox
 from sync_module.mi import (
     MIOperation,
     SolutionDepth,
@@ -119,12 +118,12 @@ def sync_build_venue_solution(
             msg_box.setWindowFlags(
                 QtCore.Qt.Dialog  # & ~QtCore.Qt.MSWindowsFixedSizeDialogHint
             )
-        except:
+        except AttributeError:
             msg_box.setWindowFlags(QtCore.Qt.WindowType.Dialog)
 
         try:
             msg_box.setIcon(QtWidgets.QMessageBox.Information)
-        except:
+        except AttributeError:
             msg_box.setIcon(QtWidgets.QMessageBox.Icon.Information)
 
         msg_box.setWindowTitle(window_title)

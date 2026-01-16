@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Iterable, Optional, Tuple
+from typing import Any, Callable, Iterable, Optional, Tuple
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -107,7 +107,7 @@ def add_solution_layers(
 def add_solution_group_contents(
     layer_tree_root: Any,
     mi_hierarchy_group_name: str,
-    progress_bar: callable,
+    progress_bar: Callable,
     qgis_instance_handle: Any,
     solution: Solution,
 ) -> Tuple:

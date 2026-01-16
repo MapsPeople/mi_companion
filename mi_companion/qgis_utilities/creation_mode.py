@@ -19,6 +19,7 @@ def put_location_layers_into_creation_mode():
     Set all location layers into creation mode by applying constraints and default values.
     This sets field constraints for name field and provides default values based on location type.
     """
+    # noinspection PyUnresolvedReferences
     from qgis.core import (
         QgsProject,
         QgsFieldConstraints,
@@ -93,6 +94,7 @@ def put_location_layer_into_regular_mode():
     1. Removing constraints and default values that were set during creation mode
     2. Restoring all fields not in CREATION_MODE_FIELDS to TextEdit widgets
     """
+    # noinspection PyUnresolvedReferences
     from qgis.core import (
         QgsProject,
         QgsFieldConstraints,
@@ -148,6 +150,7 @@ def hide_all_other_fields(layer, fields_to_keep_visible) -> None:
         layer: QgsVectorLayer to modify
         fields_to_keep_visible: String or list of field names to keep visible
     """
+    # noinspection PyUnresolvedReferences
     from qgis.core import QgsEditorWidgetSetup
 
     # Convert single field to list for consistent handling

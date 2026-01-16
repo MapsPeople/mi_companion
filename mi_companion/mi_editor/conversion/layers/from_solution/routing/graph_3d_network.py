@@ -106,6 +106,7 @@ def add_graph_3d_network_layers(
             z_augment_lines.append(shapely.geometry.LineString(z_augmented_line_points))
 
         else:
+            # noinspection PyUnresolvedReferences
             from osgeo import ogr
 
             ogr_linestring = ogr.Geometry(ogr.wkbLineString)

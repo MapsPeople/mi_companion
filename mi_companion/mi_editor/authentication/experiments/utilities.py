@@ -1,6 +1,6 @@
 import webbrowser
 
-from mi_companion.mi_editor.authentication.oauth import TEXT_BROWSERS
+from mi_companion.mi_editor.authentication.experiments.oauth import TEXT_BROWSERS
 
 
 def _open_new_browser(url: str) -> bool:

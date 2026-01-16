@@ -43,9 +43,9 @@ __all__ = [
 
 
 try:
-    _default_validiation_message_level = QMessageBox.Critical
-except:
-    _default_validiation_message_level = QMessageBox.Icon.Critical
+    _default_validation_message_level = QMessageBox.Critical
+except AttributeError:
+    _default_validation_message_level = QMessageBox.Icon.Critical
 
 
 def make_hierarchy_validation_dialog(
@@ -57,7 +57,7 @@ def make_hierarchy_validation_dialog(
     reject_text: str = "Undo",
     alternative_accept_text: str = "Ignore",
     minimum_header_padding: int = 200,
-    level=_default_validiation_message_level,
+    level=_default_validation_message_level,
 ) -> Any:
     logger.error(message)
 

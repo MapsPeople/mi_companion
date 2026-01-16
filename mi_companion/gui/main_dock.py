@@ -58,6 +58,9 @@ from ..constants import (
     PROJECT_NAME,
     VERSION,
 )
+from ..mi_editor.authentication.get_credentials_from_auth_manager import (
+    get_credentials_from_auth_manager,
+)
 from ..qgis_utilities import extract_wkt_elements, get_icon_path, resolve_path
 from ..qgis_utilities.creation_mode import (
     put_location_layers_into_creation_mode,
@@ -271,7 +274,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
     def export_button_clicked(self):
         from .dialogs.solution_export import ENTRY_POINT_DIALOG as export_dialog
 
-        if self.export_dialog is None:
+        if self.export_dialog is None:  #
             self.export_dialog = export_dialog()
         self.export_dialog.show()
 
@@ -283,18 +286,12 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         self.import_dialog.show()
 
     def set_update_sync_settings(self):
+        mp_username, mp_password = get_credentials_from_auth_manager(self.iface_)
+
         self.sync_module_settings = Settings(
             mapsindoors=MapsIndoors(
-                username=read_plugin_setting(
-                    "MAPS_INDOORS_USERNAME",
-                    default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_USERNAME"],
-                    project_name=PROJECT_NAME,
-                ),
-                password=read_plugin_setting(
-                    "MAPS_INDOORS_PASSWORD",
-                    default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_PASSWORD"],
-                    project_name=PROJECT_NAME,
-                ),
+                username=mp_username,
+                password=mp_password,
                 token_endpoint=read_plugin_setting(
                     "MAPS_INDOORS_TOKEN_ENDPOINT",
                     default_value=DEFAULT_PLUGIN_SETTINGS[

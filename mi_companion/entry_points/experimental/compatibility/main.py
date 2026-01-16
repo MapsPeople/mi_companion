@@ -4,6 +4,9 @@ from textwrap import indent
 from typing import Optional
 
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH
+from mi_companion.mi_editor.authentication.get_credentials_from_auth_manager import (
+    get_credentials_from_auth_manager,
+)
 
 logger = logging.getLogger(RESOURCE_BASE_PATH)
 
@@ -11,24 +14,18 @@ __all__ = ["run"]
 
 
 def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> None:
-    from sync_module.tools import (
+    from sync_module.tools.compatibilization import (
         make_solution_compatible,
     )
     from sync_module.mi.config import MapsIndoors, Settings, set_settings
     from jord.qgis_utilities import read_plugin_setting
 
+    mp_username, mp_password = get_credentials_from_auth_manager()
+
     sync_module_settings = Settings(
         mapsindoors=MapsIndoors(
-            username=read_plugin_setting(
-                "MAPS_INDOORS_USERNAME",
-                default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_USERNAME"],
-                project_name=PROJECT_NAME,
-            ),
-            password=read_plugin_setting(
-                "MAPS_INDOORS_PASSWORD",
-                default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_PASSWORD"],
-                project_name=PROJECT_NAME,
-            ),
+            username=mp_username,
+            password=mp_password,
             token_endpoint=read_plugin_setting(
                 "MAPS_INDOORS_TOKEN_ENDPOINT",
                 default_value=DEFAULT_PLUGIN_SETTINGS["MAPS_INDOORS_TOKEN_ENDPOINT"],

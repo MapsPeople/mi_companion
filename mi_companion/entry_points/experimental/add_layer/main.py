@@ -19,9 +19,7 @@ def run() -> None:
 
     Assigns a coordinate value to all vertices in selected features of any geometry type
 
-    :param value: Value to assign
-    :param dimension: Which dimension to assign the value to
-    :param only_active_layer: Only apply to active layer
+
     :return:
     """
 

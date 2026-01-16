@@ -34,7 +34,11 @@ from qgis.core import QgsProject
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 
-from jord.qgis_utilities import read_plugin_setting, store_plugin_setting
+from jord.qgis_utilities import (
+    horizontal_orientation,
+    read_plugin_setting,
+    store_plugin_setting,
+)
 from jord.qgis_utilities.helpers import reconnect_signal
 from ..constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, VERSION
 from ..qgis_utilities.paths import get_icon_path, load_icon, resolve_path
@@ -121,7 +125,9 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
             "value",
         ]
         for ci, label in enumerate(column_headers):
-            self.settings_list_model.setHeaderData(ci, QtCore.Qt.Horizontal, str(label))
+            self.settings_list_model.setHeaderData(
+                ci, horizontal_orientation, str(label)
+            )
 
         reconnect_signal(
             self.settings_list_model.itemChanged, self.setting_item_changed

@@ -169,6 +169,7 @@ def get_hierarchical_lookup_field_expression(
     Supports both RelationReference and ValueRelation widget types.
     """
     # Add the missing imports
+    # noinspection PyUnresolvedReferences
     from qgis.core import QgsProject
 
     if not current_layer:

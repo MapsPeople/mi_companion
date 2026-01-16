@@ -9,6 +9,8 @@ mi_companion
 
 """
 
+from functools import partial
+
 import logging
 from pathlib import Path
 
@@ -23,6 +25,8 @@ from qgis.PyQt.QtWidgets import QAction
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsSettings
+
+from .gui.split_widgets.tools_dock import EntryPointsWidget
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +69,7 @@ except ModuleNotFoundError as e1:
         logger.warning(f"{e2}")
         raise e1
 
-MENU_INSTANCE_NAME = f"&{PROJECT_NAME.lower()}"
+MENU_INSTANCE_NAME = f"{PROJECT_NAME}"
 
 VERBOSE = False
 DEBUGGING = False
@@ -166,7 +170,69 @@ class MapsIndoorsCompanionPlugin:
 
         self.iface.addToolBarIcon(self.open_server_dock_window_action)
 
+        docks = [
+            (EntryPointsWidget.menu_name, EntryPointsWidget),
+        ]
+
+        for label, dock_cls in docks:
+            action = QAction(
+                QIcon(f"{resource_path}/icons/mp_notext.png"),
+                self.tr(label),
+                self.iface.mainWindow(),
+            )
+
+            signals.reconnect_signal(
+                action.triggered, partial(self.open_split_dock_widget, dock_cls)
+            )
+            self.iface.addPluginToMenu(self.menu, action)
+            self.iface.addToolBarIcon(action)
+            self.actions.append(action)
+
+        self.dock_widgets = {}
+
         self.first_start = True  # will be set False in run()
+
+    def open_split_dock_widget(self, dock_cls) -> None:
+        """
+        Opens a specific dock widget
+        """
+        name = dock_cls.__name__
+        if name in self.dock_widgets:
+            self.dock_widgets[name].show()
+            self.dock_widgets[name].raise_()
+            return
+
+        widget = dock_cls(self.iface)
+        self.dock_widgets[name] = widget
+
+        signals.reconnect_signal(
+            widget.plugin_closing,
+            partial(self.on_split_dock_widget_closed, name),
+        )
+
+        a = read_plugin_setting(
+            "DEFAULT_WIDGET_AREA",
+            default_value=DEFAULT_PLUGIN_SETTINGS["DEFAULT_WIDGET_AREA"],
+            project_name=PROJECT_NAME,
+        )
+
+        if not isinstance(a, DockWidgetAreaFlag):
+            a = eval(a)  # TODO: REMOVE EVAL?
+
+        self.iface.addDockWidget(
+            DockWidgetAreaFlag(a).value,
+            widget,
+        )
+
+    def on_split_dock_widget_closed(
+        self, name
+    ) -> None:  # used when Dock dialogue is closed
+        """
+        Gets called when the dock is closed
+        All the clean-up of the dock has to be done here
+        """
+        if name in self.dock_widgets:
+            del self.dock_widgets[name]
 
     def open_dock_widget(self) -> None:
         """
