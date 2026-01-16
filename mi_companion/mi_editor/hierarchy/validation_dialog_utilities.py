@@ -26,7 +26,7 @@ from qgis.gui import (
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
 
-from jord.qgis_utilities import read_plugin_setting
+from jord.qgis_utilities import read_plugin_setting, accept_role, reject_role
 from mi_companion import (
     DEFAULT_PLUGIN_SETTINGS,
     MAPS_INDOORS_QGIS_PLUGIN_TITLE,
@@ -42,6 +42,12 @@ __all__ = [
 ]
 
 
+try:
+    _default_validiation_message_level = QMessageBox.Critical
+except:
+    _default_validiation_message_level = QMessageBox.Icon.Critical
+
+
 def make_hierarchy_validation_dialog(
     header: str,
     message: str,
@@ -51,7 +57,7 @@ def make_hierarchy_validation_dialog(
     reject_text: str = "Undo",
     alternative_accept_text: str = "Ignore",
     minimum_header_padding: int = 200,
-    level=QMessageBox.Critical,
+    level=_default_validiation_message_level,
 ) -> Any:
     logger.error(message)
 
@@ -94,14 +100,12 @@ def make_hierarchy_validation_dialog(
         layout.setColumnMinimumWidth(layout.columnCount() - 1, 300)
 
     if add_reject_option:
-        reject_button = qt_msg_box.addButton(reject_text, QMessageBox.RejectRole)
-        accept_button = qt_msg_box.addButton(
-            alternative_accept_text, QMessageBox.AcceptRole
-        )
+        reject_button = qt_msg_box.addButton(reject_text, reject_role)
+        accept_button = qt_msg_box.addButton(alternative_accept_text, accept_role)
 
         default_button = reject_button
     else:
-        accept_button = qt_msg_box.addButton(accept_text, QMessageBox.AcceptRole)
+        accept_button = qt_msg_box.addButton(accept_text, accept_role)
         default_button = accept_button
 
     qt_msg_box.setDefaultButton(default_button)
@@ -109,9 +113,9 @@ def make_hierarchy_validation_dialog(
     res = qt_msg_box.exec()
 
     if qt_msg_box.clickedButton() == accept_button:
-        return QMessageBox.AcceptRole
+        return accept_role
 
-    return QMessageBox.RejectRole
+    return reject_role
 
 
 def make_validation_action_toast(

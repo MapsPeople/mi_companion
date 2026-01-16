@@ -14,7 +14,9 @@ __all__ = ["run"]
 
 def run(
     *,
-    field: str = "represent_value(location_type) + ': ' + name + ' - ' + external_id",
+    field: str = "represent_value(location_type) + ': ' + "
+    + '"translations.en.name"'
+    + " + ' - ' + external_id",
     min_ratio: float = read_float_setting("LAYER_LABEL_VISIBLE_MIN_RATIO"),
 ) -> None:
     """

@@ -2,13 +2,14 @@ import logging
 from typing import Any, Optional
 
 from jord.qgis_utilities import (
-    Qgis3dCullingMode,
     Qgis3dFacade,
     make_field_unique,
     set_3d_view_settings,
     set_geometry_constraints,
     set_layer_rendering_scale,
 )
+
+from qgis._3d import Qgs3DTypes
 from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
     DESCRIPTOR_BEFORE,
@@ -154,7 +155,7 @@ def add_floor_layers(
                 offset=(FLOOR_VERTICAL_SPACING + FLOOR_HEIGHT) * floor.floor_index,
                 extrusion=FLOOR_VERTICAL_SPACING,
                 facades=Qgis3dFacade.walls_and_roofs,
-                culling_mode=Qgis3dCullingMode.no_culling,
+                culling_mode=Qgs3DTypes.CullingMode.NoCulling,
                 color=(111, 111, 111),
             )
             set_geometry_constraints(floor_layer)

@@ -38,7 +38,7 @@ from mi_companion.qgis_utilities.common_attributes import extract_translations
 __all__ = ["convert_solution_venues"]
 
 from mi_companion.qgis_utilities.extraction import special_extract_layer_data
-from jord.qgis_utilities import feature_to_shapely
+from jord.qgis_utilities import feature_to_shapely, reject_role
 
 from .location_type import get_location_type_data
 
@@ -170,7 +170,7 @@ def convert_solution_venues(
                     level=QtWidgets.QMessageBox.Warning,
                 )
 
-                if reply == QMessageBox.RejectRole:
+                if reply == reject_role:
                     raise Exception("Upload cancelled")
 
                 continue
@@ -254,7 +254,7 @@ def get_venue_key(
                     level=QtWidgets.QMessageBox.Warning,
                 )
 
-                if reply == QMessageBox.RejectRole:
+                if reply == reject_role:
                     raise Exception("Upload cancelled")
 
             if venue_polygon:

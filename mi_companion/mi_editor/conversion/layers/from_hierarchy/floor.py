@@ -27,6 +27,7 @@ from jord.qgis_utilities import (
     extract_field_value,
     feature_to_shapely,
     qgs_geometry_to_shapely,
+    reject_role,
 )
 from mi_companion import (
     ANCHOR_AS_INDIVIDUAL_FIELDS,
@@ -143,7 +144,7 @@ def add_building_floors(
                 level=QtWidgets.QMessageBox.Warning,
             )
 
-            if reply == QMessageBox.RejectRole:
+            if reply == reject_role:
                 raise Exception("Upload cancelled")
 
             continue
@@ -221,7 +222,7 @@ def get_floor_data(
                     level=QtWidgets.QMessageBox.Warning,
                 )
 
-                if reply == QMessageBox.RejectRole:
+                if reply == reject_role:
                     raise Exception("Upload cancelled")
 
             if floor_polygon is None:

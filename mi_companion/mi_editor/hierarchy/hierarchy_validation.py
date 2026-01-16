@@ -19,7 +19,12 @@ from qgis.core import (
     QgsVectorLayer,
 )
 
-from jord.qgis_utilities import disconnect_signal, gc_layers, reconnect_signal
+from jord.qgis_utilities import (
+    disconnect_signal,
+    gc_layers,
+    reconnect_signal,
+    reject_role,
+)
 from mi_companion.layer_descriptors import (
     DATABASE_GROUP_DESCRIPTOR,
     ROUTE_ELEMENT_LAYER_DESCRIPTORS,
@@ -92,7 +97,7 @@ def validate_hierarchy(node: Any, parent: Optional[str] = None) -> ValidationRes
                     f"{matched_validator.__name__}",
                 )
 
-                if reply == QMessageBox.RejectRole:
+                if reply == reject_role:
                     return ValidationResultEnum.rejected
 
     if matched_validator is not None:
@@ -104,7 +109,7 @@ def validate_hierarchy(node: Any, parent: Optional[str] = None) -> ValidationRes
             f"layers will be excluded from the upload.",
         )
 
-        if reply == QMessageBox.RejectRole:
+        if reply == reject_role:
             return ValidationResultEnum.rejected
 
     return ValidationResultEnum.accepted

@@ -34,6 +34,7 @@ from jord.qgis_utilities import (
     is_str_value_null_like,
     parse_field,
     qgs_geometry_to_shapely,
+    reject_role,
 )
 from mi_companion import (
     ANCHOR_AS_INDIVIDUAL_FIELDS,
@@ -275,7 +276,7 @@ def add_floor_locations(
                     level=QtWidgets.QMessageBox.Warning,
                 )
 
-                if reply == QMessageBox.RejectRole:
+                if reply == reject_role:
                     raise Exception("Upload cancelled")
 
                 continue  # TODO: IDEA IMPLEMENT POP UP CONFIRMATION OF DELETE FEATURE WHEN MISSING GEOMETRIES.

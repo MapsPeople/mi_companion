@@ -11,6 +11,7 @@ from qgis.PyQt.QtWidgets import QMessageBox
 # noinspection PyUnresolvedReferences
 from qgis.core import Qgis, QgsProject
 
+from jord.qgis_utilities import reject_role
 from .hierarchy_model import INVERSE_NODE_PARENT_MAPPING, NODE_PARENT_MAPPING
 from .validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
@@ -80,7 +81,7 @@ def check_current_parent(
             add_reject_option=ENABLE_UNDO,
         )
 
-        if reply == QMessageBox.RejectRole:
+        if reply == reject_role:
             return ValidationResultEnum.rejected
 
     return ValidationResultEnum.accepted
@@ -121,7 +122,7 @@ def check_children(
                 add_reject_option=ENABLE_UNDO,
             )
 
-            if reply == QMessageBox.RejectRole:
+            if reply == reject_role:
                 return ValidationResultEnum.rejected
 
     return ValidationResultEnum.accepted
@@ -157,7 +158,7 @@ def check_siblings_for_duplicates(
             f"{NODE_PARENT_MAPPING[descriptor]} group.",
         )
 
-        if reply == QMessageBox.RejectRole:
+        if reply == reject_role:
             return ValidationResultEnum.rejected
 
     return ValidationResultEnum.accepted

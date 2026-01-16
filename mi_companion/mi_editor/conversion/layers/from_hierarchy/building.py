@@ -26,6 +26,7 @@ from jord.qgis_utilities import (
     extract_field_value,
     feature_to_shapely,
     qgs_geometry_to_shapely,
+    reject_role,
 )
 from mi_companion import (
     ANCHOR_AS_INDIVIDUAL_FIELDS,
@@ -206,7 +207,7 @@ def add_venue_level_hierarchy(
                         level=QtWidgets.QMessageBox.Warning,
                     )
 
-                    if reply == QMessageBox.RejectRole:
+                    if reply == reject_role:
                         raise Exception("Upload cancelled")
 
                     continue
@@ -315,7 +316,7 @@ def get_building_key(
                     level=QtWidgets.QMessageBox.Warning,
                 )
 
-                if reply == QMessageBox.RejectRole:
+                if reply == reject_role:
                     raise Exception("Upload cancelled")
 
             if building_polygon is not None:

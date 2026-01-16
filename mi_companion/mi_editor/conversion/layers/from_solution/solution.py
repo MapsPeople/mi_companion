@@ -12,6 +12,7 @@ from jord.qgis_utilities import (
     make_iterable_dropdown_widget,
     make_sorted_mapping_dropdown_widget,
     make_value_map_widget,
+    yes_button,
 )
 from jord.qlive_utilities import add_no_geom_layer
 from mi_companion import (
@@ -196,7 +197,7 @@ def add_location_type_layer_ss(qgis_instance_handle, solution, solution_group):
                     f"Accept?",
                 )
 
-                if reply == QtWidgets.QMessageBox.Yes:
+                if reply == yes_button:
                     solution_group.removeChildNode(c)
                     location_type_layer = None
                 else:
@@ -284,7 +285,7 @@ def add_solution_data_layers(qgis_instance_handle, solution, solution_group):
             f"Accept?",
         )
 
-        if reply == QtWidgets.QMessageBox.Yes:
+        if reply == yes_button:
             solution_group.removeChildNode(found_solution_data)
             found_solution_data = None
         else:
@@ -347,7 +348,7 @@ def add_solution_config_layers(qgis_instance_handle, solution, solution_group):
             f"Accept?",
         )
 
-        if reply == QtWidgets.QMessageBox.Yes:
+        if reply == yes_button:
             solution_group.removeChildNode(found_solution_config)
             found_solution_config = None
         else:

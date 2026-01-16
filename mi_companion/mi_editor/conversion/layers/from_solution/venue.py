@@ -10,6 +10,7 @@ from jord.qgis_utilities import (
     make_value_relation_widget,
     set_geometry_constraints,
     set_layer_rendering_scale,
+    yes_button,
 )
 from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
@@ -102,7 +103,7 @@ def add_venue_layer(
                     f"Would you like to reload the {venue.translations[solution.default_language].name} venue from the MI Database?",
                 )
 
-                if reply == QtWidgets.QMessageBox.Yes:
+                if reply == yes_button:
                     solution_group.removeChildNode(venue_group)
                 else:
                     continue

@@ -7,6 +7,7 @@ from qgis.PyQt import QtCore, QtWidgets
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
+from jord.qgis_utilities import help_button, no_button, yes_button
 from mi_companion import VERBOSE
 from mi_companion.configuration import read_bool_setting
 from mi_companion.gui.message_box import ResizableMessageBox
@@ -114,10 +115,18 @@ def sync_build_venue_solution(
         msg_box = ResizableMessageBox(
             # parent=qgis_instance_handle.iface
         )
-        msg_box.setWindowFlags(
-            QtCore.Qt.Dialog  # & ~QtCore.Qt.MSWindowsFixedSizeDialogHint
-        )
-        msg_box.setIcon(QtWidgets.QMessageBox.Information)
+        try:
+            msg_box.setWindowFlags(
+                QtCore.Qt.Dialog  # & ~QtCore.Qt.MSWindowsFixedSizeDialogHint
+            )
+        except:
+            msg_box.setWindowFlags(QtCore.Qt.WindowType.Dialog)
+
+        try:
+            msg_box.setIcon(QtWidgets.QMessageBox.Information)
+        except:
+            msg_box.setIcon(QtWidgets.QMessageBox.Icon.Information)
+
         msg_box.setWindowTitle(window_title)
         text_msg = f"The {solution_name}:{venue_name} venue has been modified."
 
@@ -126,19 +135,23 @@ def sync_build_venue_solution(
             f"Do you want to sync following changes?\n\n{aggregate_operation_description(operations)}"
         )
         msg_box.setDetailedText("\n\n".join([str(o) for o in operations]))
-        msg_box.setStandardButtons(
-            QtWidgets.QMessageBox.Yes
-            | QtWidgets.QMessageBox.No
-            | QtWidgets.QMessageBox.Help
-        )
-        msg_box.setDefaultButton(QtWidgets.QMessageBox.No)
-        msg_box.setEscapeButton(QtWidgets.QMessageBox.No)
+
+        _standard_buttons = yes_button | no_button | help_button
+
+        _default_button = no_button
+
+        _escape_button = no_button
+
+        msg_box.setStandardButtons(_standard_buttons)
+        msg_box.setDefaultButton(_default_button)
+        msg_box.setEscapeButton(_escape_button)
+
         reply = msg_box.exec()
 
-        if reply == QtWidgets.QMessageBox.Yes:
+        if reply == yes_button:
             return True
 
-        if reply == QtWidgets.QMessageBox.Help:
+        if reply == help_button:
             show_differences(
                 qgis_instance_handle=qgis_instance_handle,
                 solution=solution,
