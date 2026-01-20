@@ -9,10 +9,10 @@ mi_companion
 
 """
 
-from functools import partial
+from pathlib import Path
 
 import logging
-from pathlib import Path
+from functools import partial
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QCoreApplication, QLocale, QTranslator
@@ -26,54 +26,22 @@ from qgis.PyQt.QtWidgets import QAction
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsSettings
 
+from jord.qgis_utilities import read_plugin_setting, signals
+from jord.qt_utilities import DockWidgetAreaFlag
+from . import MI_MENU_INSTANCE_NAME
+from .configuration.options import DeploymentOptionsPageFactory
+from .constants import DEBUGGING, DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
+from .gui.deprecated.main_dock import MapsIndoorsMonolithDockWidget
+from .gui.split_widgets.export_dock import ExportWidget
+from .gui.split_widgets.import_dock import ImportWidget
 from .gui.split_widgets.tools_dock import EntryPointsWidget
 
-logger = logging.getLogger(__name__)
+# noinspection PyUnresolvedReferences
+from .resources import *  # Initialize Qt resources from file resources.py
 
-# my_plugin = qgis.utils.plugins['MapsIndoors Beta']
+assert qt_resource_data is not None  # from resources.py
 
-try:
-    from jord.qt_utilities import DockWidgetAreaFlag
-    from jord.qgis_utilities import read_plugin_setting, signals
-    from .constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
-
-    from .configuration.options import DeploymentOptionsPageFactory
-    from .gui.main_dock import MapsIndoorsCompanionDockWidget
-
-    # noinspection PyUnresolvedReferences
-    from .resources import *  # Initialize Qt resources from file resources.py
-
-    assert qt_resource_data is not None  # from resources.py
-
-except ModuleNotFoundError as e1:
-    try:  # TODO MAYbe fetch eqips implementation, # otherwise assume warg was installed during bootstrap
-        # from warg import get_requirements_from_file
-        if False:  # TODO: Only do this if bundle was not found
-            from warg.packages import install_requirements_from_file
-
-            install_requirements_from_file(Path(__file__).parent / "requirements.txt")
-
-        from jord.qt_utilities import DockWidgetAreaFlag
-        from jord.qgis_utilities import read_plugin_setting, signals
-        from .constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
-
-        from .configuration.options import DeploymentOptionsPageFactory
-        from .gui.main_dock import MapsIndoorsCompanionDockWidget
-
-        # noinspection PyUnresolvedReferences
-        from .resources import *  # Initialize Qt resources from file resources.py
-
-        assert qt_resource_data is not None  # from resources.py
-
-    except ModuleNotFoundError as e2:
-        logger.warning(f"{e2}")
-        raise e1
-
-MENU_INSTANCE_NAME = f"{PROJECT_NAME}"
-
-VERBOSE = False
-DEBUGGING = False
-FORCE_RELOAD = False
+_logger = logging.getLogger(__name__)
 
 
 class MapsIndoorsCompanionPlugin:
@@ -90,16 +58,24 @@ class MapsIndoorsCompanionPlugin:
 
         self.iface = iface
 
-        _ = """        if False:
-            import pydevd_pycharm
+        if DEBUGGING:
+            try:
+                if False:
+                    # import pydevd_pycharm
 
-            pydevd_pycharm.settrace(
-                "localhost",
-                port=6969,
-                stdoutToServer=True,
-                stderrToServer=True,
-            )
-"""
+                    # pydevd_pycharm.settrace(
+                    #    "localhost",
+                    #    port=6969,
+                    #    stdoutToServer=True,
+                    #    stderrToServer=True,
+                    # )
+                    _logger.warrning(
+                        "Debugging was enabled, pydevd_pycharm is available on port 6969"
+                    )
+            except:
+                _logger.error(
+                    "Debugging was enabled but pydevd_pycharm was not found, no debugging server was started"
+                )
 
         self.plugin_dir = Path(__file__).parent
         locale = QgsSettings().value(
@@ -113,18 +89,18 @@ class MapsIndoorsCompanionPlugin:
                 self.translator.load(str(locale_path))
                 QCoreApplication.installTranslator(self.translator)
         else:
-            logger.warning(
+            _logger.warning(
                 f"Unable to determine locale for {PROJECT_NAME} was {str(type(locale))} {str(locale)}"
             )
 
-        self.open_server_dock_window_action = None
-        self.mi_companion_dock_widget = None
+        self.open_monolith_dock_window_action = None
+        self.mi_companion_monolith_dock_widget = None
 
         self.options_factory = DeploymentOptionsPageFactory()
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(f"&{MENU_INSTANCE_NAME}")
+        self.menu = self.tr(f"&{MI_MENU_INSTANCE_NAME}")
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
@@ -156,27 +132,40 @@ class MapsIndoorsCompanionPlugin:
             default_value=DEFAULT_PLUGIN_SETTINGS["RESOURCES_BASE_PATH"],
             project_name=PROJECT_NAME,
         )
-        self.open_server_dock_window_action = QAction(
+        self.open_monolith_dock_window_action = QAction(
             QIcon(f"{resource_path}/icons/mp_notext.png"),
             self.tr(PROJECT_NAME),
             self.iface.mainWindow(),
         )
 
-        self.actions.append(self.open_server_dock_window_action)
+        self.actions.append(self.open_monolith_dock_window_action)
 
         signals.reconnect_signal(
-            self.open_server_dock_window_action.triggered, self.open_dock_widget
+            self.open_monolith_dock_window_action.triggered,
+            self.open_monolith_dock_widget,
         )
 
-        self.iface.addToolBarIcon(self.open_server_dock_window_action)
+        self.iface.addToolBarIcon(self.open_monolith_dock_window_action)
 
-        docks = [
-            (EntryPointsWidget.menu_name, EntryPointsWidget),
-        ]
-
-        for label, dock_cls in docks:
-            action = QAction(
+        for label, dock_cls, icon in (
+            (
+                EntryPointsWidget.menu_name,
+                EntryPointsWidget,
                 QIcon(f"{resource_path}/icons/mp_notext.png"),
+            ),
+            (
+                ImportWidget.menu_name,
+                ImportWidget,
+                QIcon(f"{resource_path}/icons/arrow_down.png"),
+            ),
+            (
+                ExportWidget.menu_name,
+                ExportWidget,
+                QIcon(f"{resource_path}/icons/arrow_up.png"),
+            ),
+        ):
+            action = QAction(
+                icon,
                 self.tr(label),
                 self.iface.mainWindow(),
             )
@@ -185,7 +174,7 @@ class MapsIndoorsCompanionPlugin:
                 action.triggered, partial(self.open_split_dock_widget, dock_cls)
             )
             self.iface.addPluginToMenu(self.menu, action)
-            self.iface.addToolBarIcon(action)
+            # self.iface.addToolBarIcon(action)
             self.actions.append(action)
 
         self.dock_widgets = {}
@@ -234,15 +223,17 @@ class MapsIndoorsCompanionPlugin:
         if name in self.dock_widgets:
             del self.dock_widgets[name]
 
-    def open_dock_widget(self) -> None:
+    def open_monolith_dock_widget(self) -> None:
         """
         Opens the dock
         """
-        if self.mi_companion_dock_widget is None:
-            self.mi_companion_dock_widget = MapsIndoorsCompanionDockWidget(self.iface)
+        if self.mi_companion_monolith_dock_widget is None:
+            self.mi_companion_monolith_dock_widget = MapsIndoorsMonolithDockWidget(
+                self.iface
+            )
 
             signals.reconnect_signal(
-                self.mi_companion_dock_widget.plugin_closing,
+                self.mi_companion_monolith_dock_widget.plugin_closing,
                 self.on_dock_widget_closed,
             )
 
@@ -257,7 +248,7 @@ class MapsIndoorsCompanionPlugin:
 
             self.iface.addDockWidget(
                 DockWidgetAreaFlag(a).value,
-                self.mi_companion_dock_widget,
+                self.mi_companion_monolith_dock_widget,
             )
 
     def on_dock_widget_closed(self) -> None:  # used when Dock dialogue is closed
@@ -265,7 +256,7 @@ class MapsIndoorsCompanionPlugin:
         Gets called when the dock is closed
         All the clean-up of the dock has to be done here
         """
-        self.mi_companion_dock_widget = None
+        self.mi_companion_monolith_dock_widget = None
 
     def unload(self) -> None:
         """Removes the plugin menu item and icon from QGIS GUI."""

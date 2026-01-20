@@ -1,27 +1,27 @@
 import logging
-from typing import Any, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
+from typing import Any, List, Optional
 
 from jord.qgis_utilities import (
     extract_field_value,
     extract_layer_attributes,
 )
 from mi_companion.layer_descriptors import LOCATION_TYPE_DESCRIPTOR
-from sync_module.model import LocationType, Solution
-from warg import str_to_bool
 from mi_companion.qgis_utilities.common_attributes import (
     extract_display_rule,
     extract_translations,
 )
+from sync_module.model import LocationType, Solution
+from warg import str_to_bool
 
 BOOLEAN_LOCATION_TYPE_ATTRS = ()
 STR_LOCATION_TYPE_ATTRS = ("translations.en.name", "admin_id")
 FLOAT_LOCATION_TYPE_ATTRS = ()
 INTEGER_LOCATION_TYPE_ATTRS = ()
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["get_location_type_data"]
 
@@ -138,11 +138,11 @@ def get_location_type_data(
 
             except Exception as e:
                 _invalid = f"Invalid location_types: {e}"
-                logger.error(_invalid)
+                _logger.error(_invalid)
 
                 if collect_invalid:
                     issues.append(_invalid)
 
                 raise e
         else:
-            logger.debug(f"{solution_level_item.name()} was not a location_type layer")
+            _logger.debug(f"{solution_level_item.name()} was not a location_type layer")

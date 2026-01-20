@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import logging
-from typing import Dict, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -9,12 +8,13 @@ from qgis.core import (
     QgsCoordinateTransform,
     QgsProject,
 )
+from typing import Dict, Optional
 
 __all__ = ["run"]
 
 from mi_companion import RESOURCE_BASE_PATH
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 
 def get_available_mi_layers() -> Dict[str, str]:
@@ -35,7 +35,7 @@ def download_mi_layer(url: str) -> Optional[dict]:
         response.raise_for_status()
         return response.json()
     except Exception as e:
-        logger.error(f"Failed to download MI layer: {e}")
+        _logger.error(f"Failed to download MI layer: {e}")
         return None
 
 
@@ -60,7 +60,7 @@ def create_mi_layer(layer_data: dict, layer_name: str) -> bool:
             return True
 
     except Exception as e:
-        logger.error(f"Failed to create MI layer: {e}")
+        _logger.error(f"Failed to create MI layer: {e}")
 
     return False
 

@@ -1,5 +1,4 @@
 import logging
-from typing import Any, Iterable
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -30,6 +29,7 @@ from qgis.core import (
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+from typing import Any, Iterable
 
 from mi_companion.configuration import read_bool_setting
 from mi_companion.qgis_utilities import (
@@ -37,7 +37,7 @@ from mi_companion.qgis_utilities import (
     get_hierarchical_lookup_field_expression,
 )
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["add_svg_symbol"]
 
@@ -177,18 +177,18 @@ def add_svg_symbol(layers: Iterable[Any]) -> None:
         return
 
     if not layers:
-        logger.info(f"{layers=} was not found")
+        _logger.info(f"{layers=} was not found")
         return
 
     for layer in layers:
         if not layer:
-            logger.info(f"{layer=} was not found")
+            _logger.info(f"{layer=} was not found")
             continue
 
         # Get the renderer for this layer
         renderer = layer.renderer()
         if not renderer:
-            logger.info(f"{renderer=} was not found")
+            _logger.info(f"{renderer=} was not found")
             continue
 
         modified = False
@@ -287,10 +287,10 @@ def add_svg_symbol(layers: Iterable[Any]) -> None:
 
                 modified = True
             else:
-                logger.info(f"Symbol not found for layer {layer.name()}")
+                _logger.info(f"Symbol not found for layer {layer.name()}")
 
         # Trigger layer updates if modified
         if modified:
             layer.triggerRepaint()
             layer.emitStyleChanged()
-            logger.info(f"Added SVG symbol layer to layer '{layer.name()}'")
+            _logger.info(f"Added SVG symbol layer to layer '{layer.name()}'")

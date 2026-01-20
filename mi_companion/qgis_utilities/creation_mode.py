@@ -8,7 +8,7 @@ from .expressions import (
     NAME_MUST_NOT_NULL_AND_NOT_EMPTY_VALIDATION_EXPRESSION,
 )
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 CREATION_MODE_FIELDS = ["location_type", "external_id", "anchor_x", "anchor_y"]
@@ -134,7 +134,7 @@ def put_location_layer_into_regular_mode():
                     "TextEdit", {"IsMultiline": False, "UseHtml": False}
                 )
                 layer.setEditorWidgetSetup(field_idx, widget_setup)
-                logger.debug(f"Restoring field '{field_name}' to TextEdit widget")
+                _logger.debug(f"Restoring field '{field_name}' to TextEdit widget")
 
     # Update the layers to apply changes
     for layer in location_layers:
@@ -157,7 +157,7 @@ def hide_all_other_fields(layer, fields_to_keep_visible) -> None:
     if isinstance(fields_to_keep_visible, str):
         fields_to_keep_visible = [fields_to_keep_visible]
 
-    logger.info(
+    _logger.info(
         f"Hiding all fields except {fields_to_keep_visible} in layer '{layer.name()}'"
     )
 
@@ -176,16 +176,16 @@ def hide_all_other_fields(layer, fields_to_keep_visible) -> None:
             # Get current widget setup to preserve original widget
             current_setup = layer.editorWidgetSetup(field_idx)
             found_fields.add(field_name)
-            logger.debug(
+            _logger.debug(
                 f"Keeping field '{field_name}' visible with widget type '{current_setup.type()}'"
             )
         else:
             # Hide field by using "Hidden" widget type
             new_setup = QgsEditorWidgetSetup("Hidden", {})
             layer.setEditorWidgetSetup(field_idx, new_setup)
-            logger.debug(f"Hiding field '{field_name}' using Hidden widget")
+            _logger.debug(f"Hiding field '{field_name}' using Hidden widget")
 
     # Check for any fields that weren't found
     missing_fields = set(fields_to_keep_visible) - found_fields
     if missing_fields:
-        logger.warning(f"Fields {missing_fields} not found in layer '{layer.name()}'")
+        _logger.warning(f"Fields {missing_fields} not found in layer '{layer.name()}'")

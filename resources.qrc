@@ -3,5 +3,8 @@
         <file>mi_companion/icon.png</file>
         <file>mi_companion/icons/mp_notext.png</file>
         <file>mi_companion/icons/mp-favicon-white.png</file>
+        <file>mi_companion/icons/arrow_down.png</file>
+        <file>mi_companion/icons/arrow_up.png</file>
+        <file>mi_companion/icons/ruby.png</file>
     </qresource>
 </RCC>

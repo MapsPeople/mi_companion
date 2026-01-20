@@ -1,17 +1,17 @@
 #!/usr/bin/python
 import logging
 from enum import Enum
-from typing import Any
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsGeometry, QgsMultiPoint, QgsPoint, QgsProject, QgsWkbTypes
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+from typing import Any
 
 from mi_companion import RESOURCE_BASE_PATH
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
 
@@ -38,12 +38,12 @@ def set_coordinate(
     """
 
     if feature is None:
-        logger.error("Feature was None")
+        _logger.error("Feature was None")
         return
 
     geom = feature.geometry()
     if not geom:
-        logger.error("No geometry found")
+        _logger.error("No geometry found")
         return feature
 
     # Get geometry type
@@ -100,7 +100,7 @@ def set_coordinate(
         )  # TODO: LOOK INTO WHETHER THIS WITH Z AND M COORDINATE..
 
     else:
-        logger.error(f"Unsupported geometry type: {geom_type}")
+        _logger.error(f"Unsupported geometry type: {geom_type}")
         return feature
 
     feature.setGeometry(new_geom)
@@ -129,7 +129,7 @@ def run(
         layers = list(QgsProject.instance().mapLayers().values())
 
     if len(layers) == 0:
-        logger.error("No layers were given")
+        _logger.error("No layers were given")
         return
 
     for layer in layers:
@@ -138,14 +138,14 @@ def run(
 
             if len(selected_features) > 0:
                 for feature in selected_features:
-                    logger.info(
+                    _logger.info(
                         f"Setting {dimension} coordinate for feature {feature.id()}"
                     )
                     feature = set_coordinate(feature, value, dimension)
                     layer.updateFeature(feature)
             else:
-                logger.error("Please select features in the layer")
+                _logger.error("Please select features in the layer")
         else:
-            logger.error(
+            _logger.error(
                 f"Skipping layer {layer.name()} as it had no selected features"
             )

@@ -1,7 +1,6 @@
+import geopandas
 import logging
 from typing import Any, List, Optional
-
-import geopandas
 
 from jord.qgis_utilities import (
     make_field_not_null,
@@ -18,7 +17,7 @@ from mi_companion.mi_editor.conversion.projection import (
 from sync_module.model import CollectionMixin, Graph
 from sync_module.pandas_utilities import locations_to_df
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["add_polygon_route_element_layers"]
 
@@ -38,7 +37,7 @@ def add_polygon_route_element_layers(
     added_layers = []
 
     if "floor_index" not in df:
-        logger.warning(f"No floor index found for {layer_name}")
+        _logger.warning(f"No floor index found for {layer_name}")
         return None
 
     df["floor_index"] = df["floor_index"].astype(str)
@@ -71,7 +70,7 @@ def add_polygon_route_element_layers(
 
                 empty_lines = obstacle_df[obstacle_df.is_empty]
                 if not empty_lines.empty:
-                    logger.warning(f"Dropping {empty_lines}")
+                    _logger.warning(f"Dropping {empty_lines}")
 
                 obstacle_df = obstacle_df[~obstacle_df.is_empty]
 
@@ -112,7 +111,7 @@ def add_polygon_route_element_layers(
 
         empty_lines = obstacle_df[obstacle_df.is_empty]
         if not empty_lines.empty:
-            logger.warning(f"Dropping {empty_lines}")
+            _logger.warning(f"Dropping {empty_lines}")
 
         obstacle_df = obstacle_df[~obstacle_df.is_empty]
 

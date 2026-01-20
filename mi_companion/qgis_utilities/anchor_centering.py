@@ -1,5 +1,4 @@
 import logging
-from typing import Iterable
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -7,6 +6,7 @@ from qgis.core import (
     QgsDefaultValue,
     QgsFieldConstraints,
 )
+from typing import Iterable
 
 from mi_companion.constants import ONLY_RESET_ANCHOR_IF_OUTSIDE
 from .expressions import (
@@ -17,7 +17,7 @@ from .expressions import (
 __all__ = ["auto_center_anchors_when_outside"]
 
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def auto_center_anchors_when_outside(layers: Iterable) -> None:
@@ -63,7 +63,7 @@ def auto_center_anchors_when_outside(layers: Iterable) -> None:
                             field_idx, Qgis.FieldDomainSplitPolicy.GeometryRatio
                         )
                     except Exception as e:
-                        logger.warning(
+                        _logger.warning(
                             "QgsVectorLayer.setFieldSplitPolicy is only available in QGIS >=3.30.0, please upgrade your QGIS to fix this"
                         )
 
@@ -73,7 +73,7 @@ def auto_center_anchors_when_outside(layers: Iterable) -> None:
                             field_idx, Qgis.FieldDomainMergePolicy.DefaultValue
                         )
                     except Exception as e:
-                        logger.warning(
+                        _logger.warning(
                             "QgsVectorLayer.setFieldMergePolicy is only available in QGIS >=3.44.0, please upgrade your QGIS to fix this"
                         )
 
@@ -83,6 +83,6 @@ def auto_center_anchors_when_outside(layers: Iterable) -> None:
                             field_idx, Qgis.FieldDuplicatePolicy.Duplicate
                         )
                     except Exception as e:
-                        logger.warning(
+                        _logger.warning(
                             "QgsVectorLayer.setFieldDuplicatePolicy is only available in QGIS >=3.38.0, please upgrade your QGIS to fix this"
                         )

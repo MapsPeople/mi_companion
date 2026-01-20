@@ -1,6 +1,4 @@
 import logging
-from typing import Any, Collection, Dict
-
 import shapely
 
 # noinspection PyUnresolvedReferences
@@ -8,6 +6,7 @@ from qgis.PyQt import QtCore, QtWidgets
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
+from typing import Any, Collection, Dict
 
 from sync_module.mi import MIOperation
 from sync_module.mi_sync_constants import MI_EPSG_NUMBER
@@ -20,7 +19,7 @@ from sync_module.model import (
 
 __all__ = ["show_differences", "extract_operation_difference_geometry"]
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def show_differences(
@@ -94,7 +93,7 @@ def show_differences(
         )
 
     except Exception as e:  # TODO: HANDLE Mixed GEOM TYPES!
-        logger.error(e)
+        _logger.error(e)
 
 
 def extract_operation_difference_geometry(
@@ -116,7 +115,7 @@ def extract_operation_difference_geometry(
         sub_operation_id = f"{operation_ith}_{ith}"
 
         if geom_wkt == "":
-            logger.warning(
+            _logger.warning(
                 f"Empty geometry WKT for operation: {o.operation_type.name} {o.item_type.__name__}, skipping, "
                 f"{i}"
             )
@@ -133,7 +132,7 @@ def extract_operation_difference_geometry(
                         rep_points
                     )
             except:
-                logger.error(f"Error parsing geometry WKT: {i=}")
+                _logger.error(f"Error parsing geometry WKT: {i=}")
 
         else:
             try:
@@ -149,6 +148,6 @@ def extract_operation_difference_geometry(
                         rep_points
                     )
             except:
-                logger.error(f"Error parsing geometry WKT: {geom_wkt=}")
+                _logger.error(f"Error parsing geometry WKT: {geom_wkt=}")
 
     return differences

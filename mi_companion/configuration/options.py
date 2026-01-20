@@ -1,9 +1,5 @@
-# !/usr/bin/env python3
-
-
 __author__ = "heider"
 __doc__ = r"""
-            TODO: Extract qlive specific code from this file.
            Created on 5/5/22
            """
 
@@ -13,42 +9,31 @@ __all__ = [
     "read_bool_setting",
     "read_float_setting",
     "reload_settings",
-    "DeploymentCompanionOptionsWidget",
+    "MapsIndoorsOptionsWidget",
 ]
 
 import logging
-from typing import Any
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt import QtCore, QtGui, uic
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtGui import QStandardItem, QStandardItemModel
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import QHBoxLayout
+from qgis.PyQt import QtCore, QtGui, QtWidgets, uic
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
+from typing import Any
 
 from jord.qgis_utilities import (
     horizontal_orientation,
     read_plugin_setting,
+    reconnect_signal,
     store_plugin_setting,
 )
-from jord.qgis_utilities.helpers import reconnect_signal
 from ..constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, VERSION
 from ..qgis_utilities.paths import get_icon_path, load_icon, resolve_path
 
-QGIS_PROJECT = QgsProject.instance()
-VERBOSE = False
-
-logger = logging.getLogger(__name__)
-
-OptionWidget, OptionWidgetBase = uic.loadUiType(resolve_path("options.ui", __file__))
+_logger = logging.getLogger(__name__)
 
 
 class DeploymentOptionsPageFactory(QgsOptionsWidgetFactory):
@@ -76,7 +61,9 @@ def reload_settings(load_attempts: int = 2) -> None:
             # restore_default_project_settings()
 
 
-class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
+class MapsIndoorsOptionsWidget(
+    *uic.loadUiType(str(resolve_path("options.ui", __file__)))[-1::]
+):
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -94,7 +81,7 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
         if hasattr(self, "settings_list_model"):
             del self.settings_list_model
 
-        self.settings_list_model = QStandardItemModel(self.settings_tree_view)
+        self.settings_list_model = QtGui.QStandardItemModel(self.settings_tree_view)
         self.type_map = {}
 
         for k in sorted(DEFAULT_PLUGIN_SETTINGS.keys()):
@@ -105,10 +92,10 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
                 default_value=DEFAULT_PLUGIN_SETTINGS[k],
             )
 
-            name_item = QStandardItem(k)
+            name_item = QtGui.QStandardItem(k)
             name_item.setEditable(False)
 
-            state_item = QStandardItem(str(q))
+            state_item = QtGui.QStandardItem(str(q))
             state_item.setDragEnabled(False)
 
             self.type_map[k] = type(DEFAULT_PLUGIN_SETTINGS[k])
@@ -155,15 +142,15 @@ class DeploymentCompanionOptionsWidget(OptionWidgetBase, OptionWidget):
                 value = self.type_map[key](item_value)
 
             if isinstance(value, bool):
-                logger.warning(f"{key} = {value}")
+                _logger.warning(f"{key} = {value}")
 
-            logger.warning(
+            _logger.warning(
                 f"Storing new setting {id(value)=} for {key}"
             )  # Only id to obscure sensitive information from logs
 
             store_plugin_setting(key, value, project_name=PROJECT_NAME)
         except Exception as e:
-            logger.warning(e)
+            _logger.warning(e)
 
 
 def read_bool_setting(key: str) -> bool:
@@ -203,9 +190,9 @@ class DeploymentCompanionOptionsPage(QgsOptionsPageWidget):
 
     def __init__(self, parent: Any):
         super().__init__(parent)
-        root_layout = QHBoxLayout()
+        root_layout = QtWidgets.QHBoxLayout()
         root_layout.setContentsMargins(0, 0, 0, 0)
-        self.options_widget = DeploymentCompanionOptionsWidget()
+        self.options_widget = MapsIndoorsOptionsWidget()
         root_layout.addWidget(self.options_widget)
 
         self.setLayout(root_layout)

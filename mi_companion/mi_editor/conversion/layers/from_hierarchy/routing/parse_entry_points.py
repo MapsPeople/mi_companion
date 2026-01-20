@@ -1,19 +1,19 @@
 import logging
-from typing import Any, List, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
+from typing import Any, List, Mapping, Optional
 
 from jord.qgis_utilities import extract_feature_attributes, feature_to_shapely
 from mi_companion import VERBOSE
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from mi_companion.qgis_utilities.common_attributes import (
     extract_single_level_str_map,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from sync_module.model import Solution
 from sync_module.shared import MIEntryPointType
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def add_entry_points(
@@ -44,7 +44,7 @@ def add_entry_points(
             entry_point_geom = feature_to_shapely(entry_point_feature)
 
             if entry_point_geom is None:
-                logger.error(
+                _logger.error(
                     f'Error while adding {entry_point_attributes["admin_id"]} {entry_point_geom=}'
                 )
                 continue
@@ -67,10 +67,10 @@ def add_entry_points(
             )
 
             if VERBOSE:
-                logger.info("added entry_point", entry_point_key)
+                _logger.info("added entry_point", entry_point_key)
         except Exception as e:
             _invalid = f"Invalid entry point: {e}"
-            logger.error(_invalid)
+            _logger.error(_invalid)
             if collect_invalid:
                 issues.append(_invalid)
                 continue
@@ -87,9 +87,9 @@ def get_entry_point_type(entry_point_attributes: Mapping[str, Any]) -> MIEntryPo
     try:
         entry_point_type = entry_point_attributes["entry_point_type"]
     except Exception as e:
-        logger.error(e)
-        logger.error(entry_point_attributes)
-        logger.error(f"Defaulting to EntryPointType.any")
+        _logger.error(e)
+        _logger.error(entry_point_attributes)
+        _logger.error(f"Defaulting to EntryPointType.any")
         entry_point_type = MIEntryPointType.any.value
         # raise e
 

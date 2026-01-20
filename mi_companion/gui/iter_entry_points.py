@@ -2,7 +2,7 @@ import logging
 import pkgutil
 from typing import Callable, Dict
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def get_entry_points(

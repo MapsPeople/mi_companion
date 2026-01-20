@@ -15,7 +15,7 @@ __all__ = ["run"]
 
 from mi_companion import RESOURCE_BASE_PATH
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 
 def run(*, name: str = "New Building (Building)") -> None:

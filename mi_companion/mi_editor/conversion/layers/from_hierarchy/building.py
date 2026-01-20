@@ -1,6 +1,4 @@
 import logging
-from typing import Any, List, Optional
-
 import shapely
 
 # noinspection PyUnresolvedReferences
@@ -21,6 +19,7 @@ from qgis.core import (
     QgsProject,
     QgsProject,
 )
+from typing import Any, List, Optional
 
 from jord.qgis_utilities import (
     extract_field_value,
@@ -46,18 +45,18 @@ from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_
 from mi_companion.mi_editor.hierarchy import (
     make_hierarchy_validation_dialog,
 )
+from mi_companion.qgis_utilities.common_attributes import extract_translations
+from mi_companion.qgis_utilities.extraction import special_extract_layer_data
 from sync_module.mi import (
     MI_OUTSIDE_BUILDING_NAME,
     get_outside_building_floor_name,
 )
 from sync_module.model import Solution
 from sync_module.shared import LanguageBundle
-from mi_companion.qgis_utilities.common_attributes import extract_translations
-from mi_companion.qgis_utilities.extraction import special_extract_layer_data
 from .floor import add_building_floors
 from .location import add_floor_contents
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["add_venue_level_hierarchy"]
 
@@ -113,7 +112,7 @@ def add_venue_level_hierarchy(
             )
 
         if not isinstance(venue_group_item, QgsLayerTreeGroup):
-            logger.debug(f"skipping {venue_group_item=}")
+            _logger.debug(f"skipping {venue_group_item=}")
         elif GRAPH_GROUP_DESCRIPTOR in venue_group_item.name():
             continue
         else:
@@ -122,7 +121,7 @@ def add_venue_level_hierarchy(
                 and FLOOR_GROUP_DESCRIPTOR in venue_group_item.name()
                 and "Outside" in venue_group_item.name()
             ):  # HANDLE OUTSIDE FLOORS, TODO: right now only support a single floor
-                logger.error("Adding outside floor")
+                _logger.error("Adding outside floor")
                 outside_building_admin_id = f"_{venue_key}"
                 outside_building = solution.buildings.get(outside_building_admin_id)
                 venue = solution.venues.get(venue_key)
@@ -140,7 +139,7 @@ def add_venue_level_hierarchy(
                     except Exception as e:
                         _invalid = f"Error adding outside building: {e}"
 
-                        logger.error(_invalid)
+                        _logger.error(_invalid)
 
                         if collect_invalid:
                             issues.append(_invalid)
@@ -164,7 +163,7 @@ def add_venue_level_hierarchy(
                 except Exception as e:
                     _invalid = f"Error adding outside floor: {e}"
 
-                    logger.error(_invalid)
+                    _logger.error(_invalid)
 
                     if collect_invalid:
                         issues.append(_invalid)
@@ -248,7 +247,7 @@ def add_venue_level_hierarchy(
             )
 
         if not isinstance(venue_group_item, QgsLayerTreeGroup):
-            logger.debug(f"skipping {venue_group_item=}")
+            _logger.debug(f"skipping {venue_group_item=}")
         else:
             if GRAPH_GROUP_DESCRIPTOR in venue_group_item.name():
                 graph_key = add_venue_graph(
@@ -355,7 +354,7 @@ def get_building_key(
                     )
                 except Exception as e:
                     _invalid = f"Invalid building: {e}"
-                    logger.error(_invalid)
+                    _logger.error(_invalid)
                     if collect_invalid:
                         issues.append(_invalid)
                         return None
@@ -364,7 +363,7 @@ def get_building_key(
 
                 return building_key
 
-    logger.error(
+    _logger.error(
         f"Did not find building polygon feature in  {building_group_items.children()=}"
     )
     return None

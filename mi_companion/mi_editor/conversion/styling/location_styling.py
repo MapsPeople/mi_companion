@@ -1,5 +1,4 @@
 import logging
-from typing import Any
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -30,6 +29,7 @@ from qgis.core import (
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+from typing import Any
 
 __all__ = [
     "apply_display_rule",
@@ -50,7 +50,7 @@ from mi_companion.qgis_utilities import (
 )
 
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def apply_display_rule(layers, display_rules) -> None: ...

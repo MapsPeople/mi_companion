@@ -1,13 +1,13 @@
-#!/usr/bin/python
+from pathlib import Path
+
 import logging
 import os
 import traceback
-from pathlib import Path
 from typing import Collection, Dict, Mapping, Optional
 
 from mi_companion import PROJECT_APP_PATH, RESOURCE_BASE_PATH
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
 
@@ -93,8 +93,8 @@ def area_of_layer(cad_file: Path) -> Optional[Dict]:
         del data_source
 
     except Exception as ex:
-        logger.error(ex)
-        logger.error(traceback.format_exc())
+        _logger.error(ex)
+        _logger.error(traceback.format_exc())
 
     return a
 
@@ -128,11 +128,11 @@ def run(
                     target_dir=PROJECT_APP_PATH.user_cache / "cad_area",
                 )
 
-                logger.info(f"Emitted {new_dxf_path}")
+                _logger.info(f"Emitted {new_dxf_path}")
 
                 area_list.append(area_of_layer(Path(Path(subdir) / file)))
             else:
-                logger.error(f"Skipping {a}")
+                _logger.error(f"Skipping {a}")
 
     write_csv(out_path, area_list)
 

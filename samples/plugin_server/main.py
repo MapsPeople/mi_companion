@@ -8,7 +8,7 @@ from pathlib import Path
 from flask import Flask, redirect, send_from_directory
 from google.cloud import storage
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 app = Flask("MapsPeople QGIS Plugin Server")
 
 from functools import wraps
@@ -72,7 +72,7 @@ def get_file(path: str) -> Response:
                     blob.generate_signed_url(datetime.now() + timedelta(hours=1))
                 )
         else:
-            logger.warning(f"Did not find {blob.path=}")
+            _logger.warning(f"Did not find {blob.path=}")
             return Response(f"Blob {blob.path} not found", status=404)
 
     return Response(f"File {path} not found", status=404)

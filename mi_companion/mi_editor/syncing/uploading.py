@@ -6,7 +6,7 @@ from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
 from .pre_upload_processing import post_process_solution
 from .upload import sync_build_venue_solution
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def upload_venue(
@@ -39,9 +39,9 @@ def upload_venue(
         issue_points = []
         for issue in issues:
             if isinstance(issue, str):
-                logger.error(issue)
+                _logger.error(issue)
             else:
-                logger.error(f"{issue=}")
+                _logger.error(f"{issue=}")
                 issue_points.append(issue)
 
         if issue_points:

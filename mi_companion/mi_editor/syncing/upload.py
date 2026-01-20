@@ -1,13 +1,13 @@
 import logging
-from typing import Any, Collection, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtWidgets
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
+from typing import Any, Collection, List, Optional
 
-from jord.qgis_utilities import help_button, no_button, yes_button, ResizableMessageBox
+from jord.qgis_utilities import ResizableMessageBox, help_button, no_button, yes_button
 from mi_companion import VERBOSE
 from mi_companion.configuration import read_bool_setting
 from sync_module.mi import (
@@ -26,7 +26,7 @@ from sync_module.model import (
 )
 from .operation_visualisation import show_differences
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["sync_build_venue_solution"]
 
@@ -74,7 +74,7 @@ def sync_build_venue_solution(
     """
 
     if VERBOSE:
-        logger.info("Synchronising")
+        _logger.info("Synchronising")
 
     venue_name = (
         next(iter(solution.venues)).translations[solution.default_language].name
@@ -83,14 +83,14 @@ def sync_build_venue_solution(
 
     def solving_progress_bar_callable(ith: int, total: int) -> None:
         progress_bar.setValue(int(20 + (ith / total) * 80))
-        logger.debug(f"Solving: {ith}/{total}")
+        _logger.debug(f"Solving: {ith}/{total}")
 
     def operation_progress_bar_callable(
         operation: MIOperation, ith: int, total: int
     ) -> None:
         progress_bar.setValue(int(20 + (ith / total) * 80))
-        logger.debug(operation)
-        logger.debug(f"Synchronising: {ith}/{total}")
+        _logger.debug(operation)
+        _logger.debug(f"Synchronising: {ith}/{total}")
 
         # qgis_instance_handle.iface.messageBar().popWidget()
         # qgis_instance_handle.iface.messageBar().pushMessage(before, text, level=level, duration=duration)
@@ -201,13 +201,13 @@ def sync_build_venue_solution(
             window_title,
             f"ERROR: {solution_name}:{venue_name} venue could not be uploaded, {e}",
         )
-        logger.error(
+        _logger.error(
             f'Error synchronising, try running the "Compatibility" button to fix solution {e}'
         )
         raise e
 
     if VERBOSE:
-        logger.info("Synchronised")
+        _logger.info("Synchronised")
 
     if success:
         QtWidgets.QMessageBox.information(

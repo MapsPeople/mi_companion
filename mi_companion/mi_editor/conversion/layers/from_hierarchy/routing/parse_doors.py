@@ -1,8 +1,8 @@
 import logging
-from typing import Any, List, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
+from typing import Any, List, Mapping, Optional
 
 from jord.qgis_utilities import (
     GeometryIsEmptyError,
@@ -11,14 +11,14 @@ from jord.qgis_utilities import (
 )
 from mi_companion import VERBOSE
 from mi_companion.configuration import read_bool_setting
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from mi_companion.qgis_utilities.common_attributes import (
     extract_single_level_str_map,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from sync_module.model import Solution
 from sync_module.shared import MIDoorType
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def add_doors(
@@ -53,7 +53,7 @@ def add_doors(
                 raise e
 
         if door_linestring is None:
-            logger.error(f"{door_linestring=}")
+            _logger.error(f"{door_linestring=}")
 
         fields = None
         if door_attributes is not None:
@@ -72,7 +72,7 @@ def add_doors(
             fields=fields,
         )
         if VERBOSE:
-            logger.info("added door", door_key)
+            _logger.info("added door", door_key)
 
 
 def get_door_type(door_attributes: Mapping[str, Any]) -> MIDoorType:

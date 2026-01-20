@@ -10,7 +10,7 @@ print(subprocess.check_call(["python", "-m", "pip", "install", "apppath"]))
 from plugin_config import PROFILE, QGIS_APP_PATH
 from warg import ensure_existence, is_mac, is_windows
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 if is_windows():
     qgis_profile_dir = QGIS_APP_PATH.user_config
@@ -44,7 +44,7 @@ if __name__ == "__main__":
             try:
                 target_folder.symlink_to(source_folder)
             except OSError as e:
-                logger.warning(
+                _logger.warning(
                     "Probably missing privileges to make symlink in target parent folder, try running symlinking as "
                     "administrator or change write access('may be read only') / owner."
                 )

@@ -1,10 +1,11 @@
-import logging
-import typing
-from inspect import isclass
 from pathlib import Path
+
+import logging
 
 # noinspection PyUnresolvedReferences
 import qgis
+import typing
+from inspect import isclass
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
@@ -18,7 +19,7 @@ __all__ = ["Dialog"]
 
 SERIALISED_SOLUTION_EXTENSION = ".json"
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
 
@@ -105,11 +106,11 @@ class Dialog(QDialog, FORM_CLASS):
                     if file_path.exists() and file_path.is_file():
                         call_kwarg[k] = file_path
                     else:
-                        logger.error(f"{file_path=}")
+                        _logger.error(f"{file_path=}")
                 else:
-                    logger.error(f"{file_path_str=}")
+                    _logger.error(f"{file_path_str=}")
             else:
-                logger.error(f"{v=}")
+                _logger.error(f"{v=}")
 
         run(**call_kwarg)
 

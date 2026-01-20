@@ -36,7 +36,7 @@ from mi_companion.qgis_utilities import (
     ROT_AND_SCALE_GEOMETRY_LINE_GENERATOR_EXPRESSION,
 )
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 __all__ = [
@@ -104,18 +104,18 @@ def add_rotation_scale_geometry_generator(layers):
         return
 
     if not layers:
-        logger.info(f"{layers=} was not found")
+        _logger.info(f"{layers=} was not found")
         return
 
     for layer in layers:
         if not layer:
-            logger.info(f"{layer=} was not found")
+            _logger.info(f"{layer=} was not found")
             continue
 
         # Get the renderer for this layer
         renderer = layer.renderer()
         if not renderer:
-            logger.info(f"{renderer=} was not found")
+            _logger.info(f"{renderer=} was not found")
             continue
 
         modified = False
@@ -171,13 +171,13 @@ def add_rotation_scale_geometry_generator(layers):
 
                 modified = True
             else:
-                logger.info(f"Symbol not found for layer {layer.name()}")
+                _logger.info(f"Symbol not found for layer {layer.name()}")
 
         # Trigger layer updates
         if modified:
             layer.triggerRepaint()
             layer.emitStyleChanged()
-            logger.info(f"Added geometry generator to layer '{layer.name()}'")
+            _logger.info(f"Added geometry generator to layer '{layer.name()}'")
 
 
 def add_anchor_and_rot_scl_geometry_generators_to_symbol(symbol):

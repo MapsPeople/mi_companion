@@ -8,13 +8,13 @@ from jord.qgis_utilities import (
 )
 from mi_companion import VERBOSE
 from mi_companion.configuration import read_bool_setting
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from mi_companion.qgis_utilities.common_attributes import (
     extract_single_level_str_map,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from sync_module.model import Solution
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def add_barriers(
@@ -44,7 +44,7 @@ def add_barriers(
             barrier_linestring = feature_to_shapely(barrier_feature)
 
             if barrier_linestring is None:
-                logger.error(f"{barrier_linestring=}")
+                _logger.error(f"{barrier_linestring=}")
                 continue
 
             fields = None
@@ -65,7 +65,7 @@ def add_barriers(
             )
 
             if VERBOSE:
-                logger.info("added barrier", barrier_key)
+                _logger.info("added barrier", barrier_key)
 
         except GeometryIsEmptyError as e:
             if not read_bool_setting("IGNORE_EMPTY_SHAPES"):

@@ -1,5 +1,4 @@
 import logging
-from typing import Any, Callable, Dict, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -14,6 +13,7 @@ from qgis.PyQt.QtWidgets import (
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from typing import Any, Callable, Dict, List, Optional
 
 from jord.qgis_utilities import parse_q_value
 from mi_companion import UPLOAD_ERROR_CONFIRMATION_TITLE
@@ -32,7 +32,7 @@ from .venue import convert_solution_venues
 
 __all__ = ["layer_hierarchy_to_solution", "convert_solution_layers_to_solution"]
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def convert_solution_layers_to_solution(
@@ -52,7 +52,7 @@ def convert_solution_layers_to_solution(
     num_mi_group_elements = len(mi_group_children)
 
     if num_mi_group_elements == 0:
-        logger.warning("No solutions to upload")
+        _logger.warning("No solutions to upload")
         return
 
     if upload_venues:
@@ -70,7 +70,7 @@ def convert_solution_layers_to_solution(
     for ith_child, mi_group_child in enumerate(mi_group_children):
         if SOLUTION_GROUP_DESCRIPTOR not in str(mi_group_child.name()):
             _warning = f"{mi_group_child=} was skipped, did not contain {SOLUTION_GROUP_DESCRIPTOR}"
-            logger.warning(_warning)
+            _logger.warning(_warning)
             if collect_warnings:
                 issues.append(_warning)
             return
@@ -82,12 +82,12 @@ def convert_solution_layers_to_solution(
         if not isinstance(mi_group_child, QgsLayerTreeGroup):
             _warning = f"{mi_group_child=} was skipped"
 
-            logger.warning(_warning)
+            _logger.warning(_warning)
             if collect_warnings:
                 issues.append(_warning)
             continue
 
-        logger.info(f"Serialising {str(mi_group_child.name())}")
+        _logger.info(f"Serialising {str(mi_group_child.name())}")
 
         solution_layer_name = str(mi_group_child.name()).split("(Solution)")[0].strip()
 
@@ -96,7 +96,7 @@ def convert_solution_layers_to_solution(
 
         if len(mi_group_child.children()) == 0:
             _warning = "No venues to upload"
-            logger.warning(_warning)
+            _logger.warning(_warning)
             if collect_warnings:
                 issues.append(_warning)
 
@@ -124,7 +124,7 @@ def convert_solution_layers_to_solution(
         if not solution_data:
             _error = f"Did not find solution_data layer, skipping {solution_layer_name}"
 
-            logger.error(_error)
+            _logger.error(_error)
 
             reply = QMessageBox.question(
                 None,
@@ -168,7 +168,7 @@ def convert_solution_layers_to_solution(
         else:
             existing_solution = None
 
-        logger.info(f"Converting {str(mi_group_child.name())}")
+        _logger.info(f"Converting {str(mi_group_child.name())}")
 
         solutions.extend(
             convert_solution_venues(

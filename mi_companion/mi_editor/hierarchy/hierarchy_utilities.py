@@ -1,6 +1,5 @@
 import logging
 from enum import Enum
-from typing import Any, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets
@@ -10,6 +9,7 @@ from qgis.PyQt.QtWidgets import QMessageBox
 
 # noinspection PyUnresolvedReferences
 from qgis.core import Qgis, QgsProject
+from typing import Any, Optional
 
 from jord.qgis_utilities import reject_role
 from .hierarchy_model import INVERSE_NODE_PARENT_MAPPING, NODE_PARENT_MAPPING
@@ -29,7 +29,7 @@ __all__ = [
 
 from ...constants import ENABLE_UNDO
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class ValidationResultEnum(Enum):
@@ -144,7 +144,7 @@ def check_siblings_for_duplicates(
             continue
         else:
             if False:
-                logger.error(f"node {node_name} has sibling {sibling_name}")
+                _logger.error(f"node {node_name} has sibling {sibling_name}")
 
         if descriptor in sibling_name:
             found_duplicates = True

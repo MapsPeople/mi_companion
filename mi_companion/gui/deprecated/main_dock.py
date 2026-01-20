@@ -1,3 +1,8 @@
+from pathlib import Path
+
+from warg import ensure_in_sys_path, first, get_submodules_by_path, reload_module
+
+ensure_in_sys_path(Path(__file__).parent.parent)
 import logging
 import math
 import os
@@ -48,96 +53,41 @@ from mi_companion.mi_editor.hierarchy.hierarchy_validation import (
 from sync_module.mi import SolutionDepth, get_venue_key_mi_venue_map
 from sync_module.mi.config import MapsIndoors, Settings, set_settings
 from sync_module.mi_sync_constants import MI_EPSG_NUMBER
-from warg import get_submodules_by_path, reload_module
-from .gui_utilities import clean_str
-from .make_solution_right_click import add_augmented_actions
-from ..configuration.options import read_bool_setting
-from ..constants import (
+
+from ..gui_utilities import clean_str
+from ..make_solution_right_click import add_augmented_actions
+from ...configuration.options import read_bool_setting
+from ...constants import (
     DEFAULT_PLUGIN_SETTINGS,
     PLUGIN_REPOSITORY,
     PROJECT_NAME,
     VERSION,
+    VERBOSE,
 )
-from ..mi_editor.authentication.get_credentials_from_auth_manager import (
+from ...mi_editor.authentication.get_credentials_from_auth_manager import (
     get_credentials_from_auth_manager,
 )
-from ..qgis_utilities import extract_wkt_elements, get_icon_path, resolve_path
-from ..qgis_utilities.creation_mode import (
+from ...qgis_utilities import (
+    extract_wkt_elements,
+    get_icon_path,
+    resolve_path,
     put_location_layers_into_creation_mode,
 )
-
-FORM_CLASS, _ = uic.loadUiType(resolve_path("main_dock.ui", __file__))
+from sync_module.mi.config import Settings
 
 signals.IS_DEBUGGING = True
-logger = logging.getLogger(__name__)
-VERBOSE = False
-
-from pathlib import Path
-
-from warg import ensure_in_sys_path
-
-ensure_in_sys_path(Path(__file__).parent.parent)
+_logger = logging.getLogger(__name__)
 
 
-class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
+class MapsIndoorsMonolithDockWidget(
+    QgsDockWidget, first(uic.loadUiType(str(resolve_path("main_dock.ui", __file__))))
+):
     plugin_closing = pyqtSignal()
-
-    def entry_point_wrapper(self, k: str, a: Callable) -> Callable:
-        def f():
-            if k not in self.entry_point_instances:
-                self.entry_point_instances[k] = a()
-
-            if isinstance(self.entry_point_instances[k], QtWidgets.QDialog):
-                self.entry_point_instances[k].show()
-            elif isinstance(self.entry_point_instances[k], QtWidgets.QDockWidget):
-                if False:
-                    try:
-                        self.iface_.mainWindow().removeDockWidget(
-                            self.entry_point_instances[k]
-                        )
-                    except Exception as e:
-                        logger.exception(e)
-
-                self.iface_.mainWindow().addDockWidget(
-                    DockWidgetAreaFlag.left.value,
-                    self.entry_point_instances[k],
-                )
-                self.entry_point_instances[k].show()
-                # self.entry_point_instances[k].setUserVisible(True)
-
-            else:
-                ...
-
-        return f
-
-    def upgrade_clicked(self, *_) -> None:
-        # noinspection PyUnresolvedReferences
-        import pyplugin_installer
-
-        msg = f"Upgrading plugin to the latest version"
-        QMessageBox.information(
-            self.iface_.mainWindow(),
-            msg,
-            msg,
-        )
-
-        logger.error(msg)
-
-        # shutil.rmtree(relative_bundled_packages_dir.absolute()) # TODO: IMPLEMENT!
-        # shutil.rmtree(PLUGIN_DIR.absolute())
-
-        # pyplugin_installer.instance().uninstallPlugin(PROJECT_NAME)
-        # pyplugin_installer.installer_data.plugins.all().keys()
-        reload = True
-        pyplugin_installer.instance().fetchAvailablePlugins(reload)
-
-        # pyplugin_installer.instance().installPlugin(PROJECT_NAME)
 
     def __init__(self, iface_: Any, parent: Optional[Any] = None):
         """Constructor."""
         super().__init__(parent)
-
-        from sync_module.mi.config import Settings
+        self.setupUi(self)
 
         # INITIALISATION OF ATTRS
         self.fetched_solution = None
@@ -145,7 +95,6 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         self.venues = None
         self.solution_external_id = None
         self.external_id_map = None
-        #
 
         self.iface_ = iface_
         self.qgis_project = QgsProject.instance()
@@ -161,7 +110,6 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         self.plugin_dir = Path(os.path.dirname(__file__))
         self.sync_module_settings = Settings()
         self.set_update_sync_settings()
-        self.setupUi(self)
 
         self.icon_label.setPixmap(QtGui.QPixmap(get_icon_path("mp_notext.png")))
 
@@ -252,7 +200,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             if ADD_LANGUAGE_BUTTON_NAME in self.entry_point_definitions:
                 self.entry_point_definitions.pop(ADD_LANGUAGE_BUTTON_NAME)
                 # del self.entry_point_definitions[ADD_LANGUAGE_BUTTON_NAME]
-                logger.warning(
+                _logger.warning(
                     f"Removed '{ADD_LANGUAGE_BUTTON_NAME}'-button from entry_point_definitions"
                 )
 
@@ -265,6 +213,57 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
         self.repopulate_grid_layout()
 
         signals.reconnect_signal(iface_.mapCanvas().mapToolSet, add_augmented_actions)
+
+    def entry_point_wrapper(self, k: str, a: Callable) -> Callable:
+        def f():
+            if k not in self.entry_point_instances:
+                self.entry_point_instances[k] = a()
+
+            if isinstance(self.entry_point_instances[k], QtWidgets.QDialog):
+                self.entry_point_instances[k].show()
+            elif isinstance(self.entry_point_instances[k], QtWidgets.QDockWidget):
+                if False:
+                    try:
+                        self.iface_.mainWindow().removeDockWidget(
+                            self.entry_point_instances[k]
+                        )
+                    except Exception as e:
+                        _logger.exception(e)
+
+                self.iface_.mainWindow().addDockWidget(
+                    DockWidgetAreaFlag.left.value,
+                    self.entry_point_instances[k],
+                )
+                self.entry_point_instances[k].show()
+                # self.entry_point_instances[k].setUserVisible(True)
+
+            else:
+                ...
+
+        return f
+
+    def upgrade_clicked(self, *_) -> None:
+        # noinspection PyUnresolvedReferences
+        import pyplugin_installer
+
+        msg = f"Upgrading plugin to the latest version"
+        QMessageBox.information(
+            self.iface_.mainWindow(),
+            msg,
+            msg,
+        )
+
+        _logger.error(msg)
+
+        # shutil.rmtree(relative_bundled_packages_dir.absolute()) # TODO: IMPLEMENT!
+        # shutil.rmtree(PLUGIN_DIR.absolute())
+
+        # pyplugin_installer.instance().uninstallPlugin(PROJECT_NAME)
+        # pyplugin_installer.installer_data.plugins.all().keys()
+        reload = True
+        pyplugin_installer.instance().fetchAvailablePlugins(reload)
+
+        # pyplugin_installer.instance().installPlugin(PROJECT_NAME)
 
     def on_creation_mode_changed(self) -> None:
         """Handle creation mode checkbox state changes"""
@@ -341,7 +340,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             bar.setValue(10)
             self.set_update_sync_settings()
             current_solution_name = str(self.solution_combo_box.currentText()).strip()
-            logger.debug(f"{current_solution_name=}")
+            _logger.debug(f"{current_solution_name=}")
 
             bar.setValue(30)
             self.solution_combo_box.clear()
@@ -384,7 +383,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             current_selected_solution_name = str(self.solution_combo_box.currentText())
 
             if current_selected_solution_name not in self.external_id_map:
-                logger.error(
+                _logger.error(
                     f"Could not find external_id for solution id for {self.solution_external_id}"
                 )
                 return
@@ -396,7 +395,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
 
             solution_id = get_solution_id(self.solution_external_id)
             if solution_id is None:
-                logger.error(
+                _logger.error(
                     f"Could not find solution id for {self.solution_external_id}"
                 )
                 return
@@ -420,7 +419,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                 if venue_info:
                     venue_name = venue_info.name
                     if venue_name in self.venue_name_id_map:
-                        logger.warning(
+                        _logger.warning(
                             f"Duplicate venue name found: {venue_name}. Using the latest one."
                         )
                         venue_name += f" ({k})"
@@ -440,7 +439,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
     def download_button_clicked(self) -> None:
         venue_name = str(self.venue_combo_box.currentText())
         if venue_name.strip() == "":
-            logger.error(f"No venue was selected!")
+            _logger.error(f"No venue was selected!")
             return
 
         solution_depth = SolutionDepth.occupants
@@ -496,7 +495,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
                     self.changes_label.setText(f"Downloaded {venue_name}")
 
                 else:
-                    logger.warning(f"Venue {venue_name} not found")
+                    _logger.warning(f"Venue {venue_name} not found")
 
     def upload_button_clicked(self) -> None:
         self.set_update_sync_settings()
@@ -558,7 +557,7 @@ class MapsIndoorsCompanionDockWidget(QgsDockWidget, FORM_CLASS):
             except Exception:
                 ...
 
-        logger.error(string_exception)
+        _logger.error(string_exception)
 
     def repopulate_grid_layout(self) -> None:
         num_columns = int(

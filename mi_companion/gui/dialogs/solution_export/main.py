@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
-import logging
 from pathlib import Path
+
+import logging
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
@@ -11,7 +12,7 @@ from qgis.utils import iface
 
 from warg import system_open_path
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 SERIALISED_SOLUTION_EXTENSION = ".json"
 
 
@@ -31,7 +32,7 @@ def run(*, path: Path, open_folder_on_completion: bool = False) -> None:
     mi_group = layer_tree_root.findGroup(DATABASE_GROUP_DESCRIPTOR)
 
     if not mi_group:  # did not find the group
-        logger.error("No Mi Hierarchy Group found")
+        _logger.error("No Mi Hierarchy Group found")
         return
 
     if not isinstance(path, Path):
@@ -45,7 +46,7 @@ def run(*, path: Path, open_folder_on_completion: bool = False) -> None:
             upload_venues=False,
         )
         if solutions is None:
-            logger.warning("No solutions found")
+            _logger.warning("No solutions found")
             return
 
         for sol in solutions:

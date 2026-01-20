@@ -1,7 +1,6 @@
+import geopandas
 import logging
 from typing import Any, List, Optional
-
-import geopandas
 
 from jord.qgis_utilities import (
     make_field_not_null,
@@ -20,7 +19,7 @@ from sync_module.pandas_utilities import locations_to_df
 
 __all__ = ["add_point_route_element_layers"]
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def add_point_route_element_layers(
@@ -41,7 +40,7 @@ def add_point_route_element_layers(
     df = locations_to_df(route_element_collection)
 
     if "floor_index" not in df:
-        logger.warning(
+        _logger.warning(
             f"No floor index found for {doors_name}, {df.columns}, {len(df)}"
         )
         return []
@@ -78,7 +77,7 @@ def add_point_route_element_layers(
 
                 empty_lines = door_df[door_df.is_empty]
                 if not empty_lines.empty:
-                    logger.warning(f"Dropping {empty_lines}")
+                    _logger.warning(f"Dropping {empty_lines}")
 
                 door_df = door_df[~door_df.is_empty]
 
@@ -121,7 +120,7 @@ def add_point_route_element_layers(
 
         empty_lines = door_df[door_df.is_empty]
         if not empty_lines.empty:
-            logger.warning(f"Dropping {empty_lines}")
+            _logger.warning(f"Dropping {empty_lines}")
 
         door_df = door_df[~door_df.is_empty]
 

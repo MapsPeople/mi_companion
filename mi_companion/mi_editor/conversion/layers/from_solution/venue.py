@@ -1,8 +1,8 @@
 import logging
-from typing import Any, Iterable, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
+from typing import Any, Iterable, Optional
 
 from jord.qgis_utilities import (
     make_field_not_null,
@@ -26,6 +26,9 @@ from mi_companion.layer_descriptors import (
     VENUE_GROUP_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
 )
+from mi_companion.mi_editor.conversion.layers.from_solution.occupancy.occupant import (
+    add_occupant_layer,
+)
 from mi_companion.mi_editor.conversion.layers.from_solution.routing.graph import (
     add_graph_layers,
 )
@@ -36,11 +39,8 @@ from mi_companion.mi_editor.conversion.projection import (
 from sync_module.model import FALLBACK_OSM_GRAPH, Solution, Venue
 from sync_module.tools import translations_to_flattened_dict
 from .building import add_building_layers
-from mi_companion.mi_editor.conversion.layers.from_solution.occupancy.occupant import (
-    add_occupant_layer,
-)
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["add_venue_layer"]
 
@@ -81,7 +81,7 @@ def add_venue_layer(
 
     for venue in solution.venues:
         if venue is None:
-            logger.warning("Venue was None!")
+            _logger.warning("Venue was None!")
             continue
 
         if DESCRIPTOR_BEFORE:
@@ -94,7 +94,7 @@ def add_venue_layer(
             not ALLOW_DUPLICATE_VENUES_IN_PROJECT
         ):  # TODO: base this in external ids rather than group name
             if venue_group:
-                logger.error(
+                _logger.error(
                     f"Venue {venue.translations[solution.default_language].name} already loaded!"
                 )
                 reply = QtWidgets.QMessageBox.question(
@@ -156,7 +156,9 @@ def add_venue_layer(
             )
 
 
-def add_occupant_layers(qgis_instance_handle, solution, venue_group):
+def add_occupant_layers(
+    qgis_instance_handle: Any, solution: Solution, venue_group: Any
+) -> Any:
     occupant_dropdown_widget = None
     if ADD_OCCUPANT_LAYERS:
         occupant_layer = add_occupant_layer(
@@ -175,15 +177,15 @@ def add_occupant_layers(qgis_instance_handle, solution, venue_group):
 
 
 def add_graph_layers_ss(
-    connection_type_dropdown_widget,
-    door_type_dropdown_widget,
-    edge_context_type_dropdown_widget,
-    entry_point_type_dropdown_widget,
-    highway_type_dropdown_widget,
-    qgis_instance_handle,
-    solution,
-    venue,
-    venue_group,
+    connection_type_dropdown_widget: Any,
+    door_type_dropdown_widget: Any,
+    edge_context_type_dropdown_widget: Any,
+    entry_point_type_dropdown_widget: Any,
+    highway_type_dropdown_widget: Any,
+    qgis_instance_handle: Any,
+    solution: Solution,
+    venue: Venue,
+    venue_group: Any,
 ):
     if read_bool_setting("ADD_GRAPH"):  # add graph
         graph = venue.graph

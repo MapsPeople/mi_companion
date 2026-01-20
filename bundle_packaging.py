@@ -18,28 +18,28 @@ REQUIREMENTS_FILE = PLUGIN_DIR / "requirements.txt"
 
 MIN_QGIS_VERSION = "3.38"
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def log_subprocess_output(pipe: Pipe) -> None:
     for line in iter(pipe.readline, b""):  # b'\n'-separated lines
-        logger.info("got line from subprocess: %r", line)
+        _logger.info("got line from subprocess: %r", line)
 
 
 def catching_callable(*args, **kwargs) -> None:
     try:
-        logger.info(f"{list(args)}, {list(kwargs.items())}")
+        _logger.info(f"{list(args)}, {list(kwargs.items())}")
 
         process = Popen(*args, **kwargs, stdout=PIPE, stderr=STDOUT)
         with process.stdout:
             log_subprocess_output(process.stdout)
         exitcode = process.wait()  # 0 means success
         if exitcode:
-            logger.info("Success")
+            _logger.info("Success")
 
     except subprocess.CalledProcessError as e:
         output = (e.stderr, e.stdout, e)
-        logger.warning(output)
+        _logger.warning(output)
 
 
 def package_dependencies(
@@ -206,7 +206,7 @@ def classFactory(iface):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    logger.setLevel(logging.INFO)
+    _logger.setLevel(logging.INFO)
     import argparse
 
     parser = argparse.ArgumentParser("simple_example")

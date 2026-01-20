@@ -1,8 +1,8 @@
 #!/usr/bin/python
-import logging
 from pathlib import Path
 
 import ifcopenshell
+import logging
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
@@ -15,7 +15,7 @@ from mi_companion import RESOURCE_BASE_PATH
 from mi_companion.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
 from mi_companion.mi_editor.conversion import add_solution_layers
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = ["run"]
 
 

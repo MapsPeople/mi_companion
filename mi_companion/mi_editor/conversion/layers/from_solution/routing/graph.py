@@ -25,7 +25,7 @@ from mi_companion.mi_editor.conversion.projection import (
 from sync_module.model import Graph, Solution, Venue
 from sync_module.tools import osm_xml_to_lines
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["add_graph_layers"]
 
@@ -71,7 +71,7 @@ def add_graph_layers(
 
     graph_boundary = venue.graph.boundary
     if graph_boundary is None:
-        logger.warning(f"Graph {graph} has no boundary, defaulting to venue boundary")
+        _logger.warning(f"Graph {graph} has no boundary, defaulting to venue boundary")
         graph_boundary = venue.polygon
 
     graph_boundary = prepare_geom_for_editing_qgis(graph_boundary, clean=False)
@@ -117,7 +117,7 @@ def add_graph_layers(
                 qgis_instance_handle=qgis_instance_handle,
             )
         else:
-            logger.warning(f"Venue does not have a valid graph {graph}")
+            _logger.warning(f"Venue does not have a valid graph {graph}")
 
     except ParseError as e:
-        logger.error(e)
+        _logger.error(e)

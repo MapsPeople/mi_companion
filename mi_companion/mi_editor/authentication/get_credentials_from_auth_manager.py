@@ -1,13 +1,17 @@
 import logging
 
 # noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtWidgets import (
+    QInputDialog,
+    QInputDialog,
+    QLineEdit,
+    QLineEdit,
+    QMessageBox,
+)
+
+# noinspection PyUnresolvedReferences
 from qgis.core import QgsApplication, QgsAuthMethodConfig
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import QInputDialog, QLineEdit
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import QInputDialog, QLineEdit, QMessageBox
 
 from jord.qgis_utilities import echo_mode, no_button, yes_button
 

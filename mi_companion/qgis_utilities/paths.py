@@ -1,5 +1,6 @@
-import os
 from pathlib import Path
+
+import os
 from typing import Any, Mapping, Optional
 
 from warg import passes_kws_to
@@ -8,7 +9,7 @@ from ..constants import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 __all__ = ["resolve_path", "load_icon", "get_icon_path"]
 
 
-def resolve_path(path: str, base_path: Optional[Path] = None) -> str:
+def resolve_path(path: str, base_path: Optional[Path] = None) -> Path:
     """
 
 
@@ -24,7 +25,7 @@ def resolve_path(path: str, base_path: Optional[Path] = None) -> str:
     if base_path.is_file():
         base_path = base_path.parent
 
-    return str(base_path / path)
+    return base_path / path
 
 
 def get_icon_path(

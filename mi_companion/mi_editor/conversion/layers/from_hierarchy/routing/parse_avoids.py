@@ -8,13 +8,13 @@ from jord.qgis_utilities import (
 )
 from mi_companion import VERBOSE
 from mi_companion.configuration import read_bool_setting
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from mi_companion.qgis_utilities.common_attributes import (
     extract_single_level_str_map,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from sync_module.model import Solution
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def add_avoids(
@@ -45,8 +45,8 @@ def add_avoids(
             avoid_point = feature_to_shapely(avoid_feature)
 
             if avoid_point is None:
-                logger.error(f"{avoid_point=}")
-                logger.error(
+                _logger.error(f"{avoid_point=}")
+                _logger.error(
                     f'Error while adding {avoid_attributes["admin_id"]} {avoid_point=}'
                 )
                 continue
@@ -68,7 +68,7 @@ def add_avoids(
             )
 
             if VERBOSE:
-                logger.info("added avoid", avoid_key)
+                _logger.info("added avoid", avoid_key)
 
         except GeometryIsEmptyError as e:
             if not read_bool_setting("IGNORE_EMPTY_SHAPES"):

@@ -1,7 +1,6 @@
 import copy
 import logging
 from datetime import datetime
-from typing import Any, Callable, Collection, List, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
@@ -11,6 +10,7 @@ from qgis.PyQt.QtCore import QDateTime, QVariant
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from typing import Any, Callable, Collection, List, Mapping, Optional
 
 from mi_companion import (
     APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE,
@@ -24,6 +24,7 @@ from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
 from mi_companion.mi_editor.syncing.uploading import upload_venue
+from mi_companion.qgis_utilities.common_attributes import extract_translations
 from sync_module.mi import SolutionDepth
 from sync_module.model import (
     ImplementationStatus,
@@ -33,7 +34,6 @@ from sync_module.model import (
 )
 from sync_module.shared import MIVenueType
 from .building import add_venue_level_hierarchy
-from mi_companion.qgis_utilities.common_attributes import extract_translations
 
 __all__ = ["convert_solution_venues"]
 
@@ -45,7 +45,7 @@ from .location_type import get_location_type_data
 # from .graph import add_venue_graph
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import (
@@ -190,7 +190,7 @@ def convert_solution_venues(
                     collect_errors=collect_errors,
                 )
             except Exception as ex:
-                logger.error(f"Failed to add {solution_group_item=}, {ex=}")
+                _logger.error(f"Failed to add {solution_group_item=}, {ex=}")
                 QtWidgets.QMessageBox.critical(None, "Error", f"\n\n- {str(ex)}")
                 raise ex
 
@@ -273,7 +273,7 @@ def get_venue_key(
                     )
                 except Exception as e:
                     _invalid = f"Invalid venue: {e}"
-                    logger.error(_invalid)
+                    _logger.error(_invalid)
                     if collect_invalid:
                         issues.append(_invalid)
                         return None
@@ -282,7 +282,7 @@ def get_venue_key(
 
                 return venue_key
 
-    logger.error(f"Did not find venue in {venue_group_items.children()=}")
+    _logger.error(f"Did not find venue in {venue_group_items.children()=}")
     return None
 
 

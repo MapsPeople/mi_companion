@@ -1,9 +1,10 @@
-import logging
-from inspect import isclass
 from pathlib import Path
+
+import logging
 
 # noinspection PyUnresolvedReferences
 import qgis
+from inspect import isclass
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
@@ -16,14 +17,15 @@ from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
 
 __all__ = ["Dialog"]
 
-FORM_CLASS, _ = uic.loadUiType(str(Path(__file__).parent / "dialog.ui"))
+from warg import first
+
 
 from mi_companion import RESOURCE_BASE_PATH
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 
-class Dialog(QDialog, FORM_CLASS):
+class Dialog(QDialog, first(uic.loadUiType(str(Path(__file__).parent / "dialog.ui")))):
 
     def __init__(self, parent=None):  #: QWidget
 
@@ -109,11 +111,11 @@ class Dialog(QDialog, FORM_CLASS):
                     if file_path.exists() and file_path.is_file():
                         call_kwarg[k] = file_path
                     else:
-                        logger.error(f"{file_path=}")
+                        _logger.error(f"{file_path=}")
                 else:
-                    logger.error(f"{file_path_str=}")
+                    _logger.error(f"{file_path_str=}")
             else:
-                logger.error(f"{v=}")
+                _logger.error(f"{v=}")
 
         run(**call_kwarg)
 

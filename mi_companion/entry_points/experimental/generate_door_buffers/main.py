@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import logging
-
 import shapely
 
 # noinspection PyUnresolvedReferences
@@ -15,7 +14,7 @@ from jord.qlive_utilities import add_shapely_layer
 from jord.shapely_utilities import dilate, is_multi
 from mi_companion import RESOURCE_BASE_PATH
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 CRS = f"EPSG:3857"
 
@@ -45,7 +44,7 @@ def run(
         layers = list(QgsProject.instance().mapLayers().values())
 
     if len(layers) == 0:
-        logger.error(f"No layers was given {layers}")
+        _logger.error(f"No layers was given {layers}")
 
     for layer in layers:  # TODO: Only do this for already editing layers
         if layer.selectedFeatureCount() > 0:
@@ -57,7 +56,7 @@ def run(
                 door_buffers = {}
 
                 for feature in iter(selected_features):
-                    logger.info(f"Randomizing {feature.id()}")
+                    _logger.info(f"Randomizing {feature.id()}")
 
                     feature_geom = feature_to_shapely(feature)
 
@@ -83,8 +82,10 @@ def run(
                 )
 
             else:
-                logger.error(f"Please select feature in the layer")
+                _logger.error(f"Please select feature in the layer")
 
             # layer.commitChanges()
         else:
-            logger.error(f"Skipping layer {layer.name()} as it had no selected feature")
+            _logger.error(
+                f"Skipping layer {layer.name()} as it had no selected feature"
+            )

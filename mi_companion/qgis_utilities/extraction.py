@@ -1,6 +1,5 @@
 import logging
 import uuid
-from typing import Any, Tuple
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets, uic
@@ -15,11 +14,12 @@ from qgis.core import (
     QgsLayerTreeLayer,
     QgsProject,
 )
+from typing import Any, Tuple
 
 from jord.qgis_utilities import extract_layer_data_single
 from mi_companion.configuration import read_bool_setting
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = [
     "special_extract_layer_data",

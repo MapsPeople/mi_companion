@@ -1,7 +1,7 @@
+from pathlib import Path
+
 import logging
 import os
-from pathlib import Path
-from typing import Any, Iterable, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets, uic
@@ -29,24 +29,26 @@ from qgis.gui import QgsDockWidget
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+from typing import Any, Iterable, Optional
 
 from jord.qgis_utilities.helpers import signals
 from mi_companion import RESOURCE_BASE_PATH
 from mi_companion.qgis_utilities import resolve_path
-from warg import ensure_in_sys_path
-
-FORM_CLASS, _ = uic.loadUiType(resolve_path("level_selector.ui", __file__))
+from warg import ensure_in_sys_path, first
 
 signals.IS_DEBUGGING = True
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 VERBOSE = False
 
 ensure_in_sys_path(Path(__file__).parent.parent)
 __all__ = ["LevelSelectorWidget"]
 
 
-class LevelSelectorWidget(QgsDockWidget, FORM_CLASS):
+class LevelSelectorWidget(
+    QgsDockWidget,
+    first(uic.loadUiType(str(resolve_path("level_selector.ui", __file__)))),
+):
     plugin_closing = pyqtSignal()
 
     def __init__(self, iface_: Any, parent: Optional[Any] = None):
@@ -106,7 +108,7 @@ class LevelSelectorWidget(QgsDockWidget, FORM_CLASS):
                 if col_idx is not None:
                     for feature in layer.getFeatures():
                         value = str(feature.attributes()[col_idx])
-                        logger.error(f"Found {value}")
+                        _logger.error(f"Found {value}")
                         unique_level_values.add(value)
 
     def enable_button_clicked(self) -> None:

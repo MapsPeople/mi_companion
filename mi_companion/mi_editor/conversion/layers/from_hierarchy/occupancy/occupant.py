@@ -1,8 +1,8 @@
 import logging
-from typing import Any, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
+from typing import Any, List, Optional
 
 from jord.qgis_utilities import (
     extract_layer_attributes,
@@ -14,7 +14,7 @@ STR_LOCATION_TYPE_ATTRS = ("key", "translations.en.name")
 FLOAT_LOCATION_TYPE_ATTRS = ()
 INTEGER_LOCATION_TYPE_ATTRS = ()
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["get_occupant_data"]
 
@@ -60,6 +60,6 @@ def get_occupant_data(
 
             except Exception as e:
                 _invalid = f"Invalid location_types: {e}"
-                logger.error(_invalid)
+                _logger.error(_invalid)
                 if collect_invalid:
                     issues.append(_invalid)

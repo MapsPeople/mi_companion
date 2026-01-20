@@ -9,7 +9,7 @@ from qgis.utils import iface
 
 from mi_companion import RESOURCE_BASE_PATH
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
 
@@ -37,16 +37,16 @@ def run() -> None:
         if not layer.countSymbolFeatures():
             ...
 
-        logger.error(renderer.classAttribute())
+        _logger.error(renderer.classAttribute())
 
         keys = renderer.legendKeys()
 
-        print(logger.name)
+        print(_logger.name)
 
-        logger.error(f"legend keys: {keys}")
+        _logger.error(f"legend keys: {keys}")
 
         for k in keys:
-            logger.error(
+            _logger.error(
                 f"Legend key expression: {renderer.legendKeyToExpression(k, layer)}"
             )
-            logger.error(f"Feature count for legend key: {layer.featureCount(k)}")
+            _logger.error(f"Feature count for legend key: {layer.featureCount(k)}")

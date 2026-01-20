@@ -1,17 +1,17 @@
 #!/usr/bin/python
 import logging
 import uuid
-from typing import Any
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+from typing import Any
 
 from mi_companion import RESOURCE_BASE_PATH
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = ["run"]
 
 
@@ -28,19 +28,19 @@ def randomize_fields_selected_features(feature, field_name: str) -> Any:  # QgsF
     more efficient changeAttributeValue() or changeGeometry() methods instead.
     """
     if feature is None:
-        logger.error(f"feature was None")
+        _logger.error(f"feature was None")
         return
 
     field_idx = feature.fieldNameIndex(field_name)
 
     if field_idx >= 0:
-        logger.info(f"Randomizing {field_name}:{field_idx}")
+        _logger.info(f"Randomizing {field_name}:{field_idx}")
 
         feature.setAttribute(field_idx, uuid.uuid4().hex)
 
         return feature
     else:
-        logger.error(f"Did not find {field_name} in {feature.fields()}")
+        _logger.error(f"Did not find {field_name} in {feature.fields()}")
 
 
 def run(
@@ -66,7 +66,7 @@ def run(
         layers = list(QgsProject.instance().mapLayers().values())
 
     if len(layers) == 0:
-        logger.error(f"No layers was given {layers}")
+        _logger.error(f"No layers was given {layers}")
 
     for layer in layers:  # TODO: Only do this for already editing layers
         if layer.selectedFeatureCount() > 0:
@@ -75,12 +75,14 @@ def run(
 
             if len(selected_features) > 0:
                 for feature in iter(selected_features):
-                    logger.info(f"Randomizing {feature.id()}")
+                    _logger.info(f"Randomizing {feature.id()}")
                     feature = randomize_fields_selected_features(feature, field_name)
                     layer.updateFeature(feature)
             else:
-                logger.error(f"Please select feature in the layer")
+                _logger.error(f"Please select feature in the layer")
 
             # layer.commitChanges()
         else:
-            logger.error(f"Skipping layer {layer.name()} as it had no selected feature")
+            _logger.error(
+                f"Skipping layer {layer.name()} as it had no selected feature"
+            )

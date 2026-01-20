@@ -41,7 +41,7 @@ from mi_companion.layer_descriptors import (
     SOLUTION_DATA_DESCRIPTOR,
 )
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
 TRANSLATIONS_FIELD_NAME = "translations"

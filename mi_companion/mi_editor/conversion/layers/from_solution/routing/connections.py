@@ -1,9 +1,8 @@
-import logging
-from typing import Any, List, Optional
-
 import geopandas
+import logging
 from geopandas import GeoDataFrame
 from pandas import json_normalize
+from typing import Any, List, Optional
 
 from jord.qgis_utilities import (
     make_field_not_null,
@@ -20,7 +19,7 @@ from mi_companion.mi_editor.conversion.projection import (
 )
 from sync_module.model import ConnectionCollection, Graph
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["add_connection_layers"]
 
@@ -97,7 +96,7 @@ def add_connection_layers(
 
                 empty_lines = df[df.is_empty]
                 if not empty_lines.empty:
-                    logger.warning(f"Dropping {empty_lines}")
+                    _logger.warning(f"Dropping {empty_lines}")
 
                 df = df[~df.is_empty]
 
@@ -129,7 +128,7 @@ def add_connection_layers(
     else:
         empty_lines = df[df.is_empty]
         if not empty_lines.empty:
-            logger.warning(f"Dropping {empty_lines}")
+            _logger.warning(f"Dropping {empty_lines}")
 
         df = df[~df.is_empty]
 

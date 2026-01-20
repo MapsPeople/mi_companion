@@ -1,14 +1,13 @@
 import json
 import logging
-from typing import List, Tuple
-
 import shapely
 import shapely.wkt
+from typing import List, Tuple
 
 __all__ = ["extract_wkt_elements", "is_json"]
 
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def is_json(my_json: str) -> bool:
@@ -79,7 +78,7 @@ def extract_wkt_elements(
                                 (context, shapely.wkt.loads(f"{wkt_qkey} ({element})"))
                             )
         except Exception as e:
-            logger.error("Error parsing")
+            _logger.error("Error parsing")
 
     return wkt_elements
 

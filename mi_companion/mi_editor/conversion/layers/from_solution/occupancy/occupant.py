@@ -16,7 +16,7 @@ STR_OCCUPANT_ATTRS = ()  # ("name",)
 FLOAT_OCCUPANT_ATTRS = ()
 INT_OCCUPANT_ATTRS = ()
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["add_occupant_layer"]
 
@@ -58,7 +58,7 @@ def add_occupant_layer(
     selected = process_nested_fields_df(selected)
 
     if not len(shape_df):
-        logger.warning(f"Nothing to be added, skipping occupants layer")
+        _logger.warning(f"Nothing to be added, skipping occupants layer")
         return None
 
     for attr_name in BOOLEAN_OCCUPANT_ATTRS:

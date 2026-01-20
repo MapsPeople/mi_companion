@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
@@ -6,14 +6,13 @@ from qgis.PyQt import uic
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
-FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), "dialog.ui"))
-
 __all__ = ["Dialog"]
 
 from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
+from warg import first
 
 
-class Dialog(QDialog, FORM_CLASS):
+class Dialog(QDialog, first(uic.loadUiType(str(Path(__file__).parent / "dialog.ui")))):
 
     def __init__(self, parent=None):
         from jord.qgis_utilities.helpers import signals

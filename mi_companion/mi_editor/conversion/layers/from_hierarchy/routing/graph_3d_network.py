@@ -1,5 +1,4 @@
 import logging
-from typing import Any, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -10,16 +9,15 @@ from qgis.core import (
     QgsProject,
     QgsWkbTypes,
 )
+from typing import Any, List, Optional
 
 from jord.qgis_utilities import feature_to_shapely, parse_q_value
-
 from mi_companion.layer_descriptors import GRAPH_LINES_DESCRIPTOR
-
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from sync_module.model import FALLBACK_OSM_GRAPH, Solution
 from sync_module.tools import lines_3d_to_osm_xml
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["add_3d_graph_edges"]
 
@@ -33,17 +31,17 @@ def set_z_from_m(layer_feature: Any) -> Any:
     """
 
     if not layer_feature:
-        logger.error("Feature was None")
+        _logger.error("Feature was None")
         return
 
     geom = layer_feature.geometry()
     if not geom:
-        logger.error("No geometry found")
+        _logger.error("No geometry found")
         return layer_feature
 
     # Validate M dimension
     if not QgsWkbTypes.hasM(geom.wkbType()):
-        logger.error("Geometry does not have M values")
+        _logger.error("Geometry does not have M values")
         return layer_feature
 
     # Extract vertices with M values
@@ -83,7 +81,7 @@ def set_z_from_m(layer_feature: Any) -> Any:
         new_geom = QgsGeometry.fromPolygonXYZ(new_rings)
 
     else:
-        logger.error(f"Unsupported geometry type: {geom_type}")
+        _logger.error(f"Unsupported geometry type: {geom_type}")
         return layer_feature
 
     layer_feature.setGeometry(new_geom)
@@ -145,7 +143,7 @@ def add_3d_graph_edges(
             "utf-8"
         )  # OSMNX HAS SOME WEIRD BUGS!
     except Exception as e:
-        logger.error(e)
+        _logger.error(e)
         osm_xml = FALLBACK_OSM_GRAPH
         if True:
             raise e
@@ -154,7 +152,7 @@ def add_3d_graph_edges(
         solution.update_graph(graph_key, osm_xml=osm_xml)
     except Exception as e:
         _invalid = f"Invalid graph: {e}"
-        logger.error(_invalid)
+        _logger.error(_invalid)
         if collect_invalid:
             issues.append(_invalid)
         else:

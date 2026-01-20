@@ -3,8 +3,6 @@ import ast
 # noinspection PyUnresolvedReferences
 import datetime
 import logging
-from typing import Any, Collection, List, Optional
-
 import shapely
 
 # noinspection PyUnresolvedReferences
@@ -26,6 +24,7 @@ from qgis.core import (
     QgsProject,
     QgsProject,
 )
+from typing import Any, Collection, List, Optional
 
 from jord.qgis_utilities import (
     extract_feature_attributes,
@@ -42,14 +41,14 @@ from mi_companion import (
     VERBOSE,
 )
 from mi_companion.configuration import read_bool_setting
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
+from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
+    make_hierarchy_validation_dialog,
+)
 from mi_companion.qgis_utilities.common_attributes import (
     extract_display_rule,
     extract_street_view_config,
     extract_translations,
-)
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
-from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
-    make_hierarchy_validation_dialog,
 )
 from mi_companion.type_enums import BackendLocationTypeEnum
 from sync_module.model import (
@@ -65,7 +64,7 @@ from warg import str_to_bool
 
 __all__ = ["add_floor_contents"]
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class MissingKeyColumn(Exception): ...
@@ -122,7 +121,7 @@ def add_floor_locations(
                         )
                     except Exception as e:
                         _invalid = f"{location_type_admin_id=} is invalid {e}"
-                        logger.error(_invalid)
+                        _logger.error(_invalid)
                         if collect_invalid:
                             issues.append(_invalid)
                         else:
@@ -287,7 +286,7 @@ def add_floor_locations(
                 media_key = parse_field(feature_attributes, field_name="media_key")
 
             if location_geometry is None:
-                logger.error(f"{location_geometry=}")
+                _logger.error(f"{location_geometry=}")
 
             if location_geometry is not None:
                 common_kvs = dict(
@@ -337,7 +336,7 @@ def add_floor_locations(
                             a = extract_field_value(feature_attributes, "category_keys")
 
                             if not isinstance(a, Collection):
-                                logger.warning(f"Skipping {a} for {k}")
+                                _logger.warning(f"Skipping {a} for {k}")
                                 continue
 
                             for category_name in a:
@@ -365,7 +364,7 @@ def add_floor_locations(
                                                 _invalid = (
                                                     f"{category_name=} is invalid {e}"
                                                 )
-                                                logger.error(_invalid)
+                                                _logger.error(_invalid)
                                                 if collect_invalid:
                                                     issues.append(_invalid)
                                                 else:
@@ -376,7 +375,7 @@ def add_floor_locations(
                                             )
                                     cat_keys.append(category_key)
                                 else:
-                                    logger.error(
+                                    _logger.error(
                                         f"Skipping invalid category {category_name} on {admin_id}"
                                     )
 
@@ -386,7 +385,7 @@ def add_floor_locations(
                             a = extract_field_value(feature_attributes, "details")
 
                             if not isinstance(a, Collection):
-                                logger.warning(f"Skipping {a} for {k}")
+                                _logger.warning(f"Skipping {a} for {k}")
                                 continue
 
                             for detail_entry in a:
@@ -427,7 +426,7 @@ def add_floor_locations(
                                         else:
                                             details.append(detail_type(**ddd))
                                     else:
-                                        logger.error(
+                                        _logger.error(
                                             f'Did not find a "__class__.__name__" in {ddd}, skipping it'
                                         )
 
@@ -465,16 +464,16 @@ def add_floor_locations(
                         raise Exception(f"{backend_location_type=} is unknown")
 
                     if VERBOSE:
-                        logger.info(f"added {backend_location_type} {location_key}")
+                        _logger.info(f"added {backend_location_type} {location_key}")
                 except Exception as e:
                     _invalid = f"Invalid location: {e}"
-                    logger.error(_invalid)
+                    _logger.error(_invalid)
                     if collect_invalid:
                         issues.append(_invalid)
                     else:
                         raise e
             else:
-                logger.error(f"{location_geometry=}")
+                _logger.error(f"{location_geometry=}")
 
 
 def add_floor_contents(

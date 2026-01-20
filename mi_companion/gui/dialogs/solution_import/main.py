@@ -1,6 +1,7 @@
 #!/usr/bin/python
-import logging
 from pathlib import Path
+
+import logging
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
@@ -8,7 +9,7 @@ from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def run(*, path: Path) -> None:

@@ -3,7 +3,7 @@ import os
 import subprocess
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def pip_install_editable(package_paths):
@@ -23,7 +23,7 @@ def pip_install_editable(package_paths):
             )
             print(f"Uninstalled: {', '.join(packages_to_remove)}")
         except subprocess.CalledProcessError as e:
-            logger.warning(f"Error uninstalling packages: {e}")
+            _logger.warning(f"Error uninstalling packages: {e}")
 
     # Install each package in editable mode
     for path in package_paths:
@@ -31,7 +31,7 @@ def pip_install_editable(package_paths):
             subprocess.check_call(["python", "-m", "pip", "install", "-e", path])
             print(f"Installed: {path}")
         except subprocess.CalledProcessError as e:
-            logger.error(f"Failed to install {path}: {e}")
+            _logger.error(f"Failed to install {path}: {e}")
             raise
 
 

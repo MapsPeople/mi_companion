@@ -1,4 +1,5 @@
 import logging
+from qgis._3d import Qgs3DTypes
 from typing import Any, Optional
 
 from jord.qgis_utilities import (
@@ -8,8 +9,6 @@ from jord.qgis_utilities import (
     set_geometry_constraints,
     set_layer_rendering_scale,
 )
-
-from qgis._3d import Qgs3DTypes
 from jord.qlive_utilities import add_shapely_layer
 from mi_companion import (
     DESCRIPTOR_BEFORE,
@@ -37,7 +36,7 @@ from sync_module.tools import translations_to_flattened_dict
 from .location import add_floor_content_layers
 from ...styling import add_rotation_scale_geometry_generator
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["add_floor_layers"]
 

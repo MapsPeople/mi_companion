@@ -1,26 +1,20 @@
 from pathlib import Path
 
+from warg import ensure_in_sys_path, get_submodules_by_path
+from ...qgis_utilities import resolve_path
+
+ensure_in_sys_path(Path(__file__).parent.parent)
+
+
 import logging
 import math
 
 # noinspection PyUnresolvedReferences
-from qgis.PyQt import QtGui, QtWidgets, uic
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtCore import pyqtSignal
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import (
-    QMessageBox,
-)
-
-# noinspection PyUnresolvedReferences
-from qgis.core import (
-    QgsProject,
-)
+from qgis.PyQt import QtGui, QtWidgets, uic, QtCore
 
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsDockWidget
+
 from typing import Any, Callable, Optional
 
 from jord.qgis_utilities import read_plugin_setting
@@ -29,20 +23,23 @@ from jord.qt_utilities import DockWidgetAreaFlag
 from mi_companion.entry_points.add_language_to_group import (
     ENTRY_POINT_NAME as ADD_LANGUAGE_BUTTON_NAME,
 )
-from warg import ensure_in_sys_path, get_submodules_by_path
+
 from ...configuration.options import read_bool_setting
 from ...constants import (
     DEFAULT_PLUGIN_SETTINGS,
+    PLUGIN_DIR,
     PROJECT_NAME,
 )
 
-ensure_in_sys_path(Path(__file__).parent.parent)
+
 _logger = logging.getLogger(__name__)
+
+__all__ = ["EntryPointsWidget"]
 
 
 class EntryPointsWidget(QgsDockWidget):
-    plugin_closing = pyqtSignal()
-    menu_name = "Tools"
+    plugin_closing = QtCore.pyqtSignal()
+    menu_name = "Advanced Tools"
 
     def __init__(self, iface_: Any, parent: Optional[Any] = None):
         super().__init__(parent)
@@ -54,6 +51,8 @@ class EntryPointsWidget(QgsDockWidget):
         self.container_widget = QtWidgets.QWidget()
         self.grid_layout = QtWidgets.QGridLayout()
         self.container_widget.setLayout(self.grid_layout)
+        self.setObjectName(self.menu_name)
+        self.setWindowTitle(self.menu_name)
 
         # Set the container as the visual content of the DockWidget
         self.setWidget(self.container_widget)
@@ -88,9 +87,12 @@ class EntryPointsWidget(QgsDockWidget):
         return f
 
     def _load_entry_points(self):
-        entry_point_modules = get_submodules_by_path(
-            Path(__file__).parent.parent.parent / "entry_points"
-        )
+
+        a = resolve_path("entry_points", PLUGIN_DIR).absolute()
+
+        entry_point_modules = list(get_submodules_by_path(a))
+
+        _logger.warning(f"Found {len(entry_point_modules)} entry points at {a}")
 
         self.entry_point_definitions = {
             getattr(d, "ENTRY_POINT_NAME"): self.entry_point_wrapper(
@@ -130,3 +132,9 @@ class EntryPointsWidget(QgsDockWidget):
             self.grid_layout.addWidget(
                 button, math.floor(i / num_columns), i % num_columns
             )
+
+    # noinspection PyPep8Naming
+    def closeEvent(self, event: Any) -> None:  # pylint: disable=invalid-name
+
+        self.plugin_closing.emit()
+        event.accept()

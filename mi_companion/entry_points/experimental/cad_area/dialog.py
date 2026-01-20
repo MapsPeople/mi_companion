@@ -1,24 +1,22 @@
-import logging
-import os
 from pathlib import Path
+
+import logging
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets, uic
 
 from jord.qgis_utilities.helpers import signals
-
-FORM_CLASS, _ = uic.loadUiType(
-    os.path.join(os.path.dirname(__file__), "cad_area_dialog.ui")
-)
-
 from mi_companion import RESOURCE_BASE_PATH
+from warg import first
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["Dialog"]
 
 
-class Dialog(QtWidgets.QDialog, FORM_CLASS):
+class Dialog(
+    QtWidgets.QDialog, first(uic.loadUiType(str(Path(__file__).parent / "dialog.ui")))
+):
 
     def __init__(self, parent=None):
         super().__init__(parent)

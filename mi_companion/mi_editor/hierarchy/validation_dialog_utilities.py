@@ -1,5 +1,4 @@
 import logging
-from typing import Any
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QIcon
@@ -25,15 +24,16 @@ from qgis.gui import (
 
 # noinspection PyUnresolvedReferences
 from qgis.utils import iface
+from typing import Any
 
-from jord.qgis_utilities import read_plugin_setting, accept_role, reject_role
+from jord.qgis_utilities import accept_role, read_plugin_setting, reject_role
 from mi_companion import (
     DEFAULT_PLUGIN_SETTINGS,
     MAPS_INDOORS_QGIS_PLUGIN_TITLE,
     PROJECT_NAME,
 )
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = [
     "make_hierarchy_validation_dialog",
@@ -59,7 +59,7 @@ def make_hierarchy_validation_dialog(
     minimum_header_padding: int = 200,
     level=_default_validation_message_level,
 ) -> Any:
-    logger.error(message)
+    _logger.error(message)
 
     resource_path = read_plugin_setting(
         "RESOURCES_BASE_PATH",

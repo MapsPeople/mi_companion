@@ -1,12 +1,11 @@
 import logging
-import typing
-from typing import Optional
-
 import numpy
 import pyproj
 import shapely
 import shapely.geometry
+import typing
 from geopandas import GeoDataFrame
+from typing import Optional
 
 from jord.shapely_utilities import clean_shape
 from mi_companion.configuration import read_bool_setting
@@ -41,7 +40,7 @@ __all__ = [
 # TODO: HONESTLY THIS FILE IS MESS; SHOULD BE REWORKED!
 
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def get_back_projection_qgis() -> typing.Callable:
@@ -123,7 +122,7 @@ def any_infinite_coords(geom_shapely: shapely.geometry.base.BaseGeometry) -> boo
     coords = numpy.array(shapely.get_coordinates(geom_shapely))
     if any(not numpy.isfinite(coord) for coord in coords.flatten()):
 
-        logger.warning("Reprojection resulted in infinite coordinates")
+        _logger.warning("Reprojection resulted in infinite coordinates")
         return True
 
     return False
@@ -140,7 +139,7 @@ def is_valid_lon_lat(geom_shapely: shapely.geometry.base.BaseGeometry) -> bool:
         lon, lat = coord[0], coord[1]
         # Check longitude (-180 to 180) and latitude (-90 to 90) ranges
         if not (-180 <= lon <= 180) or not (-90 <= lat <= 90):
-            logger.warning(f"Invalid coordinates found: lon={lon}, lat={lat}")
+            _logger.warning(f"Invalid coordinates found: lon={lon}, lat={lat}")
             return False
 
     return True
@@ -178,12 +177,12 @@ def is_valid_lon_lat_fast(
 
     if not numpy.all(valid_x):
         invalid_x = coords[~valid_x, 0]
-        logger.warning(f"Invalid longitude values found: {invalid_x}")
+        _logger.warning(f"Invalid longitude values found: {invalid_x}")
         return False
 
     if not numpy.all(valid_y):
         invalid_y = coords[~valid_y, 1]
-        logger.warning(f"Invalid latitude values found: {invalid_y}")
+        _logger.warning(f"Invalid latitude values found: {invalid_y}")
         return False
 
     return True

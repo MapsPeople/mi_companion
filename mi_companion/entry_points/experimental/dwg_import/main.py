@@ -1,7 +1,8 @@
 #!/usr/bin/python
+from pathlib import Path
+
 import logging
 import os
-from pathlib import Path
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -20,7 +21,7 @@ from qgis.core import (
 
 from mi_companion import RESOURCE_BASE_PATH
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
 
@@ -64,7 +65,7 @@ Import/Export > Import Layers from DXF/DWG)
 
     new_dxf_path: Path = convert_to_dxf(dwg_path, oda_converter_path)
 
-    logger.info(f"Emitted {new_dxf_path}")
+    _logger.info(f"Emitted {new_dxf_path}")
 
     auto_add_layers: bool = True
     if auto_add_layers:

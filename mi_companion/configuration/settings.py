@@ -1,14 +1,13 @@
 import logging
-from typing import Any, Dict, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
+from typing import Any, Dict, Mapping, Optional
 
-from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
+from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, VERBOSE
 
-VERBOSE = True
 QGIS_PROJECT = QgsProject.instance()
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 __all__ = [
@@ -111,7 +110,7 @@ def embedded_read_plugin_setting(
     if verbose:
         print("read: ", project_name, key, val)
         if not type_conversion_ok:
-            logger.warning(f"read_plugin_setting: {key} {val} {type_conversion_ok}")
+            _logger.warning(f"read_plugin_setting: {key} {val} {type_conversion_ok}")
 
     return val
 

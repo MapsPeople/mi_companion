@@ -1,15 +1,15 @@
-import logging
 from collections import defaultdict
+
+import logging
+import shapely
 from itertools import chain
 from typing import Union
-
-import shapely
 
 from jord.shapely_utilities import is_multi
 from mi_companion.configuration import read_bool_setting
 from sync_module.model import Area, PointOfInterest, Room, Solution
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["post_process_solution"]
 
@@ -64,25 +64,25 @@ def post_process_solution(solution: Solution) -> None:
                 )
 
     if read_bool_setting("POST_FIT_FLOORS"):
-        logger.warning(f"Post fitting floors")
+        _logger.warning(f"Post fitting floors")
         if False:
-            logger.error(floor_child_geoms)
+            _logger.error(floor_child_geoms)
 
         for f_id, f_polys in floor_child_geoms.items():
             new_floor_poly = shapely.unary_union(f_polys)
             if is_multi(new_floor_poly):
-                logger.error(new_floor_poly)
-                logger.error(f_polys)
-                logger.error(
+                _logger.error(new_floor_poly)
+                _logger.error(f_polys)
+                _logger.error(
                     f"Building {f_id}, {new_floor_poly=} and thus not valid, skipping fit"
                 )
                 continue
             solution.update_floor(f_id, polygon=new_floor_poly)
 
     if read_bool_setting("POST_FIT_BUILDINGS"):
-        logger.warning(f"Post fitting buildings")
+        _logger.warning(f"Post fitting buildings")
         if False:
-            logger.error(building_floor_polygons)
+            _logger.error(building_floor_polygons)
 
         for b_id, b_f_polys in building_floor_polygons.items():
             new_building_poly = shapely.unary_union(b_f_polys)
@@ -92,18 +92,18 @@ def post_process_solution(solution: Solution) -> None:
                 )
 
             if is_multi(new_building_poly):
-                logger.error(new_building_poly)
+                _logger.error(new_building_poly)
                 # logger.error(b_f_polys)
-                logger.error(
+                _logger.error(
                     f"Building {b_id}, {new_building_poly=} and thus not valid, skipping fit"
                 )
                 continue
             solution.update_building(b_id, polygon=new_building_poly)
 
     if read_bool_setting("POST_FIT_VENUES"):
-        logger.warning(f"Post fitting venues")
+        _logger.warning(f"Post fitting venues")
         if False:
-            logger.error(venue_building_polygons)
+            _logger.error(venue_building_polygons)
 
         for v_id, v_b_polys in venue_building_polygons.items():
             new_venue_poly = shapely.unary_union(v_b_polys)
@@ -115,9 +115,9 @@ def post_process_solution(solution: Solution) -> None:
 
             if False:
                 if is_multi(new_venue_poly):
-                    logger.error(new_venue_poly)
+                    _logger.error(new_venue_poly)
                     # logger.error(v_b_polys)
-                    logger.error(
+                    _logger.error(
                         f"Venue {v_id}, {new_venue_poly=} and thus not valid, skipping fit"
                     )
                     continue

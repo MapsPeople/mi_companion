@@ -37,7 +37,7 @@ from ...styling import add_rotation_scale_geometry_generator
 __all__ = ["add_building_layers"]
 
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def add_building_layers(

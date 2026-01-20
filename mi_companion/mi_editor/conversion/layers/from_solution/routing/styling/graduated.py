@@ -1,6 +1,4 @@
 # noinspection PyUnresolvedReferences
-from typing import Any, Collection, Iterable
-
 from qgis.core import (
     QgsExpression,
     QgsGraduatedSymbolRenderer,
@@ -8,6 +6,7 @@ from qgis.core import (
     QgsStyle,
     QgsSymbol,
 )
+from typing import Any, Collection, Iterable
 
 
 def set_z_based_graduated_styling(

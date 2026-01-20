@@ -1,6 +1,4 @@
 import logging
-from typing import Any, List, Optional, Tuple
-
 import shapely
 
 # noinspection PyUnresolvedReferences
@@ -22,6 +20,7 @@ from qgis.core import (
     QgsProject,
     QgsProject,
 )
+from typing import Any, List, Optional, Tuple
 
 from jord.qgis_utilities import (
     extract_field_value,
@@ -39,12 +38,12 @@ from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_
 from mi_companion.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
 )
-from sync_module.model import Solution
 from mi_companion.qgis_utilities.common_attributes import extract_translations
 from mi_companion.qgis_utilities.extraction import special_extract_layer_data
+from sync_module.model import Solution
 from .location import add_floor_contents
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["add_building_floors"]
 
@@ -97,7 +96,7 @@ def add_building_floors(
                 or num_solution_elements < 1
             ):
                 ...
-                logger.error(
+                _logger.error(
                     "Come on man... you can not divide by zero... the progress bar was not updated because of you"
                 )
             else:
@@ -226,7 +225,7 @@ def get_floor_data(
                     raise Exception("Upload cancelled")
 
             if floor_polygon is None:
-                logger.error(f"{floor_polygon=}")
+                _logger.error(f"{floor_polygon=}")
 
             if floor_polygon is not None:
                 translations = extract_translations(
@@ -264,7 +263,7 @@ def get_floor_data(
                     )
                 except Exception as e:
                     _invalid = f"Invalid floor: {e}"
-                    logger.error(_invalid)
+                    _logger.error(_invalid)
                     if collect_invalid:
                         issues.append(_invalid)
                         return floor_attributes, None
@@ -273,7 +272,7 @@ def get_floor_data(
 
                 return floor_attributes, floor_key
 
-    logger.error(
+    _logger.error(
         f"Did not find floor polygon feature in {floor_group_items.children()=}"
     )
     return None, None

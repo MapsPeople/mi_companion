@@ -1,5 +1,4 @@
 import logging
-from typing import Any, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets
@@ -18,6 +17,7 @@ from qgis.core import (
     QgsRasterLayer,
     QgsVectorLayer,
 )
+from typing import Any, Optional
 
 from jord.qgis_utilities import (
     disconnect_signal,
@@ -40,7 +40,7 @@ from .validation_dialog_utilities import (
     make_temporary_toast,
 )
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = [
     "add_solution_hierarchy_change_listener",
@@ -63,14 +63,14 @@ def validate_hierarchy(node: Any, parent: Optional[str] = None) -> ValidationRes
 
     if top_ancestor is None:
         if False:
-            logger.error(f"{node}: No valid ancestor")
+            _logger.error(f"{node}: No valid ancestor")
         return ValidationResultEnum.failure
 
     top_ancestor_name = top_ancestor.name()
 
     if DATABASE_GROUP_DESCRIPTOR not in top_ancestor_name:
         if False:
-            logger.error(f"{DATABASE_GROUP_DESCRIPTOR} not in {top_ancestor_name}")
+            _logger.error(f"{DATABASE_GROUP_DESCRIPTOR} not in {top_ancestor_name}")
         return ValidationResultEnum.failure
 
     node_name = str(node.name())
@@ -79,7 +79,7 @@ def validate_hierarchy(node: Any, parent: Optional[str] = None) -> ValidationRes
     for a in ROUTE_ELEMENT_LAYER_DESCRIPTORS:
         # IGNORED SUB LAYERS FOR NOW
         if a in parent_name:
-            logger.warning(
+            _logger.warning(
                 f"Hierarchy Validation for {node_name} was skipped, due to {a} was found in {parent_name=}, "
                 f"for now these sub-hierarchies are not validated"
             )
@@ -157,7 +157,7 @@ def will_remove_children(node, index_from, index_to) -> None:
     for child in existing_children[index_from : index_to + 1]:
         PREVIOUS_PARENT[child.name()] = node
 
-    logger.error([f"{c}:{node.name()}" for c, node in PREVIOUS_PARENT.items()])
+    _logger.error([f"{c}:{node.name()}" for c, node in PREVIOUS_PARENT.items()])
     # NAMES_TO_BE_REMOVED_FROM[node.name()] = [child.name() for child in existing_children]
 
 
@@ -169,7 +169,7 @@ def added_children(node, index_from, index_to) -> None:
     new_children = new_children[index_from : index_to + 1]
 
     if False:
-        logger.error(f"{node.name()}, {index_from}, {index_to}, {new_children}")
+        _logger.error(f"{node.name()}, {index_from}, {index_to}, {new_children}")
 
     for child in new_children:
         child_name = child.name()

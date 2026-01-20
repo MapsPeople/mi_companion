@@ -1,11 +1,11 @@
 import logging
-from typing import Dict, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from typing import Dict, Optional
 
 from mi_companion import HALF_SIZE
 from mi_companion.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
@@ -16,7 +16,7 @@ __all__ = ["revert_venues"]
 
 from jord.qgis_utilities import parse_q_value
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def revert_venues(
@@ -53,7 +53,7 @@ def revert_venues(
                 int(10 + (90 * (float(ith_solution + 1) / num_solution_elements)))
             )
         if isinstance(solution_group_item, QgsLayerTreeGroup):
-            logger.info(f"Serialising {str(solution_group_item.name())}")
+            _logger.info(f"Serialising {str(solution_group_item.name())}")
 
             solution_layer_name = (
                 str(solution_group_item.name()).split("(Solution)")[0].strip()
@@ -85,7 +85,7 @@ def revert_venues(
             solution_external_id = solution_data_layer["external_id"]
             solution_name = solution_data_layer["name"]
 
-            logger.info(f"Converting {str(solution_group_item.name())}")
+            _logger.info(f"Converting {str(solution_group_item.name())}")
 
             venue_elements = solution_group_item.children()
             num_venue_elements = len(venue_elements)

@@ -1,5 +1,6 @@
-import logging
 from collections import defaultdict
+
+import logging
 from typing import Any, Optional
 
 from jord.qgis_utilities import (
@@ -38,7 +39,7 @@ from .linestring_route_elements import add_linestring_route_element_layers
 from .point_route_elements import add_point_route_element_layers
 from .polygon_route_elements import add_polygon_route_element_layers
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["add_route_element_layers"]
 

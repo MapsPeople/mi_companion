@@ -1,6 +1,6 @@
-import logging
 from collections import defaultdict
-from typing import Any, List, Optional
+
+import logging
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
@@ -10,6 +10,7 @@ from qgis.PyQt.QtCore import QVariant
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from typing import Any, List, Optional
 
 from jord.qgis_utilities import recurse_layers
 from mi_companion import (
@@ -36,7 +37,7 @@ from .parse_entry_points import add_entry_points
 from .parse_obstacles import add_obstacles
 from .parse_prefers import add_prefers
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = [
     "add_route_elements",
@@ -112,7 +113,7 @@ def add_route_element_groups(
                 collect_errors=collect_errors,
             )
     else:
-        logger.debug(f"Skipped adding {DOORS_GROUP_DESCRIPTOR}")
+        _logger.debug(f"Skipped adding {DOORS_GROUP_DESCRIPTOR}")
     if (
         isinstance(graph_group_item, QgsLayerTreeGroup)
         and BARRIERS_GROUP_DESCRIPTOR in graph_group_item.name()
@@ -128,7 +129,7 @@ def add_route_element_groups(
                 collect_errors=collect_errors,
             )
     else:
-        logger.debug(f"Skipped adding {BARRIERS_GROUP_DESCRIPTOR}")
+        _logger.debug(f"Skipped adding {BARRIERS_GROUP_DESCRIPTOR}")
     if (
         isinstance(graph_group_item, QgsLayerTreeGroup)
         and AVOIDS_GROUP_DESCRIPTOR in graph_group_item.name()
@@ -144,7 +145,7 @@ def add_route_element_groups(
                 collect_errors=collect_errors,
             )
     else:
-        logger.debug(f"Skipped adding {AVOIDS_GROUP_DESCRIPTOR}")
+        _logger.debug(f"Skipped adding {AVOIDS_GROUP_DESCRIPTOR}")
     if (
         isinstance(graph_group_item, QgsLayerTreeGroup)
         and PREFERS_GROUP_DESCRIPTOR in graph_group_item.name()
@@ -160,7 +161,7 @@ def add_route_element_groups(
                 collect_errors=collect_errors,
             )
     else:
-        logger.debug(f"Skipped adding {PREFERS_GROUP_DESCRIPTOR}")
+        _logger.debug(f"Skipped adding {PREFERS_GROUP_DESCRIPTOR}")
     if (
         isinstance(graph_group_item, QgsLayerTreeGroup)
         and OBSTACLES_GROUP_DESCRIPTOR in graph_group_item.name()
@@ -176,7 +177,7 @@ def add_route_element_groups(
                 collect_errors=collect_errors,
             )
     else:
-        logger.debug(f"Skipped adding {OBSTACLES_GROUP_DESCRIPTOR}")
+        _logger.debug(f"Skipped adding {OBSTACLES_GROUP_DESCRIPTOR}")
     if (
         isinstance(graph_group_item, QgsLayerTreeGroup)
         and ENTRY_POINTS_GROUP_DESCRIPTOR in graph_group_item.name()
@@ -192,7 +193,7 @@ def add_route_element_groups(
                 collect_errors=collect_errors,
             )
     else:
-        logger.debug(f"Skipped adding {ENTRY_POINTS_GROUP_DESCRIPTOR}")
+        _logger.debug(f"Skipped adding {ENTRY_POINTS_GROUP_DESCRIPTOR}")
     if (
         isinstance(graph_group_item, QgsLayerTreeGroup)
         and CONNECTORS_GROUP_DESCRIPTOR in graph_group_item.name()
@@ -216,7 +217,7 @@ def add_route_element_groups(
             collect_errors=collect_errors,
         )
     else:
-        logger.debug(f"Skipped adding {CONNECTORS_GROUP_DESCRIPTOR}")
+        _logger.debug(f"Skipped adding {CONNECTORS_GROUP_DESCRIPTOR}")
 
 
 def add_flat_route_element_layers(
@@ -242,7 +243,7 @@ def add_flat_route_element_layers(
             collect_errors=collect_errors,
         )
     else:
-        logger.debug(f"Skipped adding {DOORS_GROUP_DESCRIPTOR}")
+        _logger.debug(f"Skipped adding {DOORS_GROUP_DESCRIPTOR}")
     if (
         isinstance(graph_group_item, QgsLayerTreeLayer)
         and BARRIERS_GROUP_DESCRIPTOR in graph_group_item.name()
@@ -257,7 +258,7 @@ def add_flat_route_element_layers(
             collect_errors=collect_errors,
         )
     else:
-        logger.debug(f"Skipped adding {BARRIERS_GROUP_DESCRIPTOR}")
+        _logger.debug(f"Skipped adding {BARRIERS_GROUP_DESCRIPTOR}")
     if (
         isinstance(graph_group_item, QgsLayerTreeLayer)
         and AVOIDS_GROUP_DESCRIPTOR in graph_group_item.name()
@@ -272,7 +273,7 @@ def add_flat_route_element_layers(
             collect_errors=collect_errors,
         )
     else:
-        logger.debug(f"Skipped adding {AVOIDS_GROUP_DESCRIPTOR}")
+        _logger.debug(f"Skipped adding {AVOIDS_GROUP_DESCRIPTOR}")
     if (
         isinstance(graph_group_item, QgsLayerTreeLayer)
         and PREFERS_GROUP_DESCRIPTOR in graph_group_item.name()
@@ -287,7 +288,7 @@ def add_flat_route_element_layers(
             collect_errors=collect_errors,
         )
     else:
-        logger.debug(f"Skipped adding {PREFERS_GROUP_DESCRIPTOR}")
+        _logger.debug(f"Skipped adding {PREFERS_GROUP_DESCRIPTOR}")
     if (
         isinstance(graph_group_item, QgsLayerTreeLayer)
         and OBSTACLES_GROUP_DESCRIPTOR in graph_group_item.name()
@@ -302,7 +303,7 @@ def add_flat_route_element_layers(
             collect_errors=collect_errors,
         )
     else:
-        logger.debug(f"Skipped adding {OBSTACLES_GROUP_DESCRIPTOR}")
+        _logger.debug(f"Skipped adding {OBSTACLES_GROUP_DESCRIPTOR}")
     if (
         isinstance(graph_group_item, QgsLayerTreeLayer)
         and ENTRY_POINTS_GROUP_DESCRIPTOR in graph_group_item.name()
@@ -317,7 +318,7 @@ def add_flat_route_element_layers(
             collect_errors=collect_errors,
         )
     else:
-        logger.debug(f"Skipped adding {ENTRY_POINTS_GROUP_DESCRIPTOR}")
+        _logger.debug(f"Skipped adding {ENTRY_POINTS_GROUP_DESCRIPTOR}")
     if (
         isinstance(graph_group_item, QgsLayerTreeLayer)
         and CONNECTORS_GROUP_DESCRIPTOR in graph_group_item.name()
@@ -335,4 +336,4 @@ def add_flat_route_element_layers(
             collect_errors=collect_errors,
         )
     else:
-        logger.debug(f"Skipped adding {CONNECTORS_GROUP_DESCRIPTOR}")
+        _logger.debug(f"Skipped adding {CONNECTORS_GROUP_DESCRIPTOR}")

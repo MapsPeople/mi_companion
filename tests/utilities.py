@@ -5,7 +5,7 @@ import os
 import sys
 from typing import Tuple
 
-logger = logging.getLogger("QGIS")
+_logger = logging.getLogger("QGIS")
 
 QGIS_APP = None  # Static variable used to hold handle to running QGIS app
 CANVAS = None
@@ -90,7 +90,7 @@ def get_qgis_app_crashing(cleanup: bool = True) -> Tuple:
         QGIS_APP = QgsApplication(argv_bytes, my_gui_flag)
 
         QGIS_APP.initQgis()
-        logger.debug(QGIS_APP.showSettings())
+        _logger.debug(QGIS_APP.showSettings())
 
         def debug_log_message(message, tag, level):
             """

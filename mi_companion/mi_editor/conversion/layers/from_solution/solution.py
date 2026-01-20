@@ -1,11 +1,11 @@
 import logging
-from typing import Any, Callable, Iterable, Optional, Tuple
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup, QgsProject
+from typing import Any, Callable, Iterable, Optional, Tuple
 
 from jord.qgis_utilities import (
     make_enum_dropdown_widget,
@@ -50,7 +50,7 @@ from .venue import add_venue_layer
 
 __all__ = ["solution_venue_to_layer_hierarchy", "add_solution_layers"]
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def add_solution_layers(
@@ -206,7 +206,7 @@ def add_location_type_layer_ss(qgis_instance_handle, solution, solution_group):
         for c in solution_group.children():
             if LOCATION_TYPE_DESCRIPTOR in c.name():
                 location_type_layer = [c.layer()]
-                logger.info(f"Found location type layer: {LOCATION_TYPE_DESCRIPTOR}")
+                _logger.info(f"Found location type layer: {LOCATION_TYPE_DESCRIPTOR}")
                 break
 
         if (
@@ -218,7 +218,7 @@ def add_location_type_layer_ss(qgis_instance_handle, solution, solution_group):
                 solution_group=solution_group,
                 layer_name=LOCATION_TYPE_DESCRIPTOR,
             )
-            logger.info(f"Adding location type layer: {LOCATION_TYPE_DESCRIPTOR}")
+            _logger.info(f"Adding location type layer: {LOCATION_TYPE_DESCRIPTOR}")
 
         if len(location_type_layer):
             location_type_layer = location_type_layer[0]

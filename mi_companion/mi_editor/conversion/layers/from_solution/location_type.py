@@ -1,5 +1,4 @@
 import logging
-from typing import Any, List, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -11,6 +10,7 @@ from qgis.core import (
     QgsFieldConstraints,
     QgsMapLayer,
 )
+from typing import Any, List, Optional
 
 from jord.pandas_utilities import df_to_columns
 from jord.qgis_utilities import (
@@ -22,8 +22,6 @@ from jord.qgis_utilities import (
     set_field_widget,
 )
 from jord.qlive_utilities import add_no_geom_layer
-from sync_module.model import Solution
-from sync_module.tools import collection_to_df, process_nested_fields_df
 from mi_companion.qgis_utilities.location_fields import (
     BOOLEAN_LOCATION_TYPE_ATTRS,
     FLOAT_LOCATION_TYPE_ATTRS,
@@ -32,8 +30,10 @@ from mi_companion.qgis_utilities.location_fields import (
     RANGE_LOCATION_ATTRS,
     STR_LOCATION_TYPE_ATTRS,
 )
+from sync_module.model import Solution
+from sync_module.tools import collection_to_df, process_nested_fields_df
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["add_location_type_layer", "make_location_type_dropdown_widget"]
 

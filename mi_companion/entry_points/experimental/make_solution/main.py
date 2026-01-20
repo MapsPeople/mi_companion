@@ -1,10 +1,10 @@
 #!/usr/bin/python
 import logging
 import uuid
-from typing import Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from typing import Optional
 
 SOME_COMMENT_IGNORE_THIS = """
     decimal                            Distinguisable                          N/S or E/W  | E/W     E/W
@@ -37,7 +37,7 @@ as%20OpenStreetMap%2C%20and%20GPS%20devices
 
 from mi_companion import RESOURCE_BASE_PATH
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = ["run"]
 
 

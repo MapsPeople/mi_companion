@@ -1,10 +1,11 @@
+from collections import defaultdict
+
 import logging
 import operator
-from collections import defaultdict
-from typing import Any, List, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
+from typing import Any, List, Mapping, Optional
 
 from jord.qgis_utilities import (
     GeometryIsEmptyError,
@@ -13,14 +14,14 @@ from jord.qgis_utilities import (
 )
 from mi_companion import VERBOSE
 from mi_companion.configuration import read_bool_setting
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from mi_companion.qgis_utilities.common_attributes import (
     extract_single_level_str_map,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from sync_module.model import Connection, Connector, Solution
 from sync_module.shared import MIConnectionType
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def assemble_connections(
@@ -86,11 +87,11 @@ def assemble_connections(
             )
 
             if VERBOSE:
-                logger.info("added connector", connector_key)
+                _logger.info("added connector", connector_key)
 
         except Exception as e:
             _invalid = f"Invalid connection: {e}"
-            logger.error(_invalid)
+            _logger.error(_invalid)
             if collect_invalid:
                 issues.append(_invalid)
                 continue
@@ -133,7 +134,7 @@ def get_connections(connections_layer_tree_node: Any) -> dict:  # TODO: FINISH!
                 )
             )
         else:
-            logger.error(
+            _logger.error(
                 f"Error while adding {connector_external_id} {connector_point=}"
             )
     return connections

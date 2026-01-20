@@ -1,10 +1,11 @@
+from pathlib import Path
+
 import json
 import logging
 import urllib.parse
 import urllib.request
 import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from pathlib import Path
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QMessageBox
@@ -15,7 +16,7 @@ from mi_companion.mi_editor.authentication.experiments import oauth
 # https://github.com/googleapis/google-api-python-client/issues/299
 logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 SCOPES = [
     "https://www.googleapis.com/auth/devstorage.full_control",
@@ -80,13 +81,13 @@ def authenticate():
         + urllib.parse.urlencode(request_args)
     )
     webbrowser.open_new(auth_url)
-    logger.info("Starting Authorization ...")
+    _logger.info("Starting Authorization ...")
 
     server = HTTPServer((AUTH_HOSTNAME, AUTH_SERVER_PORT), MyAuthenticationHandler)
     server.handle_request()
 
     if not MyAuthenticationHandler.auth_code:
-        logger.error(
+        _logger.error(
             "QGIS Plugin authentication failed, can not get authentication code"
         )
         return False
@@ -109,6 +110,6 @@ def authenticate():
         oauth.get_credentials_path(),
         {"refresh_token": refresh_token, "scopes": SCOPES},
     )
-    logger.info("QGIS Plugin authenticated successfully")
+    _logger.info("QGIS Plugin authenticated successfully")
 
     return True

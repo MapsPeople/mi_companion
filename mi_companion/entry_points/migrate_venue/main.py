@@ -6,7 +6,7 @@ from mi_companion.mi_editor.authentication.get_credentials_from_auth_manager imp
     get_credentials_from_auth_manager,
 )
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = ["run"]
 
 

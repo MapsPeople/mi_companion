@@ -1,6 +1,5 @@
 import logging
 import math
-from typing import Any, Iterable, Mapping, Optional
 
 # noinspection PyUnresolvedReferences
 # from qgis.core.QgsVariantUtils import isNull, typeToDisplayString
@@ -11,6 +10,7 @@ from qgis.PyQt.QtCore import QVariant
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QColor
+from typing import Any, Iterable, Mapping, Optional
 
 from jord.qgis_utilities import (
     REAL_NONE_JSON_VALUE,
@@ -43,7 +43,7 @@ from sync_module.shared import (
 )
 from warg import nested_dict, str_to_bool
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = [
     "extract_translations",
@@ -88,7 +88,7 @@ def extract_translations(
                 lang, cname, f_name = split_res[-3:]
                 parse_q_value_field_translations(cname, f_name, lang, translations, v)
             else:
-                logger.error(f"IGNORING {split_res}")
+                _logger.error(f"IGNORING {split_res}")
 
     if len(translations) == 0:
         return None
@@ -120,7 +120,7 @@ def extract_translations(
 
         if not out["en"].name.lower().startswith(MI_OUTSIDE_BUILDING_NAME.lower()):
             for language in missing_translations:
-                logger.warning(f"Patching {language} translation with {out['en']}")
+                _logger.warning(f"Patching {language} translation with {out['en']}")
                 out[language] = out["en"]
     else:
         raise MissingTranslationsException(
@@ -157,7 +157,7 @@ def extract_street_view_config(
 
                 args[field_name] = val
             else:
-                logger.error(f"IGNORING {split_res}")
+                _logger.error(f"IGNORING {split_res}")
 
     if len(args) == 0:
         return None
@@ -182,22 +182,22 @@ def parse_q_value_field_translations(cname, f_name, lang, translations, v):
                 translations[lang][cname][f_name] = v
     elif isinstance(v, float):
         if math.isnan(v) or numpy.isnan(v):
-            logger.debug(f"Was float Nan Value")
+            _logger.debug(f"Was float Nan Value")
             if ADD_FLOAT_NAN_TRANSLATION_VALUES:
                 translations[lang][cname][f_name] = None
         else:
-            logger.debug(f"Was float Value")
+            _logger.debug(f"Was float Value")
             translations[lang][cname][f_name] = v
     elif v is None:
-        logger.debug(f"{lang}.{cname} Was None Value")
+        _logger.debug(f"{lang}.{cname} Was None Value")
         translations[lang][cname][f_name] = None
     elif isinstance(v, QVariant):  # Handle this (qgis.core.NULL) aswell? #
         # logger.debug(f"{typeToDisplayString(type(v))}")
         if v.isNull():  # isNull(v):
-            logger.debug("Was null QVariant Value")
+            _logger.debug("Was null QVariant Value")
             translations[lang][cname][f_name] = None
         else:
-            logger.debug("Was QVariant Value")
+            _logger.debug("Was QVariant Value")
             vs = v.value()
             if isinstance(vs, str):
                 v_str_ = vs.lower().strip()
@@ -214,10 +214,10 @@ def parse_q_value_field_translations(cname, f_name, lang, translations, v):
                         # logger.debug(f"Was str Value")
                         translations[lang][cname][f_name] = vs
             else:
-                logger.debug(f"Was ({type(vs)}) Value")
+                _logger.debug(f"Was ({type(vs)}) Value")
                 translations[lang][cname][f_name] = vs
     else:
-        logger.debug(f"Was ({type(v)}) Value")
+        _logger.debug(f"Was ({type(v)}) Value")
         translations[lang][cname][f_name] = v
 
 
@@ -238,22 +238,22 @@ def parse_q_value_translations(cname, lang, translations, v):
                 translations[lang][cname] = v
     elif isinstance(v, float):
         if math.isnan(v) or numpy.isnan(v):
-            logger.debug(f"Was float Nan Value")
+            _logger.debug(f"Was float Nan Value")
             if ADD_FLOAT_NAN_TRANSLATION_VALUES:
                 translations[lang][cname] = None
         else:
-            logger.debug(f"Was float Value")
+            _logger.debug(f"Was float Value")
             translations[lang][cname] = v
     elif v is None:
-        logger.debug(f"{lang}.{cname} Was None Value")
+        _logger.debug(f"{lang}.{cname} Was None Value")
         translations[lang][cname] = None
     elif isinstance(v, QVariant):  # Handle this (qgis.core.NULL) aswell? #
         # logger.debug(f"{typeToDisplayString(type(v))}")
         if v.isNull():  # isNull(v):
-            logger.debug("Was null QVariant Value")
+            _logger.debug("Was null QVariant Value")
             translations[lang][cname] = None
         else:
-            logger.debug("Was QVariant Value")
+            _logger.debug("Was QVariant Value")
             vs = v.value()
             if isinstance(vs, str):
                 v_str_ = vs.lower().strip()
@@ -270,10 +270,10 @@ def parse_q_value_translations(cname, lang, translations, v):
                         # logger.debug(f"Was str Value")
                         translations[lang][cname] = vs
             else:
-                logger.debug(f"Was ({type(vs)}) Value")
+                _logger.debug(f"Was ({type(vs)}) Value")
                 translations[lang][cname] = vs
     else:
-        logger.debug(f"Was ({type(v)}) Value")
+        _logger.debug(f"Was ({type(v)}) Value")
         translations[lang][cname] = v
 
 
@@ -312,22 +312,22 @@ def extract_single_level_str_map(
                             custom_props[cname] = v
                 elif isinstance(v, float):
                     if math.isnan(v) or numpy.isnan(v):
-                        logger.debug(f"Was float Nan Value")
+                        _logger.debug(f"Was float Nan Value")
                         if ADD_FLOAT_NAN_TRANSLATION_VALUES:
                             custom_props[cname] = None
                     else:
-                        logger.debug(f"Was float Value")
+                        _logger.debug(f"Was float Value")
                         custom_props[cname] = v
                 elif v is None:
-                    logger.debug(f"{cname} Was None Value")
+                    _logger.debug(f"{cname} Was None Value")
                     custom_props[cname] = None
                 elif isinstance(v, QVariant):  # Handle this (qgis.core.NULL) aswell? #
                     # logger.debug(f"{typeToDisplayString(type(v))}")
                     if v.isNull():  # isNull(v):
-                        logger.debug("Was null QVariant Value")
+                        _logger.debug("Was null QVariant Value")
                         custom_props[cname] = None
                     else:
-                        logger.debug("Was QVariant Value")
+                        _logger.debug("Was QVariant Value")
                         vs = v.value()
                         if isinstance(vs, str):
                             v_str_ = vs.lower().strip()
@@ -344,13 +344,13 @@ def extract_single_level_str_map(
                                     # logger.debug(f"Was str Value")
                                     custom_props[cname] = vs
                         else:
-                            logger.debug(f"Was ({type(vs)}) Value")
+                            _logger.debug(f"Was ({type(vs)}) Value")
                             custom_props[cname] = vs
                 else:
-                    logger.debug(f"Was ({type(v)}) Value")
+                    _logger.debug(f"Was ({type(v)}) Value")
                     custom_props[cname] = v
             else:
-                logger.error(f"IGNORING {split_res}")
+                _logger.error(f"IGNORING {split_res}")
 
     if len(custom_props) == 0:
         return None
@@ -452,7 +452,7 @@ def extract_display_rule(
                                 display_rule_attrs[field_name] = {}
 
                             if len(rest) > 1:
-                                logger.error(
+                                _logger.error(
                                     f"A unexpected rest was found {rest} for {attr_name}={attr_value} for {field_name}="
                                     f"{field_type}"
                                 )
@@ -466,7 +466,7 @@ def extract_display_rule(
                             display_rule_attrs[field_name][nested_field] = attr_value
                         else:
                             if True:
-                                logger.debug(
+                                _logger.debug(
                                     f"Ignoring {attr_name}={attr_value} for {field_name}={field_type}"
                                 )
                                 continue
@@ -487,7 +487,7 @@ def extract_display_rule(
                             display_rule_attrs[field_name] = field_type(attr_value)
 
                 except (ValueError, TypeError) as e:
-                    logger.warning(
+                    _logger.warning(
                         f"Could not convert {attr_name}={attr_value} to {field_type}: {e}"
                     )
                     continue
@@ -501,7 +501,7 @@ def extract_display_rule(
     try:
         return DisplayRule(**display_rule_attrs)
     except Exception as e:
-        logger.error(f"Failed to create DisplayRule: {e}")
+        _logger.error(f"Failed to create DisplayRule: {e}")
         if RETURN_EMPTY_DISPLAY_RULE:
             return DisplayRule()
 

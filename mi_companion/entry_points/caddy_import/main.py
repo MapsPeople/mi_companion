@@ -1,7 +1,7 @@
 #!/usr/bin/python
-import logging
 from pathlib import Path
-from typing import Optional
+
+import logging
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QColor, QFont
@@ -25,10 +25,11 @@ from qgis.core import (
     QgsVectorLayer,
     QgsVectorLayerSimpleLabeling,
 )
+from typing import Optional
 
 from mi_companion import RESOURCE_BASE_PATH
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
 
@@ -75,7 +76,7 @@ Import/Export > Import Layers from DXF/DWG)
         oda_converter_path_ = Path(oda_converter_path)
 
         if not oda_converter_path_.exists():
-            logger.info("Oda converter was not found...")
+            _logger.info("Oda converter was not found...")
             # TODO: Maybe run bundled installer?
 
         assert oda_converter_path_.exists(), f"{oda_converter_path} is not a valid path"
@@ -87,7 +88,7 @@ Import/Export > Import Layers from DXF/DWG)
 
     export_to(new_dxf_path, out_path)
 
-    logger.info(f"Emitted {new_dxf_path}")
+    _logger.info(f"Emitted {new_dxf_path}")
 
     if True:
         if auto_add_layers:

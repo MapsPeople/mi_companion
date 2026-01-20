@@ -7,7 +7,7 @@ from qgis.core import QgsProject, QgsSettings, QgsVectorLayer
 from mi_companion import RESOURCE_BASE_PATH
 from mi_companion.configuration import read_float_setting
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
 
@@ -42,7 +42,7 @@ def run(
     layers = list(QgsProject.instance().mapLayers().values())
 
     if len(layers) == 0:
-        logger.error("No layers found")
+        _logger.error("No layers found")
 
     for layer in layers:
         if isinstance(layer, QgsVectorLayer):
@@ -50,4 +50,4 @@ def run(
             #      layer.setLabelsEnabled(field)
             layer.triggerRepaint()
         else:
-            logger.error(f"Did not toggle {layer.name()} label state to {field}")
+            _logger.error(f"Did not toggle {layer.name()} label state to {field}")

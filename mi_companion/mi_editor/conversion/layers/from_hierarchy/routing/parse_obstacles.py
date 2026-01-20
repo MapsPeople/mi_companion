@@ -8,13 +8,13 @@ from jord.qgis_utilities import (
 )
 from mi_companion import VERBOSE
 from mi_companion.configuration import read_bool_setting
+from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from mi_companion.qgis_utilities.common_attributes import (
     extract_single_level_str_map,
 )
-from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from sync_module.model import Solution
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def add_obstacles(
@@ -44,7 +44,7 @@ def add_obstacles(
             obstacle_poly = feature_to_shapely(obstacle_feature)
 
             if obstacle_poly is None:
-                logger.error(
+                _logger.error(
                     f'Error while adding {obstacle_attributes["admin_id"]} {obstacle_poly=}'
                 )
                 continue
@@ -66,7 +66,7 @@ def add_obstacles(
                 fields=fields,
             )
             if VERBOSE:
-                logger.info("added obstacle", obstacle_key)
+                _logger.info("added obstacle", obstacle_key)
 
         except GeometryIsEmptyError as e:
             if not read_bool_setting("IGNORE_EMPTY_SHAPES"):

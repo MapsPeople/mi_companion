@@ -1,11 +1,12 @@
+from pathlib import Path
+
 import logging
 import site  # https://docs.python.org/3/library/site.html#module-site
 import sys
-from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def read_version_from_metadata(metadata_file: Path) -> str:
@@ -56,20 +57,20 @@ if not PLUGIN_DIR.is_symlink() or (
     not (Path(__file__).parent.parent / BUNDLED_PACKAGES_DIR).exists()
 ):
     BUNDLED_PACKAGES_DIR += f".{VERSION}"
-    logger.info(
+    _logger.info(
         f"Installed version of plugin detected, targeting {BUNDLED_PACKAGES_DIR}"
     )
 else:
-    logger.warning(f"Plugin dir is symlinked, assuming development version")
+    _logger.warning(f"Plugin dir is symlinked, assuming development version")
 
 relative_bundled_packages_dir = Path(__file__).parent.parent / BUNDLED_PACKAGES_DIR
 
 if relative_bundled_packages_dir.exists():
-    logger.info(f"Loading {relative_bundled_packages_dir}")
+    _logger.info(f"Loading {relative_bundled_packages_dir}")
     site.addsitedir(str(relative_bundled_packages_dir))
     sys.path = [str(relative_bundled_packages_dir), *sys.path]
 else:
-    logger.warning(
+    _logger.warning(
         f"Could not find bundled packages dir at {relative_bundled_packages_dir}"
     )
 
@@ -155,7 +156,7 @@ DEFAULT_PLUGIN_SETTINGS = {
 
 INSERT_INDEX = 0  # if zero first, if one after hierarchy data
 USE_EXTERNAL_ID_FLOOR_SELECTION = False
-VERBOSE = False
+
 
 ALLOW_DUPLICATE_VENUES_IN_PROJECT = False
 MAKE_FLOOR_WISE_LAYERS = True
@@ -222,10 +223,13 @@ if False:
     ...
     # os.environ.setdefault("PYTHONOPTIMIZE", "1")
 
-ENABLE_UNDO = False
-
 APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE = (
     f"This likely occurred because the geometry vertices have been deleted while the feature "
     f"remains. If this issue is not fixed, the feature, along with any features in its sub-hiearchy, "
     f"will be omitted from the upload."
 )
+MI_MENU_INSTANCE_NAME = f"{PROJECT_NAME}"
+
+ENABLE_UNDO = False
+VERBOSE = False
+DEBUGGING = False

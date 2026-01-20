@@ -1,7 +1,5 @@
-import logging
-from typing import Any, Iterable, List, Optional
-
 import geopandas
+import logging
 import pandas
 
 # noinspection PyUnresolvedReferences
@@ -9,6 +7,7 @@ import qgis
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsEditorWidgetSetup
+from typing import Any, Iterable, List, Optional
 
 from jord.qgis_utilities import (
     make_field_boolean,
@@ -32,18 +31,6 @@ from mi_companion.constants import (
     FLOOR_VERTICAL_SPACING,
     USE_EXTERNAL_ID_FLOOR_SELECTION,
 )
-from mi_companion.qgis_utilities.location_fields import (
-    BOOLEAN_LOCATION_FIELDS,
-    COLOR_LOCATION_FIELDS,
-    DATETIME_LOCATION_FIELDS,
-    FLOAT_LOCATION_FIELDS,
-    INT_LOCATION_FIELDS,
-    LocationGeometryType,
-    NOT_NULL_FIELDS,
-    RANGE_LOCATION_FIELDS,
-    REUSE_LAST_FIELDS,
-    STR_LOCATION_FIELDS,
-)
 from mi_companion.mi_editor.conversion.projection import (
     forward_project_qgis,
     reproject_geometry_df_qgis,
@@ -59,6 +46,18 @@ from mi_companion.mi_editor.conversion.styling import (
 from mi_companion.qgis_utilities import (
     auto_center_anchors_when_outside,
 )
+from mi_companion.qgis_utilities.location_fields import (
+    BOOLEAN_LOCATION_FIELDS,
+    COLOR_LOCATION_FIELDS,
+    DATETIME_LOCATION_FIELDS,
+    FLOAT_LOCATION_FIELDS,
+    INT_LOCATION_FIELDS,
+    LocationGeometryType,
+    NOT_NULL_FIELDS,
+    RANGE_LOCATION_FIELDS,
+    REUSE_LAST_FIELDS,
+    STR_LOCATION_FIELDS,
+)
 from mi_companion.type_enums import BackendLocationTypeEnum
 from sync_module.model import CollectionMixin, Floor, Solution
 from sync_module.pandas_utilities import locations_to_df
@@ -71,7 +70,7 @@ except ImportError:
 
 __all__ = ["add_floor_content_layers"]
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def add_location_layer(
@@ -108,7 +107,7 @@ def add_location_layer(
 
     assert len(location_collection) == len(shape_df)
     if shape_df.empty:
-        logger.info(f"{name=} {shape_df=} was empty!")
+        _logger.info(f"{name=} {shape_df=} was empty!")
 
         return
 
@@ -164,7 +163,7 @@ def add_location_layer(
     try:
         locations_df = locations_df[~locations_df.is_empty]
     except Exception as e:
-        logger.error(f"{e}")
+        _logger.error(f"{e}")
 
     reproject_geometry_df_qgis(locations_df)
 

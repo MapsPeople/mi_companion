@@ -1,7 +1,6 @@
+import geopandas
 import logging
 from typing import Any, List, Optional
-
-import geopandas
 
 from jord.qgis_utilities import (
     make_field_not_null,
@@ -19,7 +18,7 @@ from mi_companion.mi_editor.conversion.projection import (
 from sync_module.model import DoorCollection, Graph
 from sync_module.pandas_utilities import locations_to_df
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["add_linestring_route_element_layers"]
 
@@ -43,7 +42,7 @@ def add_linestring_route_element_layers(
     df = locations_to_df(doors)
 
     if "floor_index" not in df:
-        logger.warning(
+        _logger.warning(
             f"No floor index found for {doors_name}, {df.columns}, {len(df)}"
         )
         return []
@@ -77,7 +76,7 @@ def add_linestring_route_element_layers(
 
                 empty_lines = linestring_df[linestring_df.is_empty]
                 if not empty_lines.empty:
-                    logger.warning(f"Dropping {empty_lines}")
+                    _logger.warning(f"Dropping {empty_lines}")
 
                 linestring_df = linestring_df[~linestring_df.is_empty]
 
@@ -118,7 +117,7 @@ def add_linestring_route_element_layers(
 
         empty_lines = linestring_df[linestring_df.is_empty]
         if not empty_lines.empty:
-            logger.warning(f"Dropping {empty_lines}")
+            _logger.warning(f"Dropping {empty_lines}")
 
         linestring_df = linestring_df[~linestring_df.is_empty]
 

@@ -1,12 +1,13 @@
 #!/usr/bin/python
-import logging
 from pathlib import Path
+
+import logging
 
 from mi_companion import RESOURCE_BASE_PATH
 from mi_companion.mi_editor.conversion.projection import get_target_crs_srsid
 from sync_module.mi_sync_constants import MI_EPSG_NUMBER
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 # noinspection PyUnresolvedReferences
 from qgis.core import (
@@ -82,5 +83,5 @@ def run(
                 n, transformer=transformer, pre_transformer=PRE_TRANSFORM
             )
     else:
-        logger.error(f"Number of selected nodes was {len(selected_nodes)}")
-        logger.error(f"Please select node in the layer tree")
+        _logger.error(f"Number of selected nodes was {len(selected_nodes)}")
+        _logger.error(f"Please select node in the layer tree")

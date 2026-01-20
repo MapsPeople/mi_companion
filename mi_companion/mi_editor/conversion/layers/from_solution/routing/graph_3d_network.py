@@ -1,7 +1,6 @@
 import logging
-from typing import Any, Iterable
-
 import shapely
+from typing import Any, Iterable
 
 from jord.qgis_utilities import (
     make_field_not_null,
@@ -24,7 +23,7 @@ from mi_companion.mi_editor.conversion.projection import (
     solve_target_crs_authid,
 )
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 __all__ = ["add_graph_3d_network_layers"]
 
@@ -56,7 +55,7 @@ def add_graph_3d_network_layers(
     """
     lines = [prepare_geom_for_editing_qgis(l, clean=False) for l in lines]
 
-    logger.info(f"{len(lines)=} loaded!")
+    _logger.info(f"{len(lines)=} loaded!")
 
     z_augment_lines = []
     geom_measurements = []

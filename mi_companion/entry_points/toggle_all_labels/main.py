@@ -6,7 +6,7 @@ from qgis.core import QgsProject, QgsSettings, QgsVectorLayer
 
 from mi_companion import RESOURCE_BASE_PATH
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
 
@@ -33,13 +33,13 @@ def run(*, state: str = "Off") -> None:
         state = bool(state)
 
     if len(layers) == 0:
-        logger.error("No layers found")
+        _logger.error("No layers found")
 
     for layer in layers:
         if isinstance(layer, QgsVectorLayer):
             if False:
-                logger.warning(f"Toggle labels for {layer.name()} layer to {state}")
+                _logger.warning(f"Toggle labels for {layer.name()} layer to {state}")
             layer.setLabelsEnabled(state)
             layer.triggerRepaint()
         else:
-            logger.error(f"Did not toggle {layer.name()} label state to {state}")
+            _logger.error(f"Did not toggle {layer.name()} label state to {state}")

@@ -1,15 +1,16 @@
 #!/usr/bin/python
 
 
-import logging
 from pathlib import Path
+
+import logging
 
 # noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 
 from mi_companion import RESOURCE_BASE_PATH
 
-logger = logging.getLogger(RESOURCE_BASE_PATH)
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = ["run"]
 
 
@@ -23,7 +24,7 @@ def run(*, svg_file_path: Path) -> None:
     if isinstance(svg_file_path, str):
         svg_file_path = Path(svg_file_path)
 
-    logger.error(f"Loading svg file {svg_file_path}")
+    _logger.error(f"Loading svg file {svg_file_path}")
 
     svg_elements, _ = parse_svg(svg_file_path, output_space=1)
 
