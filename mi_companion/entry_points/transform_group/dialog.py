@@ -12,7 +12,7 @@ from qgis.PyQt import uic
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
-from mi_companion.entry_points.transform_group.main import FUNCTION_DESCRIPTION
+from .main import FUNCTION_DESCRIPTION
 from warg import first
 
 __all__ = ["Dialog"]

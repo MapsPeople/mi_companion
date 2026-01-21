@@ -4,6 +4,7 @@ from typing import Any, List, Optional
 from jord.qgis_utilities import (
     GeometryIsEmptyError,
     extract_feature_attributes,
+    extract_field_value,
     feature_to_shapely,
 )
 from mi_companion import VERBOSE
@@ -58,12 +59,20 @@ def add_obstacles(
                 if fields_ is not None:
                     fields = dict(fields_)
 
+            opening_hours = None
+            if "opening_hours" in obstacle_attributes:  # TODO: CONVERT THIS
+                opening_hours = extract_field_value(
+                    obstacle_attributes, "opening_hours"
+                )
+                obstacle_attributes.pop("opening_hours")
+
             obstacle_key = solution.add_obstacle(
                 obstacle_attributes["admin_id"],
                 polygon=prepare_geom_for_mi_db_qgis(obstacle_poly),
                 floor_index=int(obstacle_attributes["floor_index"]),
                 graph_key=graph_key,
                 fields=fields,
+                opening_hours=opening_hours,
             )
             if VERBOSE:
                 _logger.info("added obstacle", obstacle_key)

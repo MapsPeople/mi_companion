@@ -49,6 +49,13 @@ def add_linestring_route_element_layers(
 
     df["floor_index"] = df["floor_index"].astype(str)
 
+    if "wait_time" in df:
+        df["wait_time"] = df["wait_time"].astype("Int64")
+
+    if "bearing" in df:
+        df["bearing"] = df["bearing"].astype(float)
+    # TODO: opening_hours typecasting is missing
+
     if "fields" in df:  # TODO: Is this right?
         df.pop("fields")
 

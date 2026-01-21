@@ -95,8 +95,11 @@ class EntryPointsWidget(QgsDockWidget):
         _logger.warning(f"Found {len(entry_point_modules)} entry points at {a}")
 
         self.entry_point_definitions = {
-            getattr(d, "ENTRY_POINT_NAME"): self.entry_point_wrapper(
-                getattr(d, "ENTRY_POINT_NAME"), getattr(d, "ENTRY_POINT_DIALOG")
+            getattr(d, "ENTRY_POINT_NAME"): (
+                self.entry_point_wrapper(
+                    getattr(d, "ENTRY_POINT_NAME"), getattr(d, "ENTRY_POINT_DIALOG")
+                ),
+                getattr(d, "ENTRY_POINT_DESCRIPTION"),
             )
             for d in entry_point_modules
             if hasattr(d, "ENTRY_POINT_NAME")
@@ -124,10 +127,12 @@ class EntryPointsWidget(QgsDockWidget):
                 project_name=PROJECT_NAME,
             )
         )
-        for i, (k, entry_callable_definition) in enumerate(
-            self.entry_point_definitions.items()
-        ):
+        for i, (
+            k,
+            (entry_callable_definition, entry_callable_description),
+        ) in enumerate(self.entry_point_definitions.items()):
             button = QtWidgets.QPushButton(k)
+            button.setToolTip(entry_callable_description)
             signals.reconnect_signal(button.clicked, entry_callable_definition)
             self.grid_layout.addWidget(
                 button, math.floor(i / num_columns), i % num_columns

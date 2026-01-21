@@ -4,6 +4,7 @@ from typing import Any, List, Optional
 from jord.qgis_utilities import (
     GeometryIsEmptyError,
     extract_feature_attributes,
+    extract_field_value,
     feature_to_shapely,
 )
 from mi_companion import VERBOSE
@@ -59,12 +60,18 @@ def add_prefers(
             else:
                 fields = None
 
+            opening_hours = None
+            if "opening_hours" in prefer_attributes:  # TODO: CONVERT THIS
+                opening_hours = extract_field_value(prefer_attributes, "opening_hours")
+                prefer_attributes.pop("opening_hours")
+
             prefer_key = solution.add_prefer(
                 prefer_attributes["admin_id"],
                 point=prepare_geom_for_mi_db_qgis(prefer_point),
                 floor_index=int(prefer_attributes["floor_index"]),
                 graph_key=graph_key,
                 fields=fields,
+                opening_hours=opening_hours,
             )
             if VERBOSE:
                 _logger.info("added prefer", prefer_key)

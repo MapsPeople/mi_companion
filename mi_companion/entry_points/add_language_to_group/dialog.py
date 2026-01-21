@@ -11,7 +11,7 @@ from typing import Any
 
 __all__ = ["Dialog"]
 
-from mi_companion.entry_points.add_language_to_group.main import FUNCTION_DESCRIPTION
+from .main import FUNCTION_DESCRIPTION
 from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
 
 from jord.qgis_utilities.helpers import signals

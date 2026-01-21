@@ -7,6 +7,7 @@ from typing import Any, List, Mapping, Optional
 from jord.qgis_utilities import (
     GeometryIsEmptyError,
     extract_feature_attributes,
+    extract_field_value,
     feature_to_shapely,
 )
 from mi_companion import VERBOSE
@@ -63,6 +64,18 @@ def add_doors(
             if fields_ is not None:
                 fields = dict(fields_)
 
+        opening_hours = None
+        if "opening_hours" in door_attributes:  # TODO: CONVERT THIS
+            opening_hours = extract_field_value(door_attributes, "opening_hours")
+            door_attributes.pop("opening_hours")
+
+        wait_time = None
+        if "wait_time" in door_attributes:
+            wait_time = extract_field_value(door_attributes, "wait_time")
+            door_attributes.pop("wait_time")
+            if wait_time:
+                wait_time = int(wait_time)
+
         door_key = solution.add_door(
             door_attributes["admin_id"],
             linestring=prepare_geom_for_mi_db_qgis(door_linestring, clean=False),
@@ -70,6 +83,8 @@ def add_doors(
             floor_index=int(door_attributes["floor_index"]),
             graph_key=graph_key,
             fields=fields,
+            opening_hours=opening_hours,
+            wait_time=wait_time,
         )
         if VERBOSE:
             _logger.info("added door", door_key)

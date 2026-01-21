@@ -28,10 +28,9 @@ from qgis.core import QgsSettings
 
 from jord.qgis_utilities import read_plugin_setting, signals
 from jord.qt_utilities import DockWidgetAreaFlag
-from . import MI_MENU_INSTANCE_NAME
+from .constants import MI_MENU_INSTANCE_NAME
 from .configuration.options import DeploymentOptionsPageFactory
 from .constants import DEBUGGING, DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
-from .gui.deprecated.main_dock import MapsIndoorsMonolithDockWidget
 from .gui.split_widgets.digitisation_dock import DigitisationWidget
 from .gui.split_widgets.export_dock import ExportWidget
 from .gui.split_widgets.import_dock import ImportWidget
@@ -138,14 +137,14 @@ class MapsIndoorsCompanionPlugin:
 
         for label, dock_cls, icon in (
             (
-                EntryPointsWidget.menu_name,
-                EntryPointsWidget,
-                QIcon(f"{resource_path}/icons/mp_notext.png"),
-            ),
-            (
                 ImportWidget.menu_name,
                 ImportWidget,
                 QIcon(f"{resource_path}/icons/arrow_down.png"),
+            ),
+            (
+                DigitisationWidget.menu_name,
+                DigitisationWidget,
+                QIcon(f"{resource_path}/icons/mp_notext.png"),
             ),
             (
                 ExportWidget.menu_name,
@@ -153,8 +152,8 @@ class MapsIndoorsCompanionPlugin:
                 QIcon(f"{resource_path}/icons/arrow_up.png"),
             ),
             (
-                DigitisationWidget.menu_name,
-                DigitisationWidget,
+                EntryPointsWidget.menu_name,
+                EntryPointsWidget,
                 QIcon(f"{resource_path}/icons/ruby.png"),
             ),
         ):

@@ -13,7 +13,7 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
 from jord.qgis_utilities.helpers import signals
-from mi_companion.entry_points.validate_hierarchy.main import FUNCTION_DESCRIPTION
+from .main import FUNCTION_DESCRIPTION
 from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
 
 __all__ = ["Dialog"]

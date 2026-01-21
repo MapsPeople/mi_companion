@@ -10,8 +10,8 @@ from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 from typing import Any
 
 from jord.qgis_utilities.helpers import signals
-from mi_companion import RESOURCE_BASE_PATH
-from mi_companion.entry_points.fix_mi_layer_references.main import FUNCTION_DESCRIPTION
+from mi_companion.constants import RESOURCE_BASE_PATH
+from .main import FUNCTION_DESCRIPTION
 from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
 
 __all__ = ["Dialog"]

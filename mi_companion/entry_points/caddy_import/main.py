@@ -31,7 +31,7 @@ from mi_companion import RESOURCE_BASE_PATH
 
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
-__all__ = ["run"]
+__all__ = ["run", "FUNCTION_DESCRIPTION"]
 FUNCTION_DESCRIPTION = """Import an DXF file into the QGIS using the CADDY importer.
 """
 

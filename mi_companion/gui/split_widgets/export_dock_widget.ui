@@ -1,56 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Export</class>
- <widget class="QDockWidget" name="Export">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>806</width>
-    <height>300</height>
-   </rect>
-  </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
-  <property name="windowTitle">
-   <string>Export</string>
-  </property>
-  <widget class="QWidget" name="dockWidgetContents">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QPushButton" name="upload_button">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Upload Venues</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="Line" name="line">
-      <property name="orientation">
-       <enum>Qt::Orientation::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QPushButton" name="export_button">
-      <property name="text">
-       <string>Export Solution</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
- </widget>
- <resources/>
- <connections/>
+    <class>Export</class>
+    <widget class="QDockWidget" name="Export">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>806</width>
+                <height>300</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="windowTitle">
+            <string>Export</string>
+        </property>
+        <widget class="QWidget" name="dockWidgetContents">
+            <layout class="QGridLayout" name="gridLayout">
+                <item row="0" column="0">
+                    <widget class="QPushButton" name="upload_button">
+                        <property name="sizePolicy">
+                            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                            </sizepolicy>
+                        </property>
+                        <property name="text">
+                            <string>Upload Venues</string>
+                        </property>
+                    </widget>
+                </item>
+                <item row="1" column="0">
+                    <widget class="Line" name="line">
+                        <property name="orientation">
+                            <enum>Qt::Orientation::Horizontal</enum>
+                        </property>
+                    </widget>
+                </item>
+                <item row="2" column="0">
+                    <widget class="QPushButton" name="export_button">
+                        <property name="text">
+                            <string>Export Solution</string>
+                        </property>
+                    </widget>
+                </item>
+            </layout>
+        </widget>
+    </widget>
+    <resources/>
+    <connections/>
 </ui>

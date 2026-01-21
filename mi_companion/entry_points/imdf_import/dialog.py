@@ -12,8 +12,8 @@ from qgis.PyQt import uic
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
-from mi_companion.entry_points.imdf_import.main import FUNCTION_DESCRIPTION
 from warg import first
+from .main import FUNCTION_DESCRIPTION
 
 __all__ = ["Dialog"]
 

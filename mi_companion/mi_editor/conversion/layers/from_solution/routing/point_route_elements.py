@@ -32,7 +32,7 @@ def add_point_route_element_layers(
     layer_descriptor: str,
     route_element_collection: CollectionMixin,
 ) -> List[Any]:
-    doors_name = layer_descriptor
+    layer_name = layer_descriptor
 
     if len(route_element_collection) == 0:
         return []
@@ -41,19 +41,25 @@ def add_point_route_element_layers(
 
     if "floor_index" not in df:
         _logger.warning(
-            f"No floor index found for {doors_name}, {df.columns}, {len(df)}"
+            f"No floor index found for {layer_name}, {df.columns}, {len(df)}"
         )
         return []
 
     df["floor_index"] = df["floor_index"].astype(str)
 
+    if "wait_time" in df:
+        df["wait_time"] = df["wait_time"].astype("Int64")
+
+    if "bearing" in df:
+        df["bearing"] = df["bearing"].astype(float)
+    # TODO: opening_hours is missing
     if "fields" in df:  # TODO: Is this right?
         df.pop("fields")
 
     added_layers = []
 
     if MAKE_FLOOR_WISE_LAYERS:
-        doors_group = graph_group.insertGroup(INSERT_INDEX, doors_name)
+        doors_group = graph_group.insertGroup(INSERT_INDEX, layer_name)
 
         if not df.empty:
             floor_indices = df["floor_index"].unique()
@@ -62,7 +68,7 @@ def add_point_route_element_layers(
                     (df["floor_index"] == floor_index)
                     & (df["graph.graph_id"] == graph.graph_id)
                 ]
-                door_df = geopandas.GeoDataFrame(
+                route_element_df = geopandas.GeoDataFrame(
                     sub_df[
                         [
                             c
@@ -75,17 +81,17 @@ def add_point_route_element_layers(
 
                 # door_df["door_type"] = door_df["door_type"].apply(lambda x: x.name, axis=1)
 
-                empty_lines = door_df[door_df.is_empty]
+                empty_lines = route_element_df[route_element_df.is_empty]
                 if not empty_lines.empty:
                     _logger.warning(f"Dropping {empty_lines}")
 
-                door_df = door_df[~door_df.is_empty]
+                route_element_df = route_element_df[~route_element_df.is_empty]
 
-                reproject_geometry_df_qgis(door_df)
+                reproject_geometry_df_qgis(route_element_df)
 
                 point_layer = add_dataframe_layer(
                     qgis_instance_handle=qgis_instance_handle,
-                    dataframe=door_df,
+                    dataframe=route_element_df,
                     geometry_column="point",
                     name=f"{floor_index}",
                     categorise_by_attribute="floor_index",
@@ -103,6 +109,12 @@ def add_point_route_element_layers(
 
                 make_field_unique(point_layer, field_name="admin_id")
 
+                for field_name in ("wait_time",):
+                    ...
+
+                for field_name in ("bearing",):
+                    ...
+
                 if (
                     dropdown_widget is not None
                     and route_element_type_column is not None
@@ -111,26 +123,26 @@ def add_point_route_element_layers(
                         point_layer, route_element_type_column, dropdown_widget
                     )
     else:
-        door_df = geopandas.GeoDataFrame(
+        route_element_df = geopandas.GeoDataFrame(
             df[[c for c in df.columns if ("." not in c)]],
             geometry="point",
         )
 
         # door_df["door_type"] = door_df["door_type"].apply(lambda x: x.name, axis=1)
 
-        empty_lines = door_df[door_df.is_empty]
+        empty_lines = route_element_df[route_element_df.is_empty]
         if not empty_lines.empty:
             _logger.warning(f"Dropping {empty_lines}")
 
-        door_df = door_df[~door_df.is_empty]
+        route_element_df = route_element_df[~route_element_df.is_empty]
 
-        reproject_geometry_df_qgis(door_df)
+        reproject_geometry_df_qgis(route_element_df)
 
         point_layer = add_dataframe_layer(
             qgis_instance_handle=qgis_instance_handle,
-            dataframe=door_df,
+            dataframe=route_element_df,
             geometry_column="point",
-            name=f"{doors_name}",
+            name=f"{layer_name}",
             categorise_by_attribute="floor_index",
             group=graph_group,
             crs=solve_target_crs_authid(),
@@ -141,6 +153,12 @@ def add_point_route_element_layers(
         for field_name in ("floor_index",):
             make_field_not_null(point_layer, field_name=field_name)
             make_field_reuse_last_entered_value(point_layer, field_name=field_name)
+
+        for field_name in ("wait_time",):
+            ...
+
+        for field_name in ("bearing",):
+            ...
 
         make_field_unique(point_layer, field_name="admin_id")
 

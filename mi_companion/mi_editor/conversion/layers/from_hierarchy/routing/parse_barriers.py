@@ -4,6 +4,7 @@ from typing import Any, List, Optional
 from jord.qgis_utilities import (
     GeometryIsEmptyError,
     extract_feature_attributes,
+    extract_field_value,
     feature_to_shapely,
 )
 from mi_companion import VERBOSE
@@ -56,12 +57,34 @@ def add_barriers(
                 if fields_ is not None:
                     fields = dict(fields_)
 
+            opening_hours = None
+            if "opening_hours" in barrier_attributes:  # TODO: CONVERT THIS
+                opening_hours = extract_field_value(barrier_attributes, "opening_hours")
+                barrier_attributes.pop("opening_hours")
+
+            wait_time = None
+            if "wait_time" in barrier_attributes:
+                wait_time = extract_field_value(barrier_attributes, "wait_time")
+                barrier_attributes.pop("wait_time")
+                if wait_time:
+                    wait_time = int(wait_time)
+
+            bearing = None
+            if "bearing" in barrier_attributes:
+                bearing = extract_field_value(barrier_attributes, "bearing")
+                barrier_attributes.pop("bearing")
+                if bearing:
+                    bearing = float(bearing)
+
             barrier_key = solution.add_barrier(
                 barrier_attributes["admin_id"],
                 point=prepare_geom_for_mi_db_qgis(barrier_linestring),
                 floor_index=int(barrier_attributes["floor_index"]),
                 graph_key=graph_key,
                 fields=fields,
+                bearing=bearing,
+                wait_time=wait_time,
+                opening_hours=opening_hours,
             )
 
             if VERBOSE:
