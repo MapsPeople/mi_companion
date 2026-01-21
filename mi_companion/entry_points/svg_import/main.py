@@ -1,6 +1,4 @@
 #!/usr/bin/python
-
-
 from pathlib import Path
 
 import logging
@@ -13,8 +11,18 @@ from mi_companion import RESOURCE_BASE_PATH
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = ["run"]
 
+FUNCTION_DESCRIPTION = """Import svg file into QGIS layers
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
+
 
 def run(*, svg_file_path: Path) -> None:
+    f"""{FUNCTION_DESCRIPTION}
+
+    :return:
+"""
+
     from svaguely import parse_svg
     from warg import flatten_mapping
 

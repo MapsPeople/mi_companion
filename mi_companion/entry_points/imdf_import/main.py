@@ -14,9 +14,14 @@ from mi_companion import RESOURCE_BASE_PATH
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = ["run"]
 
+FUNCTION_DESCRIPTION = """Import and IMDF zip as QGIS layers
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
+
 
 def run(*, imdf_zip_file_path: Path) -> None:
-    """
+    f"""{FUNCTION_DESCRIPTION}
 
     :param imdf_zip_file_path:
     :return:

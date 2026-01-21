@@ -12,6 +12,9 @@ from sync_module.mi.config import MapsIndoors, Settings, set_settings
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
+FUNCTION_DESCRIPTION = """Fetch data issue from an endpoint in the ManagerAPI
+"""
+__doc__ = FUNCTION_DESCRIPTION
 
 
 def run(*, solution_id: str) -> None:

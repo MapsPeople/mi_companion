@@ -17,6 +17,9 @@ from mi_companion.mi_editor.conversion import add_solution_layers
 
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = ["run"]
+FUNCTION_DESCRIPTION = """...
+"""
+__doc__ = FUNCTION_DESCRIPTION
 
 
 def load_ifc(file_path: Path) -> ifcopenshell.entity_instance:

@@ -12,11 +12,15 @@ from mi_companion import RESOURCE_BASE_PATH
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
+FUNCTION_DESCRIPTION = """Compares a new DXF files against a reference DXF file.
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
 
 
 def run(*, original_dxf_path: Path, new_dxf_path: Path) -> None:
-    """
-    Compares a new DXF files against a reference DXF file.
+    f"""{FUNCTION_DESCRIPTION}
+
     :param original_dxf_path: Path to the original DXF file.
     :param new_dxf_path: Path to the new DXF file.
     :return:

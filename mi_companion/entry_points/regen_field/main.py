@@ -5,11 +5,15 @@ from mi_companion import RESOURCE_BASE_PATH
 
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = ["run"]
+FUNCTION_DESCRIPTION = """Recompute field_name for all features in group
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
 
 
 def run(*, field_name: str = "admin_id") -> None:
-    """
-    Recompute field_name for all features in group
+    f"""{FUNCTION_DESCRIPTION}
+
 
     :param field_name:
     """

@@ -13,6 +13,7 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
 from jord.qgis_utilities.helpers import signals
+from mi_companion.entry_points.validate_hierarchy.main import FUNCTION_DESCRIPTION
 from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
 
 __all__ = ["Dialog"]
@@ -68,7 +69,7 @@ class Dialog(QDialog, first(uic.loadUiType(str(Path(__file__).parent / "dialog.u
             h_box_w.setLayout(h_box)
             self.parameter_layout.insertWidget(0, h_box_w)
 
-        self.parameter_layout.insertWidget(0, QLabel(run.__doc__))
+        self.parameter_layout.insertWidget(0, QLabel(FUNCTION_DESCRIPTION))
 
     def on_compute_clicked(self) -> None:
         from .main import run

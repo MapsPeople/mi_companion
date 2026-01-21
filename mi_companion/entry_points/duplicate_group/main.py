@@ -12,13 +12,17 @@ from mi_companion import RESOURCE_BASE_PATH
 
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = ["run"]
+FUNCTION_DESCRIPTION = """Duplicate selected group in layer tree view
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
 
 
 def run(
     *, new_name: str = "", randomize_fields: Optional[str] = "admin_id, external_id"
 ) -> None:
-    """
-    Duplicate selected group in layer tree view
+    f"""{FUNCTION_DESCRIPTION}
+
 
     :param new_name:
     :param randomize_fields: What fields to randomize, separated by comma

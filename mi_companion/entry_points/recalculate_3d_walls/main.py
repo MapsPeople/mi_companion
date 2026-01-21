@@ -10,10 +10,14 @@ from mi_companion.mi_editor.authentication.get_credentials_from_auth_manager imp
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
+FUNCTION_DESCRIPTION = """Explicitly call a function in the ManagerAPI for recalculating 3d walls
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
 
 
 def run(*, solution_id: str, venue_ids: Optional[str] = None) -> None:
-    """
+    f"""{FUNCTION_DESCRIPTION}
 
     :param venue_ids: comma seperated
     :param solution_id:

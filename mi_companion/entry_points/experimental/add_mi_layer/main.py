@@ -12,6 +12,12 @@ from typing import Dict, Optional
 
 __all__ = ["run"]
 
+FUNCTION_DESCRIPTION = """Add an MI layer to the project from available options
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
+
+
 from mi_companion import RESOURCE_BASE_PATH
 
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
@@ -66,7 +72,9 @@ def create_mi_layer(layer_data: dict, layer_name: str) -> bool:
 
 
 def run() -> None:
-    """Add an MI layer to the project from available options"""
+    f"""{FUNCTION_DESCRIPTION}
+"""
+
     # noinspection PyUnresolvedReferences
     from qgis.PyQt.QtWidgets import QInputDialog
 

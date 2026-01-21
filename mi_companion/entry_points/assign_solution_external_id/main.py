@@ -10,10 +10,14 @@ from mi_companion.mi_editor.authentication.get_credentials_from_auth_manager imp
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
+FUNCTION_DESCRIPTION = """Assign a new external id to a solution in MapsIndoors Database
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
 
 
 def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> None:
-    """
+    f"""{FUNCTION_DESCRIPTION}
 
     :param solution_id:
     :param new_solution_external_id:

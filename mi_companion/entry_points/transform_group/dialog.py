@@ -12,6 +12,7 @@ from qgis.PyQt import uic
 # noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
+from mi_companion.entry_points.transform_group.main import FUNCTION_DESCRIPTION
 from warg import first
 
 __all__ = ["Dialog"]
@@ -68,7 +69,7 @@ class Dialog(QDialog, first(uic.loadUiType(str(Path(__file__).parent / "dialog.u
             h_box_w.setLayout(h_box)
             self.parameter_layout.insertWidget(0, h_box_w)
 
-        self.parameter_layout.insertWidget(0, QLabel(run.__doc__))
+        self.parameter_layout.insertWidget(0, QLabel(FUNCTION_DESCRIPTION))
 
     def on_compute_clicked(self) -> None:
         from .main import run

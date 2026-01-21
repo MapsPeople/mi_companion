@@ -1,10 +1,24 @@
 from pathlib import Path
 
-from warg import ensure_in_sys_path, first
+from jord.qt_utilities import DockWidgetAreaFlag
+from warg import ensure_in_sys_path, first, get_submodules_by_path
+from ... import entry_points
+from ...entry_points import (
+    add_language_to_group,
+    assign_value_to_dimension,
+    caddy_import,
+    duplicate_group,
+    imdf_import,
+    regen_field,
+    svg_import,
+    transform_group,
+    validate_hierarchy,
+)
+
 
 ensure_in_sys_path(Path(__file__).parent.parent)
 import logging
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 # noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets, uic, QtCore
@@ -12,7 +26,12 @@ from qgis.PyQt import QtGui, QtWidgets, uic, QtCore
 # noinspection PyUnresolvedReferences
 from qgis.gui import QgsDockWidget
 
-from jord.qgis_utilities import InjectedProgressBar, read_plugin_setting, signals
+from jord.qgis_utilities import (
+    InjectedProgressBar,
+    duplicate_groups,
+    read_plugin_setting,
+    signals,
+)
 from jord.qlive_utilities import add_shapely_layer
 from mi_companion.mi_editor import (
     layer_hierarchy_to_solution,
@@ -34,6 +53,11 @@ from ...qgis_utilities import extract_wkt_elements, resolve_path
 signals.IS_DEBUGGING = True
 _logger = logging.getLogger(__name__)
 VERBOSE = False
+from ...constants import (
+    DEFAULT_PLUGIN_SETTINGS,
+    PLUGIN_DIR,
+    PROJECT_NAME,
+)
 
 
 __all__ = ["DigitisationWidget"]
@@ -52,117 +76,57 @@ class DigitisationWidget(
         self.setupUi(self)
 
         self.iface_ = iface_
+        self.entry_point_instances = {}
+        self._populate_layouts()
 
-        from sync_module.mi.config import Settings
+    def entry_point_wrapper(self, k: str, a: Callable) -> Callable:
+        def f():
+            if k not in self.entry_point_instances:
+                self.entry_point_instances[k] = a()
 
-        self.sync_module_settings = Settings()
+            if isinstance(self.entry_point_instances[k], QtWidgets.QDialog):
+                self.entry_point_instances[k].show()
+            elif isinstance(self.entry_point_instances[k], QtWidgets.QDockWidget):
+                if False:
+                    try:
+                        self.iface_.mainWindow().removeDockWidget(
+                            self.entry_point_instances[k]
+                        )
+                    except Exception as e:
+                        _logger.exception(e)
 
-        self.export_dialog = None
-
-        for s, c in (
-            (self.export_button.clicked, self.export_button_clicked),
-            (self.upload_button.clicked, self.upload_button_clicked),
-        ):
-            signals.reconnect_signal(s, c)
-
-    def set_update_sync_settings(self):
-        mp_username, mp_password = get_credentials_from_auth_manager(self.iface_)
-
-        self.sync_module_settings = Settings(
-            mapsindoors=MapsIndoors(
-                username=mp_username,
-                password=mp_password,
-                token_endpoint=read_plugin_setting(
-                    "MAPS_INDOORS_TOKEN_ENDPOINT",
-                    default_value=DEFAULT_PLUGIN_SETTINGS[
-                        "MAPS_INDOORS_TOKEN_ENDPOINT"
-                    ],
-                    project_name=PROJECT_NAME,
-                ),
-                manager_api_host=read_plugin_setting(
-                    "MAPS_INDOORS_MANAGER_API_HOST",
-                    default_value=DEFAULT_PLUGIN_SETTINGS[
-                        "MAPS_INDOORS_MANAGER_API_HOST"
-                    ],
-                    project_name=PROJECT_NAME,
-                ),
-                media_api_host=read_plugin_setting(
-                    "MAPS_INDOORS_MEDIA_API_HOST",
-                    default_value=DEFAULT_PLUGIN_SETTINGS[
-                        "MAPS_INDOORS_MEDIA_API_HOST"
-                    ],
-                    project_name=PROJECT_NAME,
-                ),
-                manager_api_timeout=read_plugin_setting(
-                    "MAPS_INDOORS_MANAGER_API_TIMEOUT",
-                    default_value=DEFAULT_PLUGIN_SETTINGS[
-                        "MAPS_INDOORS_MANAGER_API_TIMEOUT"
-                    ],
-                    project_name=PROJECT_NAME,
-                ),
-                media_api_timeout=read_plugin_setting(
-                    "MAPS_INDOORS_MEDIA_API_TIMEOUT",
-                    default_value=DEFAULT_PLUGIN_SETTINGS[
-                        "MAPS_INDOORS_MEDIA_API_TIMEOUT"
-                    ],
-                    project_name=PROJECT_NAME,
-                ),
-            )
-        )
-
-        set_settings(self.sync_module_settings)
-
-    def export_button_clicked(self):
-        from ..dialogs.solution_export import ENTRY_POINT_DIALOG as export_dialog
-
-        if self.export_dialog is None:  #
-            self.export_dialog = export_dialog()
-        self.export_dialog.show()
-
-    def upload_button_clicked(self) -> None:
-        self.set_update_sync_settings()
-
-        solution_depth = SolutionDepth.obstacles
-
-        with InjectedProgressBar(parent=self.iface_.mainWindow().statusBar()) as bar:
-
-            try:
-                layer_hierarchy_to_solution(
-                    self,
-                    progress_bar=bar,
-                    solution_depth=solution_depth,
+                self.iface_.mainWindow().addDockWidget(
+                    DockWidgetAreaFlag.left.value,
+                    self.entry_point_instances[k],
                 )
-
-            except Exception as e:
-                self.display_geometry_in_exception(e)
-
-                raise e
-
-    # noinspection PyPep8Naming
-    def closeEvent(self, event: Any) -> None:  # pylint: disable=invalid-name
-        self.plugin_closing.emit()
-        event.accept()
-
-    def display_geometry_in_exception(self, e: Exception) -> None:
-        # string_exception = "\n".join(e.args)
-
-        string_exception = str(e)
-        if False:
-            try:
-                wkt_elements = list(zip(*extract_wkt_elements(string_exception)))
-                if wkt_elements and len(wkt_elements) == 2:
-                    contexts, elements = wkt_elements
-
-                    contexts = [clean_str(c) for c in contexts]
-
-                    add_shapely_layer(
-                        self,
-                        elements,
-                        name="exceptions",
-                        columns=[{"contexts": c} for c in contexts],
-                        crs=f"EPSG:{MI_EPSG_NUMBER}",
-                    )
-            except Exception:
+                self.entry_point_instances[k].show()
+            else:
                 ...
 
-        _logger.error(string_exception)
+        return f
+
+    def _populate_layouts(self):
+
+        for i in (svg_import, caddy_import, imdf_import):
+            button = QtWidgets.QPushButton(i.ENTRY_POINT_NAME)
+            signals.reconnect_signal(
+                button.clicked,
+                self.entry_point_wrapper(i.ENTRY_POINT_NAME, i.ENTRY_POINT_DIALOG),
+            )
+            self.importers_layout.addWidget(button)
+
+        for i in (duplicate_group, add_language_to_group, regen_field):
+            button = QtWidgets.QPushButton(i.ENTRY_POINT_NAME)
+            signals.reconnect_signal(
+                button.clicked,
+                self.entry_point_wrapper(i.ENTRY_POINT_NAME, i.ENTRY_POINT_DIALOG),
+            )
+            self.hierarchy_layout.addWidget(button)
+
+        for i in (transform_group, assign_value_to_dimension):
+            button = QtWidgets.QPushButton(i.ENTRY_POINT_NAME)
+            signals.reconnect_signal(
+                button.clicked,
+                self.entry_point_wrapper(i.ENTRY_POINT_NAME, i.ENTRY_POINT_DIALOG),
+            )
+            self.transformation_layout.addWidget(button)

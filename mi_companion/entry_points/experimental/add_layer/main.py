@@ -13,12 +13,14 @@ _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
 
+FUNCTION_DESCRIPTION = """Assigns a coordinate value to all vertices in selected features of any geometry type
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
+
 
 def run() -> None:
-    """
-
-    Assigns a coordinate value to all vertices in selected features of any geometry type
-
+    f"""{FUNCTION_DESCRIPTION}
 
     :return:
     """

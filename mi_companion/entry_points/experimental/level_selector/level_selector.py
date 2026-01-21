@@ -43,6 +43,9 @@ VERBOSE = False
 
 ensure_in_sys_path(Path(__file__).parent.parent)
 __all__ = ["LevelSelectorWidget"]
+FUNCTION_DESCRIPTION = """...
+"""
+__doc__ = FUNCTION_DESCRIPTION
 
 
 class LevelSelectorWidget(

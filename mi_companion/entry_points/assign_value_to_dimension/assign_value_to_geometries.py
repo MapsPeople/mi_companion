@@ -14,6 +14,10 @@ from mi_companion import RESOURCE_BASE_PATH
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
+FUNCTION_DESCRIPTION = """Assigns a coordinate value to all vertices in selected features of any geometry type
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
 
 
 class ValueDimension(str, Enum):
@@ -28,13 +32,13 @@ def set_coordinate(
 ) -> Any:
     """
 
-
     Sets the specified coordinate for all vertices in any feature geometry type
 
-    :param feature:
-    :param value:
-    :param coord_type:
-    :return:
+
+        :param feature:
+        :param value:
+        :param coord_type:
+        :return:
     """
 
     if feature is None:
@@ -110,9 +114,9 @@ def set_coordinate(
 def run(
     *, value: float = 0.0, dimension: str = "m", only_active_layer: bool = True
 ) -> None:
-    """
+    f"""{FUNCTION_DESCRIPTION}
 
-    Assigns a coordinate value to all vertices in selected features of any geometry type
+
 
     :param value: Value to assign
     :param dimension: Which dimension to assign the value to

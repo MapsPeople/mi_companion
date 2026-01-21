@@ -10,6 +10,9 @@ from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
 from jord.qgis_utilities.helpers import signals
 from mi_companion import RESOURCE_BASE_PATH
+from mi_companion.entry_points.assign_value_to_dimension.assign_value_to_geometries import (
+    FUNCTION_DESCRIPTION,
+)
 from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
 from warg import first
 
@@ -56,7 +59,7 @@ class Dialog(QDialog, first(uic.loadUiType(str(Path(__file__).parent / "dialog.u
             self.parameter_layout.insertWidget(0, h_box_w)
             self.parameter_lines[k] = line_edit
 
-        self.parameter_layout.insertWidget(0, QLabel(run.__doc__))
+        self.parameter_layout.insertWidget(0, QLabel(FUNCTION_DESCRIPTION))
 
     def on_compute_clicked(self) -> None:
         from .assign_value_to_geometries import run

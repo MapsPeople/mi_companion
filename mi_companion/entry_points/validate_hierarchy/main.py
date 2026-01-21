@@ -21,10 +21,15 @@ from mi_companion import RESOURCE_BASE_PATH
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = ["run"]
 
+FUNCTION_DESCRIPTION = """Validate the hierarchy of the solution layers.
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
+
 
 def run() -> None:
-    """
-    Validate the hierarchy of the solution layers.
+    f"""{FUNCTION_DESCRIPTION}
+
     """
 
     from mi_companion.mi_editor import convert_solution_layers_to_solution

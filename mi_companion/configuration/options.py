@@ -62,7 +62,7 @@ def reload_settings(load_attempts: int = 2) -> None:
 
 
 class MapsIndoorsOptionsWidget(
-    *uic.loadUiType(str(resolve_path("options.ui", __file__)))[-1::]
+    *uic.loadUiType(str(resolve_path("options.ui", __file__)))
 ):
 
     def __init__(self, parent=None):

@@ -34,7 +34,7 @@ class Dialog(QDialog, first(uic.loadUiType(str(Path(__file__).parent / "dialog.u
 
         # import required modules
         import inspect
-        from .main import run
+        from .main import run, FUNCTION_DESCRIPTION
 
         self.parameter_lines = {}
         self.parameter_signature = inspect.signature(run).parameters
@@ -64,7 +64,7 @@ class Dialog(QDialog, first(uic.loadUiType(str(Path(__file__).parent / "dialog.u
             h_box_w.setLayout(h_box)
             self.parameter_layout.insertWidget(0, h_box_w)
 
-        self.parameter_layout.insertWidget(0, QLabel(run.__doc__))
+        self.parameter_layout.insertWidget(0, QLabel(FUNCTION_DESCRIPTION))
 
     def on_compute_clicked(self) -> None:
         from .main import run

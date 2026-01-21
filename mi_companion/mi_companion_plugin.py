@@ -32,6 +32,7 @@ from . import MI_MENU_INSTANCE_NAME
 from .configuration.options import DeploymentOptionsPageFactory
 from .constants import DEBUGGING, DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
 from .gui.deprecated.main_dock import MapsIndoorsMonolithDockWidget
+from .gui.split_widgets.digitisation_dock import DigitisationWidget
 from .gui.split_widgets.export_dock import ExportWidget
 from .gui.split_widgets.import_dock import ImportWidget
 from .gui.split_widgets.tools_dock import EntryPointsWidget
@@ -132,20 +133,8 @@ class MapsIndoorsCompanionPlugin:
             default_value=DEFAULT_PLUGIN_SETTINGS["RESOURCES_BASE_PATH"],
             project_name=PROJECT_NAME,
         )
-        self.open_monolith_dock_window_action = QAction(
-            QIcon(f"{resource_path}/icons/mp_notext.png"),
-            self.tr(PROJECT_NAME),
-            self.iface.mainWindow(),
-        )
 
-        self.actions.append(self.open_monolith_dock_window_action)
-
-        signals.reconnect_signal(
-            self.open_monolith_dock_window_action.triggered,
-            self.open_monolith_dock_widget,
-        )
-
-        self.iface.addToolBarIcon(self.open_monolith_dock_window_action)
+        self.common_widget_actions = []
 
         for label, dock_cls, icon in (
             (
@@ -163,6 +152,11 @@ class MapsIndoorsCompanionPlugin:
                 ExportWidget,
                 QIcon(f"{resource_path}/icons/arrow_up.png"),
             ),
+            (
+                DigitisationWidget.menu_name,
+                DigitisationWidget,
+                QIcon(f"{resource_path}/icons/ruby.png"),
+            ),
         ):
             action = QAction(
                 icon,
@@ -176,8 +170,26 @@ class MapsIndoorsCompanionPlugin:
             self.iface.addPluginToMenu(self.menu, action)
             # self.iface.addToolBarIcon(action)
             self.actions.append(action)
+            if dock_cls is not EntryPointsWidget:
+                self.common_widget_actions.append(action)
 
-        self.dock_widgets = {}
+        if True:
+            self.open_monolith_dock_window_action = QAction(
+                QIcon(f"{resource_path}/icons/mp_notext.png"),
+                self.tr(PROJECT_NAME),
+                self.iface.mainWindow(),
+            )
+
+            self.actions.append(self.open_monolith_dock_window_action)
+
+            signals.reconnect_signal(
+                self.open_monolith_dock_window_action.triggered,
+                self.open_monolith_dock_widget,
+            )
+
+            self.iface.addToolBarIcon(self.open_monolith_dock_window_action)
+
+        self.dock_widget_instances = {}
 
         self.first_start = True  # will be set False in run()
 
@@ -186,13 +198,13 @@ class MapsIndoorsCompanionPlugin:
         Opens a specific dock widget
         """
         name = dock_cls.__name__
-        if name in self.dock_widgets:
-            self.dock_widgets[name].show()
-            self.dock_widgets[name].raise_()
+        if name in self.dock_widget_instances:
+            self.dock_widget_instances[name].show()
+            self.dock_widget_instances[name].raise_()
             return
 
         widget = dock_cls(self.iface)
-        self.dock_widgets[name] = widget
+        self.dock_widget_instances[name] = widget
 
         signals.reconnect_signal(
             widget.plugin_closing,
@@ -220,36 +232,15 @@ class MapsIndoorsCompanionPlugin:
         Gets called when the dock is closed
         All the clean-up of the dock has to be done here
         """
-        if name in self.dock_widgets:
-            del self.dock_widgets[name]
+        if name in self.dock_widget_instances:
+            del self.dock_widget_instances[name]
 
     def open_monolith_dock_widget(self) -> None:
         """
         Opens the dock
         """
-        if self.mi_companion_monolith_dock_widget is None:
-            self.mi_companion_monolith_dock_widget = MapsIndoorsMonolithDockWidget(
-                self.iface
-            )
-
-            signals.reconnect_signal(
-                self.mi_companion_monolith_dock_widget.plugin_closing,
-                self.on_dock_widget_closed,
-            )
-
-            a = read_plugin_setting(
-                "DEFAULT_WIDGET_AREA",
-                default_value=DEFAULT_PLUGIN_SETTINGS["DEFAULT_WIDGET_AREA"],
-                project_name=PROJECT_NAME,
-            )
-
-            if not isinstance(a, DockWidgetAreaFlag):
-                a = eval(a)  # TODO: REMOVE EVAL?
-
-            self.iface.addDockWidget(
-                DockWidgetAreaFlag(a).value,
-                self.mi_companion_monolith_dock_widget,
-            )
+        for a in self.common_widget_actions:
+            a.trigger()
 
     def on_dock_widget_closed(self) -> None:  # used when Dock dialogue is closed
         """

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Export</class>
- <widget class="QDockWidget" name="Export">
+ <class>Digitisation</class>
+ <widget class="QDockWidget" name="Digitisation">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>806</width>
-    <height>300</height>
+    <width>914</width>
+    <height>334</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -17,36 +17,89 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Export</string>
+   <string>Digitisation</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
-   <layout class="QGridLayout" name="gridLayout">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QFormLayout" name="formLayout">
     <item row="0" column="0">
-     <widget class="QPushButton" name="upload_button">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
+     <widget class="QLabel" name="label">
       <property name="text">
-       <string>Upload Venues</string>
+       <string>Raw Data</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
+    <item row="0" column="1">
+     <layout class="QHBoxLayout" name="importers_layout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+     </layout>
+    </item>
+    <item row="1" column="1">
      <widget class="Line" name="line">
       <property name="orientation">
-       <enum>Qt::Orientation::Horizontal</enum>
+       <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </item>
     <item row="2" column="0">
-     <widget class="QPushButton" name="export_button">
+     <widget class="QLabel" name="label_3">
       <property name="text">
-       <string>Export Solution</string>
+       <string>Transformation</string>
       </property>
      </widget>
+    </item>
+    <item row="2" column="1">
+     <layout class="QHBoxLayout" name="transformation_layout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+     </layout>
+    </item>
+    <item row="3" column="1">
+     <widget class="Line" name="line_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Hierarchy</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <layout class="QHBoxLayout" name="hierarchy_layout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+     </layout>
     </item>
    </layout>
   </widget>

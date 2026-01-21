@@ -11,16 +11,7 @@ _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
 
-
-def run(
-    *,
-    field: str = "represent_value(location_type) + ': ' + "
-    + '"translations.en.name"'
-    + " + ' - ' + external_id",
-    min_ratio: float = read_float_setting("LAYER_LABEL_VISIBLE_MIN_RATIO"),
-) -> None:
-    """
-    Set label value field
+FUNCTION_DESCRIPTION = """    Set label value field
 
     Common options:
 
@@ -31,6 +22,20 @@ def run(
     external_id
 
     name
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
+
+
+def run(
+    *,
+    field: str = "represent_value(location_type) + ': ' + "
+    + '"translations.en.name"'
+    + " + ' - ' + external_id",
+    min_ratio: float = read_float_setting("LAYER_LABEL_VISIBLE_MIN_RATIO"),
+) -> None:
+    f"""{FUNCTION_DESCRIPTION}
+
 
 
     :param min_ratio:

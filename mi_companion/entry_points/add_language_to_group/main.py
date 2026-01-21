@@ -45,6 +45,10 @@ _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
 TRANSLATIONS_FIELD_NAME = "translations"
+FUNCTION_DESCRIPTION = """    language_code field below: Add language, e.g. en, da, de, fr
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
 
 
 def run(
@@ -54,8 +58,9 @@ def run(
     # fallback_value: str = "NoName",
     # , auto_translate: bool=False
 ) -> bool:
-    """
-    language_code field below: Add language, e.g. en, da, de, fr
+    f"""{FUNCTION_DESCRIPTION}
+
+
     """
     copy_from_language: str = "en"
     fallback_value: str = "NoName"

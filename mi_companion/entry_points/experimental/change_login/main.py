@@ -23,10 +23,14 @@ __all__ = ["run"]
 from mi_companion import RESOURCE_BASE_PATH
 
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
+FUNCTION_DESCRIPTION = """Add an MI layer to the project from available options
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
 
 
 def run(username: str, password: str) -> None:
-    """Add an MI layer to the project from available options"""
+    f"""{FUNCTION_DESCRIPTION}"""
 
     auth_manager = QgsApplication.authManager()
     new_auth_cfg = QgsAuthMethodConfig()

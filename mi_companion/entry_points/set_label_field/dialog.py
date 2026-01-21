@@ -11,6 +11,7 @@ from typing import Any
 
 __all__ = ["Dialog"]
 
+from mi_companion.entry_points.set_label_field.main import FUNCTION_DESCRIPTION
 from mi_companion.gui.typing_utilities import get_args, is_optional, is_union
 from jord.qgis_utilities.helpers import signals
 
@@ -55,7 +56,7 @@ class Dialog(QDialog, first(uic.loadUiType(str(Path(__file__).parent / "dialog.u
             self.parameter_layout.insertWidget(0, h_box_w)
             self.parameter_lines[k] = line_edit
 
-        self.parameter_layout.insertWidget(0, QLabel(run.__doc__))
+        self.parameter_layout.insertWidget(0, QLabel(FUNCTION_DESCRIPTION))
 
     def on_compute_clicked(self) -> None:
         from .main import run

@@ -9,16 +9,20 @@ from mi_companion import RESOURCE_BASE_PATH
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
-
-
-def run(*, state: str = "Off") -> None:
-    """
-    Toggle all labels to state
+FUNCTION_DESCRIPTION = """Toggle all labels to state
 
     Either
     On
     or
     Off
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
+
+
+def run(*, state: str = "Off") -> None:
+    f"""{FUNCTION_DESCRIPTION}
+
 
     :param state:
     :return:

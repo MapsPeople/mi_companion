@@ -28,16 +28,7 @@ if False:  # TODO: Transform if not the same as GCPs!
 # BACKWARD_TRANSFORM = QgsCoordinateTransform(DEST_CRS, SOURCE_CRS, QgsProject.instance())
 
 __all__ = ["run"]
-
-
-def run(
-    *,
-    gcp_points_file_path: Path,
-    method: int = 1,
-    # TODO: MAKE Method into a dropdown based on enum
-) -> None:
-    """
-    Transform geometry for all features in the selected group
+FUNCTION_DESCRIPTION = """Transform geometry for all features in the selected group
 
     WARNING! Settings -> Options -> MapsIndoor Beta -> "REPROJECT_SHAPES" must be set to "True"
 
@@ -49,6 +40,19 @@ def run(
     5: ThinPlateSpline:   Thin plate splines
     6: Projective:        Projective
     65535:                InvalidTransform: Invalid transform
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
+
+
+def run(
+    *,
+    gcp_points_file_path: Path,
+    method: int = 1,
+    # TODO: MAKE Method into a dropdown based on enum
+) -> None:
+    f"""{FUNCTION_DESCRIPTION}
+
 
 
     :param gcp_points_file_path: The path to the file containing the GCPs

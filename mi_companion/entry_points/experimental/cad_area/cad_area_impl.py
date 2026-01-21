@@ -11,6 +11,11 @@ _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
 
+FUNCTION_DESCRIPTION = """Calculate "area" of CAD file
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
+
 
 def write_csv(csv_file_name: Path, area_list: Collection[Mapping]) -> None:
     if len(area_list) == 0:
@@ -106,6 +111,14 @@ def run(
         r"C:\Program Files\ODA\ODAFileConverter 25.4.0\ODAFileConverter.exe"
     ),
 ) -> None:
+    f"""{FUNCTION_DESCRIPTION}
+
+
+    :param root_dir:
+    :param out_path:
+    :param oda_converter_path:
+    :return:
+    """
     area_list = []
     if oda_converter_path is not None:
         if isinstance(oda_converter_path, str):

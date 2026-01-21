@@ -41,10 +41,14 @@ from mi_companion import RESOURCE_BASE_PATH
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
+FUNCTION_DESCRIPTION = """Fix layer references and add anchor and rotation/scale geometry generators.
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
 
 
 def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> None:
-    """
+    f"""{FUNCTION_DESCRIPTION}
 
     :param solution_id:
     :param new_solution_external_id:

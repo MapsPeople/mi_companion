@@ -24,6 +24,10 @@ from mi_companion import RESOURCE_BASE_PATH
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
+FUNCTION_DESCRIPTION = """E.g. If duplicating a floor group to be picked as a Floor solution component make to include the
+    describing tag (Floor)
+"""
+__doc__ = FUNCTION_DESCRIPTION
 
 
 def run(
@@ -34,10 +38,9 @@ def run(
         r"C:\Program Files\ODA\ODAFileConverter 25.4.0\ODAFileConverter.exe"
     ),
 ) -> None:
-    """
+    f"""{FUNCTION_DESCRIPTION}
 
-    E.g. If duplicating a floor group to be picked as a Floor solution component make to include the
-    describing tag (Floor)
+
 
 
     :param dwg_path:

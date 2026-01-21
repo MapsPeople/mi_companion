@@ -32,6 +32,10 @@ from mi_companion import RESOURCE_BASE_PATH
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
+FUNCTION_DESCRIPTION = """Import an DXF file into the QGIS using the CADDY importer.
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
 
 
 def run(
@@ -45,8 +49,8 @@ def run(
         r"C:\Program Files\ODA\ODAFileConverter 25.4.0\ODAFileConverter.exe"
     ),  # TODO: Use a bundled ODA converter?
 ) -> None:
-    """
-    Import an DXF file into the QGIS using the CADDY importer.
+    f"""{FUNCTION_DESCRIPTION}
+
 
     :param oda_converter_path:
     :param path: Path to the directory containing the caddy files.

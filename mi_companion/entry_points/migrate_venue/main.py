@@ -9,6 +9,13 @@ from mi_companion.mi_editor.authentication.get_credentials_from_auth_manager imp
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = ["run"]
 
+FUNCTION_DESCRIPTION = """Migrate a venue from a solution to another solution (Deletion from original currently not supported, but rather just a copy at the moment)
+
+You can find the venue_admin_id in the venue_polygon layer or in the cms
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
+
 
 def run(
     *,
@@ -17,9 +24,9 @@ def run(
     venue_admin_id: str,
     # remove_venue_in_from_solution: bool = False,
 ) -> None:
-    """
+    f"""{FUNCTION_DESCRIPTION}
 
-    You can find the venue_admin_id in the venue_polygon layer or in the cms
+
 
     :param from_solution_id:
     :param to_solution_id:

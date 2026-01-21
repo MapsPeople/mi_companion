@@ -9,10 +9,14 @@ from mi_companion.mi_editor.authentication.get_credentials_from_auth_manager imp
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
 __all__ = ["run"]
+FUNCTION_DESCRIPTION = """language_code field below: Add language, e.g. en, da, de, fr
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
 
 
 def run(*, solution_id: str) -> None:
-    """
+    f"""{FUNCTION_DESCRIPTION}
 
     :param solution_id:
     :return:
