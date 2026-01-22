@@ -16,7 +16,7 @@ FUNCTION_DESCRIPTION = """Assign a new external id to a solution in MapsIndoors 
 __doc__ = FUNCTION_DESCRIPTION
 
 
-def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> None:
+def run(*, solution_id: str, new_solution_external_id: str) -> None:
     f"""{FUNCTION_DESCRIPTION}
 
     :param solution_id:
