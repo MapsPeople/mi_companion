@@ -4,6 +4,7 @@ from jord.qt_utilities import DockWidgetAreaFlag
 from warg import ensure_in_sys_path, first
 from ...entry_points import (
     add_language_to_group,
+    assign_solution_external_id,
     assign_value_to_dimension,
     caddy_import,
     duplicate_group,
@@ -106,3 +107,12 @@ class DigitisationWidget(
                 self.entry_point_wrapper(i.ENTRY_POINT_NAME, i.ENTRY_POINT_DIALOG),
             )
             self.transformation_layout.addWidget(button)
+
+        for i in (assign_solution_external_id,):
+            button = QtWidgets.QPushButton(i.ENTRY_POINT_NAME)
+            button.setToolTip(i.ENTRY_POINT_DESCRIPTION)
+            signals.reconnect_signal(
+                button.clicked,
+                self.entry_point_wrapper(i.ENTRY_POINT_NAME, i.ENTRY_POINT_DIALOG),
+            )
+            self.database_layout.addWidget(button)
