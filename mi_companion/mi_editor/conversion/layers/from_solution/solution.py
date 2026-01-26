@@ -302,7 +302,7 @@ def add_solution_data_layers(qgis_instance_handle, solution, solution_group):
                     "name": solution.name,
                     "customer_id": solution.customer_id,
                     "occupants_enabled": solution.occupants_enabled,
-                    "available_languages": solution.available_languages,
+                    "available_languages": [*solution.available_languages],
                     "implementation_type": str(solution.implementation_type),
                     "default_language": solution.default_language,
                 }
