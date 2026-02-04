@@ -10,5 +10,4 @@ from qgis.core import (
     QgsTaskManager,
 )
 
-
 QgsApplication.taskManager()

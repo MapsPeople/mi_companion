@@ -29,7 +29,6 @@ from jord.qgis_utilities import (
 )
 from ...qgis_utilities import resolve_path
 
-
 signals.IS_DEBUGGING = True
 _logger = logging.getLogger(__name__)
 VERBOSE = False

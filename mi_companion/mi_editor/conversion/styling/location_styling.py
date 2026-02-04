@@ -49,7 +49,6 @@ from mi_companion.qgis_utilities import (
     HEX_COLOR_POLY_FILL_EXPRESSION,
 )
 
-
 _logger = logging.getLogger(__name__)
 
 

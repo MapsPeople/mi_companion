@@ -30,7 +30,6 @@ from ...mi_editor.authentication.get_credentials_from_auth_manager import (
 )
 from ...qgis_utilities import extract_wkt_elements, resolve_path
 
-
 signals.IS_DEBUGGING = True
 _logger = logging.getLogger(__name__)
 VERBOSE = False

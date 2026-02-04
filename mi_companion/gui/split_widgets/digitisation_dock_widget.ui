@@ -1,142 +1,142 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>Digitisation</class>
-    <widget class="QDockWidget" name="Digitisation">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>914</width>
-                <height>334</height>
-            </rect>
-        </property>
-        <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-            </sizepolicy>
-        </property>
-        <property name="windowTitle">
-            <string>Digitisation</string>
-        </property>
-        <widget class="QWidget" name="dockWidgetContents">
-            <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                </sizepolicy>
-            </property>
-            <layout class="QFormLayout" name="formLayout">
-                <item row="0" column="0">
-                    <widget class="QLabel" name="label">
-                        <property name="text">
-                            <string>Raw Data</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="0" column="1">
-                    <layout class="QHBoxLayout" name="importers_layout">
-                        <property name="leftMargin">
-                            <number>0</number>
-                        </property>
-                        <property name="topMargin">
-                            <number>0</number>
-                        </property>
-                    </layout>
-                </item>
-                <item row="1" column="1">
-                    <widget class="Line" name="line">
-                        <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
-                        </property>
-                    </widget>
-                </item>
-                <item row="2" column="0">
-                    <widget class="QLabel" name="label_3">
-                        <property name="text">
-                            <string>Transformation</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="2" column="1">
-                    <layout class="QHBoxLayout" name="transformation_layout">
-                        <property name="leftMargin">
-                            <number>0</number>
-                        </property>
-                        <property name="topMargin">
-                            <number>0</number>
-                        </property>
-                    </layout>
-                </item>
-                <item row="3" column="1">
-                    <widget class="Line" name="line_2">
-                        <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
-                        </property>
-                    </widget>
-                </item>
-                <item row="4" column="0">
-                    <widget class="QLabel" name="label_2">
-                        <property name="text">
-                            <string>Hierarchy</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="4" column="1">
-                    <layout class="QHBoxLayout" name="hierarchy_layout">
-                        <property name="sizeConstraint">
-                            <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
-                        </property>
-                        <property name="leftMargin">
-                            <number>0</number>
-                        </property>
-                        <property name="topMargin">
-                            <number>0</number>
-                        </property>
-                        <property name="rightMargin">
-                            <number>0</number>
-                        </property>
-                        <property name="bottomMargin">
-                            <number>0</number>
-                        </property>
-                    </layout>
-                </item>
-                                <item row="5" column="1">
-                    <widget class="Line" name="line_2">
-                        <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
-                        </property>
-                    </widget>
-                </item>
-                <item row="6" column="0">
-                    <widget class="QLabel" name="label_2">
-                        <property name="text">
-                            <string>Database</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="6" column="1">
-                    <layout class="QHBoxLayout" name="database_layout">
-                        <property name="sizeConstraint">
-                            <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
-                        </property>
-                        <property name="leftMargin">
-                            <number>0</number>
-                        </property>
-                        <property name="topMargin">
-                            <number>0</number>
-                        </property>
-                        <property name="rightMargin">
-                            <number>0</number>
-                        </property>
-                        <property name="bottomMargin">
-                            <number>0</number>
-                        </property>
-                    </layout>
-                </item>
-            </layout>
-        </widget>
-    </widget>
-    <resources/>
-    <connections/>
+ <class>Digitisation</class>
+ <widget class="QDockWidget" name="Digitisation">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>168</width>
+    <height>151</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Digitisation</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QFormLayout" name="formLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Raw Data</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <layout class="QHBoxLayout" name="importers_layout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+     </layout>
+    </item>
+    <item row="1" column="1" colspan="2">
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Transformation</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <layout class="QHBoxLayout" name="transformation_layout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+     </layout>
+    </item>
+    <item row="3" column="1" colspan="2">
+     <widget class="Line" name="line_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Hierarchy</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <layout class="QHBoxLayout" name="hierarchy_layout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+     </layout>
+    </item>
+    <item row="5" column="1" colspan="2">
+     <widget class="Line" name="line_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Database</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <layout class="QHBoxLayout" name="database_layout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>

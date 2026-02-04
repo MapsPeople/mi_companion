@@ -31,7 +31,6 @@ from ...constants import (
     PROJECT_NAME,
 )
 
-
 _logger = logging.getLogger(__name__)
 
 __all__ = ["EntryPointsWidget"]

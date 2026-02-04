@@ -26,18 +26,19 @@ from mi_companion.layer_descriptors import (
     VENUE_GROUP_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
 )
-from mi_companion.mi_editor.conversion.layers.from_solution.occupancy.occupant import (
-    add_occupant_layer,
-)
-from mi_companion.mi_editor.conversion.layers.from_solution.routing.graph import (
-    add_graph_layers,
-)
+
 from mi_companion.mi_editor.conversion.projection import (
     prepare_geom_for_editing_qgis,
     solve_target_crs_authid,
 )
 from sync_module.model import FALLBACK_OSM_GRAPH, Solution, Venue
 from sync_module.tools import translations_to_flattened_dict
+from .occupancy.occupant import (
+    add_occupant_layer,
+)
+from .routing import (
+    add_graph_layers,
+)
 from .building import add_building_layers
 
 _logger = logging.getLogger(__name__)
