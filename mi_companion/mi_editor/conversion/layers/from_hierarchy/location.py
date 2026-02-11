@@ -34,6 +34,7 @@ from jord.qgis_utilities import (
     parse_field,
     qgs_geometry_to_shapely,
     reject_role,
+    message_box_warning,
 )
 from mi_companion import (
     ANCHOR_AS_INDIVIDUAL_FIELDS,
@@ -272,7 +273,7 @@ def add_floor_locations(
                     reject_text="Cancel Upload",
                     accept_text="Upload Anyway",
                     alternative_accept_text="Upload Anyway",
-                    level=QtWidgets.QMessageBox.Warning,
+                    level=message_box_warning,
                 )
 
                 if reply == reject_role:

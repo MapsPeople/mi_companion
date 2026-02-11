@@ -25,6 +25,7 @@ from typing import Any, List, Optional, Tuple
 from jord.qgis_utilities import (
     extract_field_value,
     feature_to_shapely,
+    message_box_warning,
     qgs_geometry_to_shapely,
     reject_role,
 )
@@ -140,7 +141,7 @@ def add_building_floors(
                 reject_text="Cancel Upload",
                 accept_text="Upload Anyway",
                 alternative_accept_text="Upload Anyway",
-                level=QtWidgets.QMessageBox.Warning,
+                level=message_box_warning,
             )
 
             if reply == reject_role:
@@ -218,7 +219,7 @@ def get_floor_data(
                     reject_text="Cancel Upload",
                     accept_text="Upload Anyway",
                     alternative_accept_text="Upload Anyway",
-                    level=QtWidgets.QMessageBox.Warning,
+                    level=message_box_warning,
                 )
 
                 if reply == reject_role:

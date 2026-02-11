@@ -38,7 +38,7 @@ from .building import add_venue_level_hierarchy
 __all__ = ["convert_solution_venues"]
 
 from mi_companion.qgis_utilities.extraction import special_extract_layer_data
-from jord.qgis_utilities import feature_to_shapely, reject_role
+from jord.qgis_utilities import feature_to_shapely, message_box_warning, reject_role
 
 from .location_type import get_location_type_data
 
@@ -121,9 +121,9 @@ def convert_solution_venues(
     solution.name = solution_name
     solution.customer_id = solution_customer_id
     solution.default_language = solution_default_language
-    solution.implementation_type = solution_implementation_type
+    solution.implementation_type = ImplementationStatus(solution_implementation_type)
     solution.occupants_enabled = solution_occupants_enabled
-    solution.available_languages = solution_available_languages
+    solution.available_languages = tuple(solution_available_languages)
 
     get_location_type_data(solution_group_children, solution)
 
@@ -167,7 +167,7 @@ def convert_solution_venues(
                     reject_text="Cancel Upload",
                     accept_text="Upload Anyway",
                     alternative_accept_text="Upload Anyway",
-                    level=QtWidgets.QMessageBox.Warning,
+                    level=message_box_warning,
                 )
 
                 if reply == reject_role:
@@ -251,7 +251,7 @@ def get_venue_key(
                     reject_text="Cancel Upload",
                     accept_text="Upload Anyway",
                     alternative_accept_text="Upload Anyway",
-                    level=QtWidgets.QMessageBox.Warning,
+                    level=message_box_warning,
                 )
 
                 if reply == reject_role:
