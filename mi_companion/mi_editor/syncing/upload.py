@@ -96,6 +96,13 @@ def sync_build_venue_solution(
         # qgis_instance_handle.iface.messageBar().pushMessage(before, text, level=level, duration=duration)
 
     def confirmation_dialog(operations: List[MIOperation]) -> bool:
+        """
+
+        :param operations:
+        :type operations:
+        :return:
+        :rtype:
+        """
         if operations is None or len(operations) == 0:
             QtWidgets.QMessageBox.information(
                 None, window_title, "No difference was found, no operations"
@@ -105,6 +112,13 @@ def sync_build_venue_solution(
         def aggregate_operation_description(
             operation: Collection[MIOperation],
         ) -> str:
+            """
+
+            :param operation:
+            :type operation:
+            :return:
+            :rtype:
+            """
             desc = ""
             for o in operation:
                 desc += f"{o.operation_type.name}: {len(o.item_keys)} {o.item_type.__name__}(s)\n"

@@ -11,8 +11,22 @@ except ImportError:  # Compatibility
 
 
 def is_union(field: Union[ParamSpecArgs, ParamSpecKwargs]) -> bool:
+    """
+
+    :param field:
+    :type field:
+    :return:
+    :rtype:
+    """
     return get_origin(field) is Union
 
 
 def is_optional(field: Union[ParamSpecArgs, ParamSpecKwargs]) -> bool:
+    """
+
+    :param field:
+    :type field:
+    :return:
+    :rtype:
+    """
     return is_union(field) and type(None) in get_args(field)

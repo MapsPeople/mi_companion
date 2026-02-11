@@ -47,6 +47,15 @@ def show_wkt_action_callable(layer: Any, feature: Any) -> None:
 
 
 def show_copy_action_callable(layer: Any, feature: Any) -> None:
+    """
+
+    :param layer:
+    :type layer:
+    :param feature:
+    :type feature:
+    :return:
+    :rtype:
+    """
     import pyperclip
 
     pyperclip.copy(feature.geometry().asWkt())

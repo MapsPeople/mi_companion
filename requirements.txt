@@ -30,3 +30,4 @@ svaguely~=0.0.5
 svgelements~=1.9.6
 ipython~=9.9.0
 pyyaml~=6.0.3
+matplotlib~=3.9.0

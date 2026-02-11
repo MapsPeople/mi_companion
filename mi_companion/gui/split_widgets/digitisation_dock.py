@@ -40,6 +40,8 @@ class DigitisationWidget(
     QgsDockWidget,
     first(uic.loadUiType(str(resolve_path("digitisation_dock_widget.ui", __file__)))),
 ):
+    """ """
+
     plugin_closing = QtCore.pyqtSignal()
     menu_name = "Digitisation"
 
@@ -53,7 +55,18 @@ class DigitisationWidget(
         self._populate_layouts()
 
     def entry_point_wrapper(self, k: str, a: Callable) -> Callable:
+        """
+
+        :param k:
+        :type k:
+        :param a:
+        :type a:
+        :return:
+        :rtype:
+        """
+
         def f():
+            """ """
             if k not in self.entry_point_instances:
                 self.entry_point_instances[k] = a()
 

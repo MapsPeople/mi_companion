@@ -10,6 +10,17 @@ def get_entry_points(
     entry_point_name_field: str = "ENTRY_POINT_NAME",
     entry_point_callable_field: str = "ENTRY_POINT_DIALOG",
 ) -> Dict[str, Callable]:
+    """
+
+    :param module_:
+    :type module_:
+    :param entry_point_name_field:
+    :type entry_point_name_field:
+    :param entry_point_callable_field:
+    :type entry_point_callable_field:
+    :return:
+    :rtype:
+    """
     entry_points_ = {}
     import importlib
 
