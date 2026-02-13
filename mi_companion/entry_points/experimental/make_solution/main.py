@@ -2,8 +2,8 @@
 import logging
 import uuid
 
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
+from qgis.core import QgsProject
 from typing import Optional
 
 SOME_COMMENT_IGNORE_THIS = """
@@ -64,7 +64,6 @@ def run(
     if wgs84_degree_long is None:
         wgs84_degree_long = 0
 
-    # noinspection PyUnresolvedReferences
     # from qgis.utils import iface
 
     from sync_module.model import Solution

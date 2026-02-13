@@ -1,8 +1,6 @@
 #!/usr/bin/python
 import logging
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsProject, QgsSettings, QgsVectorLayer
+from qgis.core import QgsProject, QgsVectorLayer
 
 from mi_companion import RESOURCE_BASE_PATH
 

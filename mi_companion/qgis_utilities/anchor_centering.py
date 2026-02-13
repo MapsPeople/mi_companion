@@ -1,6 +1,4 @@
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.core import (
     Qgis,
     QgsDefaultValue,

@@ -9,30 +9,23 @@ import os
 from collections import defaultdict
 from typing import Any, Callable, Optional
 
-# noinspection PyUnresolvedReferences
+
 from qgis.PyQt import QtGui, QtWidgets, uic
 
-# noinspection PyUnresolvedReferences
+
 from qgis.PyQt.QtCore import pyqtSignal
 
-# noinspection PyUnresolvedReferences
+
 from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
 
-# noinspection PyUnresolvedReferences
+
 from qgis.core import (
-    QgsApplication,
-    QgsFeature,
-    QgsGeometry,
-    QgsLayerTree,
-    QgsLayerTreeModel,
     QgsProject,
-    QgsRasterLayer,
-    QgsVectorLayer,
 )
 
-# noinspection PyUnresolvedReferences
+
 from qgis.gui import QgsDockWidget
 
 from jord.qgis_utilities import InjectedProgressBar, read_plugin_setting, signals
@@ -243,7 +236,7 @@ class MapsIndoorsMonolithDockWidget(
         return f
 
     def upgrade_clicked(self, *_) -> None:
-        # noinspection PyUnresolvedReferences
+
         import pyplugin_installer
 
         msg = f"Upgrading plugin to the latest version"

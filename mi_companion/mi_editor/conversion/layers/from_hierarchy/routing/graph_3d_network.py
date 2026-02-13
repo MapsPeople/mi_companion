@@ -1,12 +1,8 @@
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsGeometry,
-    QgsLayerTreeGroup,
     QgsLayerTreeLayer,
     QgsPoint,
-    QgsProject,
     QgsWkbTypes,
 )
 from typing import Any, List, Optional

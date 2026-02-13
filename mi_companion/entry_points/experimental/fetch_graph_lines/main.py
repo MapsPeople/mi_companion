@@ -7629,13 +7629,7 @@ def run(*, solution_id: str, graph_id: str) -> None:
         "GET", f"/{solution_id}/api/routelayer/geojson/{graph_id}"
     )
 
-    # noinspection PyUnresolvedReferences
-    from qgis.PyQt.QtWidgets import (
-        QMessageBox,
-    )
-
-    # noinspection PyUnresolvedReferences
-    from qgis.PyQt import QtGui, QtWidgets, uic
+    from qgis.PyQt import QtWidgets
 
     QtWidgets.QMessageBox.information(
         None,

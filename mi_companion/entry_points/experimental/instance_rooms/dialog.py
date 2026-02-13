@@ -1,9 +1,6 @@
 from pathlib import Path
 
-# noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
 from warg import first

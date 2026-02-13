@@ -1,9 +1,3 @@
-# noinspection PyUnresolvedReferences
-import qgis
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsEditorWidgetSetup
-
 from jord.qgis_utilities.helpers.widgets import COLOR_WIDGET, make_range_widget
 
 try:

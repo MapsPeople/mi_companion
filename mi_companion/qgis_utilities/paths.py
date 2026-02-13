@@ -58,7 +58,7 @@ def load_icon(*args, **kwargs) -> Any:  # QIcon:
     :param kwargs:
     :return:
     """
-    # noinspection PyUnresolvedReferences
+
     from qgis.PyQt.QtGui import QIcon
 
     icon = QIcon(get_icon_path(*args, **kwargs))

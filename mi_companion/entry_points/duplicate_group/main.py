@@ -1,10 +1,6 @@
 #!/usr/bin/python
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
-
-# noinspection PyUnresolvedReferences
 from qgis.utils import iface
 from typing import Optional
 

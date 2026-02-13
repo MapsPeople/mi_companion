@@ -28,14 +28,14 @@ from ...qgis_utilities import extract_wkt_elements, resolve_path
 
 import logging
 
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtGui, QtWidgets, uic, QtCore
 
-# noinspection PyUnresolvedReferences
+from qgis.PyQt import uic, QtCore
+
+
 from qgis.gui import QgsDockWidget
 
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+
+from qgis.core import QgsProject
 
 from typing import Any, Optional
 

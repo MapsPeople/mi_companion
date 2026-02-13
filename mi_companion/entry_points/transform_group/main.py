@@ -9,12 +9,11 @@ from sync_module.mi_sync_constants import MI_EPSG_NUMBER
 
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
-# noinspection PyUnresolvedReferences
+
 from qgis.core import (
     QgsProject,
     QgsCoordinateTransform,
     QgsCoordinateReferenceSystem,
-    Qgis,
 )
 
 SOURCE_CRS = QgsCoordinateReferenceSystem(MI_EPSG_NUMBER)
@@ -65,10 +64,8 @@ def run(
         transform_sub_tree_features,
     )
 
-    # noinspection PyUnresolvedReferences
     from qgis.utils import iface
 
-    # noinspection PyUnresolvedReferences
     from qgis.analysis import QgsGcpTransformerInterface
 
     assert gcp_points_file_path is not None

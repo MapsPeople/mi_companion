@@ -71,7 +71,7 @@ def add_avoids(
                 floor_index=int(avoid_attributes["floor_index"]),
                 graph_key=graph_key,
                 fields=fields,
-                opening_hours=opening_hours,
+                # opening_hours=opening_hours,
             )
 
             if VERBOSE:

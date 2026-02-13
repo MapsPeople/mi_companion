@@ -1,19 +1,13 @@
 from pathlib import Path
 
 import logging
-
-# noinspection PyUnresolvedReferences
 import qgis
 from inspect import isclass
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
-from .main import FUNCTION_DESCRIPTION
 from warg import first
+from .main import FUNCTION_DESCRIPTION
 
 __all__ = ["Dialog"]
 

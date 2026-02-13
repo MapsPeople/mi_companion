@@ -1,10 +1,6 @@
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsEditorWidgetSetup, QgsProject
+from qgis.core import QgsProject
 from typing import Any, Callable, Iterable, Optional, Tuple
 
 from jord.qgis_utilities import (

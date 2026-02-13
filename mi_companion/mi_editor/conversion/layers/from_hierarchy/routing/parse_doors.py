@@ -1,6 +1,4 @@
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
 from typing import Any, List, Mapping, Optional
 
@@ -83,7 +81,7 @@ def add_doors(
             floor_index=int(door_attributes["floor_index"]),
             graph_key=graph_key,
             fields=fields,
-            opening_hours=opening_hours,
+            # opening_hours=opening_hours,
             wait_time=wait_time,
         )
         if VERBOSE:

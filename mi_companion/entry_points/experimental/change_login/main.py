@@ -1,22 +1,10 @@
 #!/usr/bin/python
 import logging
 
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import QInputDialog
-
-# noinspection PyUnresolvedReferences
 from qgis.core import (
-    Qgis,
     QgsApplication,
-    QgsAuthManager,
     QgsAuthMethodConfig,
-    QgsCoordinateReferenceSystem,
-    QgsCoordinateTransform,
-    QgsProject,
 )
-
-# noinspection PyUnresolvedReferences
-from qgis.utils import iface
 
 __all__ = ["run"]
 

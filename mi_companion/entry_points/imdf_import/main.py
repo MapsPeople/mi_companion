@@ -2,11 +2,7 @@
 from pathlib import Path
 
 import logging
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-
-# noinspection PyUnresolvedReferences
+from qgis.core import QgsProject
 from qgis.utils import iface
 
 from mi_companion import RESOURCE_BASE_PATH

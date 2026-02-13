@@ -1,15 +1,7 @@
 from collections import defaultdict
 
 import logging
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtWidgets
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtCore import QVariant
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
 from typing import Any, List, Optional
 
 from jord.qgis_utilities import recurse_layers

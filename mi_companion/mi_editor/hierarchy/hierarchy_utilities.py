@@ -1,13 +1,5 @@
 import logging
 from enum import Enum
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtGui, QtWidgets
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import QMessageBox
-
-# noinspection PyUnresolvedReferences
 from qgis.core import Qgis, QgsProject
 from typing import Any, Optional
 

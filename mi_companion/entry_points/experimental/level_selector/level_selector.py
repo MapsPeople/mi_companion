@@ -2,32 +2,15 @@ from pathlib import Path
 
 import logging
 import os
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtGui, QtWidgets, uic
-
-# noinspection PyUnresolvedReferences
+from qgis.PyQt import uic
 from qgis.PyQt.QtCore import pyqtSignal
-
-# noinspection PyUnresolvedReferences
 from qgis.core import (
-    QgsApplication,
-    QgsFeature,
-    QgsGeometry,
-    QgsLayerTree,
     QgsLayerTreeGroup,
-    QgsLayerTreeLayer,
-    QgsLayerTreeModel,
-    QgsProject,
     QgsProject,
     QgsRasterLayer,
     QgsVectorLayer,
 )
-
-# noinspection PyUnresolvedReferences
 from qgis.gui import QgsDockWidget
-
-# noinspection PyUnresolvedReferences
 from qgis.utils import iface
 from typing import Any, Iterable, Optional
 

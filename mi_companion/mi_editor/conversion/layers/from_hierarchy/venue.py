@@ -1,15 +1,9 @@
 import copy
 import logging
 from datetime import datetime
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
-
-# noinspection PyUnresolvedReferences
+from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtCore import QDateTime, QVariant
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
 from typing import Any, Callable, Collection, List, Mapping, Optional
 
 from mi_companion import (
@@ -46,11 +40,6 @@ from .location_type import get_location_type_data
 from mi_companion.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 
 _logger = logging.getLogger(__name__)
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import (
-    QMessageBox,
-)
 
 
 def convert_solution_venues(

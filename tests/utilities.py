@@ -14,7 +14,7 @@ IFACE = None
 
 
 def get_qgis_app() -> None:
-    # noinspection PyUnresolvedReferences
+
     from qgis.core import QgsApplication
 
     # supply path to qgis install location
@@ -42,19 +42,14 @@ def get_qgis_app_crashing(cleanup: bool = True) -> Tuple:
     If QGIS is already running the handle to that app will be returned.
     """
 
-    # noinspection PyUnresolvedReferences
     from qgis.core import QgsApplication
 
-    # noinspection PyUnresolvedReferences
     from qgis.PyQt.QtCore import QSize
 
-    # noinspection PyUnresolvedReferences
     from qgis.PyQt.QtWidgets import QWidget
 
-    # noinspection PyUnresolvedReferences
     from qgis.gui import QgsMapCanvas
 
-    # noinspection PyUnresolvedReferences
     from qgis.utils import iface
 
     from .qgis_interface import QgisInterface

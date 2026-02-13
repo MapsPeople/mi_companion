@@ -1,15 +1,14 @@
-# noinspection PyUnresolvedReferences
 from qgis.PyQt import QtGui, QtWidgets, uic
 
-# noinspection PyUnresolvedReferences
+
 from qgis.PyQt.QtCore import QVariant
 
-# noinspection PyUnresolvedReferences
+
 from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
 
-# noinspection PyUnresolvedReferences
+
 from qgis.core import (
     QgsApplication,
     QgsFeature,

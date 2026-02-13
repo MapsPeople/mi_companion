@@ -1,10 +1,5 @@
 import logging
 import shapely
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtCore, QtWidgets
-
-# noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 from typing import Any, Collection, Dict
 

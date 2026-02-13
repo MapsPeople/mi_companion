@@ -6,8 +6,6 @@ import urllib.parse
 import urllib.request
 import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QMessageBox
 
 from mi_companion.mi_editor.authentication.experiments import oauth

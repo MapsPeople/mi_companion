@@ -1,16 +1,10 @@
 from pathlib import Path
 
 import logging
-
-# noinspection PyUnresolvedReferences
 import qgis
 import typing
 from inspect import isclass
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
 FORM_CLASS, _ = uic.loadUiType(str(Path(__file__).parent / "dialog.ui"))

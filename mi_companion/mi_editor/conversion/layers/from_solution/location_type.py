@@ -1,14 +1,6 @@
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.core import (
-    QgsDefaultValue,
-    QgsDefaultValue,
     QgsEditorWidgetSetup,
-    QgsEditorWidgetSetup,
-    QgsFieldConstraints,
-    QgsFieldConstraints,
-    QgsMapLayer,
 )
 from typing import Any, List, Optional
 

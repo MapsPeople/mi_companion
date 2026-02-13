@@ -68,13 +68,7 @@ def run(*, solution_id: str, venue_ids: Optional[str] = None) -> None:
     else:
         call_manager_api("PUT", f"/{solution_id}/api/derivedgeometry")
 
-    # noinspection PyUnresolvedReferences
-    from qgis.PyQt.QtWidgets import (
-        QMessageBox,
-    )
-
-    # noinspection PyUnresolvedReferences
-    from qgis.PyQt import QtGui, QtWidgets, uic
+    from qgis.PyQt import QtWidgets
 
     QtWidgets.QMessageBox.information(
         None,

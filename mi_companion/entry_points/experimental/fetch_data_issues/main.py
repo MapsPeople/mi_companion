@@ -48,13 +48,7 @@ def run(*, solution_id: str) -> None:
 
     data_issues = call_manager_api("GET", f"/api/dataissues/details/{solution_id}")
 
-    # noinspection PyUnresolvedReferences
-    from qgis.PyQt.QtWidgets import (
-        QMessageBox,
-    )
-
-    # noinspection PyUnresolvedReferences
-    from qgis.PyQt import QtGui, QtWidgets, uic
+    from qgis.PyQt import QtWidgets
 
     QtWidgets.QMessageBox.information(
         None,

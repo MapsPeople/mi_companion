@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import logging
-from typing import Optional
 
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH
 from mi_companion.mi_editor.authentication.get_credentials_from_auth_manager import (
@@ -59,13 +58,7 @@ def run(*, solution_id: str, new_solution_external_id: str) -> None:
         solution_id, new_external_id=new_solution_external_id
     )
 
-    # noinspection PyUnresolvedReferences
-    from qgis.PyQt.QtWidgets import (
-        QMessageBox,
-    )
-
-    # noinspection PyUnresolvedReferences
-    from qgis.PyQt import QtGui, QtWidgets, uic
+    from qgis.PyQt import QtWidgets
 
     QtWidgets.QMessageBox.information(
         None,

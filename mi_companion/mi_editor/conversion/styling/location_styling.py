@@ -1,34 +1,17 @@
 import logging
 
-# noinspection PyUnresolvedReferences
+
 from qgis.core import (
-    Qgis,
     QgsCategorizedSymbolRenderer,
-    QgsDefaultValue,
-    QgsEditorWidgetSetup,
-    QgsExpression,
     QgsExpressionContextUtils,
-    QgsExpressionFunction,
     QgsFeatureRequest,
-    QgsFieldConstraints,
     QgsFillSymbol,
-    QgsGeometryGeneratorSymbolLayer,
-    QgsLineSymbol,
-    QgsMapLayer,
-    QgsMarkerSymbol,
     QgsProperty,
-    QgsRasterMarkerSymbolLayer,
     QgsRendererCategory,
     QgsRuleBasedRenderer,
-    QgsSingleSymbolRenderer,
-    QgsSvgMarkerSymbolLayer,
-    QgsSymbol,
     QgsSymbolLayer,
-    QgsWkbTypes,
 )
 
-# noinspection PyUnresolvedReferences
-from qgis.utils import iface
 from typing import Any
 
 __all__ = [

@@ -2,7 +2,7 @@ from .level_selector import FUNCTION_DESCRIPTION
 
 
 def run():
-    # noinspection PyUnresolvedReferences
+
     from qgis.utils import iface
 
     from .level_selector import LevelSelectorWidget

@@ -1,23 +1,8 @@
 import logging
 import shapely
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtCore import QVariant
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import QMessageBox, QTextEdit
-
-# noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsLayerTreeGroup,
-    QgsLayerTreeGroup,
     QgsLayerTreeLayer,
-    QgsLayerTreeLayer,
-    QgsProject,
-    QgsProject,
 )
 from typing import Any, List, Optional
 

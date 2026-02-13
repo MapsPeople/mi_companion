@@ -1,18 +1,9 @@
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtCore import QVariant
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from qgis.core import QgsLayerTreeGroup, QgsProject
 from typing import Any, Callable, Dict, List, Optional
 
 from jord.qgis_utilities import parse_q_value

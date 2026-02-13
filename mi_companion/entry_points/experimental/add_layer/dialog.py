@@ -1,11 +1,7 @@
 from pathlib import Path
 
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
 __all__ = ["Dialog"]

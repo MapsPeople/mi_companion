@@ -1,9 +1,5 @@
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QIcon
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import (
     QDialog,
     QDialogButtonBox,
@@ -11,18 +7,11 @@ from qgis.PyQt.QtWidgets import (
     QMessageBox,
     QPushButton,
     QSizePolicy,
-    QWidget,
 )
-
-# noinspection PyUnresolvedReferences
-from qgis.core import Qgis, QgsGeometry, QgsMessageLog
-
-# noinspection PyUnresolvedReferences
+from qgis.core import Qgis
 from qgis.gui import (
     QgsMessageBar,
 )
-
-# noinspection PyUnresolvedReferences
 from qgis.utils import iface
 from typing import Any
 

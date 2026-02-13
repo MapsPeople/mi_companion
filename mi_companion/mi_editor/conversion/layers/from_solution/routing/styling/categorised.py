@@ -1,9 +1,6 @@
-# noinspection PyUnresolvedReferences
 from qgis.core import (
     QgsCategorizedSymbolRenderer,
-    QgsExpression,
     QgsRendererCategory,
-    QgsRendererRange,
     QgsStyle,
     QgsSymbol,
 )

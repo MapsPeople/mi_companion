@@ -1,6 +1,4 @@
-# noinspection PyUnresolvedReferences
 from qgis.core import (
-    QgsExpression,
     QgsGraduatedSymbolRenderer,
     QgsRendererRange,
     QgsStyle,
@@ -144,6 +142,7 @@ def set_z_based_graduated_styling_single_layer(
         ranges.append(value_range)
 
     renderer = QgsGraduatedSymbolRenderer("z_max($geometry)", ranges)
+
     layer.setRenderer(renderer)
     if repaint:
         layer.triggerRepaint()

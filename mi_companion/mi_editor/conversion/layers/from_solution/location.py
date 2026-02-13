@@ -1,12 +1,6 @@
 import geopandas
 import logging
 import pandas
-
-# noinspection PyUnresolvedReferences
-import qgis
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsEditorWidgetSetup
 from typing import Any, Iterable, List, Optional
 
 from jord.qgis_utilities import (

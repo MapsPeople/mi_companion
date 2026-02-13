@@ -1,28 +1,10 @@
 import ast
-
-# noinspection PyUnresolvedReferences
-import datetime
 import logging
 import shapely
-
-# noinspection PyUnresolvedReferences
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets, QtWidgets
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtCore import QVariant, QVariant
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import QMessageBox, QTextEdit
-
-# noinspection PyUnresolvedReferences
+from qgis.PyQt.QtCore import QVariant
 from qgis.core import (
     QgsLayerTreeGroup,
-    QgsLayerTreeGroup,
     QgsLayerTreeLayer,
-    QgsLayerTreeLayer,
-    QgsProject,
-    QgsProject,
 )
 from typing import Any, Collection, List, Optional
 
@@ -31,10 +13,10 @@ from jord.qgis_utilities import (
     extract_field_value,
     feature_to_shapely,
     is_str_value_null_like,
+    message_box_warning,
     parse_field,
     qgs_geometry_to_shapely,
     reject_role,
-    message_box_warning,
 )
 from mi_companion import (
     ANCHOR_AS_INDIVIDUAL_FIELDS,

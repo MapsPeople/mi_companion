@@ -1,26 +1,13 @@
 import shapely
 import uuid
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtCore, QtWidgets
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
-
-# noinspection PyUnresolvedReferences
 from qgis.core import (
-    QgsLayerTreeGroup,
-    QgsLayerTreeLayer,
     QgsMapLayerType,
     QgsProject,
 )
-
-# noinspection PyUnresolvedReferences
 from qgis.gui import QgsMapLayerAction, QgsMapToolIdentify
-
-# noinspection PyUnresolvedReferences
 from qgis.utils import iface
 from typing import Any
 
@@ -29,7 +16,6 @@ from jord.qgis_utilities.helpers import reconnect_signal
 from jord.shapely_utilities import clean_shape
 from sync_module.shared import LanguageBundle
 
-# noinspection PyUnresolvedReferences
 # from qgis.utils import iface
 
 IDENTIFY_ACTIONS_AUGMENTED = SELECT_ACTIONS_AUGMENTED = False

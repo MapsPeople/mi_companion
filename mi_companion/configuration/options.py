@@ -13,14 +13,7 @@ __all__ = [
 ]
 
 import logging
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtCore, QtGui, QtWidgets, uic
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsProject
-
-# noinspection PyUnresolvedReferences
+from qgis.PyQt import QtGui, QtWidgets, uic
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
 from typing import Any
 

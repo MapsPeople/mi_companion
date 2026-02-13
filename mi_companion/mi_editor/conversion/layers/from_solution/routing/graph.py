@@ -13,7 +13,7 @@ from mi_companion.layer_descriptors import (
     GRAPH_GROUP_DESCRIPTOR,
 )
 from mi_companion.mi_editor.conversion.layers.from_solution.routing.graph_3d_network import (
-    add_graph_3d_network_layers,
+    add_navigation_graph_layers,
 )
 from mi_companion.mi_editor.conversion.layers.from_solution.routing.route_elements import (
     add_route_element_layers,
@@ -105,15 +105,12 @@ def add_graph_layers(
                 points,
                 points_meta_data,
             ) = osm_xml_to_lines(graph.osm_xml)
-            # add_graph_network_layers(
-            add_graph_3d_network_layers(
+            add_navigation_graph_layers(
                 edge_context_type_dropdown_widget=edge_context_type_dropdown_widget,
                 graph_group=graph_group,
                 highway_type_dropdown_widget=highway_type_dropdown_widget,
                 lines=lines,
                 lines_meta_data=lines_meta_data,
-                points=points,
-                points_meta_data=points_meta_data,
                 qgis_instance_handle=qgis_instance_handle,
             )
         else:

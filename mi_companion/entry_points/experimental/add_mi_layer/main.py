@@ -1,12 +1,9 @@
 #!/usr/bin/python
 import logging
 
-# noinspection PyUnresolvedReferences
+
 from qgis.core import (
     Qgis,
-    QgsCoordinateReferenceSystem,
-    QgsCoordinateTransform,
-    QgsProject,
 )
 from typing import Dict, Optional
 
@@ -75,10 +72,8 @@ def run() -> None:
     f"""{FUNCTION_DESCRIPTION}
 """
 
-    # noinspection PyUnresolvedReferences
     from qgis.PyQt.QtWidgets import QInputDialog
 
-    # noinspection PyUnresolvedReferences
     from qgis.utils import iface
 
     # Get available layers

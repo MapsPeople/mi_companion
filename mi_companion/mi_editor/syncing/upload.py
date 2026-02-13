@@ -1,10 +1,5 @@
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt import QtCore, QtWidgets
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsProject
 from typing import Any, Collection, List, Optional
 
 from jord.qgis_utilities import ResizableMessageBox, help_button, no_button, yes_button

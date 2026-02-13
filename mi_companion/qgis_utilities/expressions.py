@@ -1,23 +1,5 @@
-# noinspection PyUnresolvedReferences
 from qgis.core import (
-    Qgis,
-    QgsDefaultValue,
-    QgsEditorWidgetSetup,
-    QgsExpression,
-    QgsExpressionContextUtils,
-    QgsExpressionFunction,
-    QgsFeatureRequest,
-    QgsFieldConstraints,
-    QgsFillSymbol,
-    QgsGeometryGeneratorSymbolLayer,
-    QgsLineSymbol,
-    QgsMapLayer,
-    QgsMarkerSymbol,
     QgsProperty,
-    QgsRuleBasedRenderer,
-    QgsSymbol,
-    QgsSymbolLayer,
-    QgsWkbTypes,
 )
 
 HEX_COLOR_POLY_FILL_EXPRESSION = QgsProperty.fromExpression(
@@ -168,7 +150,7 @@ def get_hierarchical_lookup_field_expression(
     Supports both RelationReference and ValueRelation widget types.
     """
     # Add the missing imports
-    # noinspection PyUnresolvedReferences
+
     from qgis.core import QgsProject
 
     if not current_layer:

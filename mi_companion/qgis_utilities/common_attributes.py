@@ -1,14 +1,9 @@
 import logging
 import math
 
-# noinspection PyUnresolvedReferences
 # from qgis.core.QgsVariantUtils import isNull, typeToDisplayString
 import numpy
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QColor
 from typing import Any, Iterable, Mapping, Optional
 

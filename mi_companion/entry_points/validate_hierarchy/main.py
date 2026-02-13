@@ -1,18 +1,8 @@
 #!/usr/bin/python
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.core import (
-    Qgis,
-    QgsCoordinateReferenceSystem,
-    QgsCoordinateTransform,
-    QgsLayerTreeGroup,
-    QgsLayerTreeLayer,
-    QgsProject,
     QgsProject,
 )
-
-# noinspection PyUnresolvedReferences
 from qgis.utils import iface
 
 from jord.qgis_utilities.helpers import InjectedProgressBar

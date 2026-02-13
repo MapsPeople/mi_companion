@@ -1,10 +1,5 @@
 #!/usr/bin/python
 import logging
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsProject, QgsSettings, QgsVectorLayer
-
-# noinspection PyUnresolvedReferences
 from qgis.utils import iface
 
 from mi_companion import RESOURCE_BASE_PATH

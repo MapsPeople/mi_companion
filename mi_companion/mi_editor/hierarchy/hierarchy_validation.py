@@ -1,21 +1,6 @@
 import logging
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtGui, QtWidgets
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt.QtWidgets import QMessageBox
-
-# noinspection PyUnresolvedReferences
 from qgis.core import (
-    QgsApplication,
-    QgsFeature,
-    QgsGeometry,
-    QgsLayerTree,
-    QgsLayerTreeModel,
     QgsProject,
-    QgsRasterLayer,
-    QgsVectorLayer,
 )
 from typing import Any, Optional
 

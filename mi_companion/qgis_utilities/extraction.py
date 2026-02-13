@@ -1,19 +1,6 @@
 import logging
 import uuid
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtWidgets, uic
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
-
-# noinspection PyUnresolvedReferences
-from qgis.core import (
-    QgsFeatureRequest,
-    QgsLayerTreeGroup,
-    QgsLayerTreeLayer,
-    QgsProject,
-)
 from typing import Any, Tuple
 
 from jord.qgis_utilities import extract_layer_data_single

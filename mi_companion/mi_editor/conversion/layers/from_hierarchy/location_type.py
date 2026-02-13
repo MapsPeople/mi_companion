@@ -1,7 +1,5 @@
 import logging
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
+from qgis.core import QgsLayerTreeLayer
 from typing import Any, List, Optional
 
 from jord.qgis_utilities import (

@@ -1,38 +1,15 @@
 #!/usr/bin/python
 import logging
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtGui, QtWidgets, uic
-
-# noinspection PyUnresolvedReferences
+from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtCore import QVariant
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
-
-# noinspection PyUnresolvedReferences
-# noinspection PyUnresolvedReferences
 from qgis.core import (
-    QgsCategorizedSymbolRenderer,
     QgsField,
     QgsLayerTreeGroup,
     QgsLayerTreeLayer,
-    QgsLineSymbol,
-    QgsPalLayerSettings,
-    QgsProject,
-    QgsProject,
-    QgsRendererCategory,
-    QgsSymbol,
-    QgsTextBackgroundSettings,
-    QgsTextFormat,
-    QgsVectorLayer,
-    QgsVectorLayerSimpleLabeling,
-    QgsWkbTypes,
 )
-
-# noinspection PyUnresolvedReferences
 from qgis.utils import iface
 
 from mi_companion import RESOURCE_BASE_PATH

@@ -1,11 +1,7 @@
 #!/usr/bin/python
 import logging
 import uuid
-
-# noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
-
-# noinspection PyUnresolvedReferences
 from qgis.utils import iface
 from typing import Any
 

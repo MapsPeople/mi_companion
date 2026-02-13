@@ -1,9 +1,6 @@
 from pathlib import Path
 
-# noinspection PyUnresolvedReferences
 from qgis.PyQt import uic
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
 from mi_companion.gui.typing_utilities import get_args, is_optional, is_union

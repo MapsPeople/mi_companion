@@ -84,7 +84,7 @@ def add_barriers(
                 fields=fields,
                 bearing=bearing,
                 wait_time=wait_time,
-                opening_hours=opening_hours,
+                # opening_hours=opening_hours,
             )
 
             if VERBOSE:

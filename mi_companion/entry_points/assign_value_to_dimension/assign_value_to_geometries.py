@@ -1,11 +1,7 @@
 #!/usr/bin/python
 import logging
 from enum import Enum
-
-# noinspection PyUnresolvedReferences
 from qgis.core import QgsGeometry, QgsMultiPoint, QgsPoint, QgsProject, QgsWkbTypes
-
-# noinspection PyUnresolvedReferences
 from qgis.utils import iface
 from typing import Any
 

@@ -1,14 +1,10 @@
 def example_that_does_not_work():
 
     # Imports with proper QGIS modules
-    # noinspection PyUnresolvedReferences
+
     from qgis.core import QgsProject, QgsVectorLayer
 
-    # noinspection PyUnresolvedReferences
     from qgis.utils import iface
-
-    # noinspection PyUnresolvedReferences
-    from qgis.gui import QgsMapToolAdvancedDigitizing
 
     # Function to update anchor points after split
     def update_anchor_after_split(layer, features):

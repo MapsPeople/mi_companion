@@ -1,11 +1,7 @@
 #!/usr/bin/python
 import logging
 import shapely
-
-# noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
-
-# noinspection PyUnresolvedReferences
 from qgis.utils import iface
 
 from jord.geometric_analysis import buffer_principal_axis

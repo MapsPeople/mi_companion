@@ -9,10 +9,10 @@ ensure_in_sys_path(Path(__file__).parent.parent)
 import logging
 import math
 
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtGui, QtWidgets, uic, QtCore
 
-# noinspection PyUnresolvedReferences
+from qgis.PyQt import QtWidgets, QtCore
+
+
 from qgis.gui import QgsDockWidget
 
 from typing import Any, Callable, Optional

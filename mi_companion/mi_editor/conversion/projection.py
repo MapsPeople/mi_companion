@@ -307,7 +307,7 @@ def get_target_crs_auth_id() -> str:
     :return:
     """
     if should_reproject_to_project_qgis:
-        # noinspection PyUnresolvedReferences
+
         from qgis.core import QgsProject
 
         target_crs = QgsProject.instance().crs().authid()
@@ -323,7 +323,7 @@ def get_target_crs_srsid() -> int:
     :return:
     """
     if should_reproject_to_project_qgis:
-        # noinspection PyUnresolvedReferences
+
         from qgis.core import QgsProject
 
         target_crs = QgsProject.instance().crs().srsid()

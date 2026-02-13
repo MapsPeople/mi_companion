@@ -17,7 +17,7 @@ def run(*, field_name: str = "admin_id") -> None:
 
     :param field_name:
     """
-    # noinspection PyUnresolvedReferences
+
     from qgis.utils import iface
     from jord.qgis_utilities.helpers import randomize_sub_tree_field
 

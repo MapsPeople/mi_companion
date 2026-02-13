@@ -18,10 +18,10 @@ ensure_in_sys_path(Path(__file__).parent.parent)
 import logging
 from typing import Any, Callable, Optional
 
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtGui, QtWidgets, uic, QtCore
 
-# noinspection PyUnresolvedReferences
+from qgis.PyQt import QtWidgets, uic, QtCore
+
+
 from qgis.gui import QgsDockWidget
 
 from jord.qgis_utilities import (

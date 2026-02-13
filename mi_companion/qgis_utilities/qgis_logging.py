@@ -3,8 +3,6 @@ from pathlib import Path
 
 import logging
 import yaml
-
-# noinspection PyUnresolvedReferences
 from qgis.core import Qgis, QgsMessageLog
 
 __doc__ = "Logging"

@@ -1,8 +1,6 @@
 from pathlib import Path
 
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets, uic
 
 from jord.qgis_utilities.helpers import signals

@@ -1,9 +1,6 @@
 from pathlib import Path
 
-# noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets, uic
-
-# noinspection PyUnresolvedReferences
 from qgis.core import QgsMessageLog
 
 FORM_CLASS, _ = uic.loadUiType(str(Path(__file__).parent / "base_dialog.ui"))

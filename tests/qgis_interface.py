@@ -25,16 +25,16 @@ __copyright__ = (
 import logging
 from typing import List
 
-# noinspection PyUnresolvedReferences
+
 from qgis.PyQt.QtCore import QObject, QSize, pyqtSignal, pyqtSlot
 
-# noinspection PyUnresolvedReferences
+
 from qgis.PyQt.QtWidgets import QDockWidget
 
-# noinspection PyUnresolvedReferences
+
 from qgis.core import QgsMapLayer, QgsProject
 
-# noinspection PyUnresolvedReferences
+
 from qgis.gui import QgsMapCanvas, QgsMessageBar
 
 LOGGER = logging.getLogger("QGIS")

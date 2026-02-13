@@ -13,30 +13,24 @@ from pathlib import Path
 
 import logging
 from functools import partial
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QCoreApplication, QLocale, QTranslator
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QIcon
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtWidgets import QAction
-
-# noinspection PyUnresolvedReferences
 from qgis.core import QgsSettings
 
 from jord.qgis_utilities import read_plugin_setting, signals
 from jord.qt_utilities import DockWidgetAreaFlag
-from .constants import MI_MENU_INSTANCE_NAME
 from .configuration.options import DeploymentOptionsPageFactory
-from .constants import DEBUGGING, DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME
+from .constants import (
+    DEBUGGING,
+    DEFAULT_PLUGIN_SETTINGS,
+    MI_MENU_INSTANCE_NAME,
+    PROJECT_NAME,
+)
 from .gui.split_widgets.digitisation_dock import DigitisationWidget
 from .gui.split_widgets.export_dock import ExportWidget
 from .gui.split_widgets.import_dock import ImportWidget
 from .gui.split_widgets.tools_dock import EntryPointsWidget
-
-# noinspection PyUnresolvedReferences
 from .resources import *  # Initialize Qt resources from file resources.py
 
 assert qt_resource_data is not None  # from resources.py

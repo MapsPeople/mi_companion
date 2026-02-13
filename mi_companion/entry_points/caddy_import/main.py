@@ -2,24 +2,11 @@
 from pathlib import Path
 
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtGui import QColor, QFont
-
-# noinspection PyUnresolvedReferences
 from qgis.core import (
     Qgis,
-    QgsApplication,
-    QgsFeature,
-    QgsGeometry,
-    QgsLayerTree,
-    QgsLayerTreeGroup,
-    QgsLayerTreeLayer,
-    QgsLayerTreeModel,
     QgsPalLayerSettings,
     QgsProject,
-    QgsProject,
-    QgsRasterLayer,
     QgsTextBufferSettings,
     QgsTextFormat,
     QgsVectorLayer,

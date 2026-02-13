@@ -1,6 +1,4 @@
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.core import QgsProject
 from typing import Any, Dict, Mapping, Optional
 

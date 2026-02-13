@@ -3,19 +3,8 @@ from pathlib import Path
 
 import logging
 import os
-
-# noinspection PyUnresolvedReferences
 from qgis.core import (
-    QgsApplication,
-    QgsFeature,
-    QgsGeometry,
-    QgsLayerTree,
-    QgsLayerTreeGroup,
-    QgsLayerTreeLayer,
-    QgsLayerTreeModel,
     QgsProject,
-    QgsProject,
-    QgsRasterLayer,
     QgsVectorLayer,
 )
 

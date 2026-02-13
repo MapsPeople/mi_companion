@@ -2,8 +2,6 @@ from collections import defaultdict
 
 import logging
 import operator
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt.QtCore import QVariant
 from typing import Any, List, Mapping, Optional
 

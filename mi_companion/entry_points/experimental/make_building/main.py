@@ -1,10 +1,6 @@
 #!/usr/bin/python
 import logging
-
-# noinspection PyUnresolvedReferences
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-
-# noinspection PyUnresolvedReferences
+from qgis.core import QgsLayerTreeGroup
 from qgis.utils import iface
 
 from mi_companion.mi_editor.conversion import (

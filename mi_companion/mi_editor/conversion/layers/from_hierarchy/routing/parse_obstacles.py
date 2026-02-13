@@ -72,7 +72,7 @@ def add_obstacles(
                 floor_index=int(obstacle_attributes["floor_index"]),
                 graph_key=graph_key,
                 fields=fields,
-                opening_hours=opening_hours,
+                # opening_hours=opening_hours,
             )
             if VERBOSE:
                 _logger.info("added obstacle", obstacle_key)

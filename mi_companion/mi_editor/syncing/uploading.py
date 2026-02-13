@@ -1,7 +1,5 @@
 import logging
-
-# noinspection PyUnresolvedReferences
-from qgis.PyQt import QtCore, QtGui, QtWidgets, QtWidgets
+from qgis.PyQt import QtWidgets
 
 from .pre_upload_processing import post_process_solution
 from .upload import sync_build_venue_solution

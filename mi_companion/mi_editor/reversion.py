@@ -1,9 +1,5 @@
 import logging
-
-# noinspection PyUnresolvedReferences
 from qgis.PyQt import QtWidgets
-
-# noinspection PyUnresolvedReferences
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 from typing import Dict, Optional
 

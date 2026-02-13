@@ -65,13 +65,8 @@ def run(*, solution_id: str, new_solution_external_id: Optional[str] = None) -> 
     compatibility_report = make_solution_compatible(
         solution_id, new_external_id=solution_external_id
     )
-    # noinspection PyUnresolvedReferences
-    from qgis.PyQt.QtWidgets import (
-        QMessageBox,
-    )
 
-    # noinspection PyUnresolvedReferences
-    from qgis.PyQt import QtGui, QtWidgets, uic
+    from qgis.PyQt import QtWidgets
 
     formatted_report = indent(("\n".join(compatibility_report)), "  - ")
     QtWidgets.QMessageBox.information(
