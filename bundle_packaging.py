@@ -61,7 +61,8 @@ def package_dependencies(
     if version is not None:
         version = version.replace(" ", "")
         assert (
-            VERSION.replace(" ", "").lower() == version
+            VERSION.replace(" ", "").lower().split("-")[0]
+            == version.split("-")[0]  # Allow experimental releases
         ), f"{VERSION}!={version}"  # JUST MAKE SURE!
         # bundle_name = bundle_name.with_stem(f"{bundle_name.stem}.{version}")
 

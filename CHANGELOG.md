@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Simplification] Regeneration of fields of features in layers and groups is now a single button
 * [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
 
+
+
+## 0.7.23 - 2026-02-13
+
+* [Styling] Graph is now styled according to level (m value) and highway type
+
+## 0.7.22 - 2025-08-04
+
+* [Regression Fix] ...
+
 ## 0.7.21 - 2025-08-04
 
 * [Regression Fix] last_verified field is not serialised and deserialised properly
