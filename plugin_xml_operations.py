@@ -1,6 +1,6 @@
 # Standard library
 import sys
-from typing import Iterable, Set, Optional
+from typing import Iterable, Optional, Set
 
 # Third-party imports
 from lxml import etree

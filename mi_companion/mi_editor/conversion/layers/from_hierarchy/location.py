@@ -1,12 +1,13 @@
 import ast
 import logging
+from typing import Any, Collection, List, Optional
+
 import shapely
 from qgis.PyQt.QtCore import QVariant
 from qgis.core import (
     QgsLayerTreeGroup,
     QgsLayerTreeLayer,
 )
-from typing import Any, Collection, List, Optional
 
 from jord.qgis_utilities import (
     extract_feature_attributes,

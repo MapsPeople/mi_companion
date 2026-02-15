@@ -1,7 +1,8 @@
 import logging
+from typing import Any, Callable, Iterable, Optional, Tuple
+
 from qgis.PyQt import QtWidgets
 from qgis.core import QgsProject
-from typing import Any, Callable, Iterable, Optional, Tuple
 
 from jord.qgis_utilities import (
     make_enum_dropdown_widget,

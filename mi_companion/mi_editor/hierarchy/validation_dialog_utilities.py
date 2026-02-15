@@ -1,4 +1,6 @@
 import logging
+from typing import Any
+
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import (
     QDialog,
@@ -13,7 +15,6 @@ from qgis.gui import (
     QgsMessageBar,
 )
 from qgis.utils import iface
-from typing import Any
 
 from jord.qgis_utilities import accept_role, read_plugin_setting, reject_role
 from mi_companion import (

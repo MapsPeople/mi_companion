@@ -1,4 +1,5 @@
 import logging
+
 from qgis.core import (
     Qgis,
     QgsCategorizedSymbolRenderer,

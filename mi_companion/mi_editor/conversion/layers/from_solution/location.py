@@ -1,7 +1,8 @@
-import geopandas
 import logging
-import pandas
 from typing import Any, Iterable, List, Optional
+
+import geopandas
+import pandas
 
 from jord.qgis_utilities import (
     make_field_boolean,

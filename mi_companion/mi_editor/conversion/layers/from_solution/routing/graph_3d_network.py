@@ -1,6 +1,7 @@
 import logging
-from osgeo import ogr
 from typing import Any
+
+from osgeo import ogr
 
 from jord.qgis_utilities import (
     make_field_not_null,

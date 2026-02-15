@@ -1,8 +1,9 @@
 import logging
+from typing import Any, Optional
+
 from qgis.core import (
     QgsProject,
 )
-from typing import Any, Optional
 
 from jord.qgis_utilities import (
     disconnect_signal,

@@ -1,10 +1,11 @@
 import logging
+from typing import Iterable
+
 from qgis.core import (
     Qgis,
     QgsDefaultValue,
     QgsFieldConstraints,
 )
-from typing import Iterable
 
 from mi_companion.constants import ONLY_RESET_ANCHOR_IF_OUTSIDE
 from .expressions import (

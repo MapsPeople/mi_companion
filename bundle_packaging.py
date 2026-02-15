@@ -22,11 +22,23 @@ _logger = logging.getLogger(__name__)
 
 
 def log_subprocess_output(pipe: Pipe) -> None:
+    """
+
+    :param pipe:
+    :type pipe:
+    """
     for line in iter(pipe.readline, b""):  # b'\n'-separated lines
         _logger.info("got line from subprocess: %r", line)
 
 
 def catching_callable(*args, **kwargs) -> None:
+    """
+
+    :param args:
+    :type args:
+    :param kwargs:
+    :type kwargs:
+    """
     try:
         _logger.info(f"{list(args)}, {list(kwargs.items())}")
 
@@ -51,6 +63,21 @@ def package_dependencies(
     project_name: str = "MapsIndoors",
     platform: str = sysconfig.get_platform(),
 ) -> None:
+    """
+
+    :param bundle_name:
+    :type bundle_name:
+    :param clean:
+    :type clean:
+    :param python_version:
+    :type python_version:
+    :param version:
+    :type version:
+    :param project_name:
+    :type project_name:
+    :param platform:
+    :type platform:
+    """
     if isinstance(bundle_name, str):
         bundle_name = Path(bundle_name)
     if True:
@@ -61,10 +88,8 @@ def package_dependencies(
     if version is not None:
         version = version.replace(" ", "")
         assert (
-            VERSION.replace(" ", "").lower().split("-")[0]
-            == version.split("-")[0]  # Allow experimental releases
+            VERSION.replace(" ", "").lower() == version
         ), f"{VERSION}!={version}"  # JUST MAKE SURE!
-        # bundle_name = bundle_name.with_stem(f"{bundle_name.stem}.{version}")
 
     bundle_name.mkdir(parents=True, exist_ok=True)
 
@@ -136,6 +161,17 @@ def emit_additional_bundle_files(
     bundle_version: str = "0.0.1",
     bundle_project_name: str = "MapsIndoors",
 ) -> None:
+    """
+
+    :param python_version:
+    :type python_version:
+    :param target_site_packages_dir:
+    :type target_site_packages_dir:
+    :param bundle_version:
+    :type bundle_version:
+    :param bundle_project_name:
+    :type bundle_project_name:
+    """
     with open(target_site_packages_dir / "metadata.txt", "w") as f:
         f.write(
             f"""[general]

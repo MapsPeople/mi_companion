@@ -1,11 +1,12 @@
 import logging
+import typing
+from typing import Optional
+
 import numpy
 import pyproj
 import shapely
 import shapely.geometry
-import typing
 from geopandas import GeoDataFrame
-from typing import Optional
 
 from jord.shapely_utilities import clean_shape
 from mi_companion.configuration import read_bool_setting

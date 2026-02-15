@@ -1,6 +1,8 @@
 __all__ = ["set_graph_styling"]
 
 
+from typing import Any, Collection, Iterable
+
 from qgis.PyQt.QtCore import QPointF
 from qgis.core import (
     Qgis,
@@ -11,7 +13,6 @@ from qgis.core import (
     QgsRendererRange,
     QgsStyle,
 )
-from typing import Any, Collection, Iterable
 
 from warg import frange, pairs
 

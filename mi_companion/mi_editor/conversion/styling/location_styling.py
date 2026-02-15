@@ -1,5 +1,5 @@
 import logging
-
+from typing import Any
 
 from qgis.core import (
     QgsCategorizedSymbolRenderer,
@@ -11,8 +11,6 @@ from qgis.core import (
     QgsRuleBasedRenderer,
     QgsSymbolLayer,
 )
-
-from typing import Any
 
 __all__ = [
     "apply_display_rule",

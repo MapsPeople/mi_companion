@@ -1,6 +1,7 @@
-import geopandas
 import logging
 from typing import Any, List, Optional
+
+import geopandas
 
 from jord.qgis_utilities import (
     make_field_not_null,

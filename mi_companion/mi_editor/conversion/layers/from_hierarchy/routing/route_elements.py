@@ -1,8 +1,8 @@
-from collections import defaultdict
-
 import logging
-from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
+from collections import defaultdict
 from typing import Any, List, Optional
+
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
 
 from jord.qgis_utilities import recurse_layers
 from mi_companion import (

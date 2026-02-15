@@ -1,12 +1,13 @@
 #!/usr/bin/python
 import logging
+from typing import Optional
+
 from qgis.PyQt import QtWidgets
 from qgis.core import (
     QgsProject,
     QgsRelation,
 )
 from qgis.utils import iface
-from typing import Optional
 
 from mi_companion import RESOURCE_BASE_PATH
 

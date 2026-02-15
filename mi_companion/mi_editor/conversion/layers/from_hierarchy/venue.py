@@ -1,10 +1,11 @@
 import copy
 import logging
 from datetime import datetime
+from typing import Any, Callable, Collection, List, Mapping, Optional
+
 from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtCore import QDateTime, QVariant
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
-from typing import Any, Callable, Collection, List, Mapping, Optional
 
 from mi_companion import (
     APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE,

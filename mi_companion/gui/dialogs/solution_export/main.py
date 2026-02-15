@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
+import logging
 from pathlib import Path
 
-import logging
 from qgis.core import QgsProject
 from qgis.utils import iface
 

@@ -1,10 +1,11 @@
 import logging
+from typing import Any, List, Optional, Tuple
+
 import shapely
 from qgis.core import (
     QgsLayerTreeGroup,
     QgsLayerTreeLayer,
 )
-from typing import Any, List, Optional, Tuple
 
 from jord.qgis_utilities import (
     extract_field_value,

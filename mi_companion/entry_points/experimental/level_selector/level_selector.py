@@ -1,7 +1,8 @@
-from pathlib import Path
-
 import logging
 import os
+from pathlib import Path
+from typing import Any, Iterable, Optional
+
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import pyqtSignal
 from qgis.core import (
@@ -12,7 +13,6 @@ from qgis.core import (
 )
 from qgis.gui import QgsDockWidget
 from qgis.utils import iface
-from typing import Any, Iterable, Optional
 
 from jord.qgis_utilities.helpers import signals
 from mi_companion import RESOURCE_BASE_PATH

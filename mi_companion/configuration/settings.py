@@ -1,6 +1,7 @@
 import logging
-from qgis.core import QgsProject
 from typing import Any, Dict, Mapping, Optional
+
+from qgis.core import QgsProject
 
 from mi_companion import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, VERBOSE
 

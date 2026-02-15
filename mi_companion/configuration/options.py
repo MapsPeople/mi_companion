@@ -13,9 +13,10 @@ __all__ = [
 ]
 
 import logging
+from typing import Any
+
 from qgis.PyQt import QtGui, QtWidgets, uic
 from qgis.gui import QgsOptionsPageWidget, QgsOptionsWidgetFactory
-from typing import Any
 
 from jord.qgis_utilities import (
     horizontal_orientation,

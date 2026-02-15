@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import logging
+
 import shapely
 from qgis.core import QgsProject
 from qgis.utils import iface

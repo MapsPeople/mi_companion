@@ -9,10 +9,10 @@ mi_companion
 
 """
 
-from pathlib import Path
-
 import logging
 from functools import partial
+from pathlib import Path
+
 from qgis.PyQt.QtCore import QCoreApplication, QLocale, QTranslator
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction

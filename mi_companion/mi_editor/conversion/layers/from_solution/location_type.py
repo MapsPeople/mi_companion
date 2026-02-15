@@ -1,8 +1,9 @@
 import logging
+from typing import Any, List, Optional
+
 from qgis.core import (
     QgsEditorWidgetSetup,
 )
-from typing import Any, List, Optional
 
 from jord.pandas_utilities import df_to_columns
 from jord.qgis_utilities import (

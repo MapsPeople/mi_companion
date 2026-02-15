@@ -1,5 +1,7 @@
-import shapely
 import uuid
+from typing import Any
+
+import shapely
 from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
@@ -9,7 +11,6 @@ from qgis.core import (
 )
 from qgis.gui import QgsMapLayerAction, QgsMapToolIdentify
 from qgis.utils import iface
-from typing import Any
 
 from jord.qgis_utilities import feature_to_shapely
 from jord.qgis_utilities.helpers import reconnect_signal

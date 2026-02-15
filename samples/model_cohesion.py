@@ -8,7 +8,7 @@ from sync_module.model import (
     LocationType,
     Venue,
 )
-from sync_module.shared import MIVenueType, LanguageBundle
+from sync_module.shared import LanguageBundle, MIVenueType
 
 if __name__ == "__main__":
     venue = Venue(

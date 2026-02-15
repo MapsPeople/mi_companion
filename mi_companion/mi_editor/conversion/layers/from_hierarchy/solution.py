@@ -1,10 +1,11 @@
 import logging
+from typing import Any, Callable, Dict, List, Optional
+
 from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
 from qgis.core import QgsLayerTreeGroup, QgsProject
-from typing import Any, Callable, Dict, List, Optional
 
 from jord.qgis_utilities import parse_q_value
 from mi_companion import UPLOAD_ERROR_CONFIRMATION_TITLE

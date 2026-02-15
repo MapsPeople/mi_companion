@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import logging
+
 from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtWidgets import (

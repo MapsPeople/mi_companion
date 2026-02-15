@@ -1,11 +1,10 @@
 #!/usr/bin/python
 import logging
-
+from typing import Dict, Optional
 
 from qgis.core import (
     Qgis,
 )
-from typing import Dict, Optional
 
 __all__ = ["run"]
 

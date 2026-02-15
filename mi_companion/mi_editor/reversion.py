@@ -1,7 +1,8 @@
 import logging
+from typing import Dict, Optional
+
 from qgis.PyQt import QtWidgets
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
-from typing import Dict, Optional
 
 from mi_companion import HALF_SIZE
 from mi_companion.layer_descriptors import DATABASE_GROUP_DESCRIPTOR

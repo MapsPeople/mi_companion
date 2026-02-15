@@ -1,6 +1,7 @@
 import logging
-from qgis.PyQt import QtCore, QtWidgets
 from typing import Any, Collection, List, Optional
+
+from qgis.PyQt import QtCore, QtWidgets
 
 from jord.qgis_utilities import ResizableMessageBox, help_button, no_button, yes_button
 from mi_companion import VERBOSE

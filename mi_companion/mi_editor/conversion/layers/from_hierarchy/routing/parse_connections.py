@@ -1,9 +1,9 @@
-from collections import defaultdict
-
 import logging
 import operator
-from qgis.PyQt.QtCore import QVariant
+from collections import defaultdict
 from typing import Any, List, Mapping, Optional
+
+from qgis.PyQt.QtCore import QVariant
 
 from jord.qgis_utilities import (
     GeometryIsEmptyError,

@@ -1,11 +1,11 @@
-from pathlib import Path
-
 import json
 import logging
 import urllib.parse
 import urllib.request
 import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
+
 from qgis.PyQt.QtWidgets import QMessageBox
 
 from mi_companion.mi_editor.authentication.experiments import oauth

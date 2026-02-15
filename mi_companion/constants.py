@@ -1,8 +1,7 @@
-from pathlib import Path
-
 import logging
 import site  # https://docs.python.org/3/library/site.html#module-site
 import sys
+from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
 

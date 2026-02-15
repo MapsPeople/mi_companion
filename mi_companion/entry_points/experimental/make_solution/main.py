@@ -1,10 +1,9 @@
 #!/usr/bin/python
 import logging
 import uuid
-
+from typing import Optional
 
 from qgis.core import QgsProject
-from typing import Optional
 
 SOME_COMMENT_IGNORE_THIS = """
     decimal                            Distinguisable                          N/S or E/W  | E/W     E/W

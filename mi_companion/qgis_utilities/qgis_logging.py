@@ -1,7 +1,7 @@
+import logging
 from logging import config
 from pathlib import Path
 
-import logging
 import yaml
 from qgis.core import Qgis, QgsMessageLog
 

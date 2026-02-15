@@ -1,7 +1,8 @@
 #!/usr/bin/python
-from pathlib import Path
-
 import logging
+from pathlib import Path
+from typing import Optional
+
 from qgis.PyQt.QtGui import QColor, QFont
 from qgis.core import (
     Qgis,
@@ -12,7 +13,6 @@ from qgis.core import (
     QgsVectorLayer,
     QgsVectorLayerSimpleLabeling,
 )
-from typing import Optional
 
 from mi_companion import RESOURCE_BASE_PATH
 

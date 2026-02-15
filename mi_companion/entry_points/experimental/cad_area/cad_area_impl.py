@@ -1,8 +1,7 @@
-from pathlib import Path
-
 import logging
 import os
 import traceback
+from pathlib import Path
 from typing import Collection, Dict, Mapping, Optional
 
 from mi_companion import PROJECT_APP_PATH, RESOURCE_BASE_PATH

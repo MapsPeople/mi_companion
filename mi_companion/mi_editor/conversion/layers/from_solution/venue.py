@@ -1,6 +1,7 @@
 import logging
-from qgis.PyQt import QtWidgets
 from typing import Any, Iterable, Optional
+
+from qgis.PyQt import QtWidgets
 
 from jord.qgis_utilities import (
     make_field_not_null,

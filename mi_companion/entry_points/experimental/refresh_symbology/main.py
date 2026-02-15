@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import logging
+
 from qgis.utils import iface
 
 from mi_companion import RESOURCE_BASE_PATH

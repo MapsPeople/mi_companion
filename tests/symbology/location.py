@@ -1,27 +1,11 @@
-from qgis.PyQt import QtGui, QtWidgets, uic
-
-
 from qgis.PyQt.QtCore import QVariant
 
-
-from qgis.PyQt.QtWidgets import (
-    QMessageBox,
-)
-
-
 from qgis.core import (
-    QgsApplication,
     QgsFeature,
     QgsField,
     QgsFillSymbol,
     QgsGeometry,
-    QgsLayerTree,
-    QgsLayerTreeModel,
-    QgsProject,
-    QgsProject,
-    QgsRasterLayer,
     QgsRuleBasedRenderer,
-    QgsVectorLayer,
     QgsVectorLayer,
 )
 

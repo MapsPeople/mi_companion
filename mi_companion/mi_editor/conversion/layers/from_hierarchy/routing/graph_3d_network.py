@@ -1,11 +1,12 @@
 import logging
+from typing import Any, List, Optional
+
 from qgis.core import (
     QgsGeometry,
     QgsLayerTreeLayer,
     QgsPoint,
     QgsWkbTypes,
 )
-from typing import Any, List, Optional
 
 from jord.qgis_utilities import feature_to_shapely, parse_q_value
 from mi_companion.layer_descriptors import GRAPH_LINES_DESCRIPTOR

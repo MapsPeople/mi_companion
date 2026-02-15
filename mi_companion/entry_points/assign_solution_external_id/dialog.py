@@ -1,9 +1,9 @@
-from pathlib import Path
-
 import logging
+from pathlib import Path
+from typing import Any
+
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
-from typing import Any
 
 __all__ = ["Dialog"]
 

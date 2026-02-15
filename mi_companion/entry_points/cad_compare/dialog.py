@@ -1,8 +1,8 @@
+import logging
+from inspect import isclass
 from pathlib import Path
 
-import logging
 import qgis
-from inspect import isclass
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 

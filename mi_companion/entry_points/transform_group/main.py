@@ -1,7 +1,6 @@
 #!/usr/bin/python
-from pathlib import Path
-
 import logging
+from pathlib import Path
 
 from mi_companion import RESOURCE_BASE_PATH
 from mi_companion.mi_editor.conversion.projection import get_target_crs_srsid

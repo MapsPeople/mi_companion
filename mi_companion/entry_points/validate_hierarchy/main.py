@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import logging
+
 from qgis.core import (
     QgsProject,
 )

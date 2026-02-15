@@ -1,9 +1,10 @@
 #!/usr/bin/python
 import logging
 import uuid
+from typing import Any
+
 from qgis.core import QgsProject
 from qgis.utils import iface
-from typing import Any
 
 from mi_companion import RESOURCE_BASE_PATH
 

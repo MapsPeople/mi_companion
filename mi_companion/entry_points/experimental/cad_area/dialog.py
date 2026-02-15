@@ -1,6 +1,6 @@
+import logging
 from pathlib import Path
 
-import logging
 from qgis.PyQt import QtWidgets, uic
 
 from jord.qgis_utilities.helpers import signals

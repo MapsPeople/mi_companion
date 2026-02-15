@@ -1,6 +1,7 @@
 import logging
-from qgis.core import QgsLayerTreeLayer
 from typing import Any, List, Optional
+
+from qgis.core import QgsLayerTreeLayer
 
 from jord.qgis_utilities import (
     extract_field_value,

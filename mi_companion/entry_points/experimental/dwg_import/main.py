@@ -1,8 +1,8 @@
 #!/usr/bin/python
-from pathlib import Path
-
 import logging
 import os
+from pathlib import Path
+
 from qgis.core import (
     QgsProject,
     QgsVectorLayer,

@@ -1,5 +1,4 @@
 from collections import defaultdict
-
 from typing import Any, List, Mapping
 
 from mi_companion.layer_descriptors import *

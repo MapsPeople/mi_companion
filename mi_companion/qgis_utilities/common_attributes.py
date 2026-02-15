@@ -1,11 +1,11 @@
 import logging
 import math
+from typing import Any, Iterable, Mapping, Optional
 
 # from qgis.core.QgsVariantUtils import isNull, typeToDisplayString
 import numpy
 from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtGui import QColor
-from typing import Any, Iterable, Mapping, Optional
 
 from jord.qgis_utilities import (
     REAL_NONE_JSON_VALUE,

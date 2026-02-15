@@ -1,7 +1,8 @@
 import logging
+from typing import Any, Collection, Dict
+
 import shapely
 from qgis.core import QgsProject
-from typing import Any, Collection, Dict
 
 from sync_module.mi import MIOperation
 from sync_module.mi_sync_constants import MI_EPSG_NUMBER

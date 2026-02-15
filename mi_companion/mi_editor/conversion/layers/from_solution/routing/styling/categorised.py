@@ -1,10 +1,11 @@
+from typing import Any
+
 from qgis.core import (
     QgsCategorizedSymbolRenderer,
     QgsRendererCategory,
     QgsStyle,
     QgsSymbol,
 )
-from typing import Any
 
 
 def set_m_based_categorised_styling_single_layer(

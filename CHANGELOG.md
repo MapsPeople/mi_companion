@@ -9,18 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [New Button] Find feature geometry overlaps
 * [New Button] Merge feature geometry overlaps
-* [Simplification] Regeneration of fields of features in layers and groups is now a single button
-* [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
-
-
 
 ## 0.7.23 - 2026-02-13
 
 * [Styling] Graph is now styled according to level (m value) and highway type
+* [Security] User MapsIndoors credentials is now stored the QGIS Password Manager.
+* [Compatibility] QT6 is now supported
 
 ## 0.7.22 - 2025-08-04
 
-* [Regression Fix] ...
+* [Simplification] Regeneration of fields of features in layers and groups is now a single button
 
 ## 0.7.21 - 2025-08-04
 
@@ -32,7 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Regression Fix] An import in the "set label field" functionality had become invalid, this is fixed now
 * [Feature] Patch english langauge if it is missing or empty now
 * [Feature] Auto patch anchors that did end up outside a polygon at upload-time
-* [Feature] Location-type based location creation mode button and functionality now controllable through the ADD_LOCATION_TYPE_MODE_TOGGLE flag in settings
+* [Feature] Location-type based location creation mode button and functionality now controllable through the
+  ADD_LOCATION_TYPE_MODE_TOGGLE flag in settings
 
 ## 0.7.19 - 2025-07-30
 
@@ -40,11 +39,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.7.18 - 2025-07-30
 
-* [Bug] In QGIS <3.44.0 the setFieldMergePolicy of QgsVectorLayer is not available, now the download processes do not stop but rather warns the user to upgrade and proceeds
+* [Bug] In QGIS <3.44.0 the setFieldMergePolicy of QgsVectorLayer is not available, now the download processes
+  do not stop but rather warns the user to upgrade and proceeds
 
 ## 0.7.17 - 2025-07-29
 
-* [Simplification] If a translation for a certain language is missing try to migitate from copying en at the moment
+* [Simplification] If a translation for a certain language is missing try to migitate from copying en at the
+  moment
 * [Feature] Set policy for when splitting, merging and duplicating features.
 
 ## 0.7.16 - 2025-07-29
@@ -59,17 +60,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [Bug] Mixed None/NaN/Nat types is now unified to be None/NULL's
 * [Bug] Mixed casing categories are now unified as lowercase in lookups
-* [Simplification] Collections to Layers is more general now, ensuring that some values are not messed up in serialising and deserialising
+* [Simplification] Collections to Layers is more general now, ensuring that some values are not messed up in
+  serialising and deserialising
 
 ## 0.7.13 - 2025-07-26
 
-* [Bug] Anchor generation now uses "point_on_surface" rather than "centroid" to ensure that the anchor point is always inside the polygon
+* [Bug] Anchor generation now uses "point_on_surface" rather than "centroid" to ensure that the anchor point is
+  always inside the polygon
 
 ## 0.7.12 - 2025-07-22
 
-* [Bug] If shapely <2.1.0 is already available in QGIS then make sure that equals_exact call is using normalised geometries
+* [Bug] If shapely <2.1.0 is already available in QGIS then make sure that equals_exact call is using
+  normalised geometries
 * [Feature] 2d_model are now inherited from location_types as well
-
 
 ## 0.7.11 - 2025-07-22
 
@@ -98,7 +101,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Validation] All result lon and lat coordinates are now range validation (-90 to 90) and (-180 to 180)
 * [Feature] Anchor and 3d-rotation is now visualised in every polygon, can be disabled by setting,
   ADD_ANCHOR_AND_3DROTSCL_SYMBOLS.
-* [Feature] Adds support for 2D model styling and visualisation (SVG and raster symbols) on location level, location-type level is still missing
+* [Feature] Adds support for 2D model styling and visualisation (SVG and raster symbols) on location level,
+  location-type level is still missing
 
 ## 0.7.6 - 2025-07-03
 

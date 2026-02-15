@@ -1,4 +1,5 @@
 import logging
+
 from qgis.PyQt import QtWidgets
 
 from .pre_upload_processing import post_process_solution

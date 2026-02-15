@@ -1,6 +1,7 @@
 import logging
-from qgis._3d import Qgs3DTypes
 from typing import Any, Optional
+
+from qgis._3d import Qgs3DTypes
 
 from jord.qgis_utilities import (
     Qgis3dFacade,

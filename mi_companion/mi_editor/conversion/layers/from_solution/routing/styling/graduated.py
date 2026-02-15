@@ -1,10 +1,11 @@
+from typing import Any, Collection, Iterable
+
 from qgis.core import (
     QgsGraduatedSymbolRenderer,
     QgsRendererRange,
     QgsStyle,
     QgsSymbol,
 )
-from typing import Any, Collection, Iterable
 
 
 def set_z_based_graduated_styling(

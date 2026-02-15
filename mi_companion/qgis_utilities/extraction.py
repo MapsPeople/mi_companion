@@ -1,7 +1,8 @@
 import logging
 import uuid
-from qgis.PyQt.QtCore import QVariant
 from typing import Any, Tuple
+
+from qgis.PyQt.QtCore import QVariant
 
 from jord.qgis_utilities import extract_layer_data_single
 from mi_companion.configuration import read_bool_setting

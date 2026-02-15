@@ -1,6 +1,7 @@
 import logging
-from qgis.PyQt.QtCore import QVariant
 from typing import Any, List, Mapping, Optional
+
+from qgis.PyQt.QtCore import QVariant
 
 from jord.qgis_utilities import (
     extract_feature_attributes,

@@ -1,9 +1,9 @@
-from pathlib import Path
-
 import logging
+from pathlib import Path
+from typing import Any
+
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
-from typing import Any
 
 from mi_companion.entry_points.add_admin_id_to_route_elements.main import (
     FUNCTION_DESCRIPTION,

@@ -2,7 +2,6 @@ from qgis.core import (
     QgsExpression,
 )
 
-
 two_color_gradient_feature_m_start = QgsExpression(
     """
   ramp_color(

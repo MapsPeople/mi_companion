@@ -1,6 +1,5 @@
-from pathlib import Path
-
 import os
+from pathlib import Path
 from typing import Any, Mapping, Optional
 
 from warg import passes_kws_to

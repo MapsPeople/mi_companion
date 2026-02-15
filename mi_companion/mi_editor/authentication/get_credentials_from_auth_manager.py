@@ -1,4 +1,5 @@
 import logging
+
 from qgis.PyQt.QtWidgets import (
     QInputDialog,
     QMessageBox,

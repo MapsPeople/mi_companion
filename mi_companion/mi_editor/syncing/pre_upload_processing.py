@@ -1,9 +1,9 @@
-from collections import defaultdict
-
 import logging
-import shapely
+from collections import defaultdict
 from itertools import chain
 from typing import Union
+
+import shapely
 
 from jord.shapely_utilities import is_multi
 from mi_companion.configuration import read_bool_setting

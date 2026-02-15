@@ -1,7 +1,8 @@
 import logging
 from enum import Enum
-from qgis.core import Qgis, QgsProject
 from typing import Any, Optional
+
+from qgis.core import Qgis, QgsProject
 
 from jord.qgis_utilities import reject_role
 from .hierarchy_model import INVERSE_NODE_PARENT_MAPPING, NODE_PARENT_MAPPING

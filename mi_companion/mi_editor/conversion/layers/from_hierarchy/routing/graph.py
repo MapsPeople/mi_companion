@@ -1,9 +1,10 @@
 import logging
+from typing import Any, List, Optional, Tuple
+
 from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
 from qgis.core import QgsLayerTreeLayer
-from typing import Any, List, Optional, Tuple
 
 from jord.qgis_utilities import extract_layer_data_single, feature_to_shapely
 from mi_companion import UPLOAD_ERROR_CONFIRMATION_TITLE

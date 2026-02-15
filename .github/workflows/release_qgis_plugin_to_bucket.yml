@@ -73,12 +73,11 @@ jobs:
           path: mi_companion.${{ env.RELEASE_VERSION }}.zip
           destination: ${{ env.QGIS_PATH }}
 
-
       - id: "setup-gcloud-cli"
         name: "setup-gcloud-cli"
         uses: "google-github-actions/setup-gcloud@v2"
         with:
-          version: '>= 363.0.0'
+          version: ">= 363.0.0"
 
       - id: "list-files-in-GCS-path"
         name: list-files-in-GCS-path
@@ -116,4 +115,3 @@ jobs:
         run: |
           gcloud storage cp ${{ env.GCS_PATH }}/plugins_merged.xml ${{ env.GCS_PATH }}/plugins.xml
           echo "plugins.xml file has been overwritten with the merged version."
-

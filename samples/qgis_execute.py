@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 from qgis.core import QgsApplication
 
 QgsApplication.setPrefixPath(

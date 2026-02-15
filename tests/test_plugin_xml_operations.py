@@ -1,7 +1,7 @@
 # Standard library
 import sys
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
 # Third-party imports
 import pytest
@@ -36,7 +36,7 @@ def test_merge_xml(inputs_dir):
     pxo.merge_xml(str(file1), str(file2), str(merged_file))
 
     # Check the merged output
-    with open(merged_file, "r") as merged_file:
+    with open(merged_file) as merged_file:
         merged_content = merged_file.read()
         assert merged_content.count("<pyqgis_plugin") == 4
         assert (
@@ -70,7 +70,7 @@ def test_remove_missing_plugins_from_gcs(inputs_dir):
     pxo.remove_missing_plugins_from_gcs(xml_file, gcs_plugins_set, temp_file_path)
 
     # Check the modified XML
-    with open(temp_file_path, "r") as modified_file:
+    with open(temp_file_path) as modified_file:
         modified_content = modified_file.read()
         assert (
             '<pyqgis_plugin name="MapsIndoors Beta" version="0.7.20">'
@@ -101,7 +101,7 @@ def test_remove_deprecated_plugins_from_file(inputs_dir):
     pxo.remove_deprecated_plugins_from_file(xml_file, temp_file_path)
 
     # Check the modified XML
-    with open(temp_file_path, "r") as modified_file:
+    with open(temp_file_path) as modified_file:
         modified_content = modified_file.read()
         assert (
             '<pyqgis_plugin name="MapsIndoors Beta" version="0.7.20-rc44">'

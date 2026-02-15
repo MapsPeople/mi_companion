@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import logging
+
 from qgis.core import QgsProject, QgsVectorLayer
 
 from mi_companion import RESOURCE_BASE_PATH

@@ -1,4 +1,6 @@
 import logging
+from typing import Any, Iterable
+
 from qgis.core import (
     Qgis,
     QgsCategorizedSymbolRenderer,
@@ -10,7 +12,6 @@ from qgis.core import (
     QgsSvgMarkerSymbolLayer,
     QgsSymbolLayer,
 )
-from typing import Any, Iterable
 
 from mi_companion.configuration import read_bool_setting
 from mi_companion.qgis_utilities import (
