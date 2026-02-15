@@ -3,7 +3,7 @@ name=MapsIndoors
 
 qgisMinimumVersion=3.36
 qgisMaximumVersion=3.99
-version=0.7.23-styled-graph
+version=0.7.24-rc1
 
 author=MapsPeople A/S
 email=chen@mapspeople.com
