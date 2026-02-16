@@ -4,24 +4,28 @@ import shutil
 import subprocess
 import sys
 import sysconfig
-from multiprocessing import Pipe
 from pathlib import Path
 from subprocess import PIPE, Popen, STDOUT
-from typing import Optional, Union
+from typing import IO, Optional, Union
 
-from mi_companion.constants import BUNDLED_PACKAGES_DIR, VERSION
+from mi_plugin.constants import (
+    BUNDLED_PACKAGES_DIR,
+    PROJECT_NAME,
+    RESOURCE_BASE_PATH,
+    VERSION,
+)
 
 THIS_DIR = Path(__file__).parent
-TARGET_DIR = THIS_DIR / BUNDLED_PACKAGES_DIR
-PLUGIN_DIR = THIS_DIR / "mi_companion"
+BUNDLE_TARGET_DIR = THIS_DIR / BUNDLED_PACKAGES_DIR
+PLUGIN_DIR = THIS_DIR / RESOURCE_BASE_PATH
 REQUIREMENTS_FILE = PLUGIN_DIR / "requirements.txt"
 
-MIN_QGIS_VERSION = "3.38"
+MIN_QGIS_VERSION = "3.4"
 
 _logger = logging.getLogger(__name__)
 
 
-def log_subprocess_output(pipe: Pipe) -> None:
+def log_subprocess_output(pipe: IO[str]) -> None:
     """
 
     :param pipe:
@@ -60,7 +64,7 @@ def package_dependencies(
     clean: bool = True,
     python_version: str = "3.12",
     version: Optional[str] = None,
-    project_name: str = "MapsIndoors",
+    project_name: str = PROJECT_NAME,
     platform: str = sysconfig.get_platform(),
 ) -> None:
     """
@@ -272,7 +276,7 @@ if __name__ == "__main__":
         "--target-dir",
         help="Where to install the packages",
         type=str,
-        default=str(TARGET_DIR),
+        default=str(BUNDLE_TARGET_DIR),
         required=False,
     )
 

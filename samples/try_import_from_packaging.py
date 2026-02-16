@@ -12,12 +12,7 @@ if platform.system() == "Darwin":
 elif platform.system() == "Linux":
     platform_postfix = "linux"
 
-p = (
-    Path(__file__).parent.parent
-    / "mi_companion"
-    / SHIPPED_PACKAGES_DIR
-    / platform_postfix
-)
+p = Path(__file__).parent.parent / "mi_plugin" / SHIPPED_PACKAGES_DIR / platform_postfix
 _logger = logging.getLogger(__name__)
 
 if p.exists():

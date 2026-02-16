@@ -23,8 +23,8 @@ else:
 
 if __name__ == "__main__":
     for f_n in (
-        "mi_companion",
-        # f"mi_companion_bundle.{VERSION}"
+        "mi_plugin",
+        # f"mi_plugin_bundle.{VERSION}"
     ):
         source_folder = (Path(__file__).parent / f_n).absolute()
         target_folder = (

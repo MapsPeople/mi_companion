@@ -317,7 +317,7 @@ secure_files/
 
 linux/
 .gitlab-ci-local
-mi_companion_bundle*
+mi_plugin_bundle*
 release.md
 
 plugins.xml

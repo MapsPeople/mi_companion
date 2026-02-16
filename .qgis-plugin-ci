@@ -1,6 +1,6 @@
-plugin_path: mi_companion
+plugin_path: mi_plugin
 github_organization_slug: MapsPeople
-project_slug: mi_companion
+project_slug: mi_plugin
 changelog_path: CHANGELOG.md
 changelog_include: True
 changelog_number_of_entries: 999

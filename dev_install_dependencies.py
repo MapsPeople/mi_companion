@@ -40,7 +40,7 @@ def install_dependencies():
     env["SUBMODULE_DIRECTORY"] = str(Path(__file__).parent)
     print(
         subprocess.check_call(
-            ["python", "-m", "pip", "install", "-r", "mi_companion/requirements.txt"],
+            ["python", "-m", "pip", "install", "-r", "mi_plugin/requirements.txt"],
             env=env,
         )
     )

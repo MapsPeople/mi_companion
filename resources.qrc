@@ -1,10 +1,10 @@
 <RCC>
     <qresource>
-        <file>mi_companion/icon.png</file>
-        <file>mi_companion/icons/mp_notext.png</file>
-        <file>mi_companion/icons/mp-favicon-white.png</file>
-        <file>mi_companion/icons/arrow_down.png</file>
-        <file>mi_companion/icons/arrow_up.png</file>
-        <file>mi_companion/icons/ruby.png</file>
+        <file>mi_plugin/icon.png</file>
+        <file>mi_plugin/icons/mp_notext.png</file>
+        <file>mi_plugin/icons/mp-favicon-white.png</file>
+        <file>mi_plugin/icons/arrow_down.png</file>
+        <file>mi_plugin/icons/arrow_up.png</file>
+        <file>mi_plugin/icons/ruby.png</file>
     </qresource>
 </RCC>

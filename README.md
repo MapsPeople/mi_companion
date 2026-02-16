@@ -27,7 +27,7 @@ Using the interpreter of choice, execute
 
 ## How to setup python interpreter in pycharm
 
-1. Build mi_companion_bundle and install. Run `bundle_packaging.py` to build the mi_companion_bundle. Run
+1. Build mi_plugin_bundle and install. Run `bundle_packaging.py` to build the mi_plugin_bundle. Run
    `dev_install_plugin.py` to install the plugin.
 2. Open QGIS and open the Python console. Run
 

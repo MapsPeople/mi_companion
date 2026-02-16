@@ -1,0 +1,50 @@
+import logging
+from pathlib import Path
+
+from qgis.core import QgsProject
+from qgis.utils import iface
+
+from mi_plugin import RESOURCE_BASE_PATH
+
+_logger = logging.getLogger(RESOURCE_BASE_PATH)
+__all__ = ["run"]
+
+FUNCTION_DESCRIPTION = """Import and IMDF zip as QGIS layers
+"""
+
+__doc__ = FUNCTION_DESCRIPTION
+
+
+def run(*, imdf_zip_file_path: Path) -> None:
+    f"""{FUNCTION_DESCRIPTION}
+
+    :param imdf_zip_file_path:
+    :return:
+    """
+    from mi_plugin.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
+    from mi_plugin.mi_editor.conversion import add_solution_layers
+    from jord.qgis_utilities.helpers import InjectedProgressBar
+    from midf.conversion import to_mi_solution
+    from midf.linking import link_imdf
+    from midf.loading import load_imdf
+
+    qgis_instance_handle = QgsProject.instance()
+    layer_tree_root = QgsProject.instance().layerTreeRoot()
+
+    if isinstance(imdf_zip_file_path, str):
+        imdf_zip_file_path = Path(imdf_zip_file_path)
+
+    imdf_dict = load_imdf(imdf_zip_file_path)
+
+    midf_solution = link_imdf(imdf_dict)
+
+    mi_solution = to_mi_solution(midf_solution)
+
+    with InjectedProgressBar(parent=iface.mainWindow().statusBar()) as progress_bar:
+        add_solution_layers(
+            qgis_instance_handle=qgis_instance_handle,
+            solution=mi_solution,
+            layer_tree_root=layer_tree_root,
+            mi_hierarchy_group_name=DATABASE_GROUP_DESCRIPTOR,
+            progress_bar=progress_bar,
+        )

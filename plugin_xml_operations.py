@@ -104,7 +104,7 @@ def read_gcs_plugin_versions(file_path: str) -> Set[str]:
                     version = (
                         line.strip()
                         .split("/")[-1]
-                        .split("mi_companion.")[1]
+                        .split("mi_plugin.")[1]
                         .split(".zip")[0]
                     )
                 except IndexError:

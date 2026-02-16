@@ -1,0 +1,56 @@
+import logging
+import uuid
+from typing import Any, Tuple
+
+from qgis.PyQt.QtCore import QVariant
+
+from jord.qgis_utilities import extract_layer_data_single
+from mi_plugin.configuration import read_bool_setting
+
+_logger = logging.getLogger(__name__)
+
+__all__ = [
+    "special_extract_layer_data",
+]
+
+
+def special_extract_layer_data(layer_tree_layer: Any) -> Tuple:  # TODO: REWRITE
+    """
+
+    :param layer_tree_layer:
+    :return:
+    """
+    layer_attributes, layer_feature = extract_layer_data_single(
+        layer_tree_layer, raise_if_empty=False
+    )
+
+    if layer_attributes is None:
+        _logger.warning(
+            f"{layer_tree_layer} layer did contain any valid data, skipping"
+        )
+        return None, None, None, None
+
+    admin_id = layer_attributes["admin_id"] if "admin_id" in layer_attributes else None
+    if admin_id is None:
+        if read_bool_setting("GENERATE_MISSING_ADMIN_IDS"):
+            admin_id = uuid.uuid4().hex
+        else:
+            raise ValueError(f"{layer_feature} is missing a valid admin id")
+    elif isinstance(admin_id, QVariant):
+        if admin_id.isNull():
+            raise ValueError(f"{layer_feature} is missing a valid admin id")
+        else:
+            admin_id = str(admin_id.value())
+
+    external_id = (
+        layer_attributes["external_id"] if "external_id" in layer_attributes else None
+    )
+    if external_id is None:
+        ...
+    elif isinstance(external_id, QVariant):
+        if external_id.isNull():
+            external_id = None
+        else:
+            external_id = str(external_id.value())
+
+    return admin_id, external_id, layer_attributes, layer_feature

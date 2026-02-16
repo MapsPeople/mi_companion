@@ -56,7 +56,7 @@ jobs:
       - name: Package QGIS Plugin
         run: |
           python bundle_packaging.py --python-version ${{ matrix.python-version }} --plugin-version ${{ env.RELEASE_VERSION }} --platform ${{ matrix.platform }} || exit 1
-          qgis-plugin-ci package ${{ env.RELEASE_VERSION }} -a mi_companion_bundle.${{ env.RELEASE_VERSION }}/ -u https://qgis.mapsindoors.com/plugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
+          qgis-plugin-ci package ${{ env.RELEASE_VERSION }} -a mi_plugin_bundle.${{ env.RELEASE_VERSION }}/ -u https://qgis.mapsindoors.com/plugins/dev/${{ matrix.platform }}/${{ matrix.python-version }}/
 
       - id: "auth"
         name: auth
@@ -70,7 +70,7 @@ jobs:
         name: upload-file-to-bucket
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
-          path: mi_companion.${{ env.RELEASE_VERSION }}.zip
+          path: mi_plugin.${{ env.RELEASE_VERSION }}.zip
           destination: ${{ env.QGIS_PATH }}
 
       - id: "setup-gcloud-cli"
