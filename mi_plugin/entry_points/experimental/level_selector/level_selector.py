@@ -13,11 +13,11 @@ from qgis.core import (
 )
 from qgis.gui import QgsDockWidget
 from qgis.utils import iface
+from warg import ensure_in_sys_path, first
 
 from jord.qgis_utilities.helpers import signals
 from mi_plugin import RESOURCE_BASE_PATH
 from mi_plugin.qgis_utilities import resolve_path
-from warg import ensure_in_sys_path, first
 
 signals.IS_DEBUGGING = True
 

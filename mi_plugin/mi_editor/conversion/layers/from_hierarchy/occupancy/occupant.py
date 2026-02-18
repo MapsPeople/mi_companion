@@ -2,11 +2,11 @@ import logging
 from typing import Any, List, Optional
 
 from qgis.core import QgsLayerTreeLayer
+from sync_module.model import Occupant, Solution
 
 from jord.qgis_utilities import (
     extract_layer_attributes,
 )
-from sync_module.model import Occupant, Solution
 
 BOOLEAN_LOCATION_TYPE_ATTRS = ()
 STR_LOCATION_TYPE_ATTRS = ("key", "translations.en.name")

@@ -4,10 +4,10 @@ from typing import Any
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
+from warg import get_args, is_optional, is_union
 
 from jord.qgis_utilities.helpers import signals
 from mi_plugin.constants import RESOURCE_BASE_PATH
-from mi_plugin.gui.typing_utilities import get_args, is_optional, is_union
 from .main import FUNCTION_DESCRIPTION
 
 __all__ = ["Dialog"]

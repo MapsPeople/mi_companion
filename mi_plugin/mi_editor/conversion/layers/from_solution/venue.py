@@ -2,6 +2,8 @@ import logging
 from typing import Any, Iterable, Optional
 
 from qgis.PyQt import QtWidgets
+from sync_module.model import FALLBACK_OSM_GRAPH, Solution, Venue
+from sync_module.tools import translations_to_flattened_dict
 
 from jord.qgis_utilities import (
     make_field_not_null,
@@ -29,8 +31,6 @@ from mi_plugin.mi_editor.conversion.projection import (
     prepare_geom_for_editing_qgis,
     solve_target_crs_authid,
 )
-from sync_module.model import FALLBACK_OSM_GRAPH, Solution, Venue
-from sync_module.tools import translations_to_flattened_dict
 from .building import add_building_layers
 from .occupancy.occupant import (
     add_occupant_layer,

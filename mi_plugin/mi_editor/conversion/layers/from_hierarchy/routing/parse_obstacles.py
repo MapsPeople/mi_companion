@@ -1,6 +1,8 @@
 import logging
 from typing import Any, List, Optional
 
+from sync_module.model import Solution
+
 from jord.qgis_utilities import (
     GeometryIsEmptyError,
     extract_feature_attributes,
@@ -13,7 +15,6 @@ from mi_plugin.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgi
 from mi_plugin.qgis_utilities.common_attributes import (
     extract_single_level_str_map,
 )
-from sync_module.model import Solution
 
 _logger = logging.getLogger(__name__)
 

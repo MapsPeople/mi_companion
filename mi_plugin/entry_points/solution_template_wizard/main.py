@@ -1,16 +1,18 @@
 import logging
-from typing import Tuple
+import time
+from pathlib import Path
+from typing import List, Optional
 
 import shapely
-from qgis.core import QgsProject, QgsLayerTreeLayer, QgsLayerTreeGroup
+from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 from qgis.utils import iface
-
-from mi_plugin import RESOURCE_BASE_PATH
-from mi_plugin.layer_descriptors import (
-    LOCATION_TYPE_DESCRIPTOR,
-    SOLUTION_DATA_DESCRIPTOR,
-    SOLUTION_GROUP_DESCRIPTOR,
+from sync_module.mi import (
+    SolutionDepth,
+    get_remote_solution,
+    get_solution_id,
+    load_location_types_to_solution,
 )
+from sync_module.mi.synchronization import _create_solution
 from sync_module.model import (
     Connector,
     FALLBACK_OSM_GRAPH,
@@ -27,9 +29,15 @@ from sync_module.shared import (
     MIMediaType,
     MIOccupantType,
 )
-from mi_plugin.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
-from mi_plugin.mi_editor.conversion import add_solution_layers
+
 from jord.qgis_utilities.helpers import InjectedProgressBar
+from mi_plugin import DEFAULT_PLUGIN_SETTINGS, PROJECT_NAME, RESOURCE_BASE_PATH
+from mi_plugin.layer_descriptors import (
+    DATABASE_GROUP_DESCRIPTOR,
+    LOCATION_TYPE_DESCRIPTOR,
+    SOLUTION_DATA_DESCRIPTOR,
+)
+from mi_plugin.mi_editor.conversion import add_solution_layers
 
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 __all__ = ["run"]
@@ -46,8 +54,8 @@ FUNCTION_DESCRIPTION = """Generate an empty hierarchy for map creation from scra
     :type solution_customer_id: str
     :param solution_default_language: Default language code for the solution (default: "en")
     :type solution_default_language: str
-    :param solution_available_languages: Tuple of all available language codes (default: ("en",))
-    :type solution_available_languages: Tuple[str, ...]
+    :param solution_available_languages: List of all available language codes (default: ("en",))
+    :type solution_available_languages: List[str]
     :param number_of_floors: Number of floors to generate in the building (must be positive integer)
     :type number_of_floors: int
 """
@@ -59,9 +67,12 @@ def run(
     *,
     solution_external_id: str,
     solution_customer_id: str,
-    # solution_default_language: str = SOLUTION_DEFAULT_LANGUAGE,
-    # solution_available_languages: Tuple[        str, ...    ] = SOLUTION_DEFAULT_AVAILABLE_LANGUAGES,
+    solution_default_language: str = SOLUTION_DEFAULT_LANGUAGE,
+    solution_available_languages: List[str] = list(
+        SOLUTION_DEFAULT_AVAILABLE_LANGUAGES
+    ),
     number_of_floors: int,
+    location_types_csv: Optional[Path] = None,
 ) -> None:
     f"""{FUNCTION_DESCRIPTION}
 
@@ -87,21 +98,89 @@ def run(
         )
     """
 
-    solution_default_language = SOLUTION_DEFAULT_LANGUAGE
-    solution_available_languages = SOLUTION_DEFAULT_AVAILABLE_LANGUAGES
+    existing_solution = None
+
+    if location_types_csv is not None:
+
+        from sync_module.mi.config import MapsIndoors, Settings, set_settings
+        from jord.qgis_utilities import read_plugin_setting
+        from mi_plugin.mi_editor.authentication.get_credentials_from_auth_manager import (
+            get_credentials_from_auth_manager,
+        )
+
+        mp_username, mp_password = get_credentials_from_auth_manager()
+
+        sync_module_settings = Settings(
+            mapsindoors=MapsIndoors(
+                username=mp_username,
+                password=mp_password,
+                token_endpoint=read_plugin_setting(
+                    "MAPS_INDOORS_TOKEN_ENDPOINT",
+                    default_value=DEFAULT_PLUGIN_SETTINGS[
+                        "MAPS_INDOORS_TOKEN_ENDPOINT"
+                    ],
+                    project_name=PROJECT_NAME,
+                ),
+                manager_api_host=read_plugin_setting(
+                    "MAPS_INDOORS_MANAGER_API_HOST",
+                    default_value=DEFAULT_PLUGIN_SETTINGS[
+                        "MAPS_INDOORS_MANAGER_API_HOST"
+                    ],
+                    project_name=PROJECT_NAME,
+                ),
+                media_api_host=read_plugin_setting(
+                    "MAPS_INDOORS_MEDIA_API_HOST",
+                    default_value=DEFAULT_PLUGIN_SETTINGS[
+                        "MAPS_INDOORS_MEDIA_API_HOST"
+                    ],
+                    project_name=PROJECT_NAME,
+                ),
+            )
+        )
+
+        set_settings(sync_module_settings)
+
+        try:
+            get_remote_solution(
+                external_id=solution_external_id, depth=SolutionDepth.solution
+            )
+            solution_id = get_solution_id(solution_external_id)
+        except:  # May not exists yet
+            solution_id = _create_solution(
+                external_id=solution_external_id,
+                name=solution_external_id,
+                customer_id=solution_customer_id,
+                occupants_enabled=True,
+                available_languages=solution_available_languages,
+                default_language=solution_default_language,
+            )
+            time.sleep(
+                2
+            )  # Wait for BACKEND to process creation before loading location types
+
+        load_location_types_to_solution(
+            path=location_types_csv, solution_id=solution_id
+        )
+        existing_solution = get_remote_solution(
+            external_id=solution_external_id, depth=SolutionDepth.solution
+        )
 
     qgis_instance_handle = QgsProject.instance()
     layer_tree_root = QgsProject.instance().layerTreeRoot()
 
-    mi_solution = Solution(
-        solution_external_id,
-        solution_external_id,
-        _customer_id=solution_customer_id,
-        implementation_type=ImplementationStatus.develop,
-        occupants_enabled=True,
-        _default_language=solution_default_language,
-        _available_languages=solution_available_languages,
-    )
+    if existing_solution:
+        mi_solution = existing_solution
+    else:
+        mi_solution = Solution(
+            solution_external_id,
+            solution_external_id,
+            _customer_id=solution_customer_id,
+            implementation_type=ImplementationStatus.develop,
+            occupants_enabled=True,
+            _default_language=solution_default_language,
+            _available_languages=tuple(solution_available_languages),
+        )
+        # location_type_key = mi_solution.add_location_type(        dummy_id, translations=dummy_translation    )
 
     dummy_id = "dummy"
     dummy_point = shapely.Point((0, 0))
@@ -121,7 +200,7 @@ def run(
         occupant_type=MIOccupantType.occupant,
         occupant_category_key=occupant_category_key,
     )
-    # location_type_key = mi_solution.add_location_type(        dummy_id, translations=dummy_translation    )
+
     category_key = mi_solution.add_category(dummy_id, dummy_translation)
     media_key = mi_solution.add_media(dummy_id, data=b"bla", media_type=MIMediaType.png)
 

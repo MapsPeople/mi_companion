@@ -13,7 +13,6 @@ from qgis.core import (
     QgsRendererRange,
     QgsStyle,
 )
-
 from warg import frange, pairs
 
 dashing_style_in_highway_type_expression = """if(

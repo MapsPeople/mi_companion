@@ -3,6 +3,9 @@ from collections import defaultdict
 from typing import Any, List, Optional
 
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
+from sync_module.model import (
+    Solution,
+)
 
 from jord.qgis_utilities import recurse_layers
 from mi_plugin import (
@@ -17,9 +20,6 @@ from mi_plugin.layer_descriptors import (
     ENTRY_POINTS_GROUP_DESCRIPTOR,
     OBSTACLES_GROUP_DESCRIPTOR,
     PREFERS_GROUP_DESCRIPTOR,
-)
-from sync_module.model import (
-    Solution,
 )
 from .parse_avoids import add_avoids
 from .parse_barriers import add_barriers

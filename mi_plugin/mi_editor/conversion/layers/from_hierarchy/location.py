@@ -8,6 +8,16 @@ from qgis.core import (
     QgsLayerTreeGroup,
     QgsLayerTreeLayer,
 )
+from sync_module.model import (
+    Category,
+    LocationType,
+    OpeningHoursDetail,
+    Solution,
+    StrToDetailTypeMap,
+)
+from sync_module.shared import LanguageBundle
+from sync_module.tools import standard_opening_hours_from_dict
+from warg import str_to_bool
 
 from jord.qgis_utilities import (
     extract_feature_attributes,
@@ -35,16 +45,6 @@ from mi_plugin.qgis_utilities.common_attributes import (
     extract_translations,
 )
 from mi_plugin.type_enums import BackendLocationTypeEnum
-from sync_module.model import (
-    Category,
-    LocationType,
-    OpeningHoursDetail,
-    Solution,
-    StrToDetailTypeMap,
-)
-from sync_module.shared import LanguageBundle
-from sync_module.tools import standard_opening_hours_from_dict
-from warg import str_to_bool
 
 __all__ = ["add_floor_contents"]
 

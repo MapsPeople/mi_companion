@@ -21,9 +21,27 @@ Now just open QGIS and get cracking.
 
 ## How to setup editable development environment
 
-Using the interpreter of choice, execute
+Using the interpreter of choice, execute while in the root of this repository
 
 `python dev_install_dependencies.py`
+
+## How to compile resources
+
+install pyside6 if you haven't already
+
+pip install pyside6
+
+then run
+
+`pyside6-rcc -g python -o mi_plugin/resources.py resources.qrc`
+
+and replace in mi_plugin/resources.py
+
+`from PySide6 import QtCore`
+
+with
+
+`from qgis.PyQt import QtCore`
 
 ## How to setup python interpreter in pycharm
 

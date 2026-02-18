@@ -3,6 +3,22 @@ from typing import Any, Callable, Iterable, Optional, Tuple
 
 from qgis.PyQt import QtWidgets
 from qgis.core import QgsProject
+from sync_module.mi import (
+    SolutionDepth,
+    get_remote_solution,
+)
+from sync_module.model import (
+    GraphEdgeContextTypes,
+    IMPLEMENTATION_STATUS,
+    Solution,
+)
+from sync_module.pandas_utilities import extract_columns_from_solution_config
+from sync_module.shared import (
+    MIConnectionType,
+    MIDoorType,
+    MIEntryPointType,
+    MIVenueType,
+)
 
 from jord.qgis_utilities import (
     make_enum_dropdown_widget,
@@ -25,22 +41,6 @@ from mi_plugin.layer_descriptors import (
     SOLUTION_CONFIG_DESCRIPTOR,
     SOLUTION_DATA_DESCRIPTOR,
     SOLUTION_GROUP_DESCRIPTOR,
-)
-from sync_module.mi import (
-    SolutionDepth,
-    get_remote_solution,
-)
-from sync_module.model import (
-    GraphEdgeContextTypes,
-    IMPLEMENTATION_STATUS,
-    Solution,
-)
-from sync_module.pandas_utilities import extract_columns_from_solution_config
-from sync_module.shared import (
-    MIConnectionType,
-    MIDoorType,
-    MIEntryPointType,
-    MIVenueType,
 )
 from .location_type import add_location_type_layer, make_location_type_dropdown_widget
 from .venue import add_venue_layer

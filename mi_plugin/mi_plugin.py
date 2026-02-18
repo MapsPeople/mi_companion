@@ -27,10 +27,10 @@ from .constants import (
     MI_MENU_INSTANCE_NAME,
     PROJECT_NAME,
 )
+from .gui.split_widgets.advanced_tools_dock import AdvancedToolsWidget
 from .gui.split_widgets.digitisation_dock import DigitisationWidget
 from .gui.split_widgets.export_dock import ExportWidget
 from .gui.split_widgets.import_dock import ImportWidget
-from .gui.split_widgets.tools_dock import EntryPointsWidget
 from .resources import *  # Initialize Qt resources from file resources.py
 
 assert qt_resource_data is not None  # from resources.py
@@ -131,11 +131,6 @@ class MapsIndoorsPlugin:
 
         for label, dock_cls, icon in (
             (
-                ImportWidget.menu_name,
-                ImportWidget,
-                QIcon(f"{resource_path}/icons/arrow_down.png"),
-            ),
-            (
                 DigitisationWidget.menu_name,
                 DigitisationWidget,
                 QIcon(f"{resource_path}/icons/mp_notext.png"),
@@ -146,9 +141,14 @@ class MapsIndoorsPlugin:
                 QIcon(f"{resource_path}/icons/arrow_up.png"),
             ),
             (
-                EntryPointsWidget.menu_name,
-                EntryPointsWidget,
+                AdvancedToolsWidget.menu_name,
+                AdvancedToolsWidget,
                 QIcon(f"{resource_path}/icons/ruby.png"),
+            ),
+            (
+                ImportWidget.menu_name,
+                ImportWidget,
+                QIcon(f"{resource_path}/icons/arrow_down.png"),
             ),
         ):
             action = QAction(
@@ -163,7 +163,8 @@ class MapsIndoorsPlugin:
             self.iface.addPluginToMenu(self.menu, action)
             # self.iface.addToolBarIcon(action)
             self.actions.append(action)
-            if dock_cls is not EntryPointsWidget:
+
+            if dock_cls is not AdvancedToolsWidget:
                 self.common_widget_actions.append(action)
 
         if True:
@@ -228,12 +229,26 @@ class MapsIndoorsPlugin:
         if name in self.dock_widget_instances:
             del self.dock_widget_instances[name]
 
+    def _organize_dock_widgets_as_tabs(self) -> None:
+        """
+        Organizes all triggered dock widgets into tabs within a single dock area.
+        """
+        dock_widgets = list(self.dock_widget_instances.values())
+        if len(dock_widgets) < 2:
+            return
+
+        # Tab the first widget with subsequent ones
+        for i in range(1, len(dock_widgets)):
+            self.iface.mainWindow().tabifyDockWidget(dock_widgets[0], dock_widgets[i])
+
     def open_monolith_dock_widget(self) -> None:
         """
         Opens the dock
         """
         for a in self.common_widget_actions:
             a.trigger()
+
+        self._organize_dock_widgets_as_tabs()
 
     def on_dock_widget_closed(self) -> None:  # used when Dock dialogue is closed
         """

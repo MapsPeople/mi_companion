@@ -13,7 +13,7 @@ from warg import first
 
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
-from mi_plugin.gui.typing_utilities import get_args, is_optional, is_union
+from warg import get_args, is_optional, is_union
 
 
 class Dialog(QDialog, first(uic.loadUiType(str(Path(__file__).parent / "dialog.ui")))):

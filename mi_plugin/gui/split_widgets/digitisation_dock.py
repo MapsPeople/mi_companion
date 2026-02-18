@@ -1,7 +1,8 @@
 from pathlib import Path
 
-from jord.qt_utilities import DockWidgetAreaFlag
 from warg import ensure_in_sys_path, first
+
+from jord.qt_utilities import DockWidgetAreaFlag
 from ...entry_points import (
     add_language_to_group,
     assign_solution_external_id,
@@ -10,6 +11,7 @@ from ...entry_points import (
     duplicate_group,
     imdf_import,
     regen_field,
+    solution_template_wizard,
     svg_import,
     transform_group,
 )
@@ -111,7 +113,7 @@ class DigitisationWidget(
             )
             self.hierarchy_layout.addWidget(button)
 
-        for i in (transform_group, assign_value_to_dimension):
+        for i in (solution_template_wizard, transform_group, assign_value_to_dimension):
             button = QtWidgets.QPushButton(i.ENTRY_POINT_NAME)
             button.setToolTip(i.ENTRY_POINT_DESCRIPTION)
             signals.reconnect_signal(

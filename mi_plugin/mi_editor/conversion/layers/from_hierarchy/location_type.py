@@ -2,6 +2,8 @@ import logging
 from typing import Any, List, Optional
 
 from qgis.core import QgsLayerTreeLayer
+from sync_module.model import LocationType, Solution
+from warg import str_to_bool
 
 from jord.qgis_utilities import (
     extract_field_value,
@@ -12,8 +14,6 @@ from mi_plugin.qgis_utilities.common_attributes import (
     extract_display_rule,
     extract_translations,
 )
-from sync_module.model import LocationType, Solution
-from warg import str_to_bool
 
 BOOLEAN_LOCATION_TYPE_ATTRS = ()
 STR_LOCATION_TYPE_ATTRS = ("translations.en.name", "admin_id")

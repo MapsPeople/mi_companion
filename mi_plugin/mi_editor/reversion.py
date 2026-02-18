@@ -3,11 +3,11 @@ from typing import Dict, Optional
 
 from qgis.PyQt import QtWidgets
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
+from sync_module.mi import SyncLevel, synchronize
+from sync_module.model import Solution
 
 from mi_plugin import HALF_SIZE
 from mi_plugin.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
-from sync_module.mi import SyncLevel, synchronize
-from sync_module.model import Solution
 
 __all__ = ["revert_venues"]
 

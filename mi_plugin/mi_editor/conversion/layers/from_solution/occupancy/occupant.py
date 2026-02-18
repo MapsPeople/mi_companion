@@ -1,6 +1,9 @@
 import logging
 from typing import Any, List, Optional
 
+from sync_module.model import Solution
+from sync_module.tools import collection_to_df, process_nested_fields_df
+
 from jord.pandas_utilities import df_to_columns
 from jord.qgis_utilities import (
     make_field_not_null,
@@ -8,8 +11,6 @@ from jord.qgis_utilities import (
     make_field_unique,
 )
 from jord.qlive_utilities import add_no_geom_layer
-from sync_module.model import Solution
-from sync_module.tools import collection_to_df, process_nested_fields_df
 
 BOOLEAN_OCCUPANT_ATTRS = ()
 STR_OCCUPANT_ATTRS = ()  # ("name",)

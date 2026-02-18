@@ -4,6 +4,7 @@ from typing import Any, List, Optional
 import geopandas
 from geopandas import GeoDataFrame
 from pandas import json_normalize
+from sync_module.model import ConnectionCollection, Graph
 
 from jord.qgis_utilities import (
     make_field_not_null,
@@ -18,7 +19,6 @@ from mi_plugin.mi_editor.conversion.projection import (
     reproject_geometry_df_qgis,
     solve_target_crs_authid,
 )
-from sync_module.model import ConnectionCollection, Graph
 
 _logger = logging.getLogger(__name__)
 

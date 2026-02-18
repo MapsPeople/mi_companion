@@ -6,8 +6,7 @@ from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 __all__ = ["Dialog"]
 
 from .main import FUNCTION_DESCRIPTION
-from mi_plugin.gui.typing_utilities import get_args, is_optional, is_union
-from warg import first
+from warg import get_args, is_optional, is_union, first
 
 
 class Dialog(QDialog, first(uic.loadUiType(str(Path(__file__).parent / "dialog.ui")))):

@@ -6,6 +6,14 @@ from typing import Any, Callable, Collection, List, Mapping, Optional
 from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtCore import QDateTime, QVariant
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer
+from sync_module.mi import SolutionDepth
+from sync_module.model import (
+    ImplementationStatus,
+    OptionalPostalAddress,
+    PostalAddress,
+    Solution,
+)
+from sync_module.shared import MIVenueType
 
 from mi_plugin import (
     APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE,
@@ -20,14 +28,6 @@ from mi_plugin.mi_editor.hierarchy.validation_dialog_utilities import (
 )
 from mi_plugin.mi_editor.syncing.uploading import upload_venue
 from mi_plugin.qgis_utilities.common_attributes import extract_translations
-from sync_module.mi import SolutionDepth
-from sync_module.model import (
-    ImplementationStatus,
-    OptionalPostalAddress,
-    PostalAddress,
-    Solution,
-)
-from sync_module.shared import MIVenueType
 from .building import add_venue_level_hierarchy
 
 __all__ = ["convert_solution_venues"]

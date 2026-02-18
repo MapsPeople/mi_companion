@@ -1,6 +1,10 @@
 import logging
 from typing import Any, Callable, Optional
 
+from sync_module.mi import get_outside_building_admin_id
+from sync_module.model import Building, Solution, Venue
+from sync_module.tools import translations_to_flattened_dict
+
 from jord.qgis_utilities import (
     make_field_unique,
     set_geometry_constraints,
@@ -28,9 +32,6 @@ from mi_plugin.mi_editor.conversion.projection import (
 from mi_plugin.qgis_utilities import (
     auto_center_anchors_when_outside,
 )
-from sync_module.mi import get_outside_building_admin_id
-from sync_module.model import Building, Solution, Venue
-from sync_module.tools import translations_to_flattened_dict
 from .floor import add_floor_layers
 from ...styling import add_rotation_scale_geometry_generator
 

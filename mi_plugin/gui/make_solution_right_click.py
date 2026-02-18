@@ -11,11 +11,11 @@ from qgis.core import (
 )
 from qgis.gui import QgsMapLayerAction, QgsMapToolIdentify
 from qgis.utils import iface
+from sync_module.shared import LanguageBundle
 
 from jord.qgis_utilities import feature_to_shapely
 from jord.qgis_utilities.helpers import reconnect_signal
 from jord.shapely_utilities import clean_shape
-from sync_module.shared import LanguageBundle
 
 # from qgis.utils import iface
 

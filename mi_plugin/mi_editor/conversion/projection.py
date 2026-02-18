@@ -7,10 +7,6 @@ import pyproj
 import shapely
 import shapely.geometry
 from geopandas import GeoDataFrame
-
-from jord.shapely_utilities import clean_shape
-from mi_plugin.configuration import read_bool_setting
-from mi_plugin.qgis_utilities import InvalidReprojection
 from sync_module.mi_sync_constants import (
     EDITING_CRS_AUTHID,
     EDITING_EPSG_NUMBER,
@@ -18,6 +14,10 @@ from sync_module.mi_sync_constants import (
     MI_EPSG_NUMBER,
 )
 from sync_module.shared import MI_CRS
+
+from jord.shapely_utilities import clean_shape
+from mi_plugin.configuration import read_bool_setting
+from mi_plugin.qgis_utilities import InvalidReprojection
 
 __all__ = [
     "prepare_geom_for_mi_db_qgis",

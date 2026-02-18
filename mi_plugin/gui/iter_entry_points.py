@@ -5,6 +5,9 @@ from typing import Callable, Dict
 _logger = logging.getLogger(__name__)
 
 
+__all__ = ["list_submodules", "get_entry_points"]
+
+
 def get_entry_points(
     module_: object,
     entry_point_name_field: str = "ENTRY_POINT_NAME",

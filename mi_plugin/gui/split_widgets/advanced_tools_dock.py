@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from warg import ensure_in_sys_path, get_submodules_by_path
+
 from ...qgis_utilities import resolve_path
 
 ensure_in_sys_path(Path(__file__).parent.parent)
@@ -33,10 +34,10 @@ from ...constants import (
 
 _logger = logging.getLogger(__name__)
 
-__all__ = ["EntryPointsWidget"]
+__all__ = ["AdvancedToolsWidget"]
 
 
-class EntryPointsWidget(QgsDockWidget):
+class AdvancedToolsWidget(QgsDockWidget):
     plugin_closing = QtCore.pyqtSignal()
     menu_name = "Advanced Tools"
 

@@ -5,7 +5,6 @@ from pathlib import Path
 import qgis
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
-
 from warg import first
 
 __all__ = ["Dialog"]
@@ -14,7 +13,7 @@ from mi_plugin import RESOURCE_BASE_PATH
 
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
-from mi_plugin.gui.typing_utilities import get_args, is_optional, is_union
+from warg import get_args, is_optional, is_union
 from jord.qgis_utilities.helpers import signals
 
 

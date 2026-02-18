@@ -2,10 +2,10 @@ import logging
 from pathlib import Path
 
 from qgis.PyQt import QtWidgets, uic
+from warg import first
 
 from jord.qgis_utilities.helpers import signals
 from mi_plugin import RESOURCE_BASE_PATH
-from warg import first
 
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 

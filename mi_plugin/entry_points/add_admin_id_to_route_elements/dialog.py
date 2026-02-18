@@ -4,15 +4,15 @@ from typing import Any
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
+from warg import first
 
 from mi_plugin.entry_points.add_admin_id_to_route_elements.main import (
     FUNCTION_DESCRIPTION,
 )
-from warg import first
 
 __all__ = ["Dialog"]
 
-from mi_plugin.gui.typing_utilities import get_args, is_optional, is_union
+from warg import get_args, is_optional, is_union
 from jord.qgis_utilities.helpers import signals
 
 from mi_plugin import RESOURCE_BASE_PATH

@@ -2,8 +2,7 @@ from pathlib import Path
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
-
-from mi_plugin.gui.typing_utilities import get_args, is_optional, is_union
+from warg import get_args, is_optional, is_union
 
 __all__ = ["Dialog"]
 

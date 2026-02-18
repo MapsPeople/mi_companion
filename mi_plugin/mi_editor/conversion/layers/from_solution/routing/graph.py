@@ -2,6 +2,9 @@ import logging
 from typing import Any, Optional
 from xml.etree.ElementTree import ParseError
 
+from sync_module.model import Graph, Solution, Venue
+from sync_module.tools import osm_xml_to_lines
+
 from jord.qgis_utilities import make_field_not_null, set_geometry_constraints
 from jord.qlive_utilities import add_shapely_layer
 from mi_plugin import (
@@ -22,8 +25,6 @@ from mi_plugin.mi_editor.conversion.projection import (
     prepare_geom_for_editing_qgis,
     solve_target_crs_authid,
 )
-from sync_module.model import Graph, Solution, Venue
-from sync_module.tools import osm_xml_to_lines
 
 _logger = logging.getLogger(__name__)
 

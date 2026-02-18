@@ -4,6 +4,8 @@ from collections import defaultdict
 from typing import Any, List, Mapping, Optional
 
 from qgis.PyQt.QtCore import QVariant
+from sync_module.model import Connection, Connector, Solution
+from sync_module.shared import MIConnectionType
 
 from jord.qgis_utilities import (
     GeometryIsEmptyError,
@@ -16,8 +18,6 @@ from mi_plugin.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgi
 from mi_plugin.qgis_utilities.common_attributes import (
     extract_single_level_str_map,
 )
-from sync_module.model import Connection, Connector, Solution
-from sync_module.shared import MIConnectionType
 
 _logger = logging.getLogger(__name__)
 

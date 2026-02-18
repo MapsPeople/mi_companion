@@ -3,7 +3,6 @@ from pathlib import Path
 
 from qgis.core import QgsProject
 from qgis.utils import iface
-
 from warg import system_open_path
 
 _logger = logging.getLogger(__name__)

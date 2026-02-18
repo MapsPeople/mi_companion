@@ -6,6 +6,7 @@ from qgis.core import (
     QgsLayerTreeGroup,
     QgsLayerTreeLayer,
 )
+from sync_module.model import Solution
 
 from jord.qgis_utilities import (
     extract_field_value,
@@ -26,7 +27,6 @@ from mi_plugin.mi_editor.hierarchy.validation_dialog_utilities import (
 )
 from mi_plugin.qgis_utilities.common_attributes import extract_translations
 from mi_plugin.qgis_utilities.extraction import special_extract_layer_data
-from sync_module.model import Solution
 from .location import add_floor_contents
 
 _logger = logging.getLogger(__name__)

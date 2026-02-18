@@ -2,6 +2,8 @@ import logging
 from typing import Any, Optional
 
 from qgis._3d import Qgs3DTypes
+from sync_module.model import Building, Floor, Solution
+from sync_module.tools import translations_to_flattened_dict
 
 from jord.qgis_utilities import (
     Qgis3dFacade,
@@ -32,8 +34,6 @@ from mi_plugin.mi_editor.conversion.projection import (
 from mi_plugin.qgis_utilities import (
     auto_center_anchors_when_outside,
 )
-from sync_module.model import Building, Floor, Solution
-from sync_module.tools import translations_to_flattened_dict
 from .location import add_floor_content_layers
 from ...styling import add_rotation_scale_geometry_generator
 

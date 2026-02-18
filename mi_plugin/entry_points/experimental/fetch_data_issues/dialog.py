@@ -7,7 +7,7 @@ from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QLineEdit, QWidget
 
 __all__ = ["Dialog"]
 
-from mi_plugin.gui.typing_utilities import get_args, is_optional, is_union
+from warg import get_args, is_optional, is_union
 
 from jord.qgis_utilities.helpers import signals
 

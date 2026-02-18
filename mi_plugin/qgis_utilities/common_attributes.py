@@ -6,17 +6,6 @@ from typing import Any, Iterable, Mapping, Optional
 import numpy
 from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtGui import QColor
-
-from jord.qgis_utilities import (
-    REAL_NONE_JSON_VALUE,
-    is_str_value_null_like,
-    parse_q_value,
-)
-from mi_plugin import (
-    ADD_FLOAT_NAN_TRANSLATION_VALUES,
-    ADD_REAL_NONE_TRANSLATION_VALUES,
-    ADD_STRING_NAN_TRANSLATION_VALUES,
-)
 from sync_module.mi import MI_OUTSIDE_BUILDING_NAME
 from sync_module.mi_sync_constants import ZOOM_LEVEL_DATA_TYPE
 from sync_module.model import (
@@ -37,6 +26,17 @@ from sync_module.shared import (
     MILabelTypeOptionEnum,
 )
 from warg import nested_dict, str_to_bool
+
+from jord.qgis_utilities import (
+    REAL_NONE_JSON_VALUE,
+    is_str_value_null_like,
+    parse_q_value,
+)
+from mi_plugin import (
+    ADD_FLOAT_NAN_TRANSLATION_VALUES,
+    ADD_REAL_NONE_TRANSLATION_VALUES,
+    ADD_STRING_NAN_TRANSLATION_VALUES,
+)
 
 _logger = logging.getLogger(__name__)
 

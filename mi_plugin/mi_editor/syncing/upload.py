@@ -2,10 +2,6 @@ import logging
 from typing import Any, Collection, List, Optional
 
 from qgis.PyQt import QtCore, QtWidgets
-
-from jord.qgis_utilities import ResizableMessageBox, help_button, no_button, yes_button
-from mi_plugin import VERBOSE
-from mi_plugin.configuration import read_bool_setting
 from sync_module.mi import (
     MIOperation,
     SolutionDepth,
@@ -20,6 +16,10 @@ from sync_module.model import (
     Graph,
     Solution,
 )
+
+from jord.qgis_utilities import ResizableMessageBox, help_button, no_button, yes_button
+from mi_plugin import VERBOSE
+from mi_plugin.configuration import read_bool_setting
 from .operation_visualisation import show_differences
 
 _logger = logging.getLogger(__name__)

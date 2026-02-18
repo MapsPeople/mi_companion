@@ -3,6 +3,9 @@ from typing import Any, Iterable, List, Optional
 
 import geopandas
 import pandas
+from sync_module.model import CollectionMixin, Floor, Solution
+from sync_module.pandas_utilities import locations_to_df
+from sync_module.tools import collection_to_df, process_nested_fields_df
 
 from jord.qgis_utilities import (
     make_field_boolean,
@@ -54,9 +57,6 @@ from mi_plugin.qgis_utilities.location_fields import (
     STR_LOCATION_FIELDS,
 )
 from mi_plugin.type_enums import BackendLocationTypeEnum
-from sync_module.model import CollectionMixin, Floor, Solution
-from sync_module.pandas_utilities import locations_to_df
-from sync_module.tools import collection_to_df, process_nested_fields_df
 
 try:
     from enum import StrEnum

@@ -4,6 +4,8 @@ from typing import Any, List, Optional
 from qgis.core import (
     QgsEditorWidgetSetup,
 )
+from sync_module.model import Solution
+from sync_module.tools import collection_to_df, process_nested_fields_df
 
 from jord.pandas_utilities import df_to_columns
 from jord.qgis_utilities import (
@@ -23,8 +25,6 @@ from mi_plugin.qgis_utilities.location_fields import (
     RANGE_LOCATION_ATTRS,
     STR_LOCATION_TYPE_ATTRS,
 )
-from sync_module.model import Solution
-from sync_module.tools import collection_to_df, process_nested_fields_df
 
 _logger = logging.getLogger(__name__)
 

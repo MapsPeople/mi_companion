@@ -5,12 +5,12 @@ from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
 from qgis.core import QgsLayerTreeLayer
+from sync_module.model import FALLBACK_OSM_GRAPH, Solution
 
 from jord.qgis_utilities import extract_layer_data_single, feature_to_shapely
 from mi_plugin import UPLOAD_ERROR_CONFIRMATION_TITLE
 from mi_plugin.layer_descriptors import GRAPH_BOUND_DESCRIPTOR
 from mi_plugin.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
-from sync_module.model import FALLBACK_OSM_GRAPH, Solution
 from .graph_3d_network import add_3d_graph_edges
 from .route_elements import (
     add_route_elements,

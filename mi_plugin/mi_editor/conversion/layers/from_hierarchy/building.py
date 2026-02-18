@@ -6,6 +6,12 @@ from qgis.core import (
     QgsLayerTreeGroup,
     QgsLayerTreeLayer,
 )
+from sync_module.mi import (
+    MI_OUTSIDE_BUILDING_NAME,
+    get_outside_building_floor_name,
+)
+from sync_module.model import Solution
+from sync_module.shared import LanguageBundle
 
 from jord.qgis_utilities import (
     extract_field_value,
@@ -34,12 +40,6 @@ from mi_plugin.mi_editor.hierarchy import (
 )
 from mi_plugin.qgis_utilities.common_attributes import extract_translations
 from mi_plugin.qgis_utilities.extraction import special_extract_layer_data
-from sync_module.mi import (
-    MI_OUTSIDE_BUILDING_NAME,
-    get_outside_building_floor_name,
-)
-from sync_module.model import Solution
-from sync_module.shared import LanguageBundle
 from .floor import add_building_floors
 from .location import add_floor_contents
 
