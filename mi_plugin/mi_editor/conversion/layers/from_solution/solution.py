@@ -78,11 +78,11 @@ def add_solution_layers(
         venue_type_dropdown_widget,
         location_type_ref_layer,
     ) = add_solution_group_contents(
-        layer_tree_root,
-        mi_hierarchy_group_name,
-        progress_bar,
-        qgis_instance_handle,
-        solution,
+        layer_tree_root=layer_tree_root,
+        mi_hierarchy_group_name=mi_hierarchy_group_name,
+        qgis_instance_handle=qgis_instance_handle,
+        solution=solution,
+        progress_bar=progress_bar,
     )
 
     add_venue_layer(
@@ -104,11 +104,12 @@ def add_solution_layers(
 
 
 def add_solution_group_contents(
+    *,
     layer_tree_root: Any,
     mi_hierarchy_group_name: str,
-    progress_bar: Callable,
     qgis_instance_handle: Any,
     solution: Solution,
+    progress_bar: Optional[QtWidgets.QProgressBar] = None,
 ) -> Tuple:
     """
 

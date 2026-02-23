@@ -12,11 +12,13 @@ from qgis.core import (
 )
 from qgis.utils import iface
 
+from jord.qgis_utilities import LayerEditingContext
 from mi_plugin import RESOURCE_BASE_PATH
 from mi_plugin.layer_descriptors import (
     LAYER_DESCRIPTORS_WITH_TRANSLATIONS,
     SOLUTION_DATA_DESCRIPTOR,
 )
+from jord.qgis_utilities.compatability import cancel_button, ok_button
 
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
 
@@ -94,11 +96,24 @@ def run(
 def add_translation_language_field_to_layer(
     node, language_code: str, fallback_value: str, copy_from_language: str
 ) -> dict[str, bool]:
+    """
+
+    :param node:
+    :type node:
+    :param language_code:
+    :type language_code:
+    :param fallback_value:
+    :type fallback_value:
+    :param copy_from_language:
+    :type copy_from_language:
+    :return:
+    :rtype:
+    """
     current_layer = node.layer()  # QgisVectorLayer
     should_add_translation = False
-    layername = node.name()
+    layer_name = node.name()
     for descriptor in LAYER_DESCRIPTORS_WITH_TRANSLATIONS:
-        if descriptor in layername:
+        if descriptor in layer_name:
             should_add_translation = True
             break
 
@@ -110,13 +125,13 @@ def add_translation_language_field_to_layer(
 
     ### Check if provided language_code already exists
     if f"{TRANSLATIONS_FIELD_NAME}.{language_code}.name" in layer_names:
-        msg = f"The layer {layername} already has the '{language_code}' language. Do you want to overwrite it?"
+        msg = f"The layer {layer_name} already has the '{language_code}' language. Do you want to overwrite it?"
         reply = QMessageBox.question(
-            None, "language_code exists", msg, QMessageBox.Ok, QMessageBox.Cancel
+            None, "language_code exists", msg, ok_button, cancel_button
         )
 
         if reply == QMessageBox.Cancel:
-            return {layername: False}
+            return {layer_name: False}
 
     ### Check if inputvalues are provided and change booleans accordingly.
     default_language_exists = False
@@ -128,48 +143,58 @@ def add_translation_language_field_to_layer(
         fallback_value_exists = True
 
         ### Also let user know that copy_from_language does not exist, hence you ask if they wanna use the fallback_value.
-        msg = f"The layer {layername} does not have '{copy_from_language}' language to copy from. Do you want to populate all features with '{fallback_value}' instead?"
-        reply = QMessageBox.question(
-            None, "QGIS plugin", msg, QMessageBox.Ok, QMessageBox.Cancel
-        )
+        msg = f"The layer {layer_name} does not have '{copy_from_language}' language to copy from. Do you want to populate all features with '{fallback_value}' instead?"
+        reply = QMessageBox.question(None, "QGIS plugin", msg, ok_button, cancel_button)
 
         if reply == QMessageBox.Cancel:
-            return {layername: False}
+            return {layer_name: False}
 
     else:
         QtWidgets.QMessageBox.warning(
             None,
             "Missing attribute",
-            f"The layer {layername} does not have a {TRANSLATIONS_FIELD_NAME}.{copy_from_language}.name attribute. Please specify a fallback_value (e.g. NoName).",
+            f"The layer {layer_name} does not have a {TRANSLATIONS_FIELD_NAME}.{copy_from_language}.name attribute. Please specify a fallback_value (e.g. NoName).",
         )
-        return {layername: False}
+        return {layer_name: False}
 
     # Start editing the layer
-    current_layer.startEditing()
-    field_name = f"{TRANSLATIONS_FIELD_NAME}.{language_code}.name"
-    # Create a new field
-    new_field = QgsField(field_name, QVariant.String)  # Change type as needed
+    with LayerEditingContext(f"Add {language_code}", current_layer):
+        field_name = f"{TRANSLATIONS_FIELD_NAME}.{language_code}.name"
+        # Create a new field
+        new_field = QgsField(field_name, QVariant.String)  # Change type as needed
 
-    # Add the field to the layer
-    current_layer.addAttribute(new_field)
-    if default_language_exists:
-        for feature in current_layer.getFeatures():
-            feature[field_name] = feature[
-                f"{TRANSLATIONS_FIELD_NAME}.{copy_from_language}.name"
-            ]
-            current_layer.updateFeature(feature)
-    elif fallback_value_exists:
-        for feature in current_layer.getFeatures():
-            feature[field_name] = fallback_value
-            current_layer.updateFeature(feature)
-    # Commit the changes
-    current_layer.commitChanges()
-    return {layername: True}
+        # Add the field to the layer
+        current_layer.addAttribute(new_field)
+        if default_language_exists:
+            for feature in current_layer.getFeatures():
+                feature[field_name] = feature[
+                    f"{TRANSLATIONS_FIELD_NAME}.{copy_from_language}.name"
+                ]
+                current_layer.updateFeature(feature)
+        elif fallback_value_exists:
+            for feature in current_layer.getFeatures():
+                feature[field_name] = fallback_value
+                current_layer.updateFeature(feature)
+
+    return {layer_name: True}
 
 
 def recursive_add_language_to_group(
     node, language_code: str, fallback_value: str, copy_from_language: str
 ) -> dict[str, bool]:
+    """
+
+    :param node:
+    :type node:
+    :param language_code:
+    :type language_code:
+    :param fallback_value:
+    :type fallback_value:
+    :param copy_from_language:
+    :type copy_from_language:
+    :return:
+    :rtype:
+    """
     responses = {}
     if isinstance(node, QgsLayerTreeLayer):
         response = add_translation_language_field_to_layer(
@@ -194,11 +219,20 @@ def recursive_add_language_to_group(
 
 
 def add_language_code_to_solutiondata(node, language_code: str) -> dict[str, bool]:
+    """
+
+    :param node:
+    :type node:
+    :param language_code:
+    :type language_code:
+    :return:
+    :rtype:
+    """
     layer = node.layer()  # QgisVectorLayer
 
-    layername = node.name()
+    layer_name = node.name()
 
-    if SOLUTION_DATA_DESCRIPTOR in layername:
+    if SOLUTION_DATA_DESCRIPTOR in layer_name:
 
         # Get the first feature (assuming there's only one)
         feature = next(layer.getFeatures())
@@ -213,20 +247,18 @@ def add_language_code_to_solutiondata(node, language_code: str) -> dict[str, boo
 
         # Check if the language already exists
         if language_code not in languages:
-            # Add the new language
-            languages.append(language_code)
 
-            # Update the feature
-            layer.startEditing()
-            layer.changeAttributeValue(feature.id(), field_index, languages)
-            print(f"Added {language_code} to languages list")
+            with LayerEditingContext(f"Add {language_code}", layer):
+                # Add the new language
+                languages.append(language_code)
+
+                layer.changeAttributeValue(feature.id(), field_index, languages)
+                print(f"Added {language_code} to languages list")
         else:
             print(f"{language_code} already in languages list")
-            return {layername: False}
+            return {layer_name: False}
 
-        # Commit changes
-        layer.commitChanges()
-        return {layername: True}
+        return {layer_name: True}
 
     return {}
 
@@ -234,6 +266,7 @@ def add_language_code_to_solutiondata(node, language_code: str) -> dict[str, boo
 if __name__ == "__main__":
 
     def asijdauh():
+        """ """
         kemper_qgis = "4b2592bdd05342f2ada9cca3"
 
         run(language="th")

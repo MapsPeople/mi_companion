@@ -5,6 +5,7 @@ from typing import Any
 from qgis.core import QgsGeometry, QgsMultiPoint, QgsPoint, QgsProject, QgsWkbTypes
 from qgis.utils import iface
 
+from jord.qgis_utilities import LayerEditingContext
 from mi_plugin import RESOURCE_BASE_PATH
 
 _logger = logging.getLogger(RESOURCE_BASE_PATH)
@@ -134,17 +135,20 @@ def run(
 
     for layer in layers:
         if layer.selectedFeatureCount() > 0:
-            selected_features = layer.selectedFeatures()
+            with LayerEditingContext(
+                f"Assigning {dimension} coordinate to {value}", layer
+            ):
+                selected_features = layer.selectedFeatures()
 
-            if len(selected_features) > 0:
-                for feature in selected_features:
-                    _logger.info(
-                        f"Setting {dimension} coordinate for feature {feature.id()}"
-                    )
-                    feature = set_coordinate(feature, value, dimension)
-                    layer.updateFeature(feature)
-            else:
-                _logger.error("Please select features in the layer")
+                if len(selected_features) > 0:
+                    for feature in selected_features:
+                        _logger.info(
+                            f"Setting {dimension} coordinate for feature {feature.id()}"
+                        )
+                        feature = set_coordinate(feature, value, dimension)
+                        layer.updateFeature(feature)
+                else:
+                    _logger.error("Please select features in the layer")
         else:
             _logger.error(
                 f"Skipping layer {layer.name()} as it had no selected features"

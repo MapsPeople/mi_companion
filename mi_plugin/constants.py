@@ -130,17 +130,17 @@ DEFAULT_PLUGIN_SETTINGS = {
     "UPDATE_GRAPH": True,
     "SOLVING_PROGRESS_BAR_ENABLED": True,
     "LOGGING_LEVEL": logging.WARNING,
-    "REPROJECT_SHAPES": False,
+    "REPROJECT_SHAPES": True,
     "REPROJECT_TO_PROJECT_CRS": True,
     "SHOW_GRAPH_ON_LOAD": False,
     "POST_FIT_FLOORS": False,
     "POST_FIT_BUILDINGS": False,
     "POST_FIT_VENUES": False,
-    "ALLOW_SOLUTION_CREATION": False,
+    "ALLOW_SOLUTION_CREATION": True,
     "ALLOW_LOCATION_TYPE_CREATION": True,
     "ALLOW_CATEGORY_TYPE_CREATION": True,
     "IGNORE_EMPTY_SHAPES": True,
-    "UPLOAD_OSM_GRAPH": False,
+    "UPLOAD_OSM_GRAPH": True,
     "FLOOR_HEIGHT": 4.0,
     "USE_LOCATION_TYPE_FOR_LABEL": False,
     "LAYER_LABEL_VISIBLE_MIN_RATIO": 1.0 / 999.0,
@@ -222,7 +222,7 @@ if False:
 
 APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE = (
     f"This likely occurred because the geometry vertices have been deleted while the feature "
-    f"remains. If this issue is not fixed, the feature, along with any features in its sub-hiearchy, "
+    f"remains. If this issue is not fixed, the feature, along with any features in its sub-hierarchy, "
     f"will be omitted from the upload."
 )
 
@@ -230,3 +230,4 @@ APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE = (
 ENABLE_UNDO = False
 VERBOSE = False
 DEBUGGING = False
+USE_FUZZY_MATCHING_FOR_3D_GRAPH_NODES = True

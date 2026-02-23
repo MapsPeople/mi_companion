@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 QGIS Processing Command Line Interface
 This script allows running QGIS processing algorithms from the command line.

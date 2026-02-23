@@ -8,10 +8,10 @@ from sync_module.model import Connection, Connector, Solution
 from sync_module.shared import MIConnectionType
 
 from jord.qgis_utilities import (
-    GeometryIsEmptyError,
     extract_feature_attributes,
     feature_to_shapely,
 )
+from jord.qgis_utilities.exceptions import GeometryIsEmptyError
 from mi_plugin import VERBOSE
 from mi_plugin.configuration import read_bool_setting
 from mi_plugin.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis

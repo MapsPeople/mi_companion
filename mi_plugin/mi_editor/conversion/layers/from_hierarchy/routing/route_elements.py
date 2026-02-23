@@ -21,13 +21,28 @@ from mi_plugin.layer_descriptors import (
     OBSTACLES_GROUP_DESCRIPTOR,
     PREFERS_GROUP_DESCRIPTOR,
 )
-from .parse_avoids import add_avoids
-from .parse_barriers import add_barriers
-from .parse_connections import assemble_connections, get_connections
-from .parse_doors import add_doors
-from .parse_entry_points import add_entry_points
-from .parse_obstacles import add_obstacles
-from .parse_prefers import add_prefers
+from mi_plugin.mi_editor.conversion.layers.from_hierarchy.routing.parsing.parse_avoids import (
+    add_avoids,
+)
+from mi_plugin.mi_editor.conversion.layers.from_hierarchy.routing.parsing.parse_barriers import (
+    add_barriers,
+)
+from mi_plugin.mi_editor.conversion.layers.from_hierarchy.routing.parsing.parse_connections import (
+    assemble_connections,
+    get_connections,
+)
+from mi_plugin.mi_editor.conversion.layers.from_hierarchy.routing.parsing.parse_doors import (
+    add_doors,
+)
+from mi_plugin.mi_editor.conversion.layers.from_hierarchy.routing.parsing.parse_entry_points import (
+    add_entry_points,
+)
+from mi_plugin.mi_editor.conversion.layers.from_hierarchy.routing.parsing.parse_obstacles import (
+    add_obstacles,
+)
+from mi_plugin.mi_editor.conversion.layers.from_hierarchy.routing.parsing.parse_prefers import (
+    add_prefers,
+)
 
 _logger = logging.getLogger(__name__)
 

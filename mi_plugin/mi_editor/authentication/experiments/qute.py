@@ -9,6 +9,7 @@ from pathlib import Path
 from qgis.PyQt.QtWidgets import QMessageBox
 
 from mi_plugin.mi_editor.authentication.experiments import oauth
+from jord.qgis_utilities.compatability import ok_button, cancel_button
 
 # fix the warnings/errors messages from 'file_cache is unavailable when using oauth2client'
 # https://github.com/googleapis/google-api-python-client/issues/299
@@ -59,9 +60,7 @@ def authenticate():
         "Click OK to open a web browser and start the authentication process\n"
         "or click Cancel to stop the authentication process."
     )
-    reply = QMessageBox.question(
-        None, "QGIS plugin", msg, QMessageBox.Ok, QMessageBox.Cancel
-    )
+    reply = QMessageBox.question(None, "QGIS plugin", msg, ok_button, cancel_button)
 
     if reply == QMessageBox.Cancel:
         return False

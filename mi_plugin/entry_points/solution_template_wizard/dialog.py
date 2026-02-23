@@ -129,6 +129,14 @@ class Dialog(QDialog, first(uic.loadUiType(str(Path(__file__).parent / "dialog.u
                         value = builtin_type(value)
                     call_kwarg[k] = value
             elif isinstance(v, qgis.gui.QgsFileWidget):
+                if (
+                    not v.filePath()
+                    or v.filePath() == "None"
+                    or v.filePath().strip() == ""
+                ):
+                    _logger.error(f"parameter {k} was empty, skipping")
+                    continue
+
                 file_path_str = v.splitFilePaths(v.filePath())[
                     0
                 ]  # ONLY one supported for now

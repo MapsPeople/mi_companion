@@ -4,11 +4,11 @@ from typing import Any, List, Optional
 from sync_module.model import Solution
 
 from jord.qgis_utilities import (
-    GeometryIsEmptyError,
     extract_feature_attributes,
     extract_field_value,
     feature_to_shapely,
 )
+from jord.qgis_utilities.exceptions import GeometryIsEmptyError
 from mi_plugin import VERBOSE
 from mi_plugin.configuration import read_bool_setting
 from mi_plugin.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
