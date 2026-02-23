@@ -19,7 +19,7 @@ from sync_module.model import (
 
 from jord.qgis_utilities import ResizableMessageBox, help_button, no_button, yes_button
 from mi_plugin import VERBOSE
-from mi_plugin.configuration import read_bool_setting
+from mi_plugin.configuration.options import read_bool_setting
 from .operation_visualisation import show_differences
 
 _logger = logging.getLogger(__name__)

@@ -5,13 +5,12 @@ from qgis.PyQt import QtWidgets
 from qgis.core import QgsLayerTreeGroup, QgsLayerTreeLayer, QgsProject
 from sync_module.mi import SyncLevel, synchronize
 from sync_module.model import Solution
-
+from jord.qgis_utilities import parse_q_value
 from mi_plugin import HALF_SIZE
 from mi_plugin.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
 
 __all__ = ["revert_venues"]
 
-from jord.qgis_utilities import parse_q_value
 
 _logger = logging.getLogger(__name__)
 

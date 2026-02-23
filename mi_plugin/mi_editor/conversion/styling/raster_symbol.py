@@ -13,7 +13,7 @@ from qgis.core import (
     QgsSymbolLayer,
 )
 
-from mi_plugin.configuration import read_bool_setting
+from mi_plugin.configuration.options import read_bool_setting
 
 _logger = logging.getLogger(__name__)
 from mi_plugin.qgis_utilities import (

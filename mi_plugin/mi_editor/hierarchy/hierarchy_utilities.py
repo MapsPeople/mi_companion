@@ -57,6 +57,17 @@ def find_top_ancestor(node: Any) -> Any:
 def check_current_parent(
     node: Any, descriptor: str, parent: Optional[str] = None
 ) -> ValidationResultEnum:
+    """
+
+    :param node:
+    :type node:
+    :param descriptor:
+    :type descriptor:
+    :param parent:
+    :type parent:
+    :return:
+    :rtype:
+    """
     node_name = node.name()
     current_parent = node.parent()
     current_parent_name = str(current_parent.name())
@@ -83,6 +94,17 @@ def check_current_parent(
 def check_children(
     node: Any, descriptor: str, parent: Optional[str] = None
 ) -> ValidationResultEnum:
+    """
+
+    :param node:
+    :type node:
+    :param descriptor:
+    :type descriptor:
+    :param parent:
+    :type parent:
+    :return:
+    :rtype:
+    """
     node_name = node.name()
     children = node.children()
 
@@ -124,6 +146,17 @@ def check_children(
 def check_siblings_for_duplicates(
     node: Any, descriptor: str, parent: Optional[str] = None
 ) -> ValidationResultEnum:
+    """
+
+    :param node:
+    :type node:
+    :param descriptor:
+    :type descriptor:
+    :param parent:
+    :type parent:
+    :return:
+    :rtype:
+    """
     node_name = node.name()
     current_parent = node.parent()
     siblings = current_parent.children()
@@ -160,6 +193,13 @@ def check_siblings_for_duplicates(
 def transfer_node_ownership(
     node: Any, to_group: Any  # QgsLayerTreeNode  # QgsLayerTreeGroup
 ) -> None:
+    """
+
+    :param node:
+    :type node:
+    :param to_group:
+    :type to_group:
+    """
     current_parent = node.parent()
 
     message = (

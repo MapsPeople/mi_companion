@@ -1,11 +1,7 @@
 import logging
 from typing import Iterable
 
-from qgis.core import (
-    Qgis,
-    QgsDefaultValue,
-    QgsFieldConstraints,
-)
+from qgis.core import Qgis, QgsDefaultValue, QgsFieldConstraints, QgsVectorLayer
 
 from mi_plugin.constants import ONLY_RESET_ANCHOR_IF_OUTSIDE
 from .expressions import (
@@ -19,7 +15,12 @@ __all__ = ["auto_center_anchors_when_outside"]
 _logger = logging.getLogger(__name__)
 
 
-def auto_center_anchors_when_outside(layers: Iterable) -> None:
+def auto_center_anchors_when_outside(layers: Iterable[QgsVectorLayer]) -> None:
+    """
+
+    :param layers:
+    :type layers:
+    """
     for layers_inner in layers:
 
         for c, v in {"anchor_x": "x", "anchor_y": "y"}.items():

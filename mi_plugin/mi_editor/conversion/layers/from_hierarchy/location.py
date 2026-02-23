@@ -1,4 +1,6 @@
 import ast
+import datetime
+import json
 import logging
 from typing import Any, Collection, List, Optional
 
@@ -8,6 +10,8 @@ from qgis.core import (
     QgsLayerTreeGroup,
     QgsLayerTreeLayer,
 )
+
+from mi_plugin.exceptions import MissingKeyColumn, MissingKeyValue
 from sync_module.model import (
     Category,
     LocationType,
@@ -34,7 +38,7 @@ from mi_plugin import (
     APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE,
     VERBOSE,
 )
-from mi_plugin.configuration import read_bool_setting
+from mi_plugin.configuration.options import read_bool_setting
 from mi_plugin.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
 from mi_plugin.mi_editor.hierarchy.validation_dialog_utilities import (
     make_hierarchy_validation_dialog,
@@ -51,10 +55,59 @@ __all__ = ["add_floor_contents"]
 _logger = logging.getLogger(__name__)
 
 
-class MissingKeyColumn(Exception): ...
+def _parse_detail_entry(detail_entry: str) -> Any:
+    """
+    Safely parse a detail entry string that may contain Python literals, JSON, datetime objects, or datetime strings.
 
+    💩 This was AI generated and is a bit of a mess, but it tries multiple parsing strategies to handle various formats that might be used in the "details" field. It first tries to parse as a Python literal using ast.literal_eval, then as JSON, then using eval with a restricted namespace (only allowing datetime), and finally it tries common datetime string formats.
 
-class MissingKeyValue(Exception): ...
+    :param detail_entry: String representation of the detail entry
+    :return: Parsed object (dict, list, datetime, or other Python literal)
+    :raises: ValueError if parsing fails
+    """
+    detail_entry = detail_entry.strip()
+
+    # Try ast.literal_eval first (safest option for Python literals)
+    try:
+        return ast.literal_eval(detail_entry)
+    except (ValueError, SyntaxError, TypeError):
+        pass
+
+    # Try JSON parsing
+    try:
+        return json.loads(detail_entry)
+    except (json.JSONDecodeError, ValueError):
+        pass
+
+    # Try eval with a restricted safe namespace (only datetime objects allowed)
+    try:
+        safe_namespace = {
+            "__builtins__": {},
+            "datetime": datetime,
+        }
+        return eval(detail_entry, safe_namespace)
+    except (ValueError, SyntaxError, NameError, AttributeError, TypeError):
+        pass
+
+    # Try common datetime formats
+    datetime_formats = [
+        "%Y-%m-%d %H:%M:%S",
+        "%Y-%m-%dT%H:%M:%S",
+        "%Y-%m-%d %H:%M:%S.%f",
+        "%Y-%m-%dT%H:%M:%S.%f",
+        "%Y-%m-%d",
+        "%d/%m/%Y",
+        "%m/%d/%Y",
+    ]
+
+    for date_format in datetime_formats:
+        try:
+            return datetime.datetime.strptime(detail_entry, date_format)
+        except ValueError:
+            continue
+
+    # If all parsing attempts fail, raise an error
+    raise ValueError(f"Unable to parse detail entry: {detail_entry}")
 
 
 def add_floor_locations(
@@ -378,15 +431,21 @@ def add_floor_locations(
                                     if detail_entry_key == "":
                                         continue
 
-                                    if False:
-                                        ddd = ast.literal_eval(
+                                    try:
+                                        detail_entry_parsed = _parse_detail_entry(
                                             detail_entry
-                                        )  # TODO: MAKE SAFE?
-                                    else:
-                                        ddd = eval(detail_entry)
+                                        )
+                                    except (ValueError, SyntaxError) as parse_err:
+                                        _logger.error(
+                                            f"Failed to parse detail entry: {detail_entry}. "
+                                            f"Error: {parse_err}"
+                                        )
+                                        continue
 
-                                    if "__class__.__name__" in ddd:
-                                        detail_type = ddd.pop("__class__.__name__")
+                                    if "__class__.__name__" in detail_entry_parsed:
+                                        detail_type = detail_entry_parsed.pop(
+                                            "__class__.__name__"
+                                        )
 
                                         assert isinstance(
                                             detail_type, str
@@ -398,20 +457,25 @@ def add_floor_locations(
                                         if detail_type == OpeningHoursDetail:
                                             opening_hours = (
                                                 standard_opening_hours_from_dict(
-                                                    ddd.pop("opening_hours")
+                                                    detail_entry_parsed.pop(
+                                                        "opening_hours"
+                                                    )
                                                 )
                                             )
 
                                             details.append(
                                                 OpeningHoursDetail(
-                                                    **ddd, opening_hours=opening_hours
+                                                    **detail_entry_parsed,
+                                                    opening_hours=opening_hours,
                                                 )
                                             )
                                         else:
-                                            details.append(detail_type(**ddd))
+                                            details.append(
+                                                detail_type(**detail_entry_parsed)
+                                            )
                                     else:
                                         _logger.error(
-                                            f'Did not find a "__class__.__name__" in {ddd}, skipping it'
+                                            f'Did not find a "__class__.__name__" in {detail_entry_parsed}, skipping it'
                                         )
 
                             if details:

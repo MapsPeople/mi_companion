@@ -10,7 +10,7 @@ from jord.qlive_utilities import add_shapely_layer
 from mi_plugin import (
     DESCRIPTOR_BEFORE,
 )
-from mi_plugin.configuration import read_bool_setting
+from mi_plugin.configuration.options import read_bool_setting
 from mi_plugin.layer_descriptors import (
     GRAPH_BOUND_DESCRIPTOR,
     GRAPH_GROUP_DESCRIPTOR,

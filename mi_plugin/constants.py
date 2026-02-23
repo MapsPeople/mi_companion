@@ -9,6 +9,13 @@ _logger = logging.getLogger(__name__)
 
 
 def read_version_from_metadata(metadata_file: Path) -> str:
+    """
+
+    :param metadata_file:
+    :type metadata_file:
+    :return:
+    :rtype:
+    """
     with open(metadata_file) as f:
         for l in f.readlines():
             if "version=" in l:
@@ -17,6 +24,13 @@ def read_version_from_metadata(metadata_file: Path) -> str:
 
 
 def read_author_from_metadata(metadata_file: Path) -> str:
+    """
+
+    :param metadata_file:
+    :type metadata_file:
+    :return:
+    :rtype:
+    """
     with open(metadata_file) as f:
         for l in f.readlines():
             if "author=" in l:
@@ -27,6 +41,13 @@ def read_author_from_metadata(metadata_file: Path) -> str:
 def read_repository_from_metadata(
     metadata_file: Path,
 ) -> str:  # TODO: GENERALISE TO A single function...
+    """
+
+    :param metadata_file:
+    :type metadata_file:
+    :return:
+    :rtype:
+    """
     with open(metadata_file) as f:
         for l in f.readlines():
             if "repository=" in l:
@@ -35,6 +56,13 @@ def read_repository_from_metadata(
 
 
 def read_project_name_from_metadata(metadata_file: Path) -> str:
+    """
+
+    :param metadata_file:
+    :type metadata_file:
+    :return:
+    :rtype:
+    """
     with open(metadata_file) as f:
         for l in f.readlines():
             if "name=" in l:
@@ -231,3 +259,5 @@ ENABLE_UNDO = False
 VERBOSE = False
 DEBUGGING = False
 USE_FUZZY_MATCHING_FOR_3D_GRAPH_NODES = True
+RETURN_EMPTY_DISPLAY_RULE = False
+PATCH_MISSING_TRANSLATIONS = True

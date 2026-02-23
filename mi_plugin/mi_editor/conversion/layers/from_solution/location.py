@@ -3,6 +3,8 @@ from typing import Any, Iterable, List, Optional
 
 import geopandas
 import pandas
+from qgis._core import QgsVectorLayer
+
 from sync_module.model import CollectionMixin, Floor, Solution
 from sync_module.pandas_utilities import locations_to_df
 from sync_module.tools import collection_to_df, process_nested_fields_df
@@ -22,7 +24,7 @@ from jord.qgis_utilities import (
 )
 from jord.qgis_utilities.helpers.widgets import COLOR_WIDGET
 from jord.qlive_utilities import add_dataframe_layer
-from mi_plugin.configuration import read_bool_setting, read_float_setting
+from mi_plugin.configuration.options import read_bool_setting, read_float_setting
 from mi_plugin.constants import (
     ANCHOR_AS_INDIVIDUAL_FIELDS,
     FLOOR_HEIGHT,
@@ -81,7 +83,7 @@ def add_location_layer(
     location_type_dropdown_widget: Optional[Any] = None,
     occupant_dropdown_widget: Optional[Any] = None,
     opacity: float = 1.0,
-) -> Optional[List[Any]]:  # QgsVectorLayer
+) -> Optional[List[QgsVectorLayer]]:
     """
 
     :param location_type_ref_layer:
@@ -118,11 +120,8 @@ def add_location_layer(
     shape_df = shape_df[floor_selection]
 
     if len(shape_df) == 0:
-        # logger.warning(f"No location were found for {floor.__desc__}")
-
+        _logger.warning(f"No location were found for {floor.__desc__}")
         return
-
-    # logger.warning(shape_df.columns)
 
     column_selection = [
         c

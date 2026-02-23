@@ -1,7 +1,10 @@
 import logging
+from typing import Any, List, Optional, Union
 
 from qgis.PyQt import QtWidgets
 
+from sync_module.mi import SolutionDepth
+from sync_module.model import Solution
 from .pre_upload_processing import post_process_solution
 from .upload import sync_build_venue_solution
 
@@ -10,20 +13,49 @@ _logger = logging.getLogger(__name__)
 
 def upload_venue(
     *,
-    collect_errors,
-    collect_invalid,
-    collect_warnings,
-    include_media,
-    include_occupants,
-    issues,
-    progress_bar,
-    qgis_instance_handle,
-    solution,
-    solution_depth,
-    solution_name,
-    upload_venues,
-    venue_key,
+    collect_errors: bool,
+    collect_invalid: bool,
+    collect_warnings: bool,
+    include_media: bool,
+    include_occupants: bool,
+    issues: List[Union[str, Any]],
+    progress_bar: Optional[QtWidgets.QProgressBar] = None,
+    qgis_instance_handle: Any,
+    solution: Solution,
+    solution_depth: SolutionDepth,
+    solution_name: str,
+    upload_venues: bool,
+    venue_key: str,
 ) -> None:
+    """
+
+    :param collect_errors:
+    :type collect_errors:
+    :param collect_invalid:
+    :type collect_invalid:
+    :param collect_warnings:
+    :type collect_warnings:
+    :param include_media:
+    :type include_media:
+    :param include_occupants:
+    :type include_occupants:
+    :param issues:
+    :type issues:
+    :param progress_bar:
+    :type progress_bar:
+    :param qgis_instance_handle:
+    :type qgis_instance_handle:
+    :param solution:
+    :type solution:
+    :param solution_depth:
+    :type solution_depth:
+    :param solution_name:
+    :type solution_name:
+    :param upload_venues:
+    :type upload_venues:
+    :param venue_key:
+    :type venue_key:
+    """
     post_process_solution(solution)
 
     if collect_invalid:

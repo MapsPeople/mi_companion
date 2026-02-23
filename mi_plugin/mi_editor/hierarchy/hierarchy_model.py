@@ -1,9 +1,8 @@
-from collections import defaultdict
-from typing import Any, List, Mapping
-
+from warg import invert_mapping_list
 from mi_plugin.layer_descriptors import *
 
 __all__ = ["NODE_PARENT_MAPPING", "INVERSE_NODE_PARENT_MAPPING"]
+
 
 NODE_PARENT_MAPPING = {
     CONNECTORS_GROUP_DESCRIPTOR: GRAPH_GROUP_DESCRIPTOR,
@@ -36,15 +35,6 @@ NODE_PARENT_MAPPING = {
     AREAS_DESCRIPTOR: FLOOR_GROUP_DESCRIPTOR,
     POINT_OF_INTERESTS_DESCRIPTOR: FLOOR_GROUP_DESCRIPTOR,
 }
-
-
-def invert_mapping_list(m: Mapping[Any, Any]) -> Mapping[Any, List[Any]]:
-    out = defaultdict(list)
-
-    for k, v in m.items():
-        out[v].append(k)
-
-    return out
 
 
 INVERSE_NODE_PARENT_MAPPING = invert_mapping_list(NODE_PARENT_MAPPING)

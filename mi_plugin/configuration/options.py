@@ -37,14 +37,33 @@ class DeploymentOptionsPageFactory(QgsOptionsWidgetFactory):
 
     # noinspection PyMethodMayBeStatic
     def icon(self) -> None:
+        """
+
+        :return:
+        :rtype:
+        """
         return load_icon("mp_notext.png")
 
     # noinspection PyPep8Naming,PyMethodMayBeStatic
     def createWidget(self, parent: Any) -> "DeploymentCompanionOptionsPage":
+        """
+
+        :param parent:
+        :type parent:
+        :return:
+        :rtype:
+        """
         return DeploymentCompanionOptionsPage(parent)
 
 
 def reload_settings(load_attempts: int = 2) -> None:
+    """
+
+    :param load_attempts:
+    :type load_attempts:
+    :return:
+    :rtype:
+    """
     for a in range(load_attempts):
         try:
             return  # success return
@@ -58,6 +77,7 @@ def reload_settings(load_attempts: int = 2) -> None:
 class MapsIndoorsOptionsWidget(
     *uic.loadUiType(str(resolve_path("options.ui", __file__)))
 ):
+    """ """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -72,6 +92,7 @@ class MapsIndoorsOptionsWidget(
         self.populate_settings()
 
     def populate_settings(self) -> None:
+        """ """
         if hasattr(self, "settings_list_model"):
             del self.settings_list_model
 
@@ -126,6 +147,11 @@ class MapsIndoorsOptionsWidget(
         # self.settings_file_widget
 
     def setting_item_changed(self, item: Any) -> None:  #: qgis.PyQt.QtGui.QStandardItem
+        """
+
+        :param item:
+        :type item:
+        """
         try:
             key = self.settings_list_model.item(item.row(), 0).text()
             item_value = item.text()
@@ -148,6 +174,13 @@ class MapsIndoorsOptionsWidget(
 
 
 def read_bool_setting(key: str) -> bool:
+    """
+
+    :param key:
+    :type key:
+    :return:
+    :rtype:
+    """
     v = read_plugin_setting(
         key,
         default_value=DEFAULT_PLUGIN_SETTINGS[key],
@@ -169,6 +202,13 @@ def read_bool_setting(key: str) -> bool:
 
 
 def read_float_setting(key: str) -> float:
+    """
+
+    :param key:
+    :type key:
+    :return:
+    :rtype:
+    """
     v = read_plugin_setting(
         key,
         default_value=DEFAULT_PLUGIN_SETTINGS[key],
@@ -192,4 +232,5 @@ class DeploymentCompanionOptionsPage(QgsOptionsPageWidget):
         self.setLayout(root_layout)
 
     def apply(self) -> None:
+        """ """
         pass

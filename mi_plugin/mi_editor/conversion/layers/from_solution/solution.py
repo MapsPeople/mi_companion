@@ -34,7 +34,7 @@ from mi_plugin import (
     DESCRIPTOR_BEFORE,
     OSM_HIGHWAY_TYPES,
 )
-from mi_plugin.configuration import read_bool_setting
+from mi_plugin.configuration.options import read_bool_setting
 from mi_plugin.layer_descriptors import (
     DATABASE_GROUP_DESCRIPTOR,
     LOCATION_TYPE_DESCRIPTOR,

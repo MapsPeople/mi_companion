@@ -16,8 +16,8 @@ from sync_module.mi_sync_constants import (
 from sync_module.shared import MI_CRS
 
 from jord.shapely_utilities import clean_shape
-from mi_plugin.configuration import read_bool_setting
-from mi_plugin.qgis_utilities import InvalidReprojection
+from mi_plugin.configuration.options import read_bool_setting
+from mi_plugin.exceptions import InvalidReprojection
 
 __all__ = [
     "prepare_geom_for_mi_db_qgis",

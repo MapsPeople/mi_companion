@@ -17,7 +17,7 @@ from qgis.gui import (
 from qgis.utils import iface
 
 from jord.qgis_utilities import accept_role, read_plugin_setting, reject_role
-from mi_plugin import (
+from mi_plugin.constants import (
     DEFAULT_PLUGIN_SETTINGS,
     MAPS_INDOORS_QGIS_PLUGIN_TITLE,
     PROJECT_NAME,
@@ -47,8 +47,29 @@ def make_hierarchy_validation_dialog(
     reject_text: str = "Undo",
     alternative_accept_text: str = "Ignore",
     minimum_header_padding: int = 200,
-    level=_default_validation_message_level,
+    level: Any = _default_validation_message_level,
 ) -> Any:
+    """
+
+    :param header:
+    :type header:
+    :param message:
+    :type message:
+    :param accept_text:
+    :type accept_text:
+    :param add_reject_option:
+    :type add_reject_option:
+    :param reject_text:
+    :type reject_text:
+    :param alternative_accept_text:
+    :type alternative_accept_text:
+    :param minimum_header_padding:
+    :type minimum_header_padding:
+    :param level:
+    :type level:
+    :return:
+    :rtype:
+    """
     _logger.error(message)
 
     resource_path = read_plugin_setting(
@@ -116,7 +137,22 @@ def make_validation_action_toast(
     reject_text: str = "Undo",
     accept_text: str = "Okay",
 ):
+    """
+
+    :param header:
+    :type header:
+    :param message:
+    :type message:
+    :param add_reject_option:
+    :type add_reject_option:
+    :param reject_text:
+    :type reject_text:
+    :param accept_text:
+    :type accept_text:
+    """
+
     def showError():
+        """ """
         pass
 
     widget = iface.messageBar().createMessage("Missing Layers", "Show Me")
@@ -128,6 +164,7 @@ def make_validation_action_toast(
 
 
 def wah():
+    """ """
     ...
     """
 import time
@@ -148,6 +185,8 @@ iface.messageBar().clearWidgets()
 
 
 def wah2():
+    """ """
+
     class MyDialog(QDialog):
 
         def __init__(self):
@@ -162,6 +201,7 @@ def wah2():
             self.layout().addWidget(self.bar, 0, 0, 1, 1)
 
         def run(self):
+            """ """
             self.bar.pushMessage("Hello", "World", level=Qgis.Info)
 
     myDlg = MyDialog()
@@ -169,6 +209,15 @@ def wah2():
 
 
 def make_temporary_toast(message, level=Qgis.Info, duration=3):
+    """
+
+    :param message:
+    :type message:
+    :param level:
+    :type level:
+    :param duration:
+    :type duration:
+    """
     iface.messageBar().pushMessage(
         MAPS_INDOORS_QGIS_PLUGIN_TITLE, message, level=level, duration=duration
     )

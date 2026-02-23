@@ -11,7 +11,7 @@ from jord.qgis_utilities import recurse_layers
 from mi_plugin import (
     MAKE_FLOOR_WISE_LAYERS,
 )
-from mi_plugin.configuration import read_bool_setting
+from mi_plugin.configuration.options import read_bool_setting
 from mi_plugin.layer_descriptors import (
     AVOIDS_GROUP_DESCRIPTOR,
     BARRIERS_GROUP_DESCRIPTOR,
@@ -21,26 +21,14 @@ from mi_plugin.layer_descriptors import (
     OBSTACLES_GROUP_DESCRIPTOR,
     PREFERS_GROUP_DESCRIPTOR,
 )
-from mi_plugin.mi_editor.conversion.layers.from_hierarchy.routing.parsing.parse_avoids import (
+from .parsing import (
     add_avoids,
-)
-from mi_plugin.mi_editor.conversion.layers.from_hierarchy.routing.parsing.parse_barriers import (
     add_barriers,
-)
-from mi_plugin.mi_editor.conversion.layers.from_hierarchy.routing.parsing.parse_connections import (
     assemble_connections,
     get_connections,
-)
-from mi_plugin.mi_editor.conversion.layers.from_hierarchy.routing.parsing.parse_doors import (
     add_doors,
-)
-from mi_plugin.mi_editor.conversion.layers.from_hierarchy.routing.parsing.parse_entry_points import (
     add_entry_points,
-)
-from mi_plugin.mi_editor.conversion.layers.from_hierarchy.routing.parsing.parse_obstacles import (
     add_obstacles,
-)
-from mi_plugin.mi_editor.conversion.layers.from_hierarchy.routing.parsing.parse_prefers import (
     add_prefers,
 )
 

@@ -30,7 +30,7 @@ _logger = logging.getLogger(__name__)
 def convert_solution_layers_to_solution(
     qgis_instance_handle: Any,
     *,
-    progress_bar: Callable,
+    progress_bar: Optional[QtWidgets.QProgressBar] = None,
     mi_group: Any,
     solution_depth: SolutionDepth = SolutionDepth.obstacles,
     include_occupants: bool = False,
@@ -40,6 +40,31 @@ def convert_solution_layers_to_solution(
     collect_errors: bool = False,
     collect_invalid: bool = False,
 ) -> Optional[List[Solution]]:
+    """
+
+    :param qgis_instance_handle:
+    :type qgis_instance_handle:
+    :param progress_bar:
+    :type progress_bar:
+    :param mi_group:
+    :type mi_group:
+    :param solution_depth:
+    :type solution_depth:
+    :param include_occupants:
+    :type include_occupants:
+    :param include_media:
+    :type include_media:
+    :param upload_venues:
+    :type upload_venues:
+    :param collect_warnings:
+    :type collect_warnings:
+    :param collect_errors:
+    :type collect_errors:
+    :param collect_invalid:
+    :type collect_invalid:
+    :return:
+    :rtype:
+    """
     mi_group_children = mi_group.children()
     num_mi_group_elements = len(mi_group_children)
 
@@ -149,6 +174,10 @@ def convert_solution_layers_to_solution(
         if solution_external_id is None:
             solution_external_id = solution_name
 
+        assert isinstance(
+            solution_external_id, str
+        ), f"solution_external_id={solution_external_id} must be a string"
+
         if solution_external_id in get_solution_name_external_id_map().values():
             existing_solution = get_remote_solution(
                 solution_external_id,
@@ -221,6 +250,11 @@ def layer_hierarchy_to_solution(
         # fun stuff here
 
         def show_attribute_table(layer) -> None:
+            """
+
+            :param layer:
+            :type layer:
+            """
             if layer is None:
                 layer = qgis_instance_handle.iface_.activeLayer()
             att_dialog = qgis_instance_handle.iface_.showAttributeTable(layer)

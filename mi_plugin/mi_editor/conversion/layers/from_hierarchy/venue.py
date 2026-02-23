@@ -1,6 +1,8 @@
 import copy
 import logging
+import traceback
 from datetime import datetime
+from sys import exc_info
 from typing import Any, Callable, Collection, List, Mapping, Optional
 
 from qgis.PyQt import QtWidgets
@@ -15,7 +17,7 @@ from sync_module.model import (
 )
 from sync_module.shared import MIVenueType
 
-from mi_plugin import (
+from mi_plugin.constants import (
     APPENDIX_INVALID_GEOMETRY_DIALOG_MESSAGE,
     HALF_SIZE,
 )
@@ -23,22 +25,22 @@ from mi_plugin.layer_descriptors import (
     VENUE_GROUP_DESCRIPTOR,
     VENUE_POLYGON_DESCRIPTOR,
 )
-from mi_plugin.mi_editor.hierarchy.validation_dialog_utilities import (
+from mi_plugin.mi_editor.hierarchy import (
     make_hierarchy_validation_dialog,
 )
-from mi_plugin.mi_editor.syncing.uploading import upload_venue
-from mi_plugin.qgis_utilities.common_attributes import extract_translations
-from .building import add_venue_level_hierarchy
-
-__all__ = ["convert_solution_venues"]
-
-from mi_plugin.qgis_utilities.extraction import special_extract_layer_data
 from jord.qgis_utilities import feature_to_shapely, message_box_warning, reject_role
 
 from .location_type import get_location_type_data
 
-# from .graph import add_venue_graph
-from mi_plugin.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
+from ...projection import prepare_geom_for_mi_db_qgis
+
+from mi_plugin.mi_editor.syncing import upload_venue
+from mi_plugin.qgis_utilities import extract_translations
+from mi_plugin.qgis_utilities.extraction import special_extract_layer_data
+from .building import add_venue_level_hierarchy
+
+__all__ = ["convert_solution_venues"]
+
 
 _logger = logging.getLogger(__name__)
 
@@ -48,7 +50,7 @@ def convert_solution_venues(
     *,
     mi_group_child: QgsLayerTreeGroup,
     existing_solution: Solution,
-    progress_bar: Callable,
+    progress_bar: Optional[QtWidgets.QProgressBar] = None,
     solution_external_id: str,
     solution_name: str,
     solution_customer_id: str,
@@ -180,7 +182,9 @@ def convert_solution_venues(
                     collect_errors=collect_errors,
                 )
             except Exception as ex:
-                _logger.error(f"Failed to add {solution_group_item=}, {ex=}")
+                _logger.error(
+                    f"Failed to add {solution_group_item=}, {ex=}, {solution_group_item.name()=}\n{traceback.format_exc()}"
+                )
                 QtWidgets.QMessageBox.critical(None, "Error", f"\n\n- {str(ex)}")
                 raise ex
 
@@ -213,6 +217,23 @@ def get_venue_key(
     collect_errors: bool = False,
     issues: Optional[List[str]] = None,
 ) -> Optional[str]:
+    """
+
+    :param solution:
+    :type solution:
+    :param venue_group_items:
+    :type venue_group_items:
+    :param collect_invalid:
+    :type collect_invalid:
+    :param collect_warnings:
+    :type collect_warnings:
+    :param collect_errors:
+    :type collect_errors:
+    :param issues:
+    :type issues:
+    :return:
+    :rtype:
+    """
     for venue_level_item in venue_group_items.children():
         layer_type_test = isinstance(venue_level_item, QgsLayerTreeLayer)
         layer_name = str(venue_level_item.name()).lower().strip()
@@ -280,6 +301,13 @@ def get_venue_key(
 
 
 def get_address(layer_attributes: Mapping[str, Any]) -> OptionalPostalAddress:
+    """
+
+    :param layer_attributes:
+    :type layer_attributes:
+    :return:
+    :rtype:
+    """
     if "address.city" in layer_attributes and layer_attributes["address.city"]:
         address = PostalAddress(
             city=layer_attributes["address.city"],
@@ -297,6 +325,13 @@ def get_address(layer_attributes: Mapping[str, Any]) -> OptionalPostalAddress:
 
 
 def get_last_verified(layer_attributes: Mapping[str, Any]) -> Optional[datetime]:
+    """
+
+    :param layer_attributes:
+    :type layer_attributes:
+    :return:
+    :rtype:
+    """
     if "last_verified" in layer_attributes and layer_attributes["last_verified"]:
         last_verified = layer_attributes["last_verified"]
 
@@ -312,10 +347,14 @@ def get_last_verified(layer_attributes: Mapping[str, Any]) -> Optional[datetime]
                     try:
                         last_verified = last_verified.toPython()
                     except Exception as e:
+                        _logger.error(
+                            f"Could not convert last_verified value: {last_verified}, {e}"
+                        )
                         raise e
 
         elif isinstance(last_verified, datetime):
             ...
+            _logger.info(f"Last verified: {last_verified}")
             # last_verified = last_verified.timestamp()
         # elif isinstance(last_verified, int):
         #  last_verified = last_verified * 1000
@@ -333,6 +372,13 @@ def get_last_verified(layer_attributes: Mapping[str, Any]) -> Optional[datetime]
 
 
 def get_venue_type(layer_attributes: Mapping[str, Any]) -> Optional[MIVenueType]:
+    """
+
+    :param layer_attributes:
+    :type layer_attributes:
+    :return:
+    :rtype:
+    """
     if "venue_type" in layer_attributes and layer_attributes["venue_type"]:
         venue_type_str = layer_attributes["venue_type"]
 

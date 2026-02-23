@@ -2,10 +2,11 @@ import logging
 import math
 from typing import Any, Iterable, Mapping, Optional
 
-# from qgis.core.QgsVariantUtils import isNull, typeToDisplayString
 import numpy
 from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtGui import QColor
+
+from mi_plugin.exceptions import MissingTranslationsException
 from sync_module.mi import MI_OUTSIDE_BUILDING_NAME
 from sync_module.mi_sync_constants import ZOOM_LEVEL_DATA_TYPE
 from sync_module.model import (
@@ -32,10 +33,12 @@ from jord.qgis_utilities import (
     is_str_value_null_like,
     parse_q_value,
 )
-from mi_plugin import (
+from mi_plugin.constants import (
     ADD_FLOAT_NAN_TRANSLATION_VALUES,
     ADD_REAL_NONE_TRANSLATION_VALUES,
     ADD_STRING_NAN_TRANSLATION_VALUES,
+    PATCH_MISSING_TRANSLATIONS,
+    RETURN_EMPTY_DISPLAY_RULE,
 )
 
 _logger = logging.getLogger(__name__)
@@ -47,14 +50,6 @@ __all__ = [
     "parse_q_value_field_translations",
     "extract_street_view_config",
 ]
-
-
-RETURN_EMPTY_DISPLAY_RULE = False
-PATCH_MISSING_TRANSLATIONS = True
-
-
-class MissingTranslationsException(Exception):
-    pass
 
 
 def extract_translations(

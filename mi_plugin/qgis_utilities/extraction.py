@@ -5,7 +5,7 @@ from typing import Any, Tuple
 from qgis.PyQt.QtCore import QVariant
 
 from jord.qgis_utilities import extract_layer_data_single
-from mi_plugin.configuration import read_bool_setting
+from mi_plugin.configuration.options import read_bool_setting
 
 _logger = logging.getLogger(__name__)
 

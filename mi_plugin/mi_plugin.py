@@ -205,17 +205,20 @@ class MapsIndoorsPlugin:
             partial(self.on_split_dock_widget_closed, name),
         )
 
-        a = read_plugin_setting(
+        widget_area = read_plugin_setting(
             "DEFAULT_WIDGET_AREA",
             default_value=DEFAULT_PLUGIN_SETTINGS["DEFAULT_WIDGET_AREA"],
             project_name=PROJECT_NAME,
         )
 
-        if not isinstance(a, DockWidgetAreaFlag):
-            a = eval(a)  # TODO: REMOVE EVAL?
+        # Convert to DockWidgetAreaFlag if it's a string
+        if isinstance(widget_area, str):
+            widget_area = DockWidgetAreaFlag[widget_area.split(".")[-1]]
+        elif not isinstance(widget_area, DockWidgetAreaFlag):
+            widget_area = DockWidgetAreaFlag(widget_area)
 
         self.iface.addDockWidget(
-            DockWidgetAreaFlag(a).value,
+            widget_area.value,
             widget,
         )
 

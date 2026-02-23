@@ -7,11 +7,22 @@ from .expressions import (
     DEFAULT_NAME_GET_LOCATION_TYPE_NAME_EXPRESSION,
     NAME_MUST_NOT_NULL_AND_NOT_EMPTY_VALIDATION_EXPRESSION,
 )
+from qgis.core import (
+    QgsProject,
+    QgsFieldConstraints,
+    QgsDefaultValue,
+    QgsEditorWidgetSetup,
+)
 
 _logger = logging.getLogger(__name__)
 
 
 CREATION_MODE_FIELDS = ["location_type", "external_id", "anchor_x", "anchor_y"]
+
+__all__ = [
+    "put_location_layers_into_creation_mode",
+    "put_location_layer_into_regular_mode",
+]
 
 
 def put_location_layers_into_creation_mode():
@@ -19,13 +30,6 @@ def put_location_layers_into_creation_mode():
     Set all location layers into creation mode by applying constraints and default values.
     This sets field constraints for name field and provides default values based on location type.
     """
-
-    from qgis.core import (
-        QgsProject,
-        QgsFieldConstraints,
-        QgsDefaultValue,
-        QgsEditorWidgetSetup,
-    )
 
     # Get all layers from the project
     layers = QgsProject.instance().mapLayers().values()

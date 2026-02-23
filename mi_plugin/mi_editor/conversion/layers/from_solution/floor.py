@@ -17,7 +17,7 @@ from mi_plugin import (
     DESCRIPTOR_BEFORE,
     FLOOR_HEIGHT,
 )
-from mi_plugin.configuration import read_bool_setting, read_float_setting
+from mi_plugin.configuration.options import read_bool_setting, read_float_setting
 from mi_plugin.constants import (
     ANCHOR_AS_INDIVIDUAL_FIELDS,
     FLOOR_VERTICAL_SPACING,
