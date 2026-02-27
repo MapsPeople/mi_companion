@@ -3,7 +3,7 @@ from typing import Any, Callable, Optional
 
 from sync_module.mi import get_outside_building_admin_id
 from sync_module.model import Building, Solution, Venue
-from sync_module.tools import translations_to_flattened_dict
+from sync_module.tools.serialisation import translations_to_flattened_dict
 
 from jord.qgis_utilities import (
     make_field_unique,

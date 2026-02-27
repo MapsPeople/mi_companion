@@ -12,6 +12,7 @@ from jord.qgis_utilities import (
 from jord.qlive_utilities import add_wkb_layer
 from mi_plugin import (
     FLOOR_HEIGHT,
+    FLOOR_VERTICAL_SPACING,
     GRAPH_EDGE_COLOR,
     GRAPH_EDGE_WIDTH,
     HALF_SIZE,
@@ -83,8 +84,10 @@ def add_navigation_graph_layers(
                 (
                     x,  # X
                     y,  # Y
-                    FLOOR_HEIGHT / 2.0
-                    + z * FLOOR_HEIGHT,  # Z, used for 3d visualisation
+                    z
+                    * (
+                        FLOOR_HEIGHT + FLOOR_VERTICAL_SPACING
+                    ),  # Z, used for 3d visualisation
                     z,  # M, logical level
                 )
             )
@@ -108,7 +111,7 @@ def add_navigation_graph_layers(
 
     set_3d_view_settings(  # MAKE offset CONDITIONAL ON FLOOR_INDEX column
         graph_lines_layer,
-        offset=FLOOR_HEIGHT * HALF_SIZE,
+        offset=FLOOR_VERTICAL_SPACING * 2,
         edge_width=GRAPH_EDGE_WIDTH,
         color=GRAPH_EDGE_COLOR,
         extrusion=GRAPH_EDGE_WIDTH,

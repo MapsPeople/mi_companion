@@ -115,7 +115,7 @@ def classFactory(iface):  # pylint: disable=invalid-name
         logger.debug(
             f"Setup {setup_qgs_logger('caddy', logger_level=logging_level).name=}"
         )
-        from sync_module.mi_sync_constants import PRODUCTION
+        from sync_module.constants import PRODUCTION
 
         logger.error(
             f"Setup {setup_qgs_logger('sync_module', logger_level=logging_level).name=}, "

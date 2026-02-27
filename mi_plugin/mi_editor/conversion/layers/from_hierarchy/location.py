@@ -2,7 +2,7 @@ import ast
 import datetime
 import json
 import logging
-from typing import Any, Collection, List, Optional
+from typing import Any, Collection, List, Mapping, Optional
 
 import shapely
 from qgis.PyQt.QtCore import QVariant
@@ -10,17 +10,21 @@ from qgis.core import (
     QgsLayerTreeGroup,
     QgsLayerTreeLayer,
 )
+from shapely import Point
+from shapely.geometry.base import BaseGeometry
 
 from mi_plugin.exceptions import MissingKeyColumn, MissingKeyValue
 from sync_module.model import (
     Category,
+    DisplayRule,
     LocationType,
     OpeningHoursDetail,
     Solution,
     StrToDetailTypeMap,
+    StreetViewConfig,
 )
 from sync_module.shared import LanguageBundle
-from sync_module.tools import standard_opening_hours_from_dict
+from sync_module.tools.serialisation import standard_opening_hours_from_dict
 from warg import str_to_bool
 
 from jord.qgis_utilities import (
@@ -53,6 +57,160 @@ from mi_plugin.type_enums import BackendLocationTypeEnum
 __all__ = ["add_floor_contents"]
 
 _logger = logging.getLogger(__name__)
+
+
+def _extract_admin_id(feature_attributes: Mapping[str, Any]) -> str:
+    """
+    Extract and validate admin_id from feature attributes.
+
+    :param feature_attributes: Feature attributes dictionary
+    :return: Validated admin_id string
+    :raises: MissingKeyValue if admin_id is None
+    :raises: MissingKeyColumn if admin_id column is missing or null-like
+    """
+    if "admin_id" not in feature_attributes:
+        raise MissingKeyColumn(f'Missing "admin_id" column')
+
+    admin_id = feature_attributes["admin_id"]
+
+    if admin_id is None:
+        raise MissingKeyValue(f"Missing key {admin_id=}")
+    elif isinstance(admin_id, str):
+        v_str = admin_id.lower().strip()
+        if is_str_value_null_like(v_str):
+            raise MissingKeyColumn(f'Missing "admin_id" column')
+        return admin_id
+    elif isinstance(admin_id, QVariant):
+        if admin_id.isNull():
+            raise MissingKeyValue(f"Missing key {admin_id=}")
+        v = str(admin_id.value())
+        v_str = v.lower().strip()
+        if is_str_value_null_like(v_str):
+            raise MissingKeyColumn(f'Missing "admin_id" column')
+        return v
+
+    raise MissingKeyValue(f"Invalid admin_id type: {type(admin_id)}")
+
+
+def _extract_external_id(feature_attributes: Mapping[str, Any]) -> Optional[str]:
+    """
+    Extract and validate external_id from feature attributes.
+
+    :param feature_attributes: Feature attributes dictionary
+    :return: Validated external_id string or None if not present or null-like
+    """
+    if "external_id" not in feature_attributes:
+        return None
+
+    external_id = feature_attributes["external_id"]
+
+    if external_id is None:
+        return None
+    elif isinstance(external_id, str):
+        v_str = external_id.lower().strip()
+        return None if is_str_value_null_like(v_str) else external_id
+    elif isinstance(external_id, QVariant):
+        if external_id.isNull():
+            return None
+        v = str(external_id.value())
+        v_str = v.lower().strip()
+        return None if is_str_value_null_like(v_str) else v
+
+    return None
+
+
+def _extract_bool_field(
+    feature_attributes: Mapping[str, Any], field_name: str
+) -> Optional[bool]:
+    """
+    Extract and convert a boolean field from feature attributes.
+
+    :param feature_attributes: Feature attributes dictionary
+    :param field_name: Name of the field to extract
+    :return: Boolean value or None if not present
+    """
+    if field_name not in feature_attributes:
+        return None
+
+    value = extract_field_value(feature_attributes, field_name)
+    if value is None:
+        return None
+
+    if isinstance(value, str):
+        return value.lower().strip() != "false"
+
+    return bool(value)
+
+
+def _extract_optional_field(
+    feature_attributes: Mapping[str, Any], field_name: str
+) -> Any:
+    """
+    Extract an optional field from feature attributes.
+
+    :param feature_attributes: Feature attributes dictionary
+    :param field_name: Name of the field to extract
+    :return: Field value or None if not present or falsy
+    """
+    if field_name not in feature_attributes:
+        return None
+
+    value = extract_field_value(feature_attributes, field_name)
+    return None if not value else value
+
+
+def _extract_optional_bool_field(
+    feature_attributes: Mapping[str, Any],
+    field_name: str,
+    pop: bool = False,
+) -> Optional[bool]:
+    """
+    Extract an optional boolean field from feature attributes.
+
+    :param feature_attributes: Feature attributes dictionary
+    :param field_name: Name of the field to extract
+    :param pop: Whether to remove the field after extraction
+    :return: Boolean value or None if not present
+    """
+    if field_name not in feature_attributes:
+        return None
+
+    value = extract_field_value(feature_attributes, field_name)
+
+    if pop:
+        feature_attributes.pop(field_name)
+
+    if value is None:
+        return None
+
+    if not isinstance(value, bool):
+        value = str_to_bool(value) if isinstance(value, str) else bool(value)
+
+    return value
+
+
+def _extract_optional_numeric_field(
+    feature_attributes: Mapping[str, Any],
+    field_name: str,
+    pop: bool = False,
+) -> Optional[float]:
+    """
+    Extract an optional numeric field from feature attributes.
+
+    :param feature_attributes: Feature attributes dictionary
+    :param field_name: Name of the field to extract
+    :param pop: Whether to remove the field after extraction
+    :return: Numeric value or None if not present
+    """
+    if field_name not in feature_attributes:
+        return None
+
+    value = extract_field_value(feature_attributes, field_name)
+
+    if pop:
+        feature_attributes.pop(field_name)
+
+    return None if value is None else value
 
 
 def _parse_detail_entry(detail_entry: str) -> Any:
@@ -108,6 +266,117 @@ def _parse_detail_entry(detail_entry: str) -> Any:
 
     # If all parsing attempts fail, raise an error
     raise ValueError(f"Unable to parse detail entry: {detail_entry}")
+
+
+def _parse_category_keys_from_collection(
+    category_collection: Collection,
+    solution: Solution,
+    admin_id: str,
+    collect_invalid: bool = False,
+    issues: Optional[List[str]] = None,
+) -> List[str]:
+    """
+    Parse a collection of category names and convert them to category keys.
+
+    Creates new categories if ALLOW_CATEGORY_TYPE_CREATION is enabled,
+    otherwise raises an error for missing categories.
+
+    :param category_collection: Collection of category names (strings)
+    :param solution: Solution object to add categories to
+    :param admin_id: Admin ID of the location (for error logging)
+    :param collect_invalid: Whether to collect invalid entries instead of raising
+    :param issues: List to append invalid entries to
+    :return: List of category keys
+    """
+    cat_keys = []
+
+    for category_name in category_collection:
+        if isinstance(category_name, str):
+            if category_name.lower().strip() == "":
+                continue
+
+            category_key = Category.compute_key(ckey=category_name)
+            if solution.categories.get(category_key) is None:
+                if read_bool_setting(
+                    "ALLOW_CATEGORY_TYPE_CREATION"
+                ):  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
+                    try:
+                        category_key = solution.add_category(
+                            ckey=category_name,
+                            translations={"en": LanguageBundle(name=category_name)},
+                        )
+                    except Exception as e:
+                        _invalid = f"{category_name=} is invalid {e}"
+                        _logger.error(_invalid)
+                        if collect_invalid:
+                            issues.append(_invalid)
+                        else:
+                            raise e
+                else:
+                    raise ValueError(
+                        f"{category_key} is not a category that already exists"
+                    )
+            cat_keys.append(category_key)
+        else:
+            _logger.error(f"Skipping invalid category {category_name} on {admin_id}")
+
+    return cat_keys
+
+
+def _parse_details_from_collection(details_collection: Collection) -> List:
+    """
+    Parse a collection of detail entries and convert them to detail objects.
+
+    Handles both string and dict entries, converting __class__.__name__ to the "type" field
+    expected by details_from_dicts, then deserializes them into detail objects.
+
+    :param details_collection: Collection of detail entries (strings or dicts)
+    :return: List of parsed detail objects
+    """
+    details = []
+
+    for detail_entry in details_collection:
+        if isinstance(detail_entry, str):
+            detail_entry_key = detail_entry.lower().strip()
+            if detail_entry_key == "":
+                continue
+
+            try:
+                detail_entry_parsed = _parse_detail_entry(detail_entry)
+            except (ValueError, SyntaxError) as parse_err:
+                _logger.error(
+                    f"Failed to parse detail entry: {detail_entry}. "
+                    f"Error: {parse_err}"
+                )
+                continue
+
+            if "__class__.__name__" in detail_entry_parsed:
+                detail_type = detail_entry_parsed.pop("__class__.__name__")
+
+                assert isinstance(
+                    detail_type, str
+                ), f"{type(detail_type)} is not a supported detail type, ({StrToDetailTypeMap.keys()})"
+                detail_type = StrToDetailTypeMap[detail_type.strip()]
+
+                if detail_type == OpeningHoursDetail:
+                    opening_hours = standard_opening_hours_from_dict(
+                        detail_entry_parsed.pop("opening_hours")
+                    )
+
+                    details.append(
+                        OpeningHoursDetail(
+                            **detail_entry_parsed,
+                            opening_hours=opening_hours,
+                        )
+                    )
+                else:
+                    details.append(detail_type(**detail_entry_parsed))
+            else:
+                _logger.error(
+                    f'Did not find a "__class__.__name__" in {detail_entry_parsed}, skipping it'
+                )
+
+    return details
 
 
 def add_floor_locations(
@@ -173,124 +442,29 @@ def add_floor_locations(
                 feature_attributes, required_languages=solution.available_languages
             )
 
-            if "admin_id" in feature_attributes:
-                admin_id = feature_attributes["admin_id"]
-                if admin_id is None:
-                    raise MissingKeyValue(f"Missing key {admin_id=}")
-                elif isinstance(admin_id, str):
-                    v = admin_id
-                    v_str = v.lower().strip()
-                    if is_str_value_null_like(v_str):
-                        raise MissingKeyColumn(f'Missing "admin_id" column')
-                    else:
-                        admin_id = v
+            admin_id = _extract_admin_id(feature_attributes)
+            external_id = _extract_external_id(feature_attributes)
+            is_active = _extract_bool_field(feature_attributes, "is_active")
+            is_searchable = _extract_bool_field(feature_attributes, "is_searchable")
 
-                elif isinstance(admin_id, QVariant):
-                    if admin_id.isNull():
-                        raise MissingKeyValue(f"Missing key {admin_id=}")
-                    else:
-                        v = str(admin_id.value())
-
-                        v_str = v.lower().strip()
-                        if is_str_value_null_like(v_str):
-                            raise MissingKeyColumn(f'Missing "admin_id" column')
-
-                        admin_id = v
-            else:
-                raise MissingKeyColumn(f'Missing "admin_id" column')
-
-            external_id = None
-            if "external_id" in feature_attributes:
-                external_id = feature_attributes["external_id"]
-                if external_id is None:
-                    ...
-                elif isinstance(external_id, str):
-                    v = external_id
-                    v_str = v.lower().strip()
-                    if is_str_value_null_like(v_str):
-                        external_id = None
-                    else:
-                        external_id = v
-
-                elif isinstance(external_id, QVariant):
-                    if external_id.isNull():
-                        external_id = None
-                    else:
-                        v = str(external_id.value())
-
-                        v_str = v.lower().strip()
-                        if is_str_value_null_like(v_str):
-                            external_id = None
-                        else:
-                            external_id = v
-
-            is_active = None
-            if "is_active" in feature_attributes:
-                is_active = extract_field_value(feature_attributes, "is_active")
-                if isinstance(is_active, str):
-                    if is_active.lower().strip() == "false":
-                        is_active = False
-                    else:
-                        is_active = True
-                assert isinstance(is_active, bool), f"{type(is_active)}"
-
-            is_searchable = None
-            if "is_searchable" in feature_attributes:
-                is_searchable = extract_field_value(feature_attributes, "is_searchable")
-                if isinstance(is_searchable, str):
-                    if is_searchable.lower().strip() == "false":
-                        is_searchable = False
-                    else:
-                        is_searchable = True
-                assert isinstance(is_searchable, bool), f"{type(is_searchable)}"
-
-            restrictions = None
-            if "restrictions" in feature_attributes:
-                restrictions = extract_field_value(feature_attributes, "restrictions")
-
-                if not restrictions:
-                    restrictions = None
-
-            is_obstacle = None
-            if "is_obstacle" in feature_attributes:
-                is_obstacle = extract_field_value(feature_attributes, "is_obstacle")
-                feature_attributes.pop("is_obstacle")
-
-                if is_obstacle is not None:
-                    if not isinstance(is_obstacle, bool):
-                        is_obstacle = str_to_bool(is_obstacle)
-
-            is_selectable = None
-            if "is_selectable" in feature_attributes:
-                is_selectable = extract_field_value(feature_attributes, "is_selectable")
-                feature_attributes.pop("is_selectable")
-
-                if is_selectable is not None:
-                    if not isinstance(is_selectable, bool):
-                        is_selectable = str_to_bool(is_selectable)
-
-            settings_3d_width = None
-            if "settings_3d_width" in feature_attributes:
-                settings_3d_width = extract_field_value(
-                    feature_attributes, "settings_3d_width"
-                )
-                feature_attributes.pop("settings_3d_width")
-
-            settings_3d_margin = None
-            if "settings_3d_margin" in feature_attributes:
-                settings_3d_margin = extract_field_value(
-                    feature_attributes, "settings_3d_margin"
-                )
-                feature_attributes.pop("settings_3d_margin")
-
-            active_to = None
-            if "active_to" in feature_attributes:  # TODO: CONVERT THIS
-                active_to = extract_field_value(feature_attributes, "active_to")
+            restrictions = _extract_optional_field(feature_attributes, "restrictions")
+            is_obstacle = _extract_optional_bool_field(
+                feature_attributes, "is_obstacle", pop=True
+            )
+            is_selectable = _extract_optional_bool_field(
+                feature_attributes, "is_selectable", pop=True
+            )
+            settings_3d_width = _extract_optional_numeric_field(
+                feature_attributes, "settings_3d_width", pop=True
+            )
+            settings_3d_margin = _extract_optional_numeric_field(
+                feature_attributes, "settings_3d_margin", pop=True
+            )
+            active_to = _extract_optional_field(feature_attributes, "active_to")
+            if active_to is not None:
                 feature_attributes.pop("active_to")
-
-            active_from = None
-            if "active_from" in feature_attributes:  # TODO: CONVERT THIS
-                active_from = extract_field_value(feature_attributes, "active_from")
+            active_from = _extract_optional_field(feature_attributes, "active_from")
+            if active_from is not None:
                 feature_attributes.pop("active_from")
 
             street_view_config = extract_street_view_config(feature_attributes)
@@ -345,148 +519,16 @@ def add_floor_locations(
                     street_view_config=street_view_config,
                 )
 
-                anchor = location_geometry.representative_point()
+                anchor = extract_anchor(feature_attributes, location_geometry)
 
-                if ANCHOR_AS_INDIVIDUAL_FIELDS:
-                    if "anchor_x" in feature_attributes:
-                        ax = extract_field_value(feature_attributes, "anchor_x")
-                        feature_attributes.pop("anchor_x")
-                        ay = extract_field_value(feature_attributes, "anchor_y")
-                        feature_attributes.pop("anchor_y")
-                        anchor = shapely.Point([ax, ay])
-
-                else:
-
-                    if "anchor" in feature_attributes:
-                        a = extract_field_value(feature_attributes, "anchor")
-                        if a is not None and not (a.isNull() or a.isEmpty()):
-                            can = qgs_geometry_to_shapely(a)
-                            if can:
-                                anchor = can
-
-                        feature_attributes.pop("anchor")
-
-                for k, v in feature_attributes.items():
-                    if k not in common_kvs:
-                        if k == "category_keys":
-                            cat_keys = []
-                            a = extract_field_value(feature_attributes, "category_keys")
-
-                            if not isinstance(a, Collection):
-                                _logger.warning(f"Skipping {a} for {k}")
-                                continue
-
-                            for category_name in a:
-                                if isinstance(category_name, str):
-                                    if category_name.lower().strip() == "":
-                                        continue
-
-                                    category_key = Category.compute_key(
-                                        ckey=category_name
-                                    )
-                                    if solution.categories.get(category_key) is None:
-                                        if read_bool_setting(
-                                            "ALLOW_CATEGORY_TYPE_CREATION"
-                                        ):  # TODO: MAKE CONFIRMATION DIALOG IF TRUE
-                                            try:
-                                                category_key = solution.add_category(
-                                                    ckey=category_name,
-                                                    translations={
-                                                        "en": LanguageBundle(
-                                                            name=category_name
-                                                        )
-                                                    },
-                                                )
-                                            except Exception as e:
-                                                _invalid = (
-                                                    f"{category_name=} is invalid {e}"
-                                                )
-                                                _logger.error(_invalid)
-                                                if collect_invalid:
-                                                    issues.append(_invalid)
-                                                else:
-                                                    raise e
-                                        else:
-                                            raise ValueError(
-                                                f"{category_key} is not a category that already exists"
-                                            )
-                                    cat_keys.append(category_key)
-                                else:
-                                    _logger.error(
-                                        f"Skipping invalid category {category_name} on {admin_id}"
-                                    )
-
-                            common_kvs["category_keys"] = cat_keys
-                        elif k == "details":
-                            details = []
-                            a = extract_field_value(feature_attributes, "details")
-
-                            if not isinstance(a, Collection):
-                                _logger.warning(f"Skipping {a} for {k}")
-                                continue
-
-                            for detail_entry in a:
-                                if isinstance(detail_entry, str):
-                                    detail_entry_key = detail_entry.lower().strip()
-                                    if detail_entry_key == "":
-                                        continue
-
-                                    try:
-                                        detail_entry_parsed = _parse_detail_entry(
-                                            detail_entry
-                                        )
-                                    except (ValueError, SyntaxError) as parse_err:
-                                        _logger.error(
-                                            f"Failed to parse detail entry: {detail_entry}. "
-                                            f"Error: {parse_err}"
-                                        )
-                                        continue
-
-                                    if "__class__.__name__" in detail_entry_parsed:
-                                        detail_type = detail_entry_parsed.pop(
-                                            "__class__.__name__"
-                                        )
-
-                                        assert isinstance(
-                                            detail_type, str
-                                        ), f"{type(detail_type)} is not a supported detail type, ({StrToDetailTypeMap.keys()})"
-                                        detail_type = StrToDetailTypeMap[
-                                            detail_type.strip()
-                                        ]
-
-                                        if detail_type == OpeningHoursDetail:
-                                            opening_hours = (
-                                                standard_opening_hours_from_dict(
-                                                    detail_entry_parsed.pop(
-                                                        "opening_hours"
-                                                    )
-                                                )
-                                            )
-
-                                            details.append(
-                                                OpeningHoursDetail(
-                                                    **detail_entry_parsed,
-                                                    opening_hours=opening_hours,
-                                                )
-                                            )
-                                        else:
-                                            details.append(
-                                                detail_type(**detail_entry_parsed)
-                                            )
-                                    else:
-                                        _logger.error(
-                                            f'Did not find a "__class__.__name__" in {detail_entry_parsed}, skipping it'
-                                        )
-
-                            if details:
-                                common_kvs["details"] = details
-                        else:
-                            ...
-                            # logger.debug(f'Unknown {k}')
-                            # common_kvs[k] = extract_field_value(feature_attributes, k)
-                    else:
-                        # logger.debug("Already in kvs")
-                        ...
+                extract_special_feature_attributes(
+                    admin_id,
+                    collect_invalid,
+                    common_kvs,
+                    feature_attributes,
+                    issues,
+                    solution,
+                )
 
                 shapely_geom = prepare_geom_for_mi_db_qgis(location_geometry)
 
@@ -522,6 +564,111 @@ def add_floor_locations(
                         raise e
             else:
                 _logger.error(f"{location_geometry=}")
+
+
+def extract_special_feature_attributes(
+    admin_id: str | Any,
+    collect_invalid: bool,
+    common_kvs: dict[
+        str,
+        str
+        | None
+        | bool
+        | Mapping[str, LanguageBundle]
+        | DisplayRule
+        | StreetViewConfig
+        | Any,
+    ],
+    feature_attributes: dict[str, Any],
+    issues: list[str] | None,
+    solution: Solution,
+):
+    """
+
+    :param admin_id:
+    :type admin_id:
+    :param collect_invalid:
+    :type collect_invalid:
+    :param common_kvs:
+    :type common_kvs:
+    :param feature_attributes:
+    :type feature_attributes:
+    :param issues:
+    :type issues:
+    :param solution:
+    :type solution:
+    """
+    for k, v in feature_attributes.items():
+        if k not in common_kvs:
+            if k == "category_keys":
+                a = extract_field_value(feature_attributes, "category_keys")
+
+                if not isinstance(a, Collection):
+                    _logger.warning(f"Skipping {a} for {k}")
+                    continue
+
+                cat_keys = _parse_category_keys_from_collection(
+                    a,
+                    solution,
+                    admin_id,
+                    collect_invalid=collect_invalid,
+                    issues=issues,
+                )
+
+                if cat_keys:
+                    common_kvs["category_keys"] = cat_keys
+            elif k == "details":
+                a = extract_field_value(feature_attributes, "details")
+
+                if not isinstance(a, Collection):
+                    _logger.warning(f"Skipping {a} for {k}")
+                    continue
+
+                details = _parse_details_from_collection(a)
+
+                if details:
+                    common_kvs["details"] = details
+            else:
+                ...
+                # logger.debug(f'Unknown {k}')
+                # common_kvs[k] = extract_field_value(feature_attributes, k)
+        else:
+            # logger.debug("Already in kvs")
+            ...
+
+
+def extract_anchor(
+    feature_attributes: dict[str, Any], location_geometry: BaseGeometry
+) -> Point:
+    """
+
+    :param feature_attributes:
+    :type feature_attributes:
+    :param location_geometry:
+    :type location_geometry:
+    :return:
+    :rtype:
+    """
+    anchor = location_geometry.representative_point()
+
+    if ANCHOR_AS_INDIVIDUAL_FIELDS:
+        if "anchor_x" in feature_attributes:
+            ax = extract_field_value(feature_attributes, "anchor_x")
+            feature_attributes.pop("anchor_x")
+            ay = extract_field_value(feature_attributes, "anchor_y")
+            feature_attributes.pop("anchor_y")
+            anchor = shapely.Point([ax, ay])
+
+    else:
+        if "anchor" in feature_attributes:
+            a = extract_field_value(feature_attributes, "anchor")
+            if a is not None and not (a.isNull() or a.isEmpty()):
+                can = qgs_geometry_to_shapely(a)
+                if can:
+                    anchor = can
+
+            feature_attributes.pop("anchor")
+    return anchor
 
 
 def add_floor_contents(

@@ -5,7 +5,8 @@ from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
 from qgis.core import QgsLayerTreeLayer
-from sync_module.model import FALLBACK_OSM_GRAPH, Solution
+from sync_module.model import Solution
+from sync_module.constants import FALLBACK_OSM_GRAPH
 
 from jord.qgis_utilities import extract_layer_data_single, feature_to_shapely
 from mi_plugin import UPLOAD_ERROR_CONFIRMATION_TITLE

@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [New Button] Find feature geometry overlaps
 * [New Button] Merge feature geometry overlaps
 
+
+## 0.7.24 - 2026-02-13
+
+* [Validation] Graph is now validated to avoid issues with duplicate nodes
+
 ## 0.7.23 - 2026-02-13
 
 * [Styling] Graph is now styled according to level (m value) and highway type

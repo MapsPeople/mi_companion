@@ -7,7 +7,7 @@ from qgis._core import QgsVectorLayer
 
 from sync_module.model import CollectionMixin, Floor, Solution
 from sync_module.pandas_utilities import locations_to_df
-from sync_module.tools import collection_to_df, process_nested_fields_df
+from sync_module.tools.serialisation import collection_to_df, process_nested_fields_df
 
 from jord.qgis_utilities import (
     make_field_boolean,

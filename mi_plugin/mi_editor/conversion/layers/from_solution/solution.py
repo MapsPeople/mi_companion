@@ -8,10 +8,10 @@ from sync_module.mi import (
     get_remote_solution,
 )
 from sync_module.model import (
-    GraphEdgeContextTypes,
     IMPLEMENTATION_STATUS,
     Solution,
 )
+from sync_module.constants import GraphEdgeContextTypes
 from sync_module.pandas_utilities import extract_columns_from_solution_config
 from sync_module.shared import (
     MIConnectionType,

@@ -7,7 +7,7 @@ import pyproj
 import shapely
 import shapely.geometry
 from geopandas import GeoDataFrame
-from sync_module.mi_sync_constants import (
+from sync_module.constants import (
     EDITING_CRS_AUTHID,
     EDITING_EPSG_NUMBER,
     MI_CRS_AUTHID,

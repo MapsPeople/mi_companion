@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 def run(*, path: Path) -> None:
     from jord.qgis_utilities.helpers import InjectedProgressBar
 
-    from sync_module.tools import from_json
+    from sync_module.tools.serialisation import from_json
     from mi_plugin.layer_descriptors import DATABASE_GROUP_DESCRIPTOR
     from mi_plugin.mi_editor.conversion import add_solution_layers
 

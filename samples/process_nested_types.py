@@ -1,8 +1,7 @@
-from sync_module.tools import process_nested_fields_df
+from sync_module.tools.serialisation import process_nested_fields_df, collection_to_df
+from sync_module.mi import get_remote_solution
 
 if __name__ == "__main__":
-    from sync_module.mi import get_remote_solution
-    from sync_module.tools import collection_to_df
 
     # solution = get_remote_solution("ricoh_tyrens_sverige_250091618ed84de1957c2")
     solution = get_remote_solution("fjordhaven7")

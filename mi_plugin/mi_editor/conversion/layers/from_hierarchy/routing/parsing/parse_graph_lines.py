@@ -10,10 +10,10 @@ from jord.qgis_utilities.conversion.features import set_z_from_m
 from mi_plugin.layer_descriptors import GRAPH_LINES_DESCRIPTOR
 from mi_plugin.constants import USE_FUZZY_MATCHING_FOR_3D_GRAPH_NODES
 from mi_plugin.mi_editor.conversion.projection import prepare_geom_for_mi_db_qgis
-from sync_module.mi_sync_constants import GEOMETRY_DIFFERENCE_TOLERANCE_4326
-from sync_module.model import FALLBACK_OSM_GRAPH, Solution
-from sync_module.tools import lines_3d_to_osm_xml
-from sync_module.tools.graph_utilities.experimental.from_lines_fuzzy import (
+from sync_module.constants import FALLBACK_OSM_GRAPH, GEOMETRY_DIFFERENCE_TOLERANCE_4326
+from sync_module.model import Solution
+from sync_module.tools.graph_utilities import lines_3d_to_osm_xml
+from sync_module.tools.graph_utilities.from_lines_fuzzy import (
     lines_3d_to_osm_xml_fuzzy,
 )
 

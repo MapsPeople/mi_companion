@@ -19,7 +19,7 @@ from mi_plugin.mi_editor import (
 )
 from sync_module.mi import SolutionDepth
 from sync_module.mi.config import MapsIndoors, Settings, set_settings
-from sync_module.mi_sync_constants import MI_EPSG_NUMBER
+from sync_module.constants import MI_EPSG_NUMBER
 from ..gui_utilities import clean_str
 from ...constants import (
     DEFAULT_PLUGIN_SETTINGS,

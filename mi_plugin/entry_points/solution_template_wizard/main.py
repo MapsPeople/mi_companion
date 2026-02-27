@@ -15,12 +15,12 @@ from sync_module.mi import (
 from sync_module.mi.synchronization import _create_solution
 from sync_module.model import (
     Connector,
-    FALLBACK_OSM_GRAPH,
     ImplementationStatus,
     SOLUTION_DEFAULT_AVAILABLE_LANGUAGES,
     SOLUTION_DEFAULT_LANGUAGE,
     Solution,
 )
+from sync_module.constants import FALLBACK_OSM_GRAPH
 from sync_module.shared import (
     LanguageBundle,
     MIConnectionType,

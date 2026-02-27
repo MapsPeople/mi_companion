@@ -8,7 +8,7 @@ from qgis.PyQt.QtGui import QColor
 
 from mi_plugin.exceptions import MissingTranslationsException
 from sync_module.mi import MI_OUTSIDE_BUILDING_NAME
-from sync_module.mi_sync_constants import ZOOM_LEVEL_DATA_TYPE
+from sync_module.constants import ZOOM_LEVEL_DATA_TYPE
 from sync_module.model import (
     BadgeDisplayRule,
     Data3D,

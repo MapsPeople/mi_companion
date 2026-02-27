@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 from qgis._3d import Qgs3DTypes
 from sync_module.model import Building, Floor, Solution
-from sync_module.tools import translations_to_flattened_dict
+from sync_module.tools.serialisation import translations_to_flattened_dict
 
 from jord.qgis_utilities import (
     Qgis3dFacade,

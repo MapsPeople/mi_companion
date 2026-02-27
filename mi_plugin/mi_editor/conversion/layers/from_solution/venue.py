@@ -2,8 +2,9 @@ import logging
 from typing import Any, Iterable, Optional
 
 from qgis.PyQt import QtWidgets
-from sync_module.model import FALLBACK_OSM_GRAPH, Solution, Venue
-from sync_module.tools import translations_to_flattened_dict
+from sync_module.model import Solution, Venue
+from sync_module.constants import FALLBACK_OSM_GRAPH
+from sync_module.tools.serialisation import translations_to_flattened_dict
 
 from jord.qgis_utilities import (
     make_field_not_null,

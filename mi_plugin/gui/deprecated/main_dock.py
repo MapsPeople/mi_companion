@@ -45,7 +45,7 @@ from mi_plugin.mi_editor.hierarchy.hierarchy_validation import (
 )
 from sync_module.mi import SolutionDepth, get_venue_key_mi_venue_map
 from sync_module.mi.config import MapsIndoors, set_settings
-from sync_module.mi_sync_constants import MI_EPSG_NUMBER
+from sync_module.constants import MI_EPSG_NUMBER
 
 from ..gui_utilities import clean_str
 from ..make_solution_right_click import add_augmented_actions
